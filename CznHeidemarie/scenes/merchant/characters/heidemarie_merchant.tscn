@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3]
+
+; 商店柜台立绘。
+; 原实现借用的是 res://animations/merchant/ironclad/ironclad_merchant_skel_data.tres（战士骨架），
+; 现改为本 mod 自带的 30093 骨架，与战斗/休息点共用同一份 Spine 数据。
+[ext_resource type="Script" path="res://src/Core/Nodes/Screens/Shops/NMerchantCharacter.cs" id="1_8o68q"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/model/30093_skel_data.tres" id="2_8o68q"]
+
+; NMerchantCharacter._Ready 用 GetChild(0) 取 SpineSprite，所以 SpineSprite 必须是第一个子节点。
+[node name="HeidemarieMerchant" type="Node2D"]
+script = ExtResource("1_8o68q")
+
+[node name="SpineSprite" type="SpineSprite" parent="."]
+skeleton_data_res = ExtResource("2_8o68q")
+; 30093.skel 的停驻姿势动画即 stop。
+preview_skin = "default"
+preview_animation = "stop"
+preview_frame = false
+preview_time = 0.0
+; 实测标定：30093.skel 的 stop 骨骼包围盒高 225.46，乘 1.761 约 397px，
+; 与参考 mod 在商店柜台表面的 397px 一致。
+scale = Vector2(1.761, 1.761)
+metadata/heidemarie_scale_source = "stop 包围盒 225.46 x 186.76，比例 397/225.46 = 1.761；位置沿用柜台默认原点。"

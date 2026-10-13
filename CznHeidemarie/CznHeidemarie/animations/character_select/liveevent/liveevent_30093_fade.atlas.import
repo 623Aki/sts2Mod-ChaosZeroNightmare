@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://en7bduvco501"
+path="res://.godot/imported/liveevent_30093_fade.atlas-4dab8fafe7787b5080b7112365610615.spatlas"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/character_select/liveevent/liveevent_30093_fade.atlas"
+dest_files=["res://.godot/imported/liveevent_30093_fade.atlas-4dab8fafe7787b5080b7112365610615.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"

@@ -1,0 +1,934 @@
+# STS2 Mod 工作区 — 开发约定（多 mod 通用）
+
+本目录是《杀戮尖塔2》Mod 开发的**工作区根**。
+
+> 打包踩坑与根因详见同目录 **`打包踩坑与解决方案.md`**。
+> 本文只记录**必须遵守的规则、去哪查什么、新 mod 怎么搭**，踩坑细节不重复。
+
+---
+
+## 〇、先读这张地图
+
+| 目录 | 性质 | 什么时候看它 |
+|---|---|---|
+| `SlayTheSpire2_source/` | **游戏本体反编译源码** | 查 API 真实签名、字段、加载路径 |
+| `SlayTheSpire2ModdingTutorials/` | 官方开发教程（中英双份） | 查标准写法 |
+| `CNZ_Source/` | 卡厄思梦境原始素材（只读） | 找模型、卡图、特效、语音 |
+| `CznTipheraCharacter/` | ★ **参考 mod A**（Tiphera，纯资源型，含 CznCore） | 抄场景树、资源目录布局 |
+| `CznNineCharacter/` | ★ **参考 mod B**（Nine，纯资源型） | 抄场景树、Spine 目录约定 |
+| `CznHeidemarie/` | ★ **本工作 mod**（自研 C# 型） | 日常开发 |
+| `CZN_Viewer/` | Spine 动画查看器（单骨架浏览） | 核对骨架动画名 / 时长 / 包围盒 |
+| `CZN_AnimLab/` | **场景检查器**（加载 tscn → 列模型 → 勾选启停 → 改参数 → 保存） | 调全屏演出 / 技能特效，免打包 |
+| `tools/` | 批量脚本（`.tres` 生成、**演出计划提取**、素材提取） | 层级真值从这里产出 |
+| `STS2-RitsuLib-docs/` | RitsuLib 文档 | 将来改用 RitsuLib 时 |
+
+### 三份资料的优先级
+
+```
+SlayTheSpire2_source/   ← 最权威，真实代码，签名以此为准
+        ↓ 找对应章节
+SlayTheSpire2ModdingTutorials/
+        ↓ 找素材
+CNZ_Source/
+```
+
+> ⚠️ 教程与实际源码不一致时**一律以源码为准**。
+
+### ⚠️ 重要纠正：参考 mod 与本工作 mod 不是同一种东西
+
+查代码前先分清，否则会抄错：
+
+| | `CznTipheraCharacter` / `CznNineCharacter` | `CznHeidemarie` |
+|---|---|---|
+| 形态 | **GDRE 反编译产物**（`decompiled/` 里是反编译 C#，只读不可编译） | **自研 C# 工程**（`*.csproj` 可 `dotnet build`） |
+| 代码来源 | 别人写的完整 mod，从游戏 pck 里还原 | 本工作手写 |
+| 用什么基础库 | `CznCore`（原作者自研框架，在 `decompiled/CznCore/`） | **不用基础库**。直接引用游戏 `sts2.dll` + `0Harmony.dll` |
+| 参考价值 | **资源布局 / 场景树 / 数值标定** | C# 结构基线 |
+
+> `CznHeidemarie.csproj` 只引用三个游戏自带 DLL
+> （`sts2.dll` / `0Harmony.dll` / `GodotSharp.dll`）+
+> `Alchyr.Sts2.ModAnalyzers` 静态分析器。
+> **没有 BaseLib，没有 RitsuLib。** `ModHelper` 是游戏自带的
+> `MegaCrit.Sts2.Core.Modding.ModHelper`，不是第三方库。
+> 网上教程里大量 BaseLib/RitsuLib 写法与本工程不符，**照抄前先对照源码**。
+
+---
+
+## 一、多 mod 的硬规则
+
+### 1.1 mod id ↔ 资源目录名 ↔ 命名空间，三者必须一致
+
+每个 mod 是一个**独立工程**，同时也是 Godot 项目根。三者同源：
+
+| 环节 | 取值 | 约束 |
+|---|---|---|
+| mod id | `CznHeidemarie` | `CznHeidemarie.json` 的 `id` 字段 |
+| 资源目录 | `CznHeidemarie/` | 位于工程根下 → 打包后即 `res://CznHeidemarie/` |
+| 命名空间 | `CznHeidemarie.*` | C# 命名空间根 |
+| 角色类名 | `Heidemarie` | → slug `heidemarie` |
+
+```
+素材 ID 30093 → 角色类 Heidemarie → slug "heidemarie" → mod id "CznHeidemarie"
+```
+
+### 1.2 slug 是所有资源的唯一命名字符串
+
+`CharacterModel` 里**近二十个路径属性**都用
+`Id.Entry.ToLowerInvariant()` 拼出来。`Id.Entry = Slugify(类型名)`，
+所以 **C# 类名一旦改动，全套资源路径全部失效**：
+
+```
+类名 Heidemarie
+  → Id.Entry            "heidemarie"
+  → Id.Entry.ToUpper()  "HEIDEMARIE"        （本地化 key）
+```
+
+> ❌ 改成 `HeidemarieCharacter` ⇒ slug 变 `heidemariecharacter`
+> ⇒ 场景、图标、音效、地图标记路径全部失配。
+
+### 1.3 新 mod 的标准目录骨架
+
+新增 mod 时，**照此骨架复制一份**，目录名用新 mod id：
+
+```
+G:\sts2Mod\Czn<新角色>\
+├── Czn<新角色>.csproj            改 assembly/Target 后缀
+├── Czn<新角色>.sln
+├── Czn<新角色>.json              mod 清单（id/name/version/has_pck/has_dll）
+├── project.godot                 config/name + dotnet/project/assembly_name
+├── export_presets.cfg            export_path 指向游戏 mods/<modid>/
+├── NuGet.Config                  指向本工程的 .nuget-feed
+├── .gitignore                    ⚠️ 不得忽略 bin/（见第七节）
+├── MainFile.cs                   mod 入口 + Harmony.PatchAll()
+├── Characters\<角色名>\<角色名>.cs          CharacterModel 子类
+├── Characters\<角色名>\<角色名>CardPool.cs
+├── Characters\<角色名>\<角色名>RelicPool.cs
+├── Characters\<角色名>\<角色名>PotionPool.cs
+├── Characters\<角色名>\Cards\<角色名>Card.cs  卡牌公共基类
+├── Characters\<角色名>\Cards\*.cs             具体卡牌
+├── Registration\*RegistrationPatch.cs         ModelDb.get_AllCharacters 补丁
+├── Registration\*SfxPatch.cs                  非虚 SFX 属性重定向
+├── scenes\                       ← 覆盖 res://scenes/（见第三节清单）
+├── images\                       ← 覆盖 res://images/
+├── materials\transitions\
+├── Czn<新角色>\                  ← mod 专属资源
+│   ├── animations\body\*.skel/.atlas/.png/*_skel_data.tres
+│   └── localization\zhs\*.json
+└── bin\                          spine-godot 扩展（必需，不可删）
+```
+
+---
+
+## 二、资源引用规则
+
+### 2.1 素材区 `CNZ_Source`（只读）
+
+```
+G:\sts2Mod\CNZ_Source\
+├── czn30093\                 原始素材
+└── czn30093-spine_4211\      已转 Spine 4.2 的成品
+    ├── model\                173 个 .skel ← 主要用这个
+    ├── card\ card_illustration\
+    ├── effect\ img\ face\ camera\ camera_path\
+    └── CZNViewer.bat / CZNViewer.ps1
+```
+
+**只读，不要往里写东西。** 它是其他工程也会引用的公共素材区。
+
+### 2.2 引用素材的流程
+
+```
+CNZ_Source\czn30093-spine_4211\model\30093.skel
+        │  ① 取三件套（.skel + .atlas + .png，缺一不可）
+        ▼
+CznHeidemarie\CznHeidemarie\animations\model\
+        │  ② 放入工程（资源目录名 = mod id）
+        │  ③ 生成配套 30093_skel_data.tres
+        │  ④ Godot --import 生成 .spskel / .spatlas / .ctex
+        ▼
+pck  →  res://CznHeidemarie/animations/model/
+```
+
+### 2.3 Spine 骨架规则
+
+```
+30093.skel     骨骼 + 插槽 + 动画时间轴（动画在这里）
+30093.atlas    纹理图集描述
+30093.png      皮肤贴图（只是皮肤，不含动画）
+```
+
+- `.skel` 是 **Spine 4.2.11** 二进制（由 3.8.79 经
+  `SpineSkeletonDataConverter -v 4.2.11` 转换而来）。
+  **禁止再次转换或改动**，游戏自带运行时同样是 4.2.11。
+- 动画由 `.skel` 内**时间轴关键帧**驱动，运行时插值计算顶点。
+  PNG 只是皮肤贴图，不存在逐帧换图。
+- 参考 mod 的目录约定是 `animations/body/<slug>_body.skel`；
+  本工作 mod 用 `animations/model/<素材ID>.skel`。
+  **两种都能跑**，只要 `.tres` 与场景引用一致即可。
+
+### 2.4 `_skel_data.tres` 手工生成
+
+纯文本，**UTF-8 无 BOM**：
+
+```ini
+[gd_resource type="SpineSkeletonDataResource" load_steps=3 format=3]
+
+[ext_resource type="SpineAtlasResource" path="res://CznHeidemarie/animations/model/30093.atlas" id="1_atlas"]
+[ext_resource type="SpineSkeletonFileResource" path="res://CznHeidemarie/animations/model/30093.skel" id="2_skel"]
+
+[resource]
+atlas_res = ExtResource("1_atlas")
+skeleton_file_res = ExtResource("2_skel")
+default_mix = 0.0
+```
+
+批量生成器：`G:\sts2Mod\tools\gen_skel_tres.ps1`
+
+```powershell
+.\gen_skel_tres.ps1 -ProjectDir 'G:\sts2Mod\CznHeidemarie' `
+                     -ResourceDir 'G:\sts2Mod\CznHeidemarie\CznHeidemarie\animations\model'
+```
+
+> `res://` 前缀由 `-ProjectDir` 推导，**资源目录必须在工程内**，否则脚本报错。
+
+---
+
+## 三、必备资源清单（按 slug 派生的完整契约）
+
+这是本工作区**最重要的一节**。`CharacterModel` 的路径属性绝大多数是
+**private / 非虚**，无法 override —— 只能靠 pck 提供同名文件。
+
+源码位置：`SlayTheSpire2_source/src/Core/Models/CharacterModel.cs:91-217`
+
+### 3.1 必须存在的文件（缺失即报错）
+
+以 `heidemarie` 为 slug，游戏按下表查找：
+
+| 游戏属性（源码行） | 解析出的路径 | 文件 |
+|---|---|---|
+| `VisualsPath` (117, **private**) | `res://scenes/creature_visuals/heidemarie` | `scenes/creature_visuals/heidemarie.tscn` |
+| `IconPath` (127, `protected virtual`) | `res://scenes/ui/character_icons/heidemarie_icon` | `scenes/ui/character_icons/heidemarie_icon.tscn` |
+| `IconTexturePath` (119, private) | `res://images/ui/top_panel/character_icon_heidemarie.png` | 同左 |
+| `IconOutlineTexturePath` (123, private) | `res://images/ui/top_panel/character_icon_heidemarie_outline.png` | 同左 |
+| `EnergyCounterPath` (131) | `res://scenes/combat/energy_counters/heidemarie_energy_counter` | `scenes/combat/energy_counters/heidemarie_energy_counter.tscn` |
+| `MerchantAnimPath` (133) | `res://scenes/merchant/characters/heidemarie_merchant` | `scenes/merchant/characters/heidemarie_merchant.tscn` |
+| `RestSiteAnimPath` (135) | `res://scenes/rest_site/characters/heidemarie_rest_site` | `scenes/rest_site/characters/heidemarie_rest_site.tscn` |
+| `TrailPath` (91) | `res://scenes/vfx/card_trail_heidemarie` | `scenes/vfx/card_trail_heidemarie.tscn` |
+| `CharacterSelectBg` (161) | `res://scenes/screens/char_select/char_select_bg_heidemarie` | `scenes/screens/char_select/char_select_bg_heidemarie.tscn` |
+| `CharacterSelectIconPath` (163, virtual) | `res://images/packed/character_select/char_select_heidemarie.png` | 同左 |
+| `CharacterSelectLockedIconPath` (167, virtual) | `res://images/packed/character_select/char_select_heidemarie_locked.png` | 同左 |
+| `CharacterSelectTransitionPath` (171) | `res://materials/transitions/heidemarie_transition_mat.tres` | 同左 |
+| `MapMarkerPath` (173, virtual) | `res://images/packed/map/icons/map_marker_heidemarie.png` | 同左 |
+| `ArmPointingTexturePath` (137, private) | `res://images/ui/hands/multiplayer_hand_heidemarie_point.png` | 同左 |
+| `ArmRockTexturePath` (141, private) | `res://images/ui/hands/multiplayer_hand_heidemarie_rock.png` | 同左 |
+| `ArmPaperTexturePath` (145, private) | `res://images/ui/hands/multiplayer_hand_heidemarie_paper.png` | 同左 |
+| `ArmScissorsTexturePath` (149, private) | `res://images/ui/hands/multiplayer_hand_heidemarie_scissors.png` | 同左 |
+
+**场景文件清单（7 个，两个参考 mod 完全一致）：**
+
+```
+scenes/
+├── combat/energy_counters/<slug>_energy_counter.tscn
+├── creature_visuals/<slug>.tscn
+├── merchant/characters/<slug>_merchant.tscn
+├── rest_site/characters/<slug>_rest_site.tscn
+├── screens/char_select/char_select_bg_<slug>.tscn
+├── ui/character_icons/<slug>_icon.tscn
+└── vfx/card_trail_<slug>.tscn
+```
+
+> ⚠️ **当前缺口**：`CznHeidemarie/images/ui/hands/` 目录不存在，
+> 4 张多人对战手势贴图缺失（规格 422x1200）。
+> 素材区 `CNZ_Source` 里**没有**手部原图，无法从素材适配出来。
+> 仅在多人模式摸金场景触发，表现为该处 `TextureRect` 无贴图
+> （`NHandImage` 直接把贴图赋给 `TextureRect`，为 null 也不崩溃），可后补。
+
+> 参考 mod 另有 3 个 char_select 变体场景
+> （`<slug>_dynamic_portrait_bg` / `_live_lobby_bg` / `_static_portrait_bg`），
+> 那是被**原作者自研框架**读取的，**不是游戏本体要求**，
+> 本工作 mod 不需要。
+
+### 3.2 本体场景 `creature_visuals/<slug>.tscn` 的结构
+
+三个 mod 结构完全一致（`Bounds` 已确认为 **Control**，非待定）：
+
+```
+Node2D '<角色名>'
+  script = res://src/Core/Nodes/Combat/NCreatureVisuals.cs   ← 游戏自带脚本，不要换
+├── Control 'FormVfx'              unique_name_in_owner = true
+├── SpineSprite 'Visuals'          unique_name_in_owner = true   ← 必须
+│     skeleton_data_res = res://Czn<ModId>/animations/.../<x>_skel_data.tres
+│     preview_skin = "default"
+│     preview_animation = "idle"      ← 当前场景预览使用的真实动画名
+│     position  = Vector2(0, -20)
+│     scale     = Vector2(1.36~1.55, 同值)   ← 见 3.3
+├── Control 'Bounds'                unique_name_in_owner = true
+│     offset_left = -140, offset_top = -290/-300, offset_right = 140
+│     mouse_filter = 2
+├── Marker2D 'CenterPos'            unique_name_in_owner = true, position = (0, -165)
+└── Marker2D 'IntentPos'            unique_name_in_owner = true, position = (10, -320)
+```
+
+游戏侧取节点的代码（`NCreatureVisuals.cs:77`）：
+
+```csharp
+_body = GetNode<Node2D>("%Visuals");   // 名字错了 SpineBody 为 null，游戏 PushWarning 后禁用动画
+```
+
+### 3.3 缩放标定（经验值，别乱改）
+
+参考 mod 的标注说明了取值依据：
+
+```
+Nine:    1.55   b_idle @1.0 渲染 249x177 @1280x720 → @1.55 = 388x275
+Tiphera: 1.36   b_idle 274px
+共同目标: ~275px 高，与角色选择界面立绘一致
+Heidemarie: 1.247  b_idle 骨骼包围盒 220.55 → 275 / 220.55
+```
+
+> Heidemarie 的三个值不再是估的。做法：先用
+> `tools\SpineSkeletonDataConverter.exe <骨架>.skel <临时>.json` 把骨架导成 JSON，
+> 再复现 `CZN_Viewer` 的 `_sampled_bounds`（`local = T·R·S`，沿父链累乘矩阵，
+> 取所有骨骼原点的并集）量出骨架自带的动画包围盒：
+> `b_idle` 220.55 / `stop` 225.46 / `camping` 306.91。于是
+> **战斗 1.247（275px）/ 商店 1.761（397px）/ 休息点 2.049（478px）**。
+> 休息点的站位偏移也要按本骨架重新算：30093 的骨骼原点在骨盆
+> （`camping` 最低骨骼在原点下方 107.76），不能照抄参考 mod 的 `(0,178)`。
+
+> `Bounds` 宽度固定 280px（±140），是 HUD/交互宽度，
+> **与 Spine 缩放无关**，两者独立调。
+
+### 3.4 动画名必须与游戏约定一致
+
+游戏按字符串调 `SetAnimation()`，**名字对不上会静默不播**。
+
+**游戏默认的 `GenerateAnimator` 用的是 `idle_loop / attack / cast / hurt / die /
+relaxed_loop / low_health_loop`**（`CharacterModel.cs:247-265`）。
+卡厄思骨架里**没有这些名字**。照抄默认实现 → 角色静止不动，
+日志只刷 `could not find 'idle_loop' animation`。
+
+**必须 override `GenerateAnimator`**，按骨架真实动画名映射游戏触发器：
+
+```csharp
+public override CreatureAnimator GenerateAnimator(MegaSprite controller, Creature creature)
+{
+    AnimState idle = new("b_idle", isLooping: true);
+    AnimState hit  = new("hit");
+    AnimState attackReady = new("attack_ready");
+    AnimState attackPlay  = new("attack_play1");
+    AnimState attackEnd   = new("attack_end");
+    // … buff / defense / debuff / enter / victory / death 同理
+
+    attackReady.AddNextState(attackPlay);
+    attackPlay.AddNextState(attackEnd);
+    attackEnd.AddNextState(idle);
+
+    CreatureAnimator animator = new(idle, controller);
+    animator.AddAnyState("Idle", idle);
+    animator.AddAnyState("Relaxed", idle);
+    animator.AddAnyState("Hit", hit);
+    animator.AddAnyState("Attack", attackReady);
+    animator.AddAnyState("Cast", buffReady);
+    animator.AddAnyState("PowerUp", buffReady);
+    animator.AddAnyState("Defend", defenseReady);
+    animator.AddAnyState("Debuff", debuffReady);
+    animator.AddAnyState("Entry", enterReady);
+    animator.AddAnyState("Victory", victoryReady);
+    animator.AddAnyState("Dead", deathReady);
+    return animator;
+}
+```
+
+触发器名是游戏写死的：`Idle / Relaxed / Revive / Hit / Attack / Cast /
+PowerUp / Defend / Debuff / Entry / Victory / Dead`。
+
+`30093.skel` 实际动画（46 条）。皮肤只有 1 个，名为 `default`。
+用 `tools\SpineSkeletonDataConverter.exe 30093.skel out.json` 导出后读 `animations` 键即可复核：
+
+```
+b_idle / b_idle_to_idle / idle / idle_to_b_idle / special0_idle / move / hit / groggy
+death / death_ready / victory / victory_ready / fatal_intro / fatal1 / fatal2 / fatal3
+collapse_idle / camping / stop
+attack_ready / attack_play1 / attack_play2 / attack_end
+defense_ready / defense_play / cure_ready / cure_play
+buff_ready / buff_play / debuff_ready / debuff_play
+enter_ready / enter_play / enter_end
+u1_attack_ready / u1_attack_play / u1_attack_end
+u3_attack_ready / u3_attack_play / u3_attack_end
+u2_buff_ready / u2_buff_play / u4_buff_ready / u4_buff_play
+ug_attack / ux_attack
+```
+
+> ✅ `victory_ready` / `death_ready` **确实存在**（已核对），
+> `Heidemarie.cs` 的映射无需改动。
+>
+> ❌ 但骨架**没有**游戏约定名 `idle_loop / low_health_loop / relaxed_loop /
+> overgrowth_loop / hive_loop / glory_loop`。参考 mod 是**改造骨架**把这些名字加进去的；
+> 本工作 mod 不改骨架（见 2.3），改用代码重定向：
+>
+> - `Registration/HeidemarieSpineAnimPatch.cs` —— 商店 `relaxed_loop`→`stop`，
+>   休息点 `overgrowth_loop/hive_loop/glory_loop`→`camping`；
+> - `Registration/HeidemarieCreatureVisualsPatch.cs` —— 战斗内把 `b_idle` 视作待机、
+>   `hit` 视作受击（`NCreatureVisuals.IsPlayingIdleAnimation` / `IsPlayingHurtAnimation`）。
+>
+> 两个补丁都先查骨架是否自带约定名，自带就放手，对游戏原始角色零侵入。
+
+#### 卡牌演出触发器（Heidemarie）
+
+`GenerateAnimator` 暴露的触发器与调用方：
+
+| 触发器 | 骨架动画链 | 调用方 |
+|---|---|---|
+| `Attack` | attack_ready→attack_play1→attack_end | 游戏默认攻击流程 |
+| `Attack2` | attack_ready→attack_play2→attack_end | `HeidemarieHeavyStrike` |
+| `U1Attack` | u1_attack_ready→play→end | `HeidemarieU1Strike` |
+| `U3Attack` | u3_attack_ready→play→end | `HeidemarieU3Strike` |
+| `XAttack` / `GAttack` | ux_attack / ug_attack | `HeidemarieUxBlade` / `HeidemarieUgFinale` |
+| `U2Buff` / `U4Buff` | u2_buff_* / u4_buff_* | `HeidemarieU2Guard` / `HeidemarieU4Empower` |
+| `Cure` | cure_ready→cure_play | `HeidemarieCure` |
+| `CardReady` / `CardRestore` | idle_to_b_idle / b_idle_to_idle 姿态互切 | 暂无调用方（留接口） |
+| `SpecialIdle` / `Move` / `Groggy` / `Fatal` | special0_idle / move / groggy / fatal_intro→fatal1 | 暂无调用方（留接口） |
+
+写法约定：
+
+- **攻击卡**：`DamageCmd.Attack(...).FromCard(this, cardPlay).WithAttackerAnim("U1Attack", 0.2f).Targeting(...)`
+  —— `WithAttackerAnim` 必须排在 `FromCard` 之后，它内部会转到 `CreatureCmd.TriggerAnim`。
+- **技能/能力卡**：覆盖 `OnEnqueuePlayVfx(Creature? target)`，在里面
+  `await CreatureCmd.TriggerAnim(Owner.Creature, "Cure", 0.2f)`。
+- `TriggerAnim` 只对 `Attack`/`Cast`/`PowerUp` 播角色音效，自定义触发器名不会触发音效查找。
+
+当前初始卡组 = 4 打击 + 4 防御（共 8 张）。专属牌通过奖励与商店获取；代码中的 8 张专属牌演出仍需逐张通过对应触发器验证。
+
+### 3.4.1 全屏演出与技能特效的组装（层级真值在素材区，不在代码里）
+
+> 本节是踩坑后的定论。**层级混乱 / 特效不完整的根因从来不是渲染代码，
+> 而是时间轴 JSON 里的 z 是手编的。** 别再手写 z。
+
+#### 原游戏的三层数据链
+
+```
+30093.srcs   → command_sets     ux_attack / ug_attack / u1_attack … 由哪几条动画拼成
+30093.srmd   → command.<cmd>    演出时间轴本体，是 **JSON**（不是二进制）
+                 ani        身体动画 + 时长（= 身体相位的主时钟）
+                 effect     **组名**（file_name）+ 整组变换：
+                            type(SELF/CENTER/SCREEN/FRONT/TARGET)
+                            bone_type(POSITION/ATTACH)、zorder、global_z、
+                            scale、rotation、opacity、offset_xy、delay
+                 cutin / node_ani / hit / shake / cam_move / cam_zoom /
+                 color_blend / bg_blend / damage / control_ani …（见下"还原不出的"）
+      ↓ effect.file_name 是组名，不是骨架名
+<组名>.cfx   → primitive[]      **组展开：每层 { source: 骨架名, z: 绝对深度, format }**
+                               ← 层级真值就在这里
+30093.le     → depth_infos      选人界面层序（front-to-back，Godot 要反过来）
+30093.setting                  render 800x640, scale 1.0, offset_y_ratio 8
+```
+
+`.cfx` 是 Apple plist 格式（`plistlib` 直接可读），共 53 个。
+参考 mod 的 `ux_all_attack.json`（285 KB / 72 层）就是从这套数据提取的，
+`tipera_ug_ux_resources.json` 同理——**格式与本节完全同构**。
+
+> ⚠️ **`.cfx` 图元的空值语义：空 / 缺失 = 取默认，不是「无效」。**
+> `.cfx` 里有两种写法并存：① 全套 key 但值为空串
+> （`ug_attack_impact.cfx`：`<key>z</key><string />`）；② 只写需要的 key、
+> 其余完全不出现（`ug_attack_screen.cfx`：根本没有 `z` key）。
+> 两种写法里 `x`/`y`/`z`/`opacity`/`scale`/`rotate`/`delay` 都可能为空，
+> 语义都是「不指定 → 取默认」，**`z` 的默认是 0**。
+>
+> 把空 `z` 当「无效图元」丢掉，会让 UG 从 **43 层掉到 41 层**
+> （`ug_impact`、`ug_screen_eff` 消失）。
+> **真正该过滤的是粒子（`format = particle`），不是按 z 过滤。**
+
+#### 层级公式
+
+```
+final_z = group_zorder + primitive_z
+```
+
+`zorder`/`global_z` 是**组级元数据**，不与 `primitive_z` 叠加之外再加权。
+Nine 全部 `zorder=0`，所以它的 `z.computed == primitive_z`；
+30093 的 `ug_attack` 有 `zorder = -5000 / 0 / 200 / 300`，**必须加**，
+否则背景层会和前景层撞在同一深度。
+
+#### 时序公式
+
+`from_guid` 是**播放树**，不是编辑器父子：
+
+- 同父**兄弟并行**起播，各用自己的 `delay`
+- `wait_until_end` 只决定「本节点的子节点挂在父节点**结束**处还是**开始**处」
+- `hit` 是终点标记，`delay` 就是绝对毫秒（ux=5266 / ug=2800），直接采信
+
+两条独立证据：ug 的 5 个 effect 全是 entry 的直接子节点且 delay=0，
+而 `hit` 是同一层兄弟 delay=2800 —— 若兄弟串行，hit 会被推到 ani 之后，与 srmd 矛盾；
+而 ux 的 effect 反而是 `ani` 的子节点，于是自然从 833.3ms（身体动画结束）起播。
+**同一份资产里两种形状并存，说明结构本身就是播放关系。**
+
+把兄弟串行会得到 ux=11.3 秒，与 `hit=5266` 直接矛盾。
+
+#### 提取器
+
+```powershell
+$s='G:\sts2Mod\CNZ_Source\czn30093\model_data\30093.srmd'
+$c='G:\sts2Mod\CNZ_Source\czn30093\effect'
+$k='G:\sts2Mod\CznHeidemarie\CznHeidemarie\animations\effects'
+$cam='G:\sts2Mod\CNZ_Source\czn30093-spine_4211\camera'
+$v='G:\sts2Mod\tools\SpineSkeletonDataConverter.exe'
+$cache='G:\sts2Mod\tools\_cinematic_duration_cache.json'
+
+# 全屏演出（ux / ug）—— 整份重新生成
+python tools\extract_cinematic_plan.py --srmd $s --cfx-dir $c --skel-dir $k `
+    --camera-skel-dir $cam --converter $v --cache $cache `
+    --command ux_attack --out CznHeidemarie\CznHeidemarie\cinematic\heidemarie_ux.json
+python tools\extract_cinematic_plan.py --srmd $s --cfx-dir $c --skel-dir $k `
+    --camera-skel-dir $cam --converter $v --cache $cache `
+    --command ug_attack --out CznHeidemarie\CznHeidemarie\cinematic\heidemarie_ug.json
+
+# 技能特效——只换 z，时序原样保留
+python tools\extract_cinematic_plan.py --srmd $s --cfx-dir $c --command moves-z `
+    --out CznHeidemarie\CznHeidemarie\effects\heidemarie_moves.json
+```
+
+产物的三段结构，泾渭分明：
+
+| 段 | 内容 | 谁维护 |
+|---|---|---|
+| `layers[]` | 可直接渲染的参数：`z` / `scale` / `rotation` / `opacity` / `offset` / `start_ms` / `end_ms` / `target` / `bone_type` | **自动生成，别手改** |
+| `unsupported[]` | 资产里还原不出的部分，逐条带原因 | 自动生成 |
+| `missing[]` | `.cfx` 引用了但素材区没有的骨架 | 自动生成 |
+| `renderer.known_gaps` | 人读的缺口清单 | 自动生成 |
+| `renderer.corrections` | STS2 特有适配（黑幕、抖动、丢弃项） | 手调 |
+| `official` | srmd 事件原文 + 推导规则 + 对照解 | 只读，供复核 |
+
+#### 三个 Godot 侧的硬约束（不改就白提 z）
+
+1. **`z_as_relative` 必须关掉**（全屏演出）。
+   `_stage` 与 `_screen` 是兄弟子树，默认相对模式下 **STAGE 的所有图层会整体画在
+   SCREEN 的所有图层之前，z 再大也压不上去**，"前后景交织"直接退化成两段各自排序。
+   技能特效舞台（`heidemarie_effect_stage.gd`）全是同父兄弟，相对模式**是对的**，保留。
+
+2. **`z_index` 会被截断到 ±4096**，而真值到 -10000 / 100001。直接照搬会把一整片
+   深层背景全压成 -4096，层级又乱。
+   → 按**名次**线性压进 `[-4000, 4000]`（`_build_z_ranks`）：严格保序、同 z 并列。
+   参考 mod 的 `z_index = index - 100` **就是这个保序压缩**，只是它的输入 z 是编的，
+   压缩谁都一样错。
+   黑幕 `MATTE_Z_INDEX = -30000`（截断后 -4096）永远在最底。
+
+3. **黑幕 `z_index = -1000` 不够低**——UX 真值最底层是 -10000，会被特效盖住。
+
+#### 素材本身确实缺的（不是 mod 的锅，无法修）
+
+| 缺失项 | 说明 |
+|---|---|
+| `ux_attack_01_b1_3` / `_b1_4` / `_b2` / `ux_attack_02_b1_1` | `.cfx` 引用了，`CNZ_Source` 里从未提取出这 4 个骨架 |
+| `ux_attack_01.pati`（25 KB）、`ug_attack_screen_pati1` | **CZNFX 粒子**，STS2 无 CZNFX 运行时 |
+| `camera/*.skel` | 不是 Spine 骨架，`SpineSkeletonDataConverter` 报 `Bad optional access`。抖动只能取 srmd 的**起止时刻**，时长/振幅/频率全靠人工标定 |
+| `cam_move` / `cam_zoom` / `cam_spine` / `color_blend` / `node_ani` | STS2 战斗场景无相机 / 无颜色分级 / 无对应节点 |
+
+`30093_ug_portrait1_1..9` 与 `30093_ug_portrait2_1..3` 在 srmd 里同属一个 effect 事件
+（delay 0），`.cfx` 只给深度不给逐帧时序，因此**全部从 0 起播**。
+原游戏大概率是逐帧接力（约 300ms 一张），资产里没有依据 —— **进游戏后需标定**。
+
+#### 其他时间轴的已知不一致
+
+`heidemarie_moves.json` 的 `start_ms`/`end_ms`/`clip` **保留手写值，不要重新生成**：
+它们按身体动画相位对齐（ready 0.467 / play 0.667，与 srmd 的 `ani.duration` 一致），
+且被 C# 侧 `HeidemarieAnimationSeconds` / `WithAttackerAnim` 依赖。
+`--command moves-z` 只回填 `z`（已修 54 层），并按 `CARD_PHASES` 表把每行归到
+所属身体相位，所以同一骨架在不同相位拿到各自组里的真值
+（`eff_u1_attack_play_b`：ready 组 -100、play 组 -50）。
+
+### 3.5 本地化
+
+游戏按 `res://{mod.id}/localization/{language}/{file}.json` 查找
+（`ModManager.cs:970-983`）：
+
+```
+res://CznHeidemarie/localization/zhs/characters.json   ← 角色名、代词、解锁文案
+res://CznHeidemarie/localization/zhs/cards.json       ← 卡牌标题与描述
+```
+
+- 语言码是 `LocManager._supportedLanguages` 里的值：
+  `eng / zhs / zht / deu / esp / fra / ind / ita / jpn / kor / pol / ptb / rus / spa / tha / tur`。
+  **简中是 `zhs`**，不是 `zh`。
+- key 规则：
+  - 角色：`HEIDEMARIE.title` / `.titleObject` / `.description` /
+    `.pronounSubject` / `.pronounObject` / `.pronounPossessive` /
+    `.possessiveAdjective` / `.cardsModifierTitle` /
+    `.cardsModifierDescription` / `.eventDeathPrevention` / `.unlockText`
+    （前缀 = `Id.Entry.ToUpperInvariant()`）
+  - 卡牌：`HEIDEMARIE_STRIKE.title` / `.description`
+- **UTF-8 无 BOM**。SmartFormat 语法非法会被 `LocValidator` 拒绝并刷警告。
+
+---
+
+## 四、C# 架构约定
+
+### 4.1 角色注册：`ModelDb.get_AllCharacters` 补丁
+
+游戏没有"注册新角色"的官方 API，标准做法是 Harmony 追加
+（`Registration/HeidemarieRegistrationPatch.cs`）：
+
+```csharp
+[HarmonyPatch(typeof(ModelDb), "get_AllCharacters")]
+internal static class HeidemarieRegistrationPatch
+{
+    private static void Postfix(ref IEnumerable<CharacterModel> __result)
+    {
+        CharacterModel? model = ModelDb.GetByIdOrNull<CharacterModel>(ModelDb.GetId(typeof(Heidemarie)));
+        if (model != null)
+            __result = __result.Append(model).Distinct().ToArray();
+    }
+}
+```
+
+> `.Distinct()` 防重复注册；`GetByIdOrNull` 防初始化顺序问题。
+
+### 4.2 自定义内容不需要手动注册
+
+`ModelDb.Init()` 会扫描 mod 程序集里所有 `AbstractModel` 子类并实例化。
+卡牌/遗物/药水只要在池子的 `GenerateAllXxx()` 里用
+`ModelDb.Card<T>()` 等引用，就自动进入对应池。
+
+`ModHelper.AddModelToPool` **只用于自己无法列举内容的"共享池"**
+（如 `TokenCardPool`、`EventRelicPool`）：
+
+```csharp
+ModHelper.AddModelToPool(typeof(TokenCardPool), typeof(MyTokenCard));
+```
+
+> ❌ 传入抽象基类（如 `typeof(CardModel)`）会在池子被读取时抛
+> `ModelNotFoundException`。
+> ⚠️ 该池一旦被读取就 `isFrozen`，**太晚调用会抛 `InvalidOperationException`**，
+> 所以必须在 `MainFile.Initialize()` 里、模型初始化之前调用。
+
+### 4.3 卡池内容必须自己列举完整
+
+`CardPoolModel.AllCards` 先取 `GenerateAllCards()` 再拼接 mod 追加的内容。
+所以卡池里必须给出**完整列表**，不能只写一部分。
+
+### 4.4 非虚属性要用 Harmony 补丁重定向
+
+`CharacterModel` 有一批**非虚**属性无法 override：
+
+| 属性 | 源码行 | 默认值（按 slug 拼） |
+|---|---|---|
+| `VisualsPath` | 117 | 靠 pck 同名场景覆盖 |
+| `IconTexturePath` / `IconOutlineTexturePath` | 119 / 123 | 靠资源覆盖 |
+| `ArmPointingTexture` / `ArmRockTexture` / `ArmPaperTexture` / `ArmScissorsTexture` | 137-151 | 靠资源覆盖 |
+| `AttackSfx` | 211 | `event:/sfx/characters/<slug>/<slug>_attack` |
+| `CastSfx` | 213 | `…_cast` |
+| `DeathSfx` | 217 | `…_die` |
+
+SFMOD 事件不存在时会刷 `cannot find sfx path`。
+专属音效就位前的过渡写法（`Registration/HeidemarieSfxPatch.cs`）：
+
+```csharp
+internal static class HeidemarieSfxRedirect
+{
+    private const string IroncladSfxPrefix = "event:/sfx/characters/ironclad/ironclad_";
+
+    internal static bool Redirect(CharacterModel instance, string suffix, ref string result)
+    {
+        if (instance is not Heidemarie) return true;   // 其它角色交回原实现
+        result = IroncladSfxPrefix + suffix;
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(CharacterModel), "get_AttackSfx")]
+internal static class HeidemarieAttackSfxPatch
+{
+    private static bool Prefix(CharacterModel __instance, ref string __result)
+        => HeidemarieSfxRedirect.Redirect(__instance, "attack", ref __result);
+}
+// CastSfx → "cast"，DeathSfx → "die"，同理
+```
+
+> **零侵入原则**：所有补丁先判 `instance is <角色>`，
+> 不是本角色就 `return true` 走原实现。
+
+### 4.5 可 override 的属性清单
+
+`CharacterModel` 中**可 override** 的（直接写在角色类里即可）：
+
+```
+IsPlayable / Gender / UnlocksAfterRunAs / NameColor / StartingHp / StartingGold
+MaxEnergy / EnergyLabelOutlineColor / BaseOrbSlotCount / ShouldAlwaysShowStarCounter
+StartingPotions / IconPath / ExtraAssetPaths / MapMarkerPath
+CharacterSelectIconPath / CharacterSelectLockedIconPath
+DialogueColor / SpeechBubbleColor / MapDrawingColor
+RemoteTargetingLineColor / RemoteTargetingLineOutline
+CharacterSelectSfx / CharacterTransitionSfx
+GenerateAnimator / AnimationStates / GetArchitectAttackVfx
+```
+
+> `CharacterSelectSfx`（209，virtual）与 `CharacterTransitionSfx`（219，virtual）
+> 可以直接 override，**不需要补丁**。
+> 但 `AttackSfx` / `CastSfx` / `DeathSfx` 是非虚，只能补丁。
+
+### 4.6 卡牌公共基类
+
+参考 mod 的做法（`Characters/Heidemarie/Cards/HeidemarieCard.cs`）：
+统一把 `Pool` 指向角色卡池，并用 `ResourceLoader.Exists` 做
+"专属卡面存在就用，否则退回占位"的软降级，**免去后续改代码**：
+
+```csharp
+public override string PortraitPath => …
+// res://images/atlases/card_atlas.sprites/<pool>/<cardId>.tres 存在则用，否则 Fallback
+```
+
+---
+
+## 五、工具链版本（不可变更）
+
+| 组件 | 版本 | 说明 |
+|---|---|---|
+| Godot | **4.5.1-stable mono** | 必须与游戏本体一致，**禁止用 4.7.2 导出** |
+| spine-godot 扩展 | **4.2 × Godot 4.5.1** | 位置 `<mod>\bin\`，禁止升级到 4.3 |
+| 目标框架 | net9.0 | `global.json` 锁 `9.0.312` |
+| 基础库 | **无** | 直接引用游戏 DLL；不用 BaseLib / RitsuLib |
+| C# 语言版本 | 12.0 | |
+
+Godot 可执行文件（本机同目录并存两版，**必须用完整文件名**调用）：
+
+```
+F:\Tools\Godot_v4.5.1-stable_mono_win64\Godot_v4.5.1-stable_mono_win64_console.exe
+```
+
+游戏本体 pck 头部为 `ver=4.5.1`，Godot 4.x 只保证向后兼容——
+用更高版本导出的资源游戏读不了。
+
+### 代码索引（codegraph）
+
+工作区根有 codegraph 索引（`.codegraph/codegraph.db`，
+5505 文件 / 107k 符号）。**改完代码后跑一次同步**：
+
+```powershell
+codegraph sync                # 增量
+codegraph index               # 全量重建
+codegraph status              # 看统计
+codegraph query "GenerateAnimator"          # 搜符号
+codegraph explore "角色注册 ModelDb"        # 看源码 + 调用路径
+codegraph files --filter CznHeidemarie      # 看目录树
+codegraph callers <symbol> / callees / impact
+```
+
+---
+
+## 六、导出规则（最容易踩坑的地方）
+
+### 6.1 `bin/` 必须参与导出，禁止排除
+
+```ini
+# export_presets.cfg —— 保持现状
+exclude_filter="CznHeidemarie.json"
+```
+
+### 6.2 `.gitignore` 会影响导出 —— `bin/` 绝不能被忽略
+
+**这是最容易误判的一条。** Godot 导出时会把 `.gitignore` 当作排除依据，
+其中的 `bin/` 行会让 spine 导入器不参与导出，导致骨架资源整体丢失。
+
+`.gitignore` 已删除 `bin/` 一行，并留下警告注释。
+**不要因为它看着像"构建产物"就加回去。**
+
+> 症状特征：`exclude_filter` 明明干净、`.import` 与 `.godot/imported/` 产物都齐全，
+> pck 却缩到 0.53 MB 且 `.spskel`/`.spatlas` 消失。
+> **先查 `.gitignore`，不要只查 `exclude_filter`。**
+
+已实测失败的排除方式（不要重蹈覆辙）：
+
+| 方式 | 结果 |
+|---|---|
+| **`.gitignore` 里含 `bin/`** | **骨架丢失 ← 真正的元凶** |
+| `bin/.gdignore` | 骨架丢失 |
+| 导出前临时移走 `bin/` | 骨架丢失 |
+| `exclude_filter="**/bin/**"` | 无效 |
+| `exclude_filter="bin/spine_godot_extension.gdextension"` | 无效，导入器随之失效 |
+
+### 6.3 导出前必须关闭 Godot 进程
+
+DLL 被占用时扩展加载失败，资源被静默丢弃：
+
+```
+ERROR: Failed to open '…/~libspine_godot.windows.editor.x86_64.dll'.
+ERROR: Can't open GDExtension dynamic library
+```
+
+### 6.4 预设名含空格，必须用调用运算符
+
+```powershell
+# ❌ 会被拆成 'Windows' + 'Desktop' → Invalid export preset name: Windows
+Start-Process -FilePath $gd -ArgumentList @('--export-pack','Windows Desktop',$out) ...
+
+# ✅ 用调用运算符
+& $gd --headless --path $p --export-pack "Windows Desktop" "$out"
+```
+
+---
+
+## 七、标准流程（换 mod 只改第一行的变量）
+
+```powershell
+$id  = 'CznHeidemarie'           # ← 换 mod 只改这三个变量
+$p   = "G:\sts2Mod\$id"
+$gd  = 'F:\Tools\Godot_v4.5.1-stable_mono_win64\Godot_v4.5.1-stable_mono_win64_console.exe'
+$out = "G:\SteamLibrary\steamapps\common\Slay the Spire 2\mods\$id\$id.pck"
+
+# 1. 关进程（避免 DLL 占用）
+Get-Process -Name 'Godot*' -ErrorAction SilentlyContinue | Stop-Process -Force
+
+# 2. 编译（post-build 自动复制 dll/json/pdb 到游戏 mods 目录）
+Push-Location $p; dotnet build "$id.csproj" -c Debug -v minimal --nologo; Pop-Location
+
+# 3. 导入资源
+& $gd --headless --path $p --import
+
+# 4. 导出
+Remove-Item $out -Force -ErrorAction SilentlyContinue
+& $gd --headless --path $p --export-pack "Windows Desktop" "$out"
+```
+
+`codegraph sync $p` 视需要跑（改了 C# 才需要）。
+
+---
+
+## 八、改动资源后的验证清单
+
+```
+[ ] pck 体积合理（Heidemarie ≈ 90 MB，`.godot/imported/` 实测 89.4 MB / 934 文件；
+    缩到 0.53 MB 说明 bin/ 被排除，骨架已丢失）
+[ ] stderr 无 "Resource file not found"
+[ ] .godot/imported/ 内有 .spskel / .spatlas / .ctex 三类产物
+[ ] 场景节点 %Visuals 是 SpineSprite 且 unique_name_in_owner = true
+[ ] pck 内含 7 个必备场景（清单见 3.1）
+[ ] 进游戏：角色出现在选人界面
+[ ] 进游戏：战斗中动画真的在动（不是静止）
+[ ] 本地化生效（中文名、代词、卡牌描述）
+[ ] 无 FMOD "cannot find sfx path" 警告（或只剩已知占位项）
+```
+
+**验证 pck 时，测试工程必须自带 spine 扩展**，
+否则会报 `expected type: SpineSkeletonDataResource` 找不到——
+那是测试环境问题，不是 pck 坏了。游戏内置 spine，不受影响。
+
+---
+
+## 九、查 API 的常用命令
+
+```powershell
+# 找类定义
+Get-ChildItem 'G:\sts2Mod\SlayTheSpire2_source\src' -Recurse -Filter 'NCreatureVisuals.cs'
+
+# 全文搜字段/方法
+Select-String -Path 'G:\sts2Mod\SlayTheSpire2_source\src\**\*.cs' -Pattern 'GetScenePath'
+
+# 用 codegraph（更快）
+codegraph query "GetScenePath"
+codegraph node "SlayTheSpire2_source/src/Core/Models/CharacterModel.cs"
+codegraph callers "GenerateAnimator"
+```
+
+关键类：
+
+```
+SlayTheSpire2_source/src/Core/Models/CharacterModel.cs    ← 路径契约、动画、可 override 清单
+SlayTheSpire2_source/src/Core/Models/CharacterModel.cs:211 ← SFX 路径
+SlayTheSpire2_source/src/Core/Models/CardModel.cs         ← 卡牌基类、PortraitPath
+SlayTheSpire2_source/src/Core/Models/ModelDb.cs           ← 角色/卡池入口
+SlayTheSpire2_source/src/Core/Modding/ModHelper.cs        ← AddModelToPool 语义与冻结时机
+SlayTheSpire2_source/src/Core/Modding/ModManager.cs:970   ← 本地化查找路径
+SlayTheSpire2_source/src/Core/Localization/LocManager.cs  ← 语言码、加载流程
+SlayTheSpire2_source/src/Core/Helpers/SceneHelper.cs      ← GetScenePath 拼接规则
+SlayTheSpire2_source/src/Core/Nodes/Combat/NCreatureVisuals.cs ← 取 %Visuals、动画调用
+SlayTheSpire2_source/addons/spine/                        ← 游戏自带的 spine 运行时
+```
+
+---
+
+## 十、当前状态
+
+### 工作区
+
+| mod | 形态 | 状态 |
+|---|---|---|
+| `CznTipheraCharacter` | 参考 A（反编译，只读） | v1.1.2-beta，完整成品，**不要改动** |
+| `CznNineCharacter` | 参考 B（反编译，只读） | 完整成品，**不要改动** |
+| `CznHeidemarie` | 工作 mod（自研 C#） | 见下表 |
+
+### CznHeidemarie
+
+| 项目 | 状态 |
+|---|---|
+| 骨架 | `animations/model/30093.skel`，4.2.11，288 bones / 110 slots / 46 动画 |
+| 资源目录 | `res://CznHeidemarie/`，含 `animations/model/` + `localization/zhs/` |
+| 7 个必备场景 | ✅ 全部就位（`Bounds` 已确认为 Control） |
+| 贴图资源 | ✅ 图标/选角/地图标记/转场材质齐备 |
+| **缺口** | ⚠️ `images/ui/hands/` 4 张多人手势贴图缺失（仅多人模式触发，不崩溃） |
+| 角色注册 | ✅ `ModelDb.get_AllCharacters` 补丁 |
+| SFX | ✅ 3 个补丁重定向到战士（占位） |
+| 动画映射 | ✅ 骨架 46 个动画全部接进状态机；8 张专属卡驱动 u1/u2/u3/u4/ux/ug/cure/attack2 演出（见 3.4） |
+| 商店/休息点 | ✅ 已改用本地 30093 骨架（原借用战士骨架），动画名由补丁补齐（见 3.4） |
+| 缩放标定 | ✅ 实测得出：战斗 1.247 / 商店 1.761 / 休息点 2.049（见 3.3） |
+| 卡池 | Strike / Defend 占位 + 卡牌基类（专属卡面软降级已就绪） |
+| 遗物/药水池 | 占位 |
+| pck | ≈ 90 MB，已部署到游戏 `mods/` 目录 |
+| **待验证** | **进游戏实测：选角界面、动画、本地化、多人模式手势** |
+
+### 新增下一个 mod 时
+
+照 1.3 的目录骨架复制 → 改 mod id / 类名 / slug → 按第 3 节清单补齐
+7 个场景与全部贴图 → 写 `CharacterModel` 子类 + 注册补丁 → 按第七节流程打包。
+---
+
+## 十一、CznCore 框架接入（已搬入）
+
+参考 mod 的动画/演出能力来自一套独立框架 **CznCore**（393 个 `.cs`，不反向依赖角色程序集）。
+现已整体搬入 `CznHeidemarie/CznCore/`，并按**与参考 mod 相同的架构**接入，
+角色侧代码在 `CznHeidemarie/Integration/`。
+
+| 参考 mod（Nine） | 本项目对应物 | 职责 |
+|---|---|---|
+| `CznNineCharacter.Entry` | `Integration/HeidemarieIntegration` | 入口：注册框架补丁组 + 启动运行时 |
+| `NineSettings` | `Integration/HeidemarieSettings` | 设置存储（薄包装） |
+| `NineSettingsUiRuntime` | `Integration/HeidemarieSettingsUiRuntime` | 设置项与 UI 绑定 |
+| `UiText` / `SettingsLocalization` | `Integration/HeidemarieText` / `SettingsLocalization` | 面板文案 |
+| `NineBattleReadyRuntime` | `Integration/HeidemarieBattleReadyRuntime` | **出牌特写立绘** |
+
+### 11.1 搬移时修掉的反编译产物问题（共 404 个编译错误）
+
+1. **record 的编译器生成成员被展开** —— `Presentation/CharacterSkinProfile.cs` 一个文件
+   占 260 个：`GetHashCode`/`Equals`/拷贝构造函数里引用了并不存在的 `Xxx__BackingField`。
+   **整段删掉即可**，record 会自动生成这些成员。修完这一个文件，错误从 404 降到 144（其余多为它的级联错误）。
+2. **集合辅助类型缺失**（68 个）—— `__ReadOnlyArray<T>` / `__ReadOnlySingleElementList<T>`
+   定义在各程序集私有的 `<PrivateImplementationDetails>` 里，没被导出。
+   已补在 `CznCore/DecompiledCollectionHelpers.cs`（必须放**全局命名空间**）。
+3. **命名歧义**（62 个）—— `Timer` / `FileAccess` 在 `Godot.*` 与 `System.*` 之间歧义
+   （本项目开了 `ImplicitUsings`，引入了 `System.Threading` / `System.IO`）。
+   ⚠️ **关键陷阱**：`CznCore.Godot` 本身是个命名空间，所以在 `CznCore.*` 内部写
+   `Godot.FileAccess` 会被解析成 `CznCore.Godot.FileAccess` 而报 CS0234，
+   **必须写 `global::Godot.FileAccess`**。
+4. **`partial` 缺失**（14 个）—— Godot 源生成器要求继承 Godot 类型的类必须声明 `partial`。
+
+> ⚠️ PowerShell 的 `-replace` **默认大小写不敏感**，批量替换 `Timer` 时会把变量名 `timer` 一并改掉（踩过）。
+
+### 11.2 补丁组注册
+
+参考 mod **没有**走 `CharacterSkinModBootstrap.Init` —— 那条路要求提供完整的
+`CharacterSkinProfile`（24 个字段、每个又是别的 record），是为「一套框架驱动多个角色的
+皮肤系统」准备的。它改为**按组手动注册**，本项目沿用同一做法，只注册真正依赖的四组：
+
+| 补丁组 | 用途 |
+|---|---|
+| `SkinCardTransportPatches` | 手牌聚焦 / 悬停 / 按下 / 出牌提交 —— 出牌特写的全部事件源 |
+| `SkinTransportPatches` | 房间进入、战斗开始等生命周期 |
+| `SkinCharacterSelectPatches` | 选人界面事件 |
+| `CharacterLifecycleTransport` | 玩家阵亡 / 胜利，用于清理特写 |
+
+这些补丁把游戏原生回调转发到 `SkinEventHub` 事件总线，角色侧只订阅总线，不直接补游戏内部。
+
+### 11.3 待接入
+
+**选人界面的浮动设置面板**（参考 mod 的 `CharacterSelectSettingsMenu.Attach`，
+即选人界面那个「CZN OPTION」面板）尚未挂载 —— 它要求 `char_select_bg_<slug>.tscn`
+提供一个带 `_refresh_from_settings` 的脚本，本项目目前是静态贴图，需要先补这个 GD 脚本。
+（游戏内 `NSettingsScreen` 的设置分区已通过 `SkinSettingsUi.TryInject` 注入。）

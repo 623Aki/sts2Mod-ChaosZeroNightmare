@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://ymenq2g7s0fh"]
+
+[ext_resource type="Script" path="res://src/Core/Nodes/Combat/NCreatureVisuals.cs" id="1_visuals"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/model/30093_skel_data.tres" id="2_body"]
+
+[node name="Heidemarie" type="Node2D"]
+script = ExtResource("1_visuals")
+metadata/_edit_group_ = true
+
+[node name="FormVfx" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+
+; 节点名必须是 Visuals：NCreatureVisuals._Ready 用 GetNode<Node2D>("%Visuals") 取本体，
+; 名字不符会让 SpineBody 为 null，游戏 PushWarning 后彻底禁用动画。
+[node name="Visuals" type="SpineSprite" parent="."]
+unique_name_in_owner = true
+skeleton_data_res = ExtResource("2_body")
+; 30093.skel 只有 default 一个皮肤；默认动作/预览动画填骨架真实存在的 idle（放松待机）。
+preview_skin = "default"
+preview_animation = "idle"
+preview_frame = false
+preview_time = 0.0
+position = Vector2(0, -20)
+; 实测标定：30093.skel 的 b_idle 骨骼包围盒高 220.55（Spine 单位），
+; 乘 1.247 约 275px，与参考 mod 的目标高度（Tiphera 274px / Nine 275px）一致。
+scale = Vector2(1.247, 1.247)
+metadata/heidemarie_scale_source = "b_idle 包围盒 220.55 x 188.68，比例 275/220.55 = 1.247；站位沿用参考 mod 的 (0,-20)。"
+
+[node name="Bounds" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = -140.0
+offset_top = -290.0
+offset_right = 140.0
+mouse_filter = 2
+
+[node name="CenterPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -165)
+
+[node name="IntentPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(10, -320)

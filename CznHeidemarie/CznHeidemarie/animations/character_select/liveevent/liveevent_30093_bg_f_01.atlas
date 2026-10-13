@@ -1,0 +1,62 @@
+
+liveevent_30093_bg_f_01.png
+size: 1492,1928
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+chiz_water_07
+  rotate: true
+  xy: 1188, 498
+  size: 399, 254
+  orig: 399, 254
+  offset: 0, 0
+  index: -1
+splash1
+  rotate: true
+  xy: 1188, 1412
+  size: 511, 300
+  orig: 511, 300
+  offset: 0, 0
+  index: -1
+splash1_2
+  rotate: true
+  xy: 1188, 899
+  size: 511, 300
+  orig: 511, 300
+  offset: 0, 0
+  index: -1
+tri_x_water49
+  rotate: false
+  xy: 1188, 202
+  size: 92, 183
+  orig: 92, 183
+  offset: 0, 0
+  index: -1
+water1_0001
+  rotate: false
+  xy: 2, 1284
+  size: 1184, 639
+  orig: 1184, 639
+  offset: 0, 0
+  index: -1
+water1_0002
+  rotate: false
+  xy: 2, 643
+  size: 1184, 639
+  orig: 1184, 639
+  offset: 0, 0
+  index: -1
+water1_0003
+  rotate: false
+  xy: 2, 2
+  size: 1184, 639
+  orig: 1184, 639
+  offset: 0, 0
+  index: -1
+water_1_13
+  rotate: false
+  xy: 1188, 387
+  size: 157, 109
+  orig: 157, 109
+  offset: 0, 0
+  index: -1

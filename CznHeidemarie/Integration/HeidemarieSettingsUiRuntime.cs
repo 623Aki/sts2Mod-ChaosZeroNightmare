@@ -1,0 +1,92 @@
+using System.Collections.Generic;
+using CznCore.Presentation;
+using CznCore.Settings;
+
+namespace CznHeidemarie.Integration;
+
+/// <summary>
+/// 设置 UI 的运行时绑定。
+///
+/// <para>对应参考 mod 的 <c>CznNineCharacter.NineSettingsUiRuntime</c>。
+/// 基类 <see cref="SkinSettingsUiRuntimeBase"/> 已经把绝大多数设置项做成了
+/// 转发到 <see cref="SkinCharacterSettings"/> 的只读属性，
+/// 角色侧只需要提供身份信息（id、标题、头像、图标）与能力声明，
+/// 再用 <see cref="SkinSettingsUiRuntimeHooks"/> 把「设置变了要重算什么」接上。</para>
+/// </summary>
+internal sealed class HeidemarieSettingsUiRuntime : SkinSettingsUiRuntimeBase
+{
+	/// <summary>
+	/// 三种选角背景：静态立绘 / 动态立绘 / 角色大厅。
+	/// 对应场景见 <see cref="HeidemarieCharSelectBackgroundRuntime"/>，
+	/// 下拉里的显示名取自 settings.json 的 character_select_background_* 三条文案。
+	/// </summary>
+	private static readonly CharacterSelectBackgroundVariant[] BackgroundVariants =
+	{
+		CharacterSelectBackgroundVariant.StaticPortrait,
+		CharacterSelectBackgroundVariant.TeamJoinPortrait,
+		CharacterSelectBackgroundVariant.LiveLobby
+	};
+
+	/// <inheritdoc/>
+	public override string CharacterSettingsKey => HeidemarieSettings.CurrentCharacterId;
+
+	/// <inheritdoc/>
+	public override string CharacterSettingsHeader => HeidemarieText.SettingsHeader.Current;
+
+	/// <inheritdoc/>
+	public override string CharacterSkinTarget => HeidemarieText.CharacterType.Current;
+
+	/// <inheritdoc/>
+	public override string CharacterSettingsAvatarPath => "res://images/ui/top_panel/character_icon_heidemarie.png";
+
+	/// <inheritdoc/>
+	public override string GlobalSettingsIconPath => "res://images/ui/top_panel/character_icon_heidemarie.png";
+
+	/// <inheritdoc/>
+	/// <remarks>本项目没有专属战斗特效资源，标签沿用模板中的通用文案。</remarks>
+	public override string CharacterEffectsLabel => "战斗特效";
+
+	/// <inheritdoc/>
+	/// <remarks>本项目没有语音资源，面板不会展示这一项。</remarks>
+	public override string CharacterVoiceLabel => "角色语音";
+
+	/// <inheritdoc/>
+	public override bool SupportsMeleeApproachMovement => false;
+
+	/// <inheritdoc/>
+	public override bool SupportsOfficialAttackTiming => true;
+
+	/// <inheritdoc/>
+	public override IReadOnlyList<CharacterSelectBackgroundVariant> SupportedCharacterSelectBackgroundVariants =>
+		BackgroundVariants;
+
+	public HeidemarieSettingsUiRuntime(SkinCharacterSettings settings)
+		: base(settings, new SkinSettingsUiRuntimeHooks(
+			ApplyEffectBrightnessSettings: null,
+			ApplyBattleReadyTransform: HeidemarieBattleReadyRuntime.ApplyTransform,
+			CleanupBattleReadyOverlay: () => HeidemarieBattleReadyRuntime.Cleanup(),
+			CleanupSkinEffectsRuntime: null,
+			CleanupSkinVisualEffectsRuntime: null,
+			CleanupSkinSfxRuntime: null,
+			StopVoice: null,
+			// 关掉「出牌演出」时，出牌特写与全屏演出都要立刻收尾
+			ApplyCardPlayPresentationEnabled: enabled =>
+			{
+				HeidemarieBattleReadyRuntime.ApplyCardPlayPresentation(enabled);
+				HeidemarieCinematicRuntime.ApplyCardPlayPresentation(enabled);
+			},
+			DebugLog: (string message, int _) => HeidemarieIntegration.Log.Info(message)))
+	{
+	}
+
+	/// <inheritdoc/>
+	protected override CharacterSelectBackgroundVariant NormalizeBackgroundVariant(CharacterSelectBackgroundVariant variant)
+	{
+		// 只认声明过的三种变体，其余一律回落到静态立绘
+		return variant is CharacterSelectBackgroundVariant.StaticPortrait
+			or CharacterSelectBackgroundVariant.TeamJoinPortrait
+			or CharacterSelectBackgroundVariant.LiveLobby
+			? variant
+			: CharacterSelectBackgroundVariant.StaticPortrait;
+	}
+}

@@ -1,0 +1,683 @@
+{
+ "schema": "czn-heidemarie.move-effects.v1",
+ "note": "z 已由 tools/extract_cinematic_plan.py --command moves-z 从 .cfx 真值回填（z = srmd group_zorder + .cfx primitive_z）；start_ms/end_ms/clip 保留原值，它们按身体动画相位对齐且被 C# 侧依赖。",
+ "effects": {
+  "HeidemarieStrike": {
+   "note": "打击：attack_ready(0.2) → attack_play1(0.667)",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_attack_play1_b",
+     "clip": "animation",
+     "z": -5,
+     "start_ms": 200.0,
+     "end_ms": 633.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play1_f",
+     "clip": "animation",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 733.0,
+     "opacity": 1.0
+    }
+   ],
+   "target": [
+    {
+     "name": "heidemarie_30093_eff_attack_play1_target",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 200.0,
+     "end_ms": 1033.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_b",
+     "clip": "attack_play1",
+     "z": -10,
+     "start_ms": 200.0,
+     "end_ms": 1200.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f1",
+     "clip": "attack_play1",
+     "z": 7,
+     "start_ms": 200.0,
+     "end_ms": 1133.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f3",
+     "clip": "attack_play1",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 1200.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_target",
+     "clip": "attack_play1_target",
+     "z": 3,
+     "start_ms": 200.0,
+     "end_ms": 1133.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_cat_target",
+     "clip": "attack_play1_target",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 1133.0
+    }
+   ]
+  },
+  "HeidemarieHeavyStrike": {
+   "note": "重斩：attack_ready(0.2) → attack_play2(0.667)",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_attack_play2_b",
+     "clip": "animation",
+     "z": -5,
+     "start_ms": 200.0,
+     "end_ms": 867.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play2_f",
+     "clip": "animation",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 533.0,
+     "opacity": 1.0
+    }
+   ],
+   "target": [
+    {
+     "name": "heidemarie_30093_eff_attack_play2_target",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 200.0,
+     "end_ms": 1033.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_b",
+     "clip": "attack_play2",
+     "z": -10,
+     "start_ms": 200.0,
+     "end_ms": 1200.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f1",
+     "clip": "attack_play2",
+     "z": 7,
+     "start_ms": 200.0,
+     "end_ms": 1133.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f3",
+     "clip": "attack_play2",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 1200.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_target",
+     "clip": "attack_play2_target",
+     "z": 3,
+     "start_ms": 200.0,
+     "end_ms": 1300.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_cat_target",
+     "clip": "attack_play2_target",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 1000.0
+    }
+   ]
+  },
+  "HeidemarieDefend": {
+   "note": "防御：defense_ready(0.467) → defense_play(1.167)",
+   "owner": [
+    {
+     "name": "heidemarie_30093_sword_eff_b",
+     "clip": "animation",
+     "z": -3,
+     "start_ms": 0.0,
+     "end_ms": 1633.0
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_g",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 1633.0,
+     "opacity": 0.85
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_f",
+     "clip": "animation",
+     "z": 3,
+     "start_ms": 0.0,
+     "end_ms": 1633.0
+    },
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.7
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieU1Strike": {
+   "note": "斩击：u1_attack_ready(0.467) → u1_attack_play(0.667) → u1_attack_end(0.533)",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u1_attack_ready_b",
+     "clip": "animation",
+     "z": -50,
+     "start_ms": 0.0,
+     "end_ms": 467.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u1_attack_ready_f",
+     "clip": "animation",
+     "z": 50,
+     "start_ms": 0.0,
+     "end_ms": 467.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u1_attack_play_b",
+     "clip": "animation",
+     "z": -50,
+     "start_ms": 467.0,
+     "end_ms": 1234.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u1_attack_play_f",
+     "clip": "animation",
+     "z": 50,
+     "start_ms": 467.0,
+     "end_ms": 1167.0,
+     "opacity": 1.0
+    }
+   ],
+   "target": [
+    {
+     "name": "heidemarie_30093_eff_u1_attack_play_target_b",
+     "clip": "animation",
+     "z": -50,
+     "start_ms": 467.0,
+     "end_ms": 2467.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u1_attack_play_target_f1",
+     "clip": "animation",
+     "z": 150,
+     "start_ms": 467.0,
+     "end_ms": 2137.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u1_attack_play_target_f2",
+     "clip": "animation",
+     "z": 100,
+     "start_ms": 467.0,
+     "end_ms": 2297.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u1_attack_play_target_f3",
+     "clip": "animation",
+     "z": 70,
+     "start_ms": 467.0,
+     "end_ms": 2137.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u1_attack_sword",
+     "clip": "u1_attack_play_target",
+     "z": 50,
+     "start_ms": 467.0,
+     "end_ms": 1600.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_cat_target",
+     "clip": "u1_attack_play_target",
+     "z": 7,
+     "start_ms": 467.0,
+     "end_ms": 1434.0
+    }
+   ]
+  },
+  "HeidemarieU2Guard": {
+   "note": "结阵：u2_buff_ready(0.467) → u2_buff_play(1.4)；同一骨架在两个窗口用不同 clip 各建一个节点",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "ready",
+     "z": -1,
+     "start_ms": 0.0,
+     "end_ms": 467.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "play",
+     "z": -1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_ready",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 467.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_play",
+     "z": 0,
+     "start_ms": 467.0,
+     "end_ms": 1867.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "ready",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 467.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "play",
+     "z": 1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0,
+     "opacity": 1.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieU3Strike": {
+   "note": "裂空斩：u3_attack_ready(0.467) → u3_attack_play(0.933) → u3_attack_end(0.467)",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u3_attack_self_b",
+     "clip": "ready",
+     "z": -2,
+     "start_ms": 0.0,
+     "end_ms": 533.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_self_f",
+     "clip": "ready",
+     "z": 2,
+     "start_ms": 0.0,
+     "end_ms": 533.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_self_b",
+     "clip": "play",
+     "z": -1,
+     "start_ms": 467.0,
+     "end_ms": 1100.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_self_f",
+     "clip": "play",
+     "z": 1,
+     "start_ms": 467.0,
+     "end_ms": 1067.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_sword_1",
+     "clip": "play",
+     "z": 3,
+     "start_ms": 467.0,
+     "end_ms": 1434.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_sword_2",
+     "clip": "play",
+     "z": 4,
+     "start_ms": 467.0,
+     "end_ms": 1400.0
+    }
+   ],
+   "target": [
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_b",
+     "clip": "animation",
+     "z": -2,
+     "start_ms": 467.0,
+     "end_ms": 2667.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_rock_b",
+     "clip": "animation",
+     "z": -1,
+     "start_ms": 467.0,
+     "end_ms": 2467.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_wind_b",
+     "clip": "attack_play2",
+     "z": -4,
+     "start_ms": 467.0,
+     "end_ms": 1334.0,
+     "opacity": 0.8
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_rock_2",
+     "clip": "animation",
+     "z": 5,
+     "start_ms": 467.0,
+     "end_ms": 2537.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_ff_rock",
+     "clip": "animation",
+     "z": 7,
+     "start_ms": 467.0,
+     "end_ms": 1897.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_rcok",
+     "clip": "animation",
+     "z": 4,
+     "start_ms": 467.0,
+     "end_ms": 1837.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_f",
+     "clip": "animation",
+     "z": 3,
+     "start_ms": 467.0,
+     "end_ms": 1797.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_f2",
+     "clip": "animation",
+     "z": 6,
+     "start_ms": 467.0,
+     "end_ms": 2497.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_ff",
+     "clip": "animation",
+     "z": 8,
+     "start_ms": 467.0,
+     "end_ms": 2537.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_ff_flash",
+     "clip": "animation",
+     "z": 100001,
+     "start_ms": 467.0,
+     "end_ms": 2537.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_ff2",
+     "clip": "animation",
+     "z": 10,
+     "start_ms": 467.0,
+     "end_ms": 2537.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_ff3",
+     "clip": "animation",
+     "z": 11,
+     "start_ms": 467.0,
+     "end_ms": 2537.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_rock_f",
+     "clip": "animation",
+     "z": 9,
+     "start_ms": 467.0,
+     "end_ms": 2767.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_target_wind_f",
+     "clip": "animation",
+     "z": 300,
+     "start_ms": 467.0,
+     "end_ms": 1967.0,
+     "opacity": 1.0
+    }
+   ]
+  },
+  "HeidemarieU4Empower": {
+   "note": "蓄势：u4_buff_ready(0.467) → u4_buff_play(1.467)",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_b",
+     "clip": "ready",
+     "z": -100,
+     "start_ms": 0.0,
+     "end_ms": 467.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_b",
+     "clip": "play",
+     "z": -100,
+     "start_ms": 467.0,
+     "end_ms": 2467.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_b",
+     "clip": "ready",
+     "z": -50,
+     "start_ms": 0.0,
+     "end_ms": 500.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_b",
+     "clip": "play",
+     "z": -50,
+     "start_ms": 467.0,
+     "end_ms": 1537.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_f",
+     "clip": "ready",
+     "z": 100,
+     "start_ms": 0.0,
+     "end_ms": 467.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_f",
+     "clip": "play",
+     "z": 100,
+     "start_ms": 467.0,
+     "end_ms": 2467.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_f",
+     "clip": "ready",
+     "z": 50,
+     "start_ms": 0.0,
+     "end_ms": 500.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_f",
+     "clip": "play",
+     "z": 50,
+     "start_ms": 467.0,
+     "end_ms": 1537.0,
+     "opacity": 1.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieCure": {
+   "note": "守愈：cure_ready(0.467) → cure_play(1.167)",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready_b",
+     "clip": "animation",
+     "z": -10,
+     "start_ms": 0.0,
+     "end_ms": 1330.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 1.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieBrace": {
+   "note": "架势：格挡 + 抽牌，用特写起手组",
+   "owner": [
+    {
+     "name": "heidemarie_30093_battle_ready_eff_b",
+     "clip": "animation",
+     "z": -2,
+     "start_ms": 0.0,
+     "end_ms": 800.0
+    },
+    {
+     "name": "heidemarie_30093_battle_ready_eff_b_mask",
+     "clip": "animation",
+     "z": -1,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.5
+    },
+    {
+     "name": "heidemarie_30093_battle_ready_eff_mask",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.6
+    },
+    {
+     "name": "heidemarie_30093_battle_ready_eff_f",
+     "clip": "animation",
+     "z": 2,
+     "start_ms": 0.0,
+     "end_ms": 800.0
+    },
+    {
+     "name": "heidemarie_30093_battle_ready_eff_f_mask",
+     "clip": "animation",
+     "z": 3,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.5
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieFootwork": {
+   "note": "疾步：敏捷 buff，走施法起手 + 剑光",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready_b",
+     "clip": "animation",
+     "z": -10,
+     "start_ms": 0.0,
+     "end_ms": 1330.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_g",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 1300.0,
+     "opacity": 0.8
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieCaltrops": {
+   "note": "铁蒺藜：荆棘 buff，用武器 setup 组",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_sword_target",
+     "clip": "setup",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 2000.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_cat_target",
+     "clip": "setup",
+     "z": 2,
+     "start_ms": 0.0,
+     "end_ms": 2000.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieRegeneration": {
+   "note": "回春：再生 buff，用立绘光效组",
+   "owner": [
+    {
+     "name": "heidemarie_30093_portrait_eff",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 2000.0,
+     "opacity": 0.9
+    },
+    {
+     "name": "heidemarie_30093_portrait_eff_mask",
+     "clip": "animation",
+     "z": 2,
+     "start_ms": 0.0,
+     "end_ms": 2000.0,
+     "opacity": 0.5
+    }
+   ],
+   "target": []
+  }
+ }
+}

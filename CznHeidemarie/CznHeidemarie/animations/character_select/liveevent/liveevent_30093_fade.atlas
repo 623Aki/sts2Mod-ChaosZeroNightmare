@@ -1,0 +1,13 @@
+
+liveevent_30093_fade.png
+size: 56,56
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+white
+  rotate: false
+  xy: 2, 2
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1

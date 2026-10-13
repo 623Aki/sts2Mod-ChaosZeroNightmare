@@ -1,0 +1,14 @@
+[remap]
+
+importer="spine.skel"
+type="SpineSkeletonFileResource"
+uid="uid://cmvd0eunro015"
+path="res://.godot/imported/30093_battle_ready.skel-666b99b9b3119686c54b1f016a8566a9.spskel"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/battle_ready/30093_battle_ready.skel"
+dest_files=["res://.godot/imported/30093_battle_ready.skel-666b99b9b3119686c54b1f016a8566a9.spskel"]
+
+[params]
+

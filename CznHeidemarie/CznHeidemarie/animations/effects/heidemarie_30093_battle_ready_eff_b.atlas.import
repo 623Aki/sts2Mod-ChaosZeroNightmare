@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://by04ntfxeo5hd"
+path="res://.godot/imported/heidemarie_30093_battle_ready_eff_b.atlas-e4f3c2b58d992deb75cfb86f0538f704.spatlas"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/effects/heidemarie_30093_battle_ready_eff_b.atlas"
+dest_files=["res://.godot/imported/heidemarie_30093_battle_ready_eff_b.atlas-e4f3c2b58d992deb75cfb86f0538f704.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"

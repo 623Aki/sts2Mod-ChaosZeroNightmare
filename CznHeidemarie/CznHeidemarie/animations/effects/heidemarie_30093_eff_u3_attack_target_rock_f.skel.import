@@ -1,0 +1,14 @@
+[remap]
+
+importer="spine.skel"
+type="SpineSkeletonFileResource"
+uid="uid://cncbhqcdfq6cj"
+path="res://.godot/imported/heidemarie_30093_eff_u3_attack_target_rock_f.skel-1b8a8301e060964298dc0d40991fc052.spskel"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/effects/heidemarie_30093_eff_u3_attack_target_rock_f.skel"
+dest_files=["res://.godot/imported/heidemarie_30093_eff_u3_attack_target_rock_f.skel-1b8a8301e060964298dc0d40991fc052.spskel"]
+
+[params]
+

@@ -1,0 +1,14 @@
+[remap]
+
+importer="spine.skel"
+type="SpineSkeletonFileResource"
+uid="uid://gk8iy7ova653"
+path="res://.godot/imported/heidemarie_30093_ux_cutin_02.skel-4d2e614edfdf15a4aeeafecb497b0b77.spskel"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/effects/heidemarie_30093_ux_cutin_02.skel"
+dest_files=["res://.godot/imported/heidemarie_30093_ux_cutin_02.skel-4d2e614edfdf15a4aeeafecb497b0b77.spskel"]
+
+[params]
+

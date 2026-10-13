@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3]
+
+; Heidemarie 全屏演出（终焉剑舞 / 破军）的舞台场景。
+;
+; 根节点就是合成器（CanvasLayer，运行时由脚本把 layer 设为 4090 接管整个画面），
+; 结构参照参考 mod 的 nine_cinematic_stage.tscn / combat_ug_overlay.tscn：
+; 场景本身不含美术，全部图层由 heidemarie_cinematic_stage.gd 按
+; res://CznHeidemarie/cinematic/heidemarie_{ug,ux}.json 在运行时创建。
+;
+; 由 Integration/HeidemarieCinematicRuntime.cs 实例化并挂到 NCombatRoom 下。
+[ext_resource type="Script" path="res://CznHeidemarie/cinematic/heidemarie_cinematic_stage.gd" id="1_stage"]
+
+[node name="HeidemarieCinematic" type="CanvasLayer"]
+script = ExtResource("1_stage")

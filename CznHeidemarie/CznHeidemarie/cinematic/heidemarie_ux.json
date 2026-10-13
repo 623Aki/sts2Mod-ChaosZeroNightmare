@@ -1,0 +1,2124 @@
+{
+ "schema": "czn-heidemarie.cinematic.v3",
+ "route": "ux",
+ "note": "由 tools/extract_cinematic_plan.py 从 CNZ_Source/czn30093 的 .srmd + .cfx 直接提取。z = group_zorder + primitive_z（层级真值）；start_ms 走 from_guid 事件链；end_ms = start_ms + 骨架实测 clip 时长。scale/rotation/opacity/offset 为 srmd 原值。STS2 特有适配集中在 renderer 段，official 段是原事件原文，便于复核。",
+ "source": {
+  "srmd": "30093.srmd",
+  "command": "ux_attack",
+  "character_id": "30093",
+  "body_animation": "ux_attack",
+  "body_duration_ms": 833.3,
+  "body_start_ms": 0.0
+ },
+ "design": {
+  "width": 1280.0,
+  "height": 720.0
+ },
+ "canvas_layer": 4090,
+ "duration_ms": 8163.3,
+ "hit_ms": 5266.0,
+ "actor_restore_ms": 5266.0,
+ "presentation_end_ms": 8163.3,
+ "bg": {
+  "alpha": 0.9,
+  "fade_in_ms": 120.0,
+  "fade_out_at_ms": 7713.3,
+  "fade_out_ms": 450.0
+ },
+ "shakes": [
+  {
+   "start_ms": 4863.3,
+   "duration_ms": 300.0,
+   "amplitude": 10.0,
+   "frequency": 30.0,
+   "angle": 0.0,
+   "official": {
+    "camera_skeleton": "heidemarie_30093_ux_attack_cm1",
+    "cam_ignore_hitstop": true,
+    "delay_ms": 0.0,
+    "duration_from_camera_skel_ms": 300.0,
+    "start_is_official": true,
+    "duration_is_manual": true,
+    "amplitude_is_manual": true
+   }
+  },
+  {
+   "start_ms": 6966.3,
+   "duration_ms": 300.0,
+   "amplitude": 10.0,
+   "frequency": 30.0,
+   "angle": 0.0,
+   "official": {
+    "camera_skeleton": "heidemarie_30093_ux_attack_cm2",
+    "cam_ignore_hitstop": true,
+    "delay_ms": 33.0,
+    "duration_from_camera_skel_ms": 300.0,
+    "start_is_official": true,
+    "duration_is_manual": true,
+    "amplitude_is_manual": true
+   }
+  },
+  {
+   "start_ms": 7533.3,
+   "duration_ms": 300.0,
+   "amplitude": 10.0,
+   "frequency": 30.0,
+   "angle": 0.0,
+   "official": {
+    "camera_skeleton": "heidemarie_30093_ux_attack_cm3",
+    "cam_ignore_hitstop": true,
+    "delay_ms": 0.0,
+    "duration_from_camera_skel_ms": 300.0,
+    "start_is_official": true,
+    "duration_is_manual": true,
+    "amplitude_is_manual": true
+   }
+  }
+ ],
+ "renderer": {
+  "matte_peak": 0.9,
+  "shake_source": "起止时刻来自 srmd command.shake 事件链；振幅/频率资产里没有，人工标定",
+  "corrections": {
+   "camera": "cam_move / cam_zoom / cam_spine 无对应通道，已丢弃",
+   "color_blend": "CZN 颜色分级无对应通道，已丢弃",
+   "bg_blend": "未映射到 bg 段，黑幕仍用人工参数",
+   "attach_without_anchor": "bone_type=ATTACH 且 slot/bone 为空，按绝对坐标渲染"
+  },
+  "known_gaps": [
+   "ux_attack_01_b1_3 / _b1_4 / _b2 / ux_attack_02_b1_1 被 .cfx 引用，但素材区从未提取出这 4 个骨架，永久缺失（详见 missing 段）",
+   "ux_attack_01.pati 是 CZNFX 粒子（25KB），STS2 无 CZNFX 运行时",
+   "shake / cam_move / cam_zoom / color_blend / bg_blend / node_ani 均无对应通道，黑幕与镜头抖动需人工标定（见 bg / shakes 段）"
+  ]
+ },
+ "layers": [
+  {
+   "name": "heidemarie_30093_ux_attack_02_b3",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": -1005,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -1005,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_02_b2",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": -1004,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -1004,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_02_b2_1",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": -1003,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -1003,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_02_b1_3",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": -1002,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -1002,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_02_b1_2",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": -1001,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -1001,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_01_b4",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": -999,
+   "start_ms": 833.3,
+   "end_ms": 4733.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 3900.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -999,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_02_1",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": -998,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -998,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_01_b3",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": -997,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -997,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_01_b2_1",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": -996,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -996,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_01_b1_2",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": -992,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -992,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_01_b1",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": -991,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -991,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_cutin_01",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": 900,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 900,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_cutin_02_1",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": 901,
+   "start_ms": 833.3,
+   "end_ms": 3833.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 3000.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 901,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_cutin_02",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": 902,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 902,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_cutin_03",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": 904,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 904,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_cutin_04",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": 905,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 905,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_02_f1",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": 906,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 906,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_01_f",
+   "clip": "animation",
+   "target": "OWNER",
+   "z": 907,
+   "start_ms": 833.3,
+   "end_ms": 4863.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_01",
+   "clip_duration_ms": 4030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 907,
+    "type": "SELF",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 4030.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_1_1_1",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": -10000,
+   "start_ms": 4863.3,
+   "end_ms": 6933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -10000,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_1_1_2",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": -9999,
+   "start_ms": 4863.3,
+   "end_ms": 6933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -9999,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_1_1_3",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": -9998,
+   "start_ms": 4863.3,
+   "end_ms": 6933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -9998,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_1_1_4",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": -9997,
+   "start_ms": 4863.3,
+   "end_ms": 6933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -9997,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_1_2",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": -9996,
+   "start_ms": 4863.3,
+   "end_ms": 5933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 1070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -9996,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_1_3",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": -9995,
+   "start_ms": 4863.3,
+   "end_ms": 6933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -9995,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_2_1",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": -9994,
+   "start_ms": 4863.3,
+   "end_ms": 6893.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -9994,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_2_2",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": -9993,
+   "start_ms": 4863.3,
+   "end_ms": 6933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -9993,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_3",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": -9992,
+   "start_ms": 4863.3,
+   "end_ms": 6893.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": -9992,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_4",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": 899,
+   "start_ms": 4863.3,
+   "end_ms": 6933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 899,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_cutin_03_01",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": 900,
+   "start_ms": 4863.3,
+   "end_ms": 5933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 1070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 900,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_cutin_03_02",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": 901,
+   "start_ms": 4863.3,
+   "end_ms": 5933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 1070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 901,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_cutin_03_03",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": 902,
+   "start_ms": 4863.3,
+   "end_ms": 6933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 902,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_cutin_03_glow",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": 903,
+   "start_ms": 4863.3,
+   "end_ms": 6893.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2030.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 903,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_5",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": 904,
+   "start_ms": 4863.3,
+   "end_ms": 6933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 904,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_03_6",
+   "clip": "animation",
+   "target": "STAGE",
+   "z": 905,
+   "start_ms": 4863.3,
+   "end_ms": 6933.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 1.0,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_02_1",
+   "clip_duration_ms": 2070.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 905,
+    "type": "CENTER",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 2070.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_05",
+   "clip": "animation",
+   "target": "SCREEN",
+   "z": 999,
+   "start_ms": 6933.3,
+   "end_ms": 7533.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.8,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "POSITION",
+   "group": "heidemarie_30093_ux_attack_03",
+   "clip_duration_ms": 600.0,
+   "official": {
+    "group_zorder": 0,
+    "group_global_z": 0,
+    "primitive_z": 999,
+    "type": "SCREEN",
+    "bone_type": "POSITION",
+    "slot": "",
+    "inherit_scale": false,
+    "guid": "7a0ea0d5-1ee7-48ff-8cb4-f456a7f9ce16",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 600.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_04",
+   "clip": "animation",
+   "target": "SCREEN",
+   "z": 1000,
+   "start_ms": 6933.3,
+   "end_ms": 7633.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.5,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "ATTACH",
+   "group": "heidemarie_30093_ux_attack_02_2",
+   "clip_duration_ms": 700.0,
+   "official": {
+    "group_zorder": 1,
+    "group_global_z": 0,
+    "primitive_z": 999,
+    "type": "SCREEN",
+    "bone_type": "ATTACH",
+    "slot": "",
+    "inherit_scale": true,
+    "guid": "dc47c586-f1e2-4320-9dc1-d3fa08a1ac40",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 1230.0
+   }
+  },
+  {
+   "name": "heidemarie_30093_ux_attack_04_1",
+   "clip": "animation",
+   "target": "SCREEN",
+   "z": 1001,
+   "start_ms": 6933.3,
+   "end_ms": 8163.3,
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "scale": 0.5,
+   "rotation": 0.0,
+   "opacity": 1.0,
+   "bone_type": "ATTACH",
+   "group": "heidemarie_30093_ux_attack_02_2",
+   "clip_duration_ms": 1230.0,
+   "official": {
+    "group_zorder": 1,
+    "group_global_z": 0,
+    "primitive_z": 1000,
+    "type": "SCREEN",
+    "bone_type": "ATTACH",
+    "slot": "",
+    "inherit_scale": true,
+    "guid": "dc47c586-f1e2-4320-9dc1-d3fa08a1ac40",
+    "delay_ms": 0.0,
+    "wait_until_end": true,
+    "event_duration_ms": 1230.0
+   }
+  }
+ ],
+ "unsupported": [
+  {
+   "kind": "cutin_marker",
+   "guid": "32af4bd8-518b-4773-9027-874624eddd88",
+   "reason": "CZN CUTIN 事件只有时序没有 file_name；立绘层由 ux_attack_01.cfx 提供"
+  },
+  {
+   "kind": "primitive_format:particle",
+   "group": "heidemarie_30093_ux_attack_03",
+   "source": "heidemarie_30093_ux_attack_01_pati",
+   "reason": "非 Spine 图元（CZNFX 粒子 / 遮罩），STS2 无对应运行时"
+  },
+  {
+   "kind": "shake",
+   "guid": "167438db-ffff-4a59-998d-f5b6ae8b905d",
+   "file_name": "heidemarie_30093_ux_attack_cm3",
+   "reason": "相机抖动骨架在素材区标记为不可渲染；STS2 战斗无相机，由 renderer.shakes 近似"
+  },
+  {
+   "kind": "color_blend",
+   "guid": "9d6d5745-d1d9-4a1d-bc62-41c0cce7a755",
+   "file_name": null,
+   "reason": "CZN 颜色分级，STS2 无对应通道"
+  },
+  {
+   "kind": "node_ani",
+   "guid": "4fc6b61e-379d-43d3-93bf-c6cae476b67b",
+   "file_name": "heidemarie_30093_ux_attack_03_target_node",
+   "reason": "CZN node_ani 是 UI 节点树，STS2 无对应节点"
+  },
+  {
+   "kind": "color_blend",
+   "guid": "c96a102d-b55d-4551-b5a1-c9fe0f92b3ba",
+   "file_name": null,
+   "reason": "CZN 颜色分级，STS2 无对应通道"
+  },
+  {
+   "kind": "color_blend",
+   "guid": "9c3aecfd-2dd1-4b65-9d38-a326999410eb",
+   "file_name": null,
+   "reason": "CZN 颜色分级，STS2 无对应通道"
+  },
+  {
+   "kind": "color_blend",
+   "guid": "c2ec9e54-95f6-465d-b943-4f93b20e3e31",
+   "file_name": null,
+   "reason": "CZN 颜色分级，STS2 无对应通道"
+  },
+  {
+   "kind": "shake",
+   "guid": "93820f7d-e200-4a45-b516-601fd97b84f5",
+   "file_name": "heidemarie_30093_ux_attack_cm2",
+   "reason": "相机抖动骨架在素材区标记为不可渲染；STS2 战斗无相机，由 renderer.shakes 近似"
+  },
+  {
+   "kind": "attach_without_anchor",
+   "group": "heidemarie_30093_ux_attack_02_2",
+   "source": "heidemarie_30093_ux_attack_04",
+   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+  },
+  {
+   "kind": "attach_without_anchor",
+   "group": "heidemarie_30093_ux_attack_02_2",
+   "source": "heidemarie_30093_ux_attack_04_1",
+   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+  },
+  {
+   "kind": "cam_move",
+   "guid": "ee265b80-2664-4485-acd2-6d1e0db28e9c",
+   "file_name": null,
+   "reason": "STS2 战斗场景无相机"
+  },
+  {
+   "kind": "cam_zoom",
+   "guid": "54e3edd4-58c9-4cec-a171-337d2acb2920",
+   "file_name": null,
+   "reason": "STS2 战斗场景无相机"
+  },
+  {
+   "kind": "shake",
+   "guid": "ec7df376-1ba5-4b32-b50f-fa9fe8acba45",
+   "file_name": "heidemarie_30093_ux_attack_cm1",
+   "reason": "相机抖动骨架在素材区标记为不可渲染；STS2 战斗无相机，由 renderer.shakes 近似"
+  },
+  {
+   "kind": "cam_move",
+   "guid": "5e9a2bc5-8933-4ffa-930e-14e93c3d5ffd",
+   "file_name": null,
+   "reason": "STS2 战斗场景无相机"
+  },
+  {
+   "kind": "cam_move",
+   "guid": "72ea766e-f9dc-4491-b3ac-ba8aacb05640",
+   "file_name": null,
+   "reason": "STS2 战斗场景无相机"
+  },
+  {
+   "kind": "cam_move",
+   "guid": "0dd2dc02-9201-4d07-b963-217733f89c5b",
+   "file_name": null,
+   "reason": "STS2 战斗场景无相机"
+  },
+  {
+   "kind": "cam_move",
+   "guid": "71026d0e-d27a-43a2-b8cd-987682aa148c",
+   "file_name": null,
+   "reason": "STS2 战斗场景无相机"
+  },
+  {
+   "kind": "cam_move",
+   "guid": "a0d32492-e39a-486b-b7bb-4baebbee7744",
+   "file_name": null,
+   "reason": "STS2 战斗场景无相机"
+  },
+  {
+   "kind": "cam_zoom",
+   "guid": "adb187d6-5b9c-490c-9513-45cdbafc5cdd",
+   "file_name": null,
+   "reason": "STS2 战斗场景无相机"
+  },
+  {
+   "kind": "color_blend",
+   "guid": "e22df527-59f0-41be-b849-0daafe98270e",
+   "file_name": null,
+   "reason": "CZN 颜色分级，STS2 无对应通道"
+  },
+  {
+   "kind": "cam_zoom",
+   "guid": "bc9d5db9-1cb2-4dfb-989f-8f0419894a5d",
+   "file_name": null,
+   "reason": "STS2 战斗场景无相机"
+  },
+  {
+   "kind": "cam_zoom",
+   "guid": "7d0e18fc-cdfe-4f00-bdb0-334cc47a1c45",
+   "file_name": null,
+   "reason": "STS2 战斗场景无相机"
+  },
+  {
+   "kind": "color_blend",
+   "guid": "92bf24b9-1ce4-41f1-9694-12d138592b68",
+   "file_name": null,
+   "reason": "CZN 颜色分级，STS2 无对应通道"
+  }
+ ],
+ "missing": [
+  {
+   "group": "heidemarie_30093_ux_attack_01",
+   "source": "heidemarie_30093_ux_attack_02_b1_1",
+   "z": -1000,
+   "reason": "素材区没有该骨架（.cfx 引用了但从未被提取）"
+  },
+  {
+   "group": "heidemarie_30093_ux_attack_01",
+   "source": "heidemarie_30093_ux_attack_01_b2",
+   "z": -995,
+   "reason": "素材区没有该骨架（.cfx 引用了但从未被提取）"
+  },
+  {
+   "group": "heidemarie_30093_ux_attack_01",
+   "source": "heidemarie_30093_ux_attack_01_b1_4",
+   "z": -994,
+   "reason": "素材区没有该骨架（.cfx 引用了但从未被提取）"
+  },
+  {
+   "group": "heidemarie_30093_ux_attack_01",
+   "source": "heidemarie_30093_ux_attack_01_b1_3",
+   "z": -993,
+   "reason": "素材区没有该骨架（.cfx 引用了但从未被提取）"
+  }
+ ],
+ "z_collisions": [
+  {
+   "z": 900,
+   "layers": [
+    "heidemarie_30093_ux_attack_cutin_03_01",
+    "heidemarie_30093_ux_cutin_01"
+   ]
+  },
+  {
+   "z": 901,
+   "layers": [
+    "heidemarie_30093_ux_attack_cutin_03_02",
+    "heidemarie_30093_ux_cutin_02_1"
+   ]
+  },
+  {
+   "z": 902,
+   "layers": [
+    "heidemarie_30093_ux_attack_cutin_03_03",
+    "heidemarie_30093_ux_cutin_02"
+   ]
+  },
+  {
+   "z": 904,
+   "layers": [
+    "heidemarie_30093_ux_attack_03_5",
+    "heidemarie_30093_ux_cutin_03"
+   ]
+  },
+  {
+   "z": 905,
+   "layers": [
+    "heidemarie_30093_ux_attack_03_6",
+    "heidemarie_30093_ux_cutin_04"
+   ]
+  }
+ ],
+ "official": {
+  "command_keys": [
+   "ani",
+   "bg_blend",
+   "cam_move",
+   "cam_zoom",
+   "color_blend",
+   "cutin",
+   "entry",
+   "hit",
+   "node_ani",
+   "setting",
+   "shake"
+  ],
+  "note": "raw srmd 事件原文已逐层落在 layers[].official；此处只留非 Spine 段的原文索引",
+  "timing_rule": "from_guid 是播放树：同父兄弟并行、各用自己的 delay；wait_until_end 决定子节点挂在父节点结束处还是开始处。hit 的 delay 是绝对时刻（ug=2800 / ux=5266），直接采信。",
+  "flat_total_ms": 5266.0,
+  "flat_note": "忽略父子关系、一律从 0 起播的对照解，仅供比对。",
+  "command": {
+   "name": "ux_attack",
+   "duration": 0.0,
+   "template": "player_default",
+   "bg_off": false,
+   "skip_idle": false,
+   "flag_skip_left_effect": false,
+   "flag_return_idle": false,
+   "spark_delay": 67.0,
+   "spark_offset": "0,0",
+   "manual_setting": false,
+   "entry": [
+    {
+     "wait_until_end": false,
+     "state": "Start",
+     "id": null,
+     "guid": "8b241964-f676-41c7-8bc5-1c6fc22d6941",
+     "sequence": 0,
+     "delay": 0.0,
+     "from_guid": null,
+     "bounds": "307, 82, 100, 70",
+     "duration": 0.0,
+     "etty": "ENTRY"
+    }
+   ],
+   "ani": [
+    {
+     "animation_name": "ux_attack",
+     "duration": 833.3,
+     "loop": false,
+     "loop_count": 0,
+     "motion_skip_slow": 0.0,
+     "motion_skip_fast": 0.0,
+     "id": null,
+     "guid": "83f93ea6-d1ac-4183-9ebd-4c319e8f7589",
+     "sequence": 0,
+     "delay": 0.0,
+     "from_guid": "8b241964-f676-41c7-8bc5-1c6fc22d6941",
+     "bounds": "311, 280, 100, 70",
+     "wait_until_end": true,
+     "etty": "ANI"
+    }
+   ],
+   "shake": [
+    {
+     "file_name": "heidemarie_30093_ux_attack_cm3",
+     "cam_ignore_hitstop": true,
+     "cam_ignore_slow": false,
+     "wait_until_end": false,
+     "id": null,
+     "guid": "167438db-ffff-4a59-998d-f5b6ae8b905d",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "7a0ea0d5-1ee7-48ff-8cb4-f456a7f9ce16",
+     "bounds": "155, 1212, 100, 70",
+     "duration": 0.0,
+     "etty": "SHAKE"
+    },
+    {
+     "file_name": "heidemarie_30093_ux_attack_cm2",
+     "cam_ignore_hitstop": true,
+     "cam_ignore_slow": false,
+     "wait_until_end": false,
+     "id": null,
+     "guid": "93820f7d-e200-4a45-b516-601fd97b84f5",
+     "sequence": 1,
+     "delay": 33.0,
+     "from_guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+     "bounds": "147, 1113, 100, 70",
+     "duration": 0.0,
+     "etty": "SHAKE"
+    },
+    {
+     "file_name": "heidemarie_30093_ux_attack_cm1",
+     "cam_ignore_hitstop": true,
+     "cam_ignore_slow": false,
+     "wait_until_end": false,
+     "id": null,
+     "guid": "ec7df376-1ba5-4b32-b50f-fa9fe8acba45",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+     "bounds": "170, 410, 100, 70",
+     "duration": 0.0,
+     "etty": "SHAKE"
+    }
+   ],
+   "setting": [
+    {
+     "duration": 0.0,
+     "type": 2,
+     "on": true,
+     "our_target_type": "NONE",
+     "for_target_type": "TARGET",
+     "wait_until_end": false,
+     "id": null,
+     "guid": "0cd646b1-310d-4e4c-932c-32186c6a0f2a",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "7a0ea0d5-1ee7-48ff-8cb4-f456a7f9ce16",
+     "bounds": "321, 1306, 100, 70",
+     "etty": "SETTING"
+    },
+    {
+     "duration": 0.0,
+     "type": 2,
+     "on": false,
+     "our_target_type": "NONE",
+     "for_target_type": "TARGET",
+     "wait_until_end": false,
+     "id": null,
+     "guid": "90605a1c-b4fd-49aa-8ec2-8ca6fd693dea",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "dc47c586-f1e2-4320-9dc1-d3fa08a1ac40",
+     "bounds": "28, 957, 100, 70",
+     "etty": "SETTING"
+    }
+   ],
+   "cam_move": [
+    {
+     "pivot": "CENTER",
+     "slot": null,
+     "bone": "",
+     "x": 0.0,
+     "y": 0.0,
+     "duration": 0.0,
+     "curve": "0.3,0.3,0.7,0.7",
+     "id": null,
+     "guid": "ee265b80-2664-4485-acd2-6d1e0db28e9c",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+     "bounds": "444, 1106, 100, 70",
+     "wait_until_end": true,
+     "etty": "CAM_MOVE"
+    },
+    {
+     "pivot": "SELF",
+     "slot": null,
+     "bone": "",
+     "x": -20.0,
+     "y": -140.0,
+     "duration": 1500.0,
+     "curve": "0.15277778,0.5472222,0.325,0.9222222",
+     "id": null,
+     "guid": "a0d32492-e39a-486b-b7bb-4baebbee7744",
+     "sequence": 0,
+     "delay": 0.0,
+     "from_guid": "71026d0e-d27a-43a2-b8cd-987682aa148c",
+     "bounds": "457, 790, 100, 70",
+     "wait_until_end": true,
+     "etty": "CAM_MOVE"
+    },
+    {
+     "pivot": "SELF",
+     "slot": null,
+     "bone": "",
+     "x": 40.0,
+     "y": -160.0,
+     "duration": 0.0,
+     "curve": "0.3,0.3,0.7,0.7",
+     "id": null,
+     "guid": "71026d0e-d27a-43a2-b8cd-987682aa148c",
+     "sequence": 0,
+     "delay": 433.0,
+     "from_guid": "0dd2dc02-9201-4d07-b963-217733f89c5b",
+     "bounds": "458, 677, 100, 70",
+     "wait_until_end": true,
+     "etty": "CAM_MOVE"
+    },
+    {
+     "pivot": "SELF",
+     "slot": null,
+     "bone": "",
+     "x": -20.0,
+     "y": -140.0,
+     "duration": 0.0,
+     "curve": "0.3,0.3,0.7,0.7",
+     "id": null,
+     "guid": "0dd2dc02-9201-4d07-b963-217733f89c5b",
+     "sequence": 0,
+     "delay": 0.0,
+     "from_guid": "72ea766e-f9dc-4491-b3ac-ba8aacb05640",
+     "bounds": "453, 542, 100, 70",
+     "wait_until_end": true,
+     "etty": "CAM_MOVE"
+    },
+    {
+     "pivot": "SELF",
+     "slot": null,
+     "bone": "",
+     "x": 0.0,
+     "y": -120.0,
+     "duration": 466.7,
+     "curve": "0.3,0.3,0.7,0.7",
+     "id": null,
+     "guid": "72ea766e-f9dc-4491-b3ac-ba8aacb05640",
+     "sequence": 0,
+     "delay": 0.0,
+     "from_guid": "5e9a2bc5-8933-4ffa-930e-14e93c3d5ffd",
+     "bounds": "454, 409, 100, 70",
+     "wait_until_end": true,
+     "etty": "CAM_MOVE"
+    },
+    {
+     "pivot": "SELF",
+     "slot": null,
+     "bone": "",
+     "x": 35.0,
+     "y": -120.0,
+     "duration": 400.0,
+     "curve": "0.3,0.3,0.7,0.7",
+     "id": null,
+     "guid": "5e9a2bc5-8933-4ffa-930e-14e93c3d5ffd",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "83f93ea6-d1ac-4183-9ebd-4c319e8f7589",
+     "bounds": "450, 277, 100, 70",
+     "wait_until_end": true,
+     "etty": "CAM_MOVE"
+    }
+   ],
+   "cam_zoom": [
+    {
+     "zoom": 1.0,
+     "duration": 0.0,
+     "curve": "0.3,0.3,0.7,0.7",
+     "id": null,
+     "guid": "54e3edd4-58c9-4cec-a171-337d2acb2920",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "ee265b80-2664-4485-acd2-6d1e0db28e9c",
+     "bounds": "585, 1113, 100, 70",
+     "wait_until_end": true,
+     "etty": "CAM_ZOOM"
+    },
+    {
+     "zoom": 1.2,
+     "duration": 0.0,
+     "curve": "0,1,1,1",
+     "id": null,
+     "guid": "adb187d6-5b9c-490c-9513-45cdbafc5cdd",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "0dd2dc02-9201-4d07-b963-217733f89c5b",
+     "bounds": "611, 511, 100, 70",
+     "wait_until_end": true,
+     "etty": "CAM_ZOOM"
+    },
+    {
+     "zoom": 1.36,
+     "duration": 466.7,
+     "curve": "0.3,0.3,0.7,0.7",
+     "id": null,
+     "guid": "bc9d5db9-1cb2-4dfb-989f-8f0419894a5d",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "72ea766e-f9dc-4491-b3ac-ba8aacb05640",
+     "bounds": "602, 404, 100, 70",
+     "wait_until_end": true,
+     "etty": "CAM_ZOOM"
+    },
+    {
+     "zoom": 1.36,
+     "duration": 400.0,
+     "curve": "0,1,1,1",
+     "id": null,
+     "guid": "7d0e18fc-cdfe-4f00-bdb0-334cc47a1c45",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "5e9a2bc5-8933-4ffa-930e-14e93c3d5ffd",
+     "bounds": "455, 174, 100, 70",
+     "wait_until_end": true,
+     "etty": "CAM_ZOOM"
+    }
+   ],
+   "color_blend": [
+    {
+     "interval": 0.0,
+     "opacity": 1.0,
+     "color": [
+      {
+       "Colors": [
+        "132, 128, 128, 128",
+        "0, 128, 128, 128"
+       ],
+       "Positions": [
+        0.0,
+        1.0
+       ]
+      }
+     ],
+     "our_target_type": "ALL",
+     "for_target_type": "ALL",
+     "slot": null,
+     "id": null,
+     "guid": "9d6d5745-d1d9-4a1d-bc62-41c0cce7a755",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "f4058ef7-5e53-4ef0-9469-9403474799a9",
+     "bounds": "597, 1290, 100, 70",
+     "duration": 0.0,
+     "wait_until_end": true,
+     "etty": "COLOR_BLEND"
+    },
+    {
+     "interval": 0.0,
+     "opacity": 0.0,
+     "color": [],
+     "our_target_type": "SELF",
+     "for_target_type": "NONE",
+     "slot": null,
+     "id": null,
+     "guid": "e22df527-59f0-41be-b849-0daafe98270e",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "0dd2dc02-9201-4d07-b963-217733f89c5b",
+     "bounds": "613, 595, 100, 70",
+     "duration": 0.0,
+     "wait_until_end": true,
+     "etty": "COLOR_BLEND"
+    },
+    {
+     "interval": 267.0,
+     "opacity": 0.0,
+     "color": [],
+     "our_target_type": "WITHOUT_SELF",
+     "for_target_type": "ALL",
+     "slot": null,
+     "id": null,
+     "guid": "92bf24b9-1ce4-41f1-9694-12d138592b68",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "cefe3424-1d44-4360-8b51-b5c903e1cb88",
+     "bounds": "594, 173, 100, 70",
+     "duration": 0.0,
+     "wait_until_end": true,
+     "etty": "COLOR_BLEND"
+    },
+    {
+     "interval": 0.0,
+     "opacity": 1.0,
+     "color": [
+      {
+       "Colors": [
+        "Transparent",
+        "Transparent"
+       ],
+       "Positions": [
+        0.0,
+        1.0
+       ]
+      }
+     ],
+     "our_target_type": "NONE",
+     "for_target_type": "TARGET",
+     "slot": null,
+     "id": null,
+     "guid": "c96a102d-b55d-4551-b5a1-c9fe0f92b3ba",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "4fc6b61e-379d-43d3-93bf-c6cae476b67b",
+     "bounds": "14, 851, 100, 70",
+     "duration": 0.0,
+     "wait_until_end": true,
+     "etty": "COLOR_BLEND"
+    },
+    {
+     "interval": 0.0,
+     "opacity": 1.0,
+     "color": [
+      {
+       "Colors": [
+        "Transparent",
+        "199, 48, 48, 48"
+       ],
+       "Positions": [
+        0.0,
+        1.0
+       ]
+      }
+     ],
+     "our_target_type": "NONE",
+     "for_target_type": "TARGET",
+     "slot": null,
+     "id": null,
+     "guid": "9c3aecfd-2dd1-4b65-9d38-a326999410eb",
+     "sequence": 0,
+     "delay": 0.0,
+     "from_guid": "c96a102d-b55d-4551-b5a1-c9fe0f92b3ba",
+     "bounds": "13, 743, 100, 70",
+     "duration": 0.0,
+     "wait_until_end": true,
+     "etty": "COLOR_BLEND"
+    },
+    {
+     "interval": 0.0,
+     "opacity": 1.0,
+     "color": [
+      {
+       "Colors": [
+        "Black",
+        "Black"
+       ],
+       "Positions": [
+        0.0,
+        1.0
+       ]
+      }
+     ],
+     "our_target_type": "NONE",
+     "for_target_type": "TARGET",
+     "slot": null,
+     "id": null,
+     "guid": "c2ec9e54-95f6-465d-b943-4f93b20e3e31",
+     "sequence": 1,
+     "delay": 1066.0,
+     "from_guid": "9c3aecfd-2dd1-4b65-9d38-a326999410eb",
+     "bounds": "9, 633, 100, 70",
+     "duration": 0.0,
+     "wait_until_end": true,
+     "etty": "COLOR_BLEND"
+    }
+   ],
+   "bg_blend": [
+    {
+     "interval": 0.0,
+     "opacity": 1.0,
+     "color": [
+      {
+       "Colors": [
+        "Black",
+        "0, 0, 0, 0"
+       ],
+       "Positions": [
+        0.0,
+        1.0
+       ]
+      }
+     ],
+     "category": "ALL",
+     "id": null,
+     "guid": "f4058ef7-5e53-4ef0-9469-9403474799a9",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "7a0ea0d5-1ee7-48ff-8cb4-f456a7f9ce16",
+     "bounds": "461, 1295, 100, 70",
+     "duration": 0.0,
+     "wait_until_end": true,
+     "etty": "BG_BLEND"
+    },
+    {
+     "interval": 267.0,
+     "opacity": 0.0,
+     "color": [
+      {
+       "Colors": [
+        "0, 0, 0, 0",
+        "Black"
+       ],
+       "Positions": [
+        0.0,
+        1.0
+       ]
+      }
+     ],
+     "category": "ALL",
+     "id": null,
+     "guid": "cefe3424-1d44-4360-8b51-b5c903e1cb88",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "5e9a2bc5-8933-4ffa-930e-14e93c3d5ffd",
+     "bounds": "601, 282, 100, 70",
+     "duration": 0.0,
+     "wait_until_end": true,
+     "etty": "BG_BLEND"
+    }
+   ],
+   "node_ani": [
+    {
+     "file_name": "heidemarie_30093_ux_attack_03_target_node",
+     "target": "TARGET",
+     "slot": null,
+     "target_bone": "",
+     "formation": false,
+     "pivot": "CENTER",
+     "pivot_slot": null,
+     "bone": "",
+     "offset_xy": "0,0",
+     "scale": 1.0,
+     "rotation": 0.0,
+     "restoration": true,
+     "formation_scale": true,
+     "id": null,
+     "guid": "4fc6b61e-379d-43d3-93bf-c6cae476b67b",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+     "bounds": "163, 852, 100, 70",
+     "duration": 0.0,
+     "wait_until_end": true,
+     "etty": "NODE_ANI"
+    }
+   ],
+   "hit": [
+    {
+     "name": "action",
+     "motion_delay": 0.0,
+     "play_action": true,
+     "effect": null,
+     "wait_until_end": false,
+     "id": null,
+     "guid": "c328dcd9-6dc4-4c00-9279-fa1c38251c63",
+     "sequence": 0,
+     "delay": 5266.0,
+     "from_guid": "8b241964-f676-41c7-8bc5-1c6fc22d6941",
+     "bounds": "468, 82, 100, 70",
+     "duration": 0.0,
+     "etty": "HIT"
+    }
+   ],
+   "effect": [
+    {
+     "id": "",
+     "file_name": "heidemarie_30093_ux_attack_03",
+     "group_name": null,
+     "duration": -1.0,
+     "type": "SCREEN",
+     "slot": "",
+     "bone_type": "POSITION",
+     "offset": [
+      0,
+      0
+     ],
+     "opacity": 255,
+     "offset_xy": "0,0",
+     "scale": 0.8,
+     "rotation": 0.0,
+     "loop": false,
+     "loop_count": 0,
+     "zorder": 0,
+     "global_z": 0,
+     "ambient_flag": false,
+     "guid": "7a0ea0d5-1ee7-48ff-8cb4-f456a7f9ce16",
+     "sequence": 0,
+     "delay": 0.0,
+     "from_guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+     "bounds": "314, 1204, 100, 70",
+     "wait_until_end": true,
+     "etty": "EFFECT"
+    },
+    {
+     "id": "",
+     "file_name": "heidemarie_30093_ux_attack_02_1",
+     "group_name": null,
+     "duration": -1.0,
+     "type": "CENTER",
+     "slot": "",
+     "bone_type": "POSITION",
+     "offset": [
+      0,
+      0
+     ],
+     "opacity": 255,
+     "offset_xy": "0,0",
+     "scale": 1.0,
+     "rotation": 0.0,
+     "loop": false,
+     "loop_count": 0,
+     "zorder": 0,
+     "global_z": 0,
+     "ambient_flag": false,
+     "guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+     "sequence": 0,
+     "delay": 0.0,
+     "from_guid": "32af4bd8-518b-4773-9027-874624eddd88",
+     "bounds": "313, 966, 100, 70",
+     "wait_until_end": true,
+     "etty": "EFFECT"
+    },
+    {
+     "id": "11",
+     "file_name": "heidemarie_30093_ux_attack_02_2",
+     "group_name": null,
+     "duration": -1.0,
+     "type": "SCREEN",
+     "slot": "",
+     "bone_type": "ATTACH",
+     "offset": [
+      0,
+      0
+     ],
+     "opacity": 255,
+     "offset_xy": "0,0",
+     "scale": 0.5,
+     "rotation": 0.0,
+     "loop": false,
+     "loop_count": 0,
+     "zorder": 1,
+     "global_z": 0,
+     "inherit_scale": true,
+     "ambient_flag": false,
+     "guid": "dc47c586-f1e2-4320-9dc1-d3fa08a1ac40",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "1fea3047-3c58-4222-a37d-ab2f4aa9c445",
+     "bounds": "165, 960, 100, 70",
+     "wait_until_end": true,
+     "etty": "EFFECT"
+    },
+    {
+     "id": "",
+     "file_name": "heidemarie_30093_ux_attack_01",
+     "group_name": null,
+     "duration": -1.0,
+     "type": "SELF",
+     "slot": "",
+     "bone_type": "POSITION",
+     "offset": [
+      0,
+      0
+     ],
+     "opacity": 255,
+     "offset_xy": "0,0",
+     "scale": 0.8,
+     "rotation": 0.0,
+     "loop": false,
+     "loop_count": 0,
+     "zorder": 0,
+     "global_z": 0,
+     "ambient_flag": false,
+     "guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+     "sequence": 1,
+     "delay": 0.0,
+     "from_guid": "83f93ea6-d1ac-4183-9ebd-4c319e8f7589",
+     "bounds": "315, 409, 100, 70",
+     "wait_until_end": true,
+     "etty": "EFFECT"
+    }
+   ],
+   "cutin": [
+    {
+     "id": null,
+     "guid": "32af4bd8-518b-4773-9027-874624eddd88",
+     "sequence": 0,
+     "delay": 0.0,
+     "from_guid": "2fcecedc-0dcf-45e4-9d08-d3202399e246",
+     "bounds": "316, 550, 100, 70",
+     "duration": 0.0,
+     "wait_until_end": true,
+     "etty": "CUTIN"
+    }
+   ]
+  }
+ }
+}

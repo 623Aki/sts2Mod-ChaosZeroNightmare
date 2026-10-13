@@ -1,0 +1,61 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Texture2D" path="res://images/character_select/heidemarie_select_bg.png" id="1_bg"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/effects/heidemarie_30093_ux_illust_1_skel_data.tres" id="2_illust_back"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/effects/heidemarie_30093_ux_illust_2_skel_data.tres" id="3_illust_front"]
+
+; 背景变体二：动态立绘（对应设置里的「动态立绘」）。
+;
+; 由「破军（ux）」全屏演出用到的两张官方插画骨架叠成：
+;   ux_illust_1 —— 后层
+;   ux_illust_2 —— 前层
+; 两张都按 intro → loop 的顺序播（见 metadata/czn_portrait_animation），
+; 入场演完接循环，做出持续动感。
+;
+; 标定（设计坐标系 1920x1080，运行时按 cover 比例整体映射）：
+;   两张骨架的包围盒分别是 934.45x622.90 与 938.57x741.68（原点在左下角）。
+;   scale = max(1920/宽, 1080/高)，让它 cover 整个画面；
+;   Y 再把多出来的高度上下均分，避免只裁到一半。
+
+[node name="HeidemarieDynamicPortraitBg" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BackgroundImage" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="IllustBack" type="SpineSprite" parent="."]
+z_index = -1
+position = Vector2(0, 1180)
+scale = Vector2(2.06, 2.06)
+skeleton_data_res = ExtResource("2_illust_back")
+preview_skin = "default"
+preview_animation = "intro"
+metadata/czn_portrait_skin = "default"
+metadata/czn_portrait_animation = "intro,loop"
+metadata/czn_asset_source = "effect/heidemarie_30093_ux_illust_1"
+
+[node name="IllustFront" type="SpineSprite" parent="."]
+z_index = 1
+position = Vector2(0, 1299)
+scale = Vector2(2.05, 2.05)
+skeleton_data_res = ExtResource("3_illust_front")
+preview_skin = "default"
+preview_animation = "intro"
+metadata/czn_portrait_skin = "default"
+metadata/czn_portrait_animation = "intro,loop"
+metadata/czn_asset_source = "effect/heidemarie_30093_ux_illust_2"

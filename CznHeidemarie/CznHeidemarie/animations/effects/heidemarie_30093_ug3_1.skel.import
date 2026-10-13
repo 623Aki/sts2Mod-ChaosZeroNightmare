@@ -1,0 +1,14 @@
+[remap]
+
+importer="spine.skel"
+type="SpineSkeletonFileResource"
+uid="uid://cnp38awsrhen"
+path="res://.godot/imported/heidemarie_30093_ug3_1.skel-9a3a7979a09332133e9d9775c74a54c9.spskel"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/effects/heidemarie_30093_ug3_1.skel"
+dest_files=["res://.godot/imported/heidemarie_30093_ug3_1.skel-9a3a7979a09332133e9d9775c74a54c9.spskel"]
+
+[params]
+

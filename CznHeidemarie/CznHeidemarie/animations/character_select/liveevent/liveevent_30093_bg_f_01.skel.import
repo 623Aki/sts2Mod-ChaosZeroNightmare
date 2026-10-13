@@ -1,0 +1,14 @@
+[remap]
+
+importer="spine.skel"
+type="SpineSkeletonFileResource"
+uid="uid://cv07eekfy1kju"
+path="res://.godot/imported/liveevent_30093_bg_f_01.skel-6d5573fcf91936d0c6ea3429ffdc6bea.spskel"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/character_select/liveevent/liveevent_30093_bg_f_01.skel"
+dest_files=["res://.godot/imported/liveevent_30093_bg_f_01.skel-6d5573fcf91936d0c6ea3429ffdc6bea.spskel"]
+
+[params]
+

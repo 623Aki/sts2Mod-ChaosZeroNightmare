@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://wt1iu78ww78m"
+path="res://.godot/imported/heidemarie_30093_eff_u4_buff_sword_b.atlas-b06f73b052d304f5d68a8a8a050c6fdc.spatlas"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/effects/heidemarie_30093_eff_u4_buff_sword_b.atlas"
+dest_files=["res://.godot/imported/heidemarie_30093_eff_u4_buff_sword_b.atlas-b06f73b052d304f5d68a8a8a050c6fdc.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"

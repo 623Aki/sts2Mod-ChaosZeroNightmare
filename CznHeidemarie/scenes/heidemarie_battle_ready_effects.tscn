@@ -1,0 +1,44 @@
+[gd_scene load_steps=4 format=3]
+
+; 左侧出牌特写的「环绕光效」层。
+;
+; 这个场景不直接被游戏加载，而是由 CznCore 的 BattleReadyOverlayRuntime 通过
+; `BattleReadyOverlayIdleEffectPlan.Scene(...)` 加载后**拆层**：
+;   Back  → 挂到特写立绘骨架下，ZIndex = -1（ShowBehindParent），画在立绘后面
+;   Front → 同样挂到立绘骨架下，ZIndex = +1，画在立绘前面
+; 拆出来的两个 Node2D 自身的位置/缩放会被运行时重置为原点，所以**层级摆放靠节点顺序与
+; z_index**；这几层骨架与 30093_battle_ready 立绘骨架同属一套坐标单位，
+; 因此一律摆在原点即可与立绘对齐（无需偏移）。
+;
+; 层内容只保留 3 组「无剑」图集 —— 原 sword_eff_b / _f 与 battle_ready_eff_b / _f
+; 及三张 _mask 的图集里都画着大剑 + 带箭头的长射线，做环绕会露出剑尖，故全部移除：
+;   ug_aura                 —— 终结技光环（Back，环绕底色）
+;   sword_eff_g             —— 剑刃辉光（Front，无实体剑刃，只有辉光）
+;   eff_casting_ready_b     —— 施法待机光效（Front）
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/effects/heidemarie_30093_ug_aura_skel_data.tres" id="1_ug_aura"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/effects/heidemarie_30093_sword_eff_g_skel_data.tres" id="2_sword_g"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/effects/heidemarie_30093_eff_casting_ready_b_skel_data.tres" id="3_casting_b"]
+
+[node name="HeidemarieBattleReadyEffects" type="Node2D"]
+
+[node name="Back" type="Node2D" parent="."]
+
+[node name="UGAura" type="SpineSprite" parent="Back"]
+z_index = 0
+skeleton_data_res = ExtResource("1_ug_aura")
+preview_skin = "default"
+preview_animation = "animation"
+
+[node name="Front" type="Node2D" parent="."]
+
+[node name="SwordGlow" type="SpineSprite" parent="Front"]
+z_index = 0
+skeleton_data_res = ExtResource("2_sword_g")
+preview_skin = "default"
+preview_animation = "animation"
+
+[node name="CastingReadyGlow" type="SpineSprite" parent="Front"]
+z_index = 1
+skeleton_data_res = ExtResource("3_casting_b")
+preview_skin = "default"
+preview_animation = "animation"

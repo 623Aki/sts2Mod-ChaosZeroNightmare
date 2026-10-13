@@ -1,0 +1,76 @@
+[gd_scene load_steps=4 format=3]
+
+; 休息点营地立绘。
+; 原实现借用 res://animations/rest_site/ironclad/rest_site_ironclad_skel_data.tres（战士骨架），
+; 现改为本 mod 自带的 30093 骨架。
+;
+; 注意：NRestSiteCharacter._Ready 按当前幕硬编码播 overgrowth_loop / hive_loop / glory_loop，
+; 30093.skel 没有这三个名字，因此由 Registration/HeidemarieSpineAnimPatch.cs
+; 在骨架就绪后改写为 camping，保证角色真的会动而不是停在 setup pose。
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/model/30093_skel_data.tres" id="1_dht52"]
+[ext_resource type="Script" path="res://src/Core/Nodes/RestSite/NRestSiteCharacter.cs" id="1_qpoiy"]
+[ext_resource type="PackedScene" path="res://scenes/ui/selection_reticle.tscn" id="3_mt86d"]
+
+; 根节点位置与缩放沿用游戏原生休息点角色的标定（-2,42）/ 0.760006。
+[node name="HeidemarieRestSite" type="Node2D"]
+position = Vector2(-2, 42)
+scale = Vector2(0.760006, 0.760006)
+script = ExtResource("1_qpoiy")
+
+; 骨骼用 camping（营地动作），并按实测尺寸放大到营地立绘应有的高度。
+[node name="SpineSprite" type="SpineSprite" parent="."]
+skeleton_data_res = ExtResource("1_dht52")
+preview_skin = "default"
+preview_animation = "camping"
+preview_frame = false
+preview_time = 0.0
+; 实测标定：camping 骨骼包围盒高 306.91，乘 2.049 得 628.9 本地像素，
+; 与参考 mod 的 628.8 一致（都对应 478px 的有效高度）。
+;
+; 站位偏移不能照抄参考 mod 的 (0,178)：30093 的骨骼原点落在骨盆，
+; camping 最低骨骼在原点下方 107.76 单位，而参考骨架的原点就在脚下。
+; 取 y=-14 后角色垂直带落在 -422..207，正好与下面 Hitbox 的边界对上（上下各留 31px 余量）。
+position = Vector2(0, -14)
+scale = Vector2(2.049, 2.049)
+metadata/heidemarie_scale_source = "camping 包围盒 306.91 x 152.3，比例 478/306.91/0.760006 = 2.049；offset (0,-14) 由 minY=-107.76 反算得到。"
+
+; ControlRoot 的节点名是硬约定：NRestSiteCharacter._Ready 用 GetNode<Control>("ControlRoot") 取它。
+[node name="ControlRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="SelectionReticle" parent="ControlRoot" instance=ExtResource("3_mt86d")]
+unique_name_in_owner = true
+offset_left = -311.0
+offset_top = -463.0
+offset_right = 207.0
+offset_bottom = 248.0
+
+; 交互热区按同一套营地立绘边界给定，比选中框内缩 10px。
+[node name="Hitbox" type="Control" parent="ControlRoot"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = -301.0
+offset_top = -453.0
+offset_right = 197.0
+offset_bottom = 238.0
+
+; 思考气泡左右锚点：节点名同样是硬约定（%ThoughtBubbleLeft / %ThoughtBubbleRight）。
+[node name="ThoughtBubbleRight" type="Control" parent="ControlRoot"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = 180.0
+offset_top = -300.0
+offset_right = 180.0
+offset_bottom = -300.0
+
+[node name="ThoughtBubbleLeft" type="Control" parent="ControlRoot"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = -100.0
+offset_top = -300.0
+offset_right = -100.0
+offset_bottom = -300.0

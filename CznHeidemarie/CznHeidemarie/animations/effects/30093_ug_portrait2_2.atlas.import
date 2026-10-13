@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://cr4ef7rnboq18"
+path="res://.godot/imported/30093_ug_portrait2_2.atlas-bc9fb9ff7a703ce7eb99b82b1f82aafd.spatlas"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/effects/30093_ug_portrait2_2.atlas"
+dest_files=["res://.godot/imported/30093_ug_portrait2_2.atlas-bc9fb9ff7a703ce7eb99b82b1f82aafd.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"

@@ -1,0 +1,21 @@
+{
+  "HEIDEMARIE.title": "海德玛丽",
+  "HEIDEMARIE.titleObject": "海德玛丽",
+  "HEIDEMARIE.description": "希安联邦乐园号的市长，大众心中的英雄。\n异能「凝铸极光」——以流光凝成剑刃，挥斩眼前的敌人。\n多年前的一场战斗让她被乐园号的市民铭记，也在她的心底留下了不为人知的隐痛。自一线退下之后，她仍一如往昔地守护着乐园号的市民，只是那明朗的笑容之下，藏着未曾愈合的旧伤。",
+  "HEIDEMARIE.pronounSubject": "她",
+  "HEIDEMARIE.pronounObject": "她",
+  "HEIDEMARIE.pronounPossessive": "她的",
+  "HEIDEMARIE.possessiveAdjective": "她的",
+  "HEIDEMARIE.cardsModifierTitle": "海德玛丽卡牌",
+  "HEIDEMARIE.cardsModifierDescription": "奖励与商店中会出现海德玛丽卡牌。",
+  "HEIDEMARIE.eventDeathPrevention": "还没结束……我还能战斗。",
+  "HEIDEMARIE.goldMonologue": "[sine]这些金币，就当作是下次出击的储备。[/sine]",
+  "HEIDEMARIE.aromaPrinciple": "[sine][blue]……冷静。先看清局势。[/blue][/sine]",
+  "HEIDEMARIE.unlockText": "海德玛丽已可供选择。",
+  "HEIDEMARIE.cut_in_on.title": "全屏演出：开启",
+  "HEIDEMARIE.cut_in_on.description": "点击关闭全屏演出，改用一般战斗动画。",
+  "HEIDEMARIE.cut_in_off.title": "全屏演出：关闭",
+  "HEIDEMARIE.cut_in_off.description": "点击开启已支持的全屏演出。",
+  "HEIDEMARIE.banter.alive.endTurnPing": "[sine][blue]准备就绪。[/blue][/sine]",
+  "HEIDEMARIE.banter.dead.endTurnPing": "……"
+}

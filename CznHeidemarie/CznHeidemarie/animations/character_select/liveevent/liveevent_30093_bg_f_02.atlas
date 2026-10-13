@@ -1,0 +1,13 @@
+
+liveevent_30093_bg_f_02.png
+size: 1328,420
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+fx_02
+  rotate: false
+  xy: 2, 3
+  size: 1321, 413
+  orig: 1486, 750
+  offset: 0, 122
+  index: -1

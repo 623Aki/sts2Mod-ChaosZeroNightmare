@@ -1,0 +1,12 @@
+{
+  "id": "CznHeidemarie",
+  "name": "CznHeidemarie",
+  "author": "Archive",
+  "description": "Adds Heidemarie from Chaos Zero Nightmare as a playable character.",
+  "version": "v0.1.0",
+  "min_game_version": "0.111.0",
+  "has_pck": true,
+  "has_dll": true,
+  "dependencies": [],
+  "affects_gameplay": true
+}

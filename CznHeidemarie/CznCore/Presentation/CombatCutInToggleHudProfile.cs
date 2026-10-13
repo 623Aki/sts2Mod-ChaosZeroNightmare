@@ -1,0 +1,3 @@
+namespace CznCore.Presentation;
+
+internal sealed record CombatCutInToggleHudProfile(string EnabledTexturePath, string DisabledTexturePath, float Size = 64f, float OffsetRight = -22f, float OffsetBottom = -116f, string ButtonNodeNameSuffix = "CombatCutInToggleHud", string IconNodeNameSuffix = "CombatCutInToggleHudIcon", string HoverTipLocTable = "static_hover_tips", string EnabledHoverTipTitleKey = "", string EnabledHoverTipDescriptionKey = "", string DisabledHoverTipTitleKey = "", string DisabledHoverTipDescriptionKey = "", bool UsePileRelativePlacement = true, bool UseDiscardPileHoverTipPlacement = true, float HoverTipDiscardPileOffsetX = -320f, float HoverTipDiscardPileOffsetY = -370f);

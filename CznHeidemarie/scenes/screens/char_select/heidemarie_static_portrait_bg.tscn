@@ -1,0 +1,48 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://images/character_select/heidemarie_select_bg.png" id="1_bg"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/portrait/30093_skel_data.tres" id="2_portrait"]
+
+; 背景变体一：立绘（对应设置里的「立绘」）。
+;
+; 与原版的差别：原来是单纯一张背景 PNG，现在改成
+; 「背景图 + 官方 face/portrait/30093 立绘骨架」。
+; 立绘播放官方自带的 idle，因此虽然是「立绘」分类，人物仍有轻微呼吸感。
+;
+; 标定（设计坐标系 1920x1080，运行时按 cover 比例整体映射，见
+; Integration/HeidemarieCharSelectBackgroundRuntime.cs）：
+;   骨架自带包围盒 561.22 x 1017.93（原点在包围盒左下角，Spine 为 y 向上）。
+;   缩放 1.06 = 1080 / 1017.93，让人物高度基本撑满画面；
+;   X 883 = 人物的水平中心落在设计坐标 x≈1180（偏右，给左侧 UI 留位置）；
+;   Y 1090 = 骨架原点压在画面底边略下方，避免脚下留白。
+
+[node name="HeidemarieStaticPortraitBg" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BackgroundImage" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Portrait" type="SpineSprite" parent="."]
+position = Vector2(883, 1090)
+scale = Vector2(1.06, 1.06)
+skeleton_data_res = ExtResource("2_portrait")
+preview_skin = "normal"
+preview_animation = "idle"
+metadata/czn_portrait_skin = "normal"
+metadata/czn_portrait_animation = "idle"
+metadata/czn_design_layout = "1920x1080 设计坐标；position/scale 为待实机微调的标定值"

@@ -1,0 +1,14 @@
+[remap]
+
+importer="spine.skel"
+type="SpineSkeletonFileResource"
+uid="uid://drk87i2uhn10t"
+path="res://.godot/imported/heidemarie_30093_eff_u4_buff_self_b.skel-6fc8708ff3bbf438976940ca05c6010b.spskel"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/effects/heidemarie_30093_eff_u4_buff_self_b.skel"
+dest_files=["res://.godot/imported/heidemarie_30093_eff_u4_buff_self_b.skel-6fc8708ff3bbf438976940ca05c6010b.spskel"]
+
+[params]
+

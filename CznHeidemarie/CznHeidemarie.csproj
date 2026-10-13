@@ -1,0 +1,52 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <ImplicitUsings>true</ImplicitUsings>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <DefaultItemExcludes>$(DefaultItemExcludes);.godot\**;bin\**;obj\**</DefaultItemExcludes>
+    <Sts2Dir Condition="'$(Sts2Dir)' == ''">G:\SteamLibrary\steamapps\common\Slay the Spire 2</Sts2Dir>
+    <Sts2DataDir>$(Sts2Dir)\data_sts2_windows_x86_64</Sts2DataDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Optimize>false</Optimize>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
+    <PathMap>$(AppOutputBase)=.\</PathMap>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Alchyr.Sts2.ModAnalyzers" Version="0.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>$(Sts2DataDir)\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(Sts2DataDir)\GodotSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="sts2">
+      <HintPath>$(Sts2DataDir)\sts2.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- 构建完成后把 DLL 与清单复制到游戏的 mods 目录 -->
+  <Target Name="Copy Mod" AfterTargets="PostBuildEvent">
+    <Message Text="Copying mod to Slay the Spire 2 mods folder..." Importance="high" />
+    <MakeDir Directories="$(Sts2Dir)\mods\$(MSBuildProjectName)\" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(Sts2Dir)\mods\$(MSBuildProjectName)\" />
+    <Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(Sts2Dir)/mods/$(MSBuildProjectName)/" Condition="Exists('$(TargetDir)$(TargetName).pdb')" />
+    <Copy SourceFiles="$(MSBuildProjectName).json" DestinationFolder="$(Sts2Dir)/mods/$(MSBuildProjectName)/" />
+  </Target>
+</Project>

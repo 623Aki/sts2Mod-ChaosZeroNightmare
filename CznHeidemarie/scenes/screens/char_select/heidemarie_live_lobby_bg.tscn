@@ -1,0 +1,71 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/character_select/liveevent/liveevent_30093_bg_b_03_skel_data.tres" id="1_back_03"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/character_select/liveevent/liveevent_30093_bg_b_02_skel_data.tres" id="2_back_02"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/character_select/liveevent/liveevent_30093_bg_b_01_skel_data.tres" id="3_back_01"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/character_select/liveevent/liveevent_30093_skel_data.tres" id="4_live"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/character_select/liveevent/liveevent_30093_bg_f_02_skel_data.tres" id="5_front_02"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/character_select/liveevent/liveevent_30093_bg_f_01_skel_data.tres" id="6_front_01"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/character_select/liveevent/liveevent_30093_fade_skel_data.tres" id="7_fade"]
+
+; 背景变体三：角色大厅（对应设置里的「角色大厅」）。
+; 由 CNZ 官方 30093.le 的 depth_infos 反转为 Godot 树的 back-to-front 顺序：
+;   bg_b_03 → bg_b_02 → bg_b_01 → 主角 → bg_f_02 → bg_f_01 → fade
+; 可见层统一播 lobby 循环动画；fade 层只有 1_intro_play，保持隐藏。
+; 位置与缩放由 HeidemarieCharSelectBackgroundRuntime 按视口实时计算，
+; 下面写的 (960,540)/1.5 只是 1920x1080 下的编辑器预览值。
+[node name="HeidemarieLiveLobbyBg" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+metadata/heidemarie_layer_source = "direct official 30093.le depth_infos; Godot tree is back-to-front"
+
+[node name="HeidemarieBgBack03" type="SpineSprite" parent="."]
+position = Vector2(960, 540)
+scale = Vector2(1.5, 1.5)
+skeleton_data_res = ExtResource("1_back_03")
+preview_animation = "lobby"
+
+[node name="HeidemarieBgBack02" type="SpineSprite" parent="."]
+position = Vector2(960, 540)
+scale = Vector2(1.5, 1.5)
+skeleton_data_res = ExtResource("2_back_02")
+preview_animation = "lobby"
+
+[node name="HeidemarieBgBack01" type="SpineSprite" parent="."]
+position = Vector2(960, 540)
+scale = Vector2(1.5, 1.5)
+skeleton_data_res = ExtResource("3_back_01")
+preview_animation = "lobby"
+
+[node name="HeidemarieLive" type="SpineSprite" parent="."]
+position = Vector2(960, 540)
+scale = Vector2(1.5, 1.5)
+skeleton_data_res = ExtResource("4_live")
+preview_animation = "lobby"
+
+[node name="HeidemarieBgFront02" type="SpineSprite" parent="."]
+position = Vector2(960, 540)
+scale = Vector2(1.5, 1.5)
+skeleton_data_res = ExtResource("5_front_02")
+preview_animation = "lobby"
+
+[node name="HeidemarieBgFront01" type="SpineSprite" parent="."]
+visible = false
+position = Vector2(960, 540)
+scale = Vector2(1.5, 1.5)
+skeleton_data_res = ExtResource("6_front_01")
+preview_animation = "lobby"
+metadata/heidemarie_visibility_source = "official bg_f_01 only ships 12_step11_play, no lobby animation; kept hidden so it cannot sit in setup pose"
+
+[node name="HeidemarieFade" type="SpineSprite" parent="."]
+visible = false
+position = Vector2(960, 540)
+scale = Vector2(1.5, 1.5)
+skeleton_data_res = ExtResource("7_fade")
+preview_animation = "1_intro_play"
+metadata/heidemarie_visibility_source = "official fade has no lobby animation; kept hidden"

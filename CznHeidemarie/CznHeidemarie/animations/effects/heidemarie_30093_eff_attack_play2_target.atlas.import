@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://c4uxqfpcwr6fl"
+path="res://.godot/imported/heidemarie_30093_eff_attack_play2_target.atlas-8ad2c5da3481dbe80d865bdc488a9793.spatlas"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/effects/heidemarie_30093_eff_attack_play2_target.atlas"
+dest_files=["res://.godot/imported/heidemarie_30093_eff_attack_play2_target.atlas-8ad2c5da3481dbe80d865bdc488a9793.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"

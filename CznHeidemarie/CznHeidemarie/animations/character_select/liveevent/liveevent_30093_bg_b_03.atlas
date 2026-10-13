@@ -1,0 +1,13 @@
+
+liveevent_30093_bg_b_03.png
+size: 968,624
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+water
+  rotate: false
+  xy: 2, 2
+  size: 961, 619
+  orig: 961, 619
+  offset: 0, 0
+  index: -1

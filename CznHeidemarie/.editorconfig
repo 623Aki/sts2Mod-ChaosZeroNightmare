@@ -1,0 +1,22 @@
+root = true
+
+[*]
+charset = utf-8
+
+# CznCore/ 是自参考 mod 搬入的 GBRE 反编译产物（非本工程手写）。
+# 其大量可空性(CS86xx)与过时 API(CS0618)警告无法逐个安全修正：
+# 反编译代码的可空标注本就缺失，改动源码有改变运行时行为的风险。
+# 因此仅对 CznCore/ 目录关闭这类警告；本工程自研代码(Characters/Registration/Integration)
+# 仍保持 Nullable enable，新警告照常提示。
+[CznCore/**.cs]
+dotnet_diagnostic.CS8600.severity = none
+dotnet_diagnostic.CS8601.severity = none
+dotnet_diagnostic.CS8602.severity = none
+dotnet_diagnostic.CS8603.severity = none
+dotnet_diagnostic.CS8604.severity = none
+dotnet_diagnostic.CS8618.severity = none
+dotnet_diagnostic.CS8619.severity = none
+dotnet_diagnostic.CS8621.severity = none
+dotnet_diagnostic.CS8622.severity = none
+dotnet_diagnostic.CS8625.severity = none
+dotnet_diagnostic.CS0618.severity = none

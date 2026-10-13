@@ -1,0 +1,33 @@
+{
+  "HEIDEMARIE_STRIKE.title": "打击",
+  "HEIDEMARIE_STRIKE.description": "造成{Damage:diff()}点伤害。",
+  "HEIDEMARIE_DEFEND.title": "防御",
+  "HEIDEMARIE_DEFEND.description": "获得{Block:diff()}点[gold]格挡[/gold]。",
+
+  "HEIDEMARIE_SWORDLIGHT.title": "剑光",
+  "HEIDEMARIE_SWORDLIGHT.description": "造成{Damage:diff()}点伤害。\n{SenseName}：下一张攻击牌伤害+50%。",
+
+  "HEIDEMARIE_SWORDRAIN.title": "剑雨",
+  "HEIDEMARIE_SWORDRAIN.description": "{Link}\n造成{Damage:diff()}点伤害2次。\n{SenseName}：生成{Cards:diff()}张极光剑到抽牌堆。",
+
+  "HEIDEMARIE_AURORA_SWORD.title": "极光剑",
+  "HEIDEMARIE_AURORA_SWORD.description": "{Link}\n对随机敌人造成{Damage:diff()}点伤害。\n{GraveKeep}{RecycleLine}",
+
+  "HEIDEMARIE_SWORD_TOMB.title": "剑冢",
+  "HEIDEMARIE_SWORD_TOMB.description": "打出墓地中最多{Swords:diff()}张极光剑。",
+
+  "HEIDEMARIE_CONDENSE_EDGE.title": "凝锋",
+  "HEIDEMARIE_CONDENSE_EDGE.description": "在手牌生成{Cards:diff()}张极光剑，赋予其[gold]回收[/gold]。",
+
+  "HEIDEMARIE_REQUIEM_BLADE.title": "安魂剑",
+  "HEIDEMARIE_REQUIEM_BLADE.description": "{Link}{Rest}\n造成{Damage:diff()}点伤害2次。\n{SenseName}：在手牌生成{Cards:diff()}张极光剑。",
+
+  "HEIDEMARIE_FINAL_ECHO.title": "绝响",
+  "HEIDEMARIE_FINAL_ECHO.description": "{Terminate}{Unique}\n对全体敌人造成{Damage:diff()}点伤害。若手牌中存在解放极光，则将其消耗，此时墓地中每有1张极光剑，即可使伤害量+100%。",
+
+  "HEIDEMARIE_CONDENSED_AURORA.title": "凝聚极光",
+  "HEIDEMARIE_CONDENSED_AURORA.description": "{Unique}{Link}{Recycle}\n移动至墓地时，极光之光1。",
+
+  "HEIDEMARIE_LIBERATED_AURORA.title": "解放极光",
+  "HEIDEMARIE_LIBERATED_AURORA.description": "{Unique}\n造成{Damage:diff()}点伤害。消耗墓地中的所有极光剑，每消耗1张，即可使基础伤害量+100%。\n{BurnName}：手牌中加入一张凝聚极光。"
+}

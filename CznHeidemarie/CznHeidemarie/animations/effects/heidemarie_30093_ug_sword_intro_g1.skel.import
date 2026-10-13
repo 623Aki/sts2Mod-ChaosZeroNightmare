@@ -1,0 +1,14 @@
+[remap]
+
+importer="spine.skel"
+type="SpineSkeletonFileResource"
+uid="uid://bxjl1e2h5l1j1"
+path="res://.godot/imported/heidemarie_30093_ug_sword_intro_g1.skel-ecfc396331d840801d660268afba4040.spskel"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/effects/heidemarie_30093_ug_sword_intro_g1.skel"
+dest_files=["res://.godot/imported/heidemarie_30093_ug_sword_intro_g1.skel-ecfc396331d840801d660268afba4040.spskel"]
+
+[params]
+

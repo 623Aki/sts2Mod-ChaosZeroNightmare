@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://images/character_select/heidemarie_select_bg.png" id="1_bg"]
+
+; 选人界面背景宿主场景。游戏把本场景实例化后挂到 NCharacterSelectScreen 的
+; AnimatedBg 容器下，节点名固定为 <slug>_bg（即 heidemarie_bg）。
+;
+; VariantHost 是「背景变体」的挂载点：
+;   - 默认内容是宿主自带的静态立绘（保证任何情况下都有背景）；
+;   - 运行时由 HeidemarieCharSelectBackgroundRuntime 依据设置里的
+;     「角色背景」选项，替换为 立绘 / 动态立绘 / 角色大厅 三种变体场景之一。
+[node name="HeidemarieBg" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VariantHost" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Portrait" type="TextureRect" parent="VariantHost"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_bg")
+expand_mode = 1
+stretch_mode = 5

@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://cbn7aheypmeis"
+path="res://.godot/imported/heidemarie_30093_ug1_6.atlas-9403061942bea7b4d9463012066d9a3b.spatlas"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/effects/heidemarie_30093_ug1_6.atlas"
+dest_files=["res://.godot/imported/heidemarie_30093_ug1_6.atlas-9403061942bea7b4d9463012066d9a3b.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"

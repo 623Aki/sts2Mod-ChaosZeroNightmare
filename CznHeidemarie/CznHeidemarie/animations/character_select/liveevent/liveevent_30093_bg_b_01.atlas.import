@@ -1,0 +1,16 @@
+[remap]
+
+importer="spine.atlas"
+type="SpineAtlasResource"
+uid="uid://dwnc6ttggsrlc"
+path="res://.godot/imported/liveevent_30093_bg_b_01.atlas-4e296ad68ca5add0549e3cd72203c8c1.spatlas"
+
+[deps]
+
+source_file="res://CznHeidemarie/animations/character_select/liveevent/liveevent_30093_bg_b_01.atlas"
+dest_files=["res://.godot/imported/liveevent_30093_bg_b_01.atlas-4e296ad68ca5add0549e3cd72203c8c1.spatlas"]
+
+[params]
+
+normal_map_prefix="n"
+specular_map_prefix="s"

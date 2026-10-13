@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3]
+
+; 出牌特写立绘（打牌时在屏幕左侧弹出的角色 cut-in）。
+;
+; 结构参照参考 mod 的 nine_battle_ready.tscn：根节点本身就是 SpineSprite，
+; 不再套一层 Node2D。节点位置用的是 1920x1080 设计坐标，
+; 运行时由 HeidemarieBattleReadyOverlay 按实际分辨率做等比映射。
+;
+; 标定：
+;   位置沿用参考 mod 的左下角锚点 (165, 727)。
+;   缩放 0.973 = 参考值 0.75 × (nine_battle_ready 头高 995.81 / 30093_battle_ready 头高 767.35)，
+;   即按骨架尺寸比例补偿，使立绘在屏幕上占的高度与参考 mod 一致。
+;   骨架原点在脚下，所以位置不随缩放变化；实测若偏高偏低，只调 position 即可。
+[ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/battle_ready/30093_battle_ready_skel_data.tres" id="1"]
+
+[node name="HeidemarieBattleReady" type="SpineSprite"]
+position = Vector2(165, 727)
+scale = Vector2(0.973, 0.973)
+skeleton_data_res = ExtResource("1")
+preview_skin = "default"
+preview_animation = "b_idle"
+preview_frame = 0.0

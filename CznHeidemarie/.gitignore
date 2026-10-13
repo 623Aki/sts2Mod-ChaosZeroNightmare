@@ -1,0 +1,18 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+.mono/
+
+# 本地 IDE 目录
+.vs/
+
+# 本地 NuGet 离线源与缓存
+.nuget-feed/
+.nuget-packages/
+
+# 构建产物
+# 注意：bin/ 不能被忽略！Godot 导出时会采用 .gitignore 作为排除依据，
+# 忽略 bin/ 会导致 spine 导入器不参与导出，.skel/.atlas 连同
+# .spskel/.spatlas 产物一起从 pck 中丢失（骨架动画彻底失效）。
+# bin/ 是 spine-godot 扩展本体，属于必需资源，勿添加。
+obj/
