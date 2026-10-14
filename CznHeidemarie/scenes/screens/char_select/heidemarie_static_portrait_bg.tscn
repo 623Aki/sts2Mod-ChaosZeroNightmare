@@ -1,28 +1,29 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="Texture2D" path="res://images/character_select/heidemarie_select_bg_30093_1.png" id="1_bg"]
 [ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/effects/heidemarie_30093_ux_illust_3_skel_data.tres" id="2_illust_back"]
 [ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/effects/heidemarie_30093_ux_illust_2_skel_data.tres" id="3_illust_mid"]
 [ext_resource type="SpineSkeletonDataResource" path="res://CznHeidemarie/animations/effects/heidemarie_30093_ux_illust_1_skel_data.tres" id="4_illust_front"]
 
 ; 背景变体一：立绘（对应设置里的「立绘」）。
 ;
-; 组装 = 官方 event 场景图 bg_event_nodelist_30093_1（白天·蓝天白云·柳树圆台）
-;        + 官方「破军(ux)全屏演出」的 ux_illust effect 组三张插画骨架。
+; 组装 = 官方「破军(ux)全屏演出」的 ux_illust effect 组三张插画骨架。
+;
+; ⚠️ 2026-10-14：**背景图已移除**（原来铺的是官方 event 场景图
+;   bg_event_nodelist_30093_1「白天·柳树圆台」）。本档现在只显示角色插画本身，
+;   底图交回游戏选人界面自己的背景。要恢复只需把 BackgroundImage 节点加回来
+;   （texture = res://images/character_select/heidemarie_select_bg_30093_1.png，
+;   铺满 + expand_mode=1 + stretch_mode=6）。
 ;
 ; ⚠️ 档位归属在 2026-10-14 做过一次整体对调：
 ;   此前「立绘」放的是 face/portrait/30093、「动态立绘」放的是 ux_illust；
-;   现在按设计意图改成「立绘 = ux_illust 插画」「动态立绘 = face/portrait 立绘骨架」，
-;   背景图归属也跟着对调（bg_1 随插画、bg_2 随立绘骨架）。
+;   现在按设计意图改成「立绘 = ux_illust 插画」「动态立绘 = face/portrait 立绘骨架」。
 ;
 ; 层序严格按 CNZ_Source/czn30093/effect/heidemarie_30093_ux_illust.cfx 的 z 真值
 ; （z 越大越靠前；tools/extract_cinematic_plan.py 的 expand_cfx 按 z 升序排 = 后→前）。
-; 节点按「后 → 前」的树序排列，并显式给 z_index —— 因为背景是不透明场景图，
-; 必须确保三层一定压它之上（同一父节点下 Control 与 Node2D 混排时不要赌默认顺序）：
-;   1. BackgroundImage  bg_event_nodelist_30093_1                       场景底
-;   2. IllustBack       heidemarie_30093_ux_illust_3  cfx z=1  花2 + mid + 石柱1~4   z_index=1
-;   3. IllustMid        heidemarie_30093_ux_illust_2  cfx z=3  人物                  z_index=2
-;   4. IllustFront      heidemarie_30093_ux_illust_1  cfx z=4  花1 + 光晕            z_index=3
+; 节点仍显式给 z_index（1/2/3），保证三层之间的前后关系不依赖树序：
+;   1. IllustBack       heidemarie_30093_ux_illust_3  cfx z=1  花2 + mid + 石柱1~4   z_index=1
+;   2. IllustMid        heidemarie_30093_ux_illust_2  cfx z=3  人物                  z_index=2
+;   3. IllustFront      heidemarie_30093_ux_illust_1  cfx z=4  花1 + 光晕            z_index=3
 ;
 ; 三张插画都按 intro → loop 播放（见 metadata/czn_portrait_animation）。
 ;
@@ -31,18 +32,27 @@
 ;   实测三张骨架的骨骼树完全相同（root → pivot(y=6.95, scale=0.5154) → char/bg/mid/pillar1~4），
 ;   它们是**同一张 cut-in 的三层切片**，.cfx 里三层的 x/y/scale 全为空（= 默认 0/1）。
 ;   因此三层必须共用**同一套** position/scale，否则彼此错位。
-;   合成包围盒取三者并集 ≈ 956.61 x 872.17（原点在包围盒左下角，Spine 为 y 向上）；
-;   目标：高度撑满画面（1080）、水平中心落到设计坐标 x≈1180（与「动态立绘」的人物同一列，
-;   都靠右，给左侧 UI 留位置）：
-;     scale 1.24 = 1080 / 872.17
-;     X 587 = 1180 - 956.61 * 1.24 / 2
-;     Y 1080 = 画面底边（内容自原点向上展开）
-;   ⚠️ 背景图是 1604x804（≈2:1），cover 到 1920x1080 时左右各裁约 117px；
-;      X/Y/scale 均为待实机微调的标定值。
 ;
-; 注：IllustBack（ux_illust_3）与 bg_1 自带的柳树/圆台会形成"两层景"。
-;     若实机看下来画面太满，把该节点的 visible 改成 false 即可（变换不用动，
-;     三层共用同一套 position/scale）。
+;   ⚠️ 边界数值来自 CZN_Viewer 的 headless 采样（Skeleton.get_bounds()），
+;      但采样只覆盖了动画的一部分，**比实机实际绘制范围偏小约 1.3 倍**，
+;      因此下面所有 scale 都改用「以实机截图实测的相对倍数」推算，不直接依赖该边界：
+;        并集 x ∈ [-535.09, 516.06]、y ∈ [-481.40, 487.15]（仅作参考）
+;        人物层（illust_2）x ∈ [-455.43, 483.11]、y ∈ [-279.35, 462.31]
+;
+;   2026-10-14 第三次调整（已废弃）：整幅插画在屏幕正中居中、`scale 0.36`、`X/Y (963,541)`。
+;   ⚠️ 实机验证失败：角色只有屏幕高的 1/3（太小），且插画左缘 x≈395px 仍压在
+;      「角色描述」文本上（文本右端 x≈430px）—— 居中与放大互相矛盾。
+;
+;   2026-10-14 第四次调整（当前）：**放弃居中，改为放大 + 右移让开文本**。
+;   实机实测（1080 视口、scale 0.36）：插画占 x ∈ [395, 680]、y ∈ [130, 430] px，
+;   描述文本右端 x≈430px、顶部标题区右缘 ≈435px。
+;   目标：放大到 1.5 倍、左缘让到 x≈450px（留 15px 间隙）：
+;     scale 0.54 = 0.36 × 1.5
+;     X 1186 = 963 + [126.25(px 位移) / 0.5713(视口比) + 1.71(中心随 scale 的偏移)]
+;     Y  542 = 541 + 0.52      （保持插画垂直中心不动，抵消放大带来的中心漂移）
+;   预期占位：插画 x ∈ [450, 877]、y ∈ [55, 505] px —— 左缘让开文本，
+;   右缘 877 < 1080 不裁切，高度 450px ≈ 屏幕高的 73%（与参考效果一致）。
+;   X/Y/scale 均为待实机微调值；要更大就继续等比调大 scale，X 按 +85/每 0.1 scale 跟进。
 
 [node name="HeidemarieStaticPortraitBg" type="Control"]
 layout_mode = 3
@@ -53,23 +63,10 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="BackgroundImage" type="TextureRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("1_bg")
-expand_mode = 1
-stretch_mode = 6
-metadata/czn_asset_source = "event/bg_event_nodelist_30093_1"
-
 [node name="IllustBack" type="SpineSprite" parent="."]
 z_index = 1
-position = Vector2(587, 1080)
-scale = Vector2(1.24, 1.24)
+position = Vector2(1186, 542)
+scale = Vector2(0.54, 0.54)
 skeleton_data_res = ExtResource("2_illust_back")
 preview_skin = "default"
 preview_animation = "intro"
@@ -80,8 +77,8 @@ metadata/czn_portrait_animation = "intro,loop"
 
 [node name="IllustMid" type="SpineSprite" parent="."]
 z_index = 2
-position = Vector2(587, 1080)
-scale = Vector2(1.24, 1.24)
+position = Vector2(1186, 542)
+scale = Vector2(0.54, 0.54)
 skeleton_data_res = ExtResource("3_illust_mid")
 preview_skin = "default"
 preview_animation = "intro"
@@ -92,8 +89,8 @@ metadata/czn_portrait_animation = "intro,loop"
 
 [node name="IllustFront" type="SpineSprite" parent="."]
 z_index = 3
-position = Vector2(587, 1080)
-scale = Vector2(1.24, 1.24)
+position = Vector2(1186, 542)
+scale = Vector2(0.54, 0.54)
 skeleton_data_res = ExtResource("4_illust_front")
 preview_skin = "default"
 preview_animation = "intro"

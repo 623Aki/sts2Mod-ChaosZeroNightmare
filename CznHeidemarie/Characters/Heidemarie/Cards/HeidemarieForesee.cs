@@ -18,16 +18,14 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// </summary>
 public sealed class HeidemarieForesee : HeidemarieCard
 {
-	/// <summary>查看的张数（升级 +1）。</summary>
-	private readonly DynamicVar _view = new("View", 3m);
-
 	/// <inheritdoc/>
 	protected override string FallbackPortraitPath => "res://images/atlases/card_atlas.sprites/ironclad/defend_ironclad.tres";
 
 	/// <inheritdoc/>
 	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(1)
 	{
-		_view,
+		// 查看的张数（升级 +1）
+		new DynamicVar("View", 3m),
 	};
 
 	/// <summary>1 费、技能、公共牌、目标为自身。</summary>
@@ -40,7 +38,7 @@ public sealed class HeidemarieForesee : HeidemarieCard
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		List<CardModel> top = PileType.Draw.GetPile(Owner).Cards
-			.Take(_view.IntValue)
+			.Take(DynamicVars["View"].IntValue)
 			.ToList();
 
 		if (top.Count == 0)
@@ -70,5 +68,9 @@ public sealed class HeidemarieForesee : HeidemarieCard
 	}
 
 	/// <inheritdoc/>
-	protected override void OnUpgrade() => _view.UpgradeValueBy(1m);
+	/// <remarks>
+	/// 经 <c>DynamicVars</c> 索引器访问，避免升级预览克隆时改到与母本共享的变量对象
+	/// （同 <see cref="HeidemarieRayOfLight.OnUpgrade"/>）。
+	/// </remarks>
+	protected override void OnUpgrade() => DynamicVars["View"].UpgradeValueBy(1m);
 }

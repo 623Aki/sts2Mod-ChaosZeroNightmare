@@ -25,9 +25,6 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// </summary>
 public sealed class HeidemarieSkyfall : HeidemarieCard, ILinkCard
 {
-	/// <summary>被丢弃时的对群伤害。</summary>
-	private readonly DamageVar _discardDamage = new("DiscardDamage", 20m, ValueProp.Move);
-
 	/// <inheritdoc/>
 	protected override string FallbackPortraitPath => "res://images/atlases/card_atlas.sprites/ironclad/strike_ironclad.tres";
 
@@ -35,7 +32,8 @@ public sealed class HeidemarieSkyfall : HeidemarieCard, ILinkCard
 	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(2)
 	{
 		new DamageVar(15m, ValueProp.Move),
-		_discardDamage,
+		// 被丢弃时的对群伤害
+		new DamageVar("DiscardDamage", 20m, ValueProp.Move),
 	};
 
 	/// <summary>2 费、攻击、稀有牌、目标为任意敌人。</summary>
@@ -55,7 +53,7 @@ public sealed class HeidemarieSkyfall : HeidemarieCard, ILinkCard
 	{
 		if (card == this && Owner.Creature.CombatState is { } combatState)
 		{
-			await CreatureCmd.Damage(choiceContext, combatState.HittableEnemies, _discardDamage, Owner.Creature, this, null);
+			await CreatureCmd.Damage(choiceContext, combatState.HittableEnemies, (DamageVar)DynamicVars["DiscardDamage"], Owner.Creature, this, null);
 		}
 
 		await base.AfterCardDiscarded(choiceContext, card);
@@ -79,9 +77,13 @@ public sealed class HeidemarieSkyfall : HeidemarieCard, ILinkCard
 	}
 
 	/// <inheritdoc/>
+	/// <remarks>
+	/// 两个伤害变量都经 <c>DynamicVars</c> 索引器升级，避免升级预览克隆时改到与母本共享的变量对象
+	/// （同 <see cref="HeidemarieRayOfLight.OnUpgrade"/>）。
+	/// </remarks>
 	protected override void OnUpgrade()
 	{
 		DynamicVars.Damage.UpgradeValueBy(8m);
-		_discardDamage.UpgradeValueBy(10m);
+		DynamicVars["DiscardDamage"].UpgradeValueBy(10m);
 	}
 }

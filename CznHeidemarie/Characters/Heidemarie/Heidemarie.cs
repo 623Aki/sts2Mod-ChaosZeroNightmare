@@ -229,21 +229,22 @@ public sealed class Heidemarie : CharacterModel
 	public override PotionPoolModel PotionPool => ModelDb.PotionPool<HeidemariePotionPool>();
 
 	/// <summary>
-	/// 初始卡组：4 张打击 + 4 张防御（共 8 张）。
+	/// 初始卡组：3 张打击 + 3 张防御 + 1 张凝聚极光 + 1 张剑雨 + 1 张剑光（共 9 张）。
 	///
 	/// <para>测试期曾临时塞入 8 张「专属牌」用于点亮骨架动画，现已移除。
 	/// 角色卡（剑光 / 剑雨 / 剑冢 / 凝锋 / 安魂剑 / 绝响）通过奖励与商店获取；
 	/// 「剑光」后续会加入初始卡组（当前阶段先保持纯基础攻防）。</para>
 	/// </summary>
-	public override IEnumerable<CardModel> StartingDeck => new CardModel[8]
+	public override IEnumerable<CardModel> StartingDeck => new CardModel[9]
 	{
-		// 基础攻防：4 打击 + 4 防御
+		// 基础攻防 3 打击 + 3 防御 + 凝聚极光 + 剑光 + 剑雨
 		ModelDb.Card<HeidemarieStrike>(),
 		ModelDb.Card<HeidemarieStrike>(),
 		ModelDb.Card<HeidemarieStrike>(),
 		ModelDb.Card<HeidemarieDefend>(),
 		ModelDb.Card<HeidemarieDefend>(),
 		ModelDb.Card<HeidemarieDefend>(),
+		ModelDb.Card<HeidemarieCondensedAurora>(),
 		ModelDb.Card<HeidemarieSwordrain>(),
 		ModelDb.Card<HeidemarieSwordlight>(),
 	};
@@ -262,11 +263,17 @@ public sealed class Heidemarie : CharacterModel
 	public override string CharacterTransitionSfx => "event:/sfx/ui/wipe_ironclad";
 
 	/// <summary>
-	/// 专属选角语音就位前，临时复用战士的选角语音。
-	/// 否则游戏会去播 <c>event:/sfx/characters/heidemarie/heidemarie_select</c>，
-	/// FMOD 找不到该事件而输出 "cannot find sfx path" 警告。
+	/// 选角语音（在选人界面点选本角色时由 <c>NCharacterSelectScreen</c> 播放）。
+	///
+	/// <para>这里返回的是<b>占位 FMOD 事件路径</b>，不是真事件 —— 本角色真正的语音
+	/// 是素材区导出的 ogg（<c>se_*</c> / <c>vo_30093_*.ogg</c>），由
+	/// <see cref="Integration.HeidemarieCombatAudio"/> 用 Godot 音频播放器播放。
+	/// 占位路径由 <c>Registration/HeidemarieCombatPresentationPatch.cs</c> 里的
+	/// <c>SfxCmd.Play</c> 补丁按前缀拦下，改播我们自己的
+	/// <c>vo_30093_team_join_01.ogg</c>：既不会去 FMOD 解析一个不存在的事件，
+	/// 也顺带避免「借用战士选角语音」那种串味。</para>
 	/// </summary>
-	public override string CharacterSelectSfx => "event:/sfx/characters/ironclad/ironclad_select";
+	public override string CharacterSelectSfx => Registration.HeidemarieSfxRedirect.PlaceholderSfxPrefix + "select";
 
 	public override List<string> GetArchitectAttackVfx() => new List<string>
 	{

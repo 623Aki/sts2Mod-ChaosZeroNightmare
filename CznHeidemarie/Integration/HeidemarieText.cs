@@ -6,8 +6,8 @@ namespace CznHeidemarie.Integration;
 /// 选人界面设置面板用到的全部文案。
 ///
 /// <para>对应参考 mod 的 <c>CznNineCharacter.UiText</c>。
-/// 这里只声明本项目真正提供的设置项 —— 角色语音与多套角色背景没有对应素材，
-/// 就不放对应文案，避免面板上出现按了没反应的开关。</para>
+/// 这里只声明本项目真正提供的设置项；没有对应实现的分支不写文案，
+/// 避免面板上出现按了没反应的开关。</para>
 /// </summary>
 internal static class HeidemarieText
 {

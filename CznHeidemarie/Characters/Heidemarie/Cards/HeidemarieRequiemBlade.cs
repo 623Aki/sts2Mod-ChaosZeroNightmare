@@ -34,7 +34,7 @@ public sealed class HeidemarieRequiemBlade : HeidemarieCard, ILinkCard, IRestCar
 
 	/// <summary>2 费、攻击、公共牌、随机目标（触发安息时无目标可选，故主伤害也改为随机）。</summary>
 	public HeidemarieRequiemBlade()
-		: base(2, CardType.Attack, CardRarity.Common, TargetType.RandomEnemy)
+		: base(2, CardType.Attack, CardRarity.Uncommon, TargetType.RandomEnemy)
 	{
 	}
 

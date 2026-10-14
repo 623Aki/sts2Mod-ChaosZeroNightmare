@@ -34,7 +34,7 @@ public sealed class HeidemarieSwordTomb : HeidemarieCard
 
 	/// <summary>2 费、技能、公共牌、非指向。</summary>
 	public HeidemarieSwordTomb()
-		: base(2, CardType.Skill, CardRarity.Common, TargetType.None)
+		: base(2, CardType.Skill, CardRarity.Uncommon, TargetType.None)
 	{
 	}
 

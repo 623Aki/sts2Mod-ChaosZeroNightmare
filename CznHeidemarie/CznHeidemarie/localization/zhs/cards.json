@@ -1,87 +1,87 @@
 {
   "HEIDEMARIE_STRIKE.title": "打击",
-  "HEIDEMARIE_STRIKE.description": "造成{Damage:diff()}点伤害。",
+  "HEIDEMARIE_STRIKE.description": "{KwBlock}造成{Damage:diff()}点伤害。",
   "HEIDEMARIE_DEFEND.title": "防御",
-  "HEIDEMARIE_DEFEND.description": "获得{Block:diff()}点[gold]格挡[/gold]。",
+  "HEIDEMARIE_DEFEND.description": "{KwBlock}获得{Block:diff()}点[gold]格挡[/gold]。",
 
   "HEIDEMARIE_SWORDLIGHT.title": "剑光",
-  "HEIDEMARIE_SWORDLIGHT.description": "造成{Damage:diff()}点伤害。\n{SenseName}：下一张极光剑伤害+50%。",
+  "HEIDEMARIE_SWORDLIGHT.description": "{KwBlock}造成{Damage:diff()}点伤害。\n{SenseName}：下一张极光剑伤害+50%。",
 
   "HEIDEMARIE_SWORDRAIN.title": "剑雨",
-  "HEIDEMARIE_SWORDRAIN.description": "{Link}\n造成{Damage:diff()}点伤害2次。\n{SenseName}：在抽牌堆生成{Cards:diff()}张极光剑。",
+  "HEIDEMARIE_SWORDRAIN.description": "{KwBlock}造成{Damage:diff()}点伤害2次。\n{SenseName}：在抽牌堆生成{Cards:diff()}张极光剑。",
 
   "HEIDEMARIE_AURORA_SWORD.title": "极光剑",
-  "HEIDEMARIE_AURORA_SWORD.description": "{Link}\n对敌人造成{Damage:diff()}点伤害。被丢弃时，对随机敌人造成{Damage:diff()}点伤害。\n{GraveKeep}{RecycleLine}",
+  "HEIDEMARIE_AURORA_SWORD.description": "{KwBlock}对敌人造成{Damage:diff()}点伤害。被丢弃时，对随机敌人造成{Damage:diff()}点伤害。",
 
   "HEIDEMARIE_SWORD_TOMB.title": "剑冢",
-  "HEIDEMARIE_SWORD_TOMB.description": "打出墓地中最多{Swords:diff()}张极光剑。",
+  "HEIDEMARIE_SWORD_TOMB.description": "{KwBlock}打出墓地中最多{Swords:diff()}张极光剑。",
 
   "HEIDEMARIE_CONDENSE_EDGE.title": "凝锋",
-  "HEIDEMARIE_CONDENSE_EDGE.description": "在手牌生成{Cards:diff()}张极光剑，赋予其[gold]回收[/gold]。",
+  "HEIDEMARIE_CONDENSE_EDGE.description": "{KwBlock}在手牌生成{Cards:diff()}张极光剑，赋予其[gold]回收[/gold]。",
 
   "HEIDEMARIE_REQUIEM_BLADE.title": "安魂剑",
-  "HEIDEMARIE_REQUIEM_BLADE.description": "{Link}{Rest}\n随机对敌人造成{Damage:diff()}点伤害2次。\n{SenseName}：在手牌生成{Cards:diff()}张极光剑。",
+  "HEIDEMARIE_REQUIEM_BLADE.description": "{KwBlock}随机对敌人造成{Damage:diff()}点伤害2次。\n{SenseName}：在手牌生成{Cards:diff()}张极光剑。",
 
   "HEIDEMARIE_FINAL_ECHO.title": "绝响",
-  "HEIDEMARIE_FINAL_ECHO.description": "{Terminate}{Unique}\n对全体敌人造成{Damage:diff()}点伤害。若手牌中存在解放极光，则将其消耗，此时墓地中每有1张极光剑，即可使伤害量+100%。",
+  "HEIDEMARIE_FINAL_ECHO.description": "{KwBlock}对全体敌人造成{Damage:diff()}点伤害。若手牌中存在解放极光，则将其消耗，此时墓地中每有1张极光剑，即可使伤害量+100%。",
 
   "HEIDEMARIE_CONDENSED_AURORA.title": "凝聚极光",
-  "HEIDEMARIE_CONDENSED_AURORA.description": "{Unique}{Link}{Recycle}\n移动至墓地时，极光之光1。",
+  "HEIDEMARIE_CONDENSED_AURORA.description": "{KwBlock}移动至墓地时，[gold]极光之光[/gold]1。",
 
   "HEIDEMARIE_LIBERATED_AURORA.title": "解放极光",
-  "HEIDEMARIE_LIBERATED_AURORA.description": "{Unique}\n造成{Damage:diff()}点伤害。消耗墓地中的所有极光剑，每消耗1张，即可使基础伤害量+100%。\n{BurnName}：在手牌中生成1张凝聚极光，并移除此牌。",
+  "HEIDEMARIE_LIBERATED_AURORA.description": "{KwBlock}造成{Damage:diff()}点伤害。消耗墓地中的所有极光剑，每消耗1张，即可使基础伤害量+100%。\n{BurnName}：在手牌中生成1张凝聚极光，并移除此牌。",
 
   "HEIDEMARIE_ALL_HEROES.title": "万众英雄",
-  "HEIDEMARIE_ALL_HEROES.description": "{Rest}\n抽取{Cards:diff()}张牌，本回合内赋予它们[gold]连接[/gold]。",
+  "HEIDEMARIE_ALL_HEROES.description": "{KwBlock}抽取{Cards:diff()}张牌，本回合内赋予它们[gold]连接[/gold]。",
 
   "HEIDEMARIE_BIND_STAR.title": "缀星",
-  "HEIDEMARIE_BIND_STAR.description": "选择手牌中的{Cards:diff()}张牌，赋予其[gold]连接[/gold]。",
+  "HEIDEMARIE_BIND_STAR.description": "{KwBlock}选择手牌中的{Cards:diff()}张牌，赋予其[gold]连接[/gold]。",
   "HEIDEMARIE_BIND_STAR.selectionScreenPrompt": "选择要赋予[gold]连接[/gold]的牌。",
 
   "HEIDEMARIE_FAINT_LIGHT.title": "微光",
-  "HEIDEMARIE_FAINT_LIGHT.description": "本回合内赋予手牌中费用小于等于1的卡牌[gold]连接[/gold]。",
+  "HEIDEMARIE_FAINT_LIGHT.description": "{KwBlock}本回合内赋予手牌中费用小于等于1的卡牌[gold]连接[/gold]。",
 
   "HEIDEMARIE_REQUIEM.title": "冥渡",
-  "HEIDEMARIE_REQUIEM.description": "本回合内赋予手牌中[gold]安息[/gold]卡牌[gold]连接[/gold]。",
+  "HEIDEMARIE_REQUIEM.description": "{KwBlock}本回合内赋予手牌中[gold]安息[/gold]卡牌[gold]连接[/gold]。",
 
   "HEIDEMARIE_RECOVER.title": "撷光",
-  "HEIDEMARIE_RECOVER.description": "从抽牌堆或弃牌堆中选择{Cards:diff()}张卡牌，赋予其[gold]连接[/gold]并将其移入手牌。",
+  "HEIDEMARIE_RECOVER.description": "{KwBlock}从抽牌堆或弃牌堆中选择{Cards:diff()}张卡牌，赋予其[gold]连接[/gold]并将其移入手牌。",
   "HEIDEMARIE_RECOVER.selectionScreenPrompt": "选择要赋予[gold]连接[/gold]的牌。",
 
   "HEIDEMARIE_CALL_BLADE.title": "引锋召刃",
-  "HEIDEMARIE_CALL_BLADE.description": "抽取2张攻击卡牌。本回合内赋予手牌中攻击卡牌[gold]连接[/gold]。",
+  "HEIDEMARIE_CALL_BLADE.description": "{KwBlock}抽取2张攻击卡牌。本回合内赋予手牌中攻击卡牌[gold]连接[/gold]。",
 
   "HEIDEMARIE_RAY_OF_LIGHT.title": "一缕光芒",
-  "HEIDEMARIE_RAY_OF_LIGHT.description": "{Link}\n造成{Damage:diff()}点伤害。打出前手牌中每有1张[gold]连接[/gold]卡牌，即可使伤害+{Percent:diff()}%。",
+  "HEIDEMARIE_RAY_OF_LIGHT.description": "{KwBlock}造成{Damage:diff()}点伤害。打出前手牌中每有1张[gold]连接[/gold]卡牌，即可使伤害+{Percent:diff()}%。",
 
   "HEIDEMARIE_TRIPLE_GLOW.title": "叠光奏浪",
-  "HEIDEMARIE_TRIPLE_GLOW.description": "{Link}\n造成{Damage:diff()}点伤害。打出前手牌中连接卡牌数量大于等于3时，伤害变为3倍。",
+  "HEIDEMARIE_TRIPLE_GLOW.description": "{KwBlock}造成{Damage:diff()}点伤害。打出前手牌中连接卡牌数量大于等于3时，伤害变为3倍。",
 
   "HEIDEMARIE_RESONANCE.title": "万剑齐鸣",
-  "HEIDEMARIE_RESONANCE.description": "打出手牌中的所有[gold]连接[/gold]卡牌。",
+  "HEIDEMARIE_RESONANCE.description": "{KwBlock}打出手牌中的所有[gold]连接[/gold]卡牌。",
 
   "HEIDEMARIE_SKYFALL.title": "陨锋·坠月",
-  "HEIDEMARIE_SKYFALL.description": "{Link}\n主动打出时，对敌人造成{Damage:diff()}点伤害2次。被丢弃时，对全体敌人造成{DiscardDamage:diff()}点伤害。",
+  "HEIDEMARIE_SKYFALL.description": "{KwBlock}主动打出时，对敌人造成{Damage:diff()}点伤害2次。被丢弃时，对全体敌人造成{DiscardDamage:diff()}点伤害。",
 
   "HEIDEMARIE_UNFOLD_AURORA.title": "展开极光",
-  "HEIDEMARIE_UNFOLD_AURORA.description": "{Rest}\n在手牌生成{Cards:diff()}张极光剑。本回合内极光剑的伤害+50%。",
+  "HEIDEMARIE_UNFOLD_AURORA.description": "{KwBlock}在手牌生成{Cards:diff()}张极光剑。本回合内极光剑的伤害+50%。",
 
   "HEIDEMARIE_NORTH_POLAR.title": "北极圈",
-  "HEIDEMARIE_NORTH_POLAR.description": "回合开始时，在手牌生成2张极光剑。",
+  "HEIDEMARIE_NORTH_POLAR.description": "{KwBlock}回合开始时，在手牌生成2张极光剑。",
 
   "HEIDEMARIE_SWORD_CRYPT.title": "归墟剑骸",
-  "HEIDEMARIE_SWORD_CRYPT.description": "{Link}{Rest}\n在弃牌堆生成{Cards:diff()}张极光剑。",
+  "HEIDEMARIE_SWORD_CRYPT.description": "{KwBlock}在弃牌堆生成{Cards:diff()}张极光剑。",
 
   "HEIDEMARIE_MIRROR_BLADES.title": "万剑诀",
-  "HEIDEMARIE_MIRROR_BLADES.description": "{Link}\n打出前手牌中每有1张[gold]连接[/gold]卡牌，即可在手牌生成1张极光剑。",
+  "HEIDEMARIE_MIRROR_BLADES.description": "{KwBlock}打出前手牌中每有1张[gold]连接[/gold]卡牌，即可在手牌生成1张极光剑。",
 
   "HEIDEMARIE_STORE_LIGHT.title": "积羽",
-  "HEIDEMARIE_STORE_LIGHT.description": "{Rest}\n在弃牌堆生成{Cards:diff()}张极光剑。\n{SenseName}：下一张极光剑伤害+100%。",
+  "HEIDEMARIE_STORE_LIGHT.description": "{KwBlock}在弃牌堆生成{Cards:diff()}张极光剑。\n{SenseName}：下一张极光剑伤害+100%。",
 
   "HEIDEMARIE_FALLEN_STAR.title": "坠星",
-  "HEIDEMARIE_FALLEN_STAR.description": "将手牌和弃牌堆的卡牌全部放入抽牌堆中洗牌。抽{Draw:diff()}张牌。",
+  "HEIDEMARIE_FALLEN_STAR.description": "{KwBlock}将手牌和弃牌堆的卡牌全部放入抽牌堆中洗牌。抽{Draw:diff()}张牌。",
 
   "HEIDEMARIE_FORESEE.title": "窥星择光",
-  "HEIDEMARIE_FORESEE.description": "查看抽牌堆顶{View:diff()}张卡牌，选择其中1张加入手牌，其他的丢弃。",
+  "HEIDEMARIE_FORESEE.description": "{KwBlock}查看抽牌堆顶{View:diff()}张卡牌，选择其中1张加入手牌，其他的丢弃。",
   "HEIDEMARIE_FORESEE.selectionScreenPrompt": "选择1张加入手牌。"
 }

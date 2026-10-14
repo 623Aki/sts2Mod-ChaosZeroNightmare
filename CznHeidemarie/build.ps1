@@ -1,34 +1,40 @@
-<#
+ï»¿<#
 .SYNOPSIS
-    ±àÒë CznHeidemarie ²¢µ¼³ö pck µ½ÓÎÏ·µÄ mods Ä¿Â¼¡£
+    ç¼–è¯‘ CznHeidemarie å¹¶æŠŠèµ„æºå¯¼å‡ºæˆ pck æ”¾è¿›æ¸¸æˆçš„ mods ç›®å½•ã€‚
 
 .DESCRIPTION
-    °Ñ¡¸´ò°ü²È¿ÓÓë½â¾ö·½°¸.md¡¹µÚÆß½ÚµÄ±ê×¼Á÷³Ì¹Ì»¯³ÉÒ»ÌõÃüÁî£¬
-    Ã¿Ò»²½¶¼´øÇ°ÖÃĞ£ÑéºÍ²úÎï×Ô¼ì£¬±ÜÃâÖØĞÂ²ÈÒÑÖªµÄ¿Ó¡£
+    æŠŠã€Œæ‰“åŒ…è¸©å‘ä¸è§£å†³æ–¹æ¡ˆ.mdã€é‡Œè¸©å‡ºæ¥çš„æ ‡å‡†æµç¨‹å›ºåŒ–æˆä¸€æ¡å‘½ä»¤ï¼Œ
+    æ¯ä¸€æ­¥éƒ½æœ‰å‰ç½®æ ¡éªŒå’Œäº§ç‰©è‡ªæ£€ï¼Œé¿å…é‡å¤è¸©å·²çŸ¥çš„å‘ã€‚
 
-    Ö´ĞĞË³Ğò£º
-      0. Ç°ÖÃ¼ì²é£¨.gitignore / spine À©Õ¹ / Õ¼ÓÃ DLL µÄ Godot ½ø³Ì£©
-      1. dotnet build  ¡ª¡ª dll/json/pdb ÓÉ csproj µÄ post-build ×Ô¶¯¸´ÖÆµ½ mods
-      2. Godot --import ¡ª¡ª Éú³É .spskel / .spatlas / .ctex
-      3. Godot --export-pack ¡ª¡ª ²ú³ö pck µ½ mods Ä¿Â¼
-      4. ×Ô¼ì£ºpck Ìå»ı + ¹Ø¼ü×ÊÔ´ÊÇ·ñÆëÈ« + ¹¤³ÌÄÚÓĞÃ»ÓĞ»ì½ø src/
+    æ‰§è¡Œé¡ºåº
+      0. å‰ç½®æ£€æŸ¥ï¼ˆ.gitignore / bin æ’é™¤ / spine æ‰©å±• / å¯¼å‡ºé¢„è®¾ / å ç”¨è¿›ç¨‹ï¼‰
+      1. dotnet build â”€â”€ dll/pdb/json ç”± csproj çš„ post-build è‡ªåŠ¨å¤åˆ¶åˆ° mods
+      2. Godot --import â”€â”€ äº§å‡º .spskel / .spatlas / .ctex
+      3. Godot --export-pack â”€â”€ äº§å‡º pck åˆ° mods ç›®å½•
+      4. è‡ªæ£€ â”€â”€ æµå¼è§£æ pck çœŸå®æ–‡ä»¶ç´¢å¼•ï¼ˆåªè¯»å¤´éƒ¨ + ç´¢å¼•åŒºï¼Œä¸æ•´åŒ…è¯»å…¥ï¼‰
+                + ä½“ç§¯åŒºé—´ + è§„æ¨¡ä¸‹é™ + å…³é”®èµ„æºå‘½ä¸­
+
+    è‡ªæ£€ä¸ºä»€ä¹ˆå¿…é¡»è§£æç´¢å¼•è€Œä¸æ˜¯æœæ–‡æœ¬ï¼š
+    pck é‡Œæ‰“è¿›äº† 468 ä¸ª .cs æºç ï¼Œä»»ä½•å‡ºç°åœ¨ C# å­—ç¬¦ä¸²å¸¸é‡é‡Œçš„èµ„æºè·¯å¾„
+    éƒ½ä¼šè®©ã€Œå…¨æ–‡ Containsã€è¯¯åˆ¤ä¸ºå­˜åœ¨ã€‚åªæœ‰è¯»æ–‡ä»¶è¡¨æ‰èƒ½å¾—åˆ°çœŸå€¼ã€‚
 
 .PARAMETER Configuration
-    ±àÒëÅäÖÃ£¬Ä¬ÈÏ Debug¡£¿É´« Release¡£
+    æ„å»ºé…ç½®ï¼Œé»˜è®¤ Debugï¼Œå¯ä¼  Releaseã€‚
 
 .PARAMETER SkipBuild
-    Ìø¹ı dotnet build£¨Ö»ÖØµ¼ pck Ê±ÓÃ£»×¢Òâ´ËÊ± dll ²»»á¸üĞÂ£©¡£
+    è·³è¿‡ dotnet buildï¼Œåªé‡å¯¼ pckã€‚ä¼šæ ¡éªŒ dll å·²å­˜åœ¨ï¼Œä½†æ— æ³•ä¿è¯å®ƒæ˜¯æœ€æ–°çš„ã€‚
 
 .PARAMETER SkipImport
-    Ìø¹ı Godot --import£¨È·ÈÏ×ÊÔ´Ã»±äÊ±¿ÉÊ¡¼¸Ãë£©¡£
+    è·³è¿‡ Godot --importï¼Œç¡®å®šèµ„æºæ²¡å˜æ—¶å¯ç”¨ï¼ˆçœæ—¶é—´ï¼‰ã€‚
 
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\build.ps1
 
 .EXAMPLE
-    # Ö»ÖØĞÂµ¼Ò»´Î pck£¬²»ÖØĞÂ±àÒë
+    # åªé‡å¯¼ä¸€æ¬¡ pckï¼Œä¸é‡æ–°ç¼–è¯‘
     .\build.ps1 -SkipBuild
 #>
+#Requires -Version 5.1
 [CmdletBinding()]
 param(
     [string]$Configuration = 'Debug',
@@ -38,63 +44,134 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
-# Â·¾¶ÅäÖÃ ¡ª¡ª »»»úÆ÷ / »» Steam ¿âÎ»ÖÃÊ±Ö»¸ÄÕâÒ»¶Î
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# é…ç½®åŒº â€”â€” æ¢æœºå™¨ / æ¢ Steam åº“ä½ç½®æ—¶åªæ”¹è¿™ä¸€æ®µ
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-# ¹¤³Ì¸ùÄ¿Â¼£¨½Å±¾ËùÔÚÄ¿Â¼£¬²»Òª¸Ä³ÉÏà¶ÔÂ·¾¶£©
+# å·¥ç¨‹æ ¹ç›®å½•ï¼ˆè„šæœ¬æ‰€åœ¨ç›®å½•ï¼‰
 $ProjectDir = $PSScriptRoot
 
-# ±ØĞëÓÃ 4.5.1 µÄÍêÕûÎÄ¼şÃû£ºÍ¬Ä¿Â¼ÏÂ»¹·Å×Å 4.7.2£¬ÎŞ°æ±¾ÃûµÄ±ğÃû»áÈÏ´í¡£
-# 4.7.2 ±à³öµÄ×ÊÔ´ 4.5.1 µÄÓÎÏ·¶Á²»ÁË£¨¼û²È¿ÓÎÄµµµÚÒ»½Ú£©¡£
+# å¿…é¡»æ˜¯ Godot 4.5.1 mono çš„ console ç‰ˆã€‚
+# æ¸¸æˆæœ¬ä½“ pck å¤´ä¸º GDPC / pack_version=3 / ver=4.5.1ï¼ŒGodot åªä¿è¯å‘åå…¼å®¹ï¼Œ
+# ç”¨æ›´é«˜ç‰ˆæœ¬ç¼–å‡ºçš„å¯¼å…¥äº§ç‰©ï¼ˆ.spskel/.ctex/.spatlasï¼‰ï¼Œ4.5.1 çš„æ¸¸æˆè¯»ä¸äº†ã€‚
 $GodotExe = 'F:\Tools\Godot_v4.5.1-stable_mono_win64\Godot_v4.5.1-stable_mono_win64_console.exe'
 
-# ÓÎÏ·°²×°Ä¿Â¼
+# æ¸¸æˆå®‰è£…ç›®å½•ï¼ˆé¡»ä¸ CznHeidemarie.csproj é‡Œçš„ Sts2Dir ä¸€è‡´ï¼‰
 $Sts2Dir = 'G:\SteamLibrary\steamapps\common\Slay the Spire 2'
 
-# mod id£¬±ØĞëÓë CznHeidemarie.json µÄ id Ò»ÖÂ
+# mod id â€”â€” é¡»ä¸ CznHeidemarie.json é‡Œçš„ id ä¸€è‡´
 $ModName = 'CznHeidemarie'
 
-# µ¼³öÔ¤ÉèÃû£¨º¬¿Õ¸ñ£¬µ÷ÓÃÊ±ÓÃ & ¶ø²»ÊÇ Start-Process£©
+# å¯¼å‡ºé¢„è®¾åï¼ˆå«ç©ºæ ¼ï¼Œä¼ å‚æ—¶å¿…é¡»æ•´ä½“ä½œä¸ºä¸€ä¸ªå‚æ•°ï¼‰
 $PresetName = 'Windows Desktop'
 
-# ©¤©¤ ÓÉÉÏÃæÍÆµ¼£¬Ò»°ã²»ÓÃ¸Ä ©¤©¤
-$ModDir = Join-Path $Sts2Dir "mods\$ModName"
-$PckOut = Join-Path $ModDir "$ModName.pck"
+# æ´¾ç”Ÿè·¯å¾„ï¼ˆä¸‹é¢è¿™ç»„ä¸è¦æ‰‹æ”¹ï¼‰
+$ModDir      = Join-Path $Sts2Dir "mods\$ModName"
+$PckOut      = Join-Path $ModDir "$ModName.pck"
 $ImportedDir = Join-Path $ProjectDir '.godot\imported'
 $ExtListPath = Join-Path $ProjectDir '.godot\extension_list.cfg'
-$GdextPath = Join-Path $ProjectDir 'bin\spine_godot_extension.gdextension'
+$GdextPath   = Join-Path $ProjectDir 'bin\spine_godot_extension.gdextension'
+$PresetPath  = Join-Path $ProjectDir 'export_presets.cfg'
 
-# pck Àï±ØĞëÄÜÕÒµ½µÄ×ÊÔ´£¬ÉÙÈÎºÎÒ»¸ö¶¼ËµÃ÷µ¼³ö³öÁËÎÊÌâ
-$RequiredInPck = @(
-    'CznHeidemarie/animations/model/30093.skel',
-    '30093.skel-',                    # .spskel£¨¹Ç¼Ü¶ş½øÖÆ£¬º¬¶¯»­Ê±¼äÖá£©
-    '30093.atlas-',                   # .spatlas
-    '30093.png-',                     # .ctex
-    'bin/spine_godot_extension',      # À©Õ¹±¾Ìå£¬È±ÁËËµÃ÷ bin/ ±»ÅÅ³ı
-    'localization/zhs/cards.json',
-    'localization/zhs/characters.json',
-    'localization/zhs/settings.json',
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# å¿…éœ€èµ„æºæ¸…å•ï¼ˆç²¾ç¡®è·¯å¾„ï¼‰
+#
+# å–å€¼ä¾æ®ï¼šå½“å‰ pck çš„çœŸå®æ–‡ä»¶è¡¨ï¼ˆ1812 æ¡ï¼‰é€æ¡æ¯”å¯¹å¾—åˆ°ï¼Œä¸æ˜¯çŒœçš„ã€‚
+# æ³¨æ„ä¸¤ä¸ªåç›´è§‰çš„äº‹å®ï¼š
+#   1. æºèµ„æºæœ¬ä½“ï¼ˆ.skel/.atlas/.png/.ogg/.webpï¼‰ä¸è¿› pckï¼Œ
+#      è¿› pck çš„æ˜¯å®ƒä»¬çš„ .import ç´¢å¼•æ–‡ä»¶ã€‚æ‰€ä»¥è¿™é‡Œæ ¡éªŒçš„æ˜¯ .importã€‚
+#   2. æ‰©å±•åªæ‰“è¿›äº†æè¿°æ–‡ä»¶ bin/spine_godot_extension.gdextensionï¼Œ
+#      æ‰©å±•çš„ DLLï¼ˆbin/windows/*.dllï¼‰ä»æ¥ä¸åœ¨ pck é‡Œ â€”â€” è¿è¡ŒæœŸç”±æ¸¸æˆæœ¬ä½“æä¾›ã€‚
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+$RequiredExact = @(
+    # spine æ‰©å±•æè¿°æ–‡ä»¶ï¼ˆç¼ºå®ƒè¯´æ˜ bin/ è¢« .gitignore æ’é™¤äº†ï¼‰
+    'bin/spine_godot_extension.gdextension',
+
+    # æˆ˜æ–—éª¨æ¶ï¼ˆä¸»è§’æ¨¡å‹ï¼‰
+    'CznHeidemarie/animations/model/30093.skel.import',
+    'CznHeidemarie/animations/model/30093.atlas.import',
+    'CznHeidemarie/animations/model/30093.png.import',
+    'CznHeidemarie/animations/model/30093_skel_data.tres',
+
+    # æˆ˜æ–—å¼€å§‹æ¼”å‡ºéª¨æ¶
+    'CznHeidemarie/animations/battle_ready/30093_battle_ready.skel.import',
+    'CznHeidemarie/animations/battle_ready/30093_battle_ready.atlas.import',
+    'CznHeidemarie/animations/battle_ready/30093_battle_ready.png.import',
+    'CznHeidemarie/animations/battle_ready/30093_battle_ready_skel_data.tres',
+
+    # æ–‡æœ¬
+    'CznHeidemarie/localization/zhs/cards.json',
+    'CznHeidemarie/localization/zhs/characters.json',
+    'CznHeidemarie/localization/zhs/settings.json',
+
+    # åœºæ™¯
     'scenes/creature_visuals/heidemarie.tscn',
+    'scenes/heidemarie_battle_ready.tscn',
     'scenes/merchant/characters/heidemarie_merchant.tscn',
     'scenes/rest_site/characters/heidemarie_rest_site.tscn',
     'scenes/combat/energy_counters/heidemarie_energy_counter.tscn',
     'scenes/vfx/card_trail_heidemarie.tscn',
-    'scenes/heidemarie_battle_ready.tscn',          # ³öÅÆÌØĞ´Á¢»æ
-    'CznHeidemarie/animations/battle_ready/30093_battle_ready.skel',
-    '30093_battle_ready.skel-',                     # ÌØĞ´¹Ç¼ÜµÄ .spskel
-    '30093_battle_ready.png-',                      # ÌØĞ´ÌùÍ¼µÄ .ctex
-    'CznHeidemarie/audio/sfx/se_30093_attack_play1.ogg',   # Õ½¶·ÒôĞ§£¨.bank µ¼³ö£©
-    'CznHeidemarie/audio/voice/vo_30093_attack_01.ogg',    # ½ÇÉ«ÓïÒô£¨.bank µ¼³ö£©
-    'CznHeidemarie/images/defeat/heidemarie_defeat_cg_1.webp'  # °Ü±± CG
+
+    # éŸ³é¢‘ä¸ç«‹ç»˜ï¼ˆæˆ˜æ–—éŸ³æ•ˆã€è§’è‰²è¯­éŸ³ã€é€‰è§’è¯­éŸ³ã€è´¥åŒ— CGï¼‰
+    'CznHeidemarie/audio/sfx/se_30093_attack_play1.ogg.import',
+    'CznHeidemarie/audio/voice/vo_30093_attack_01.ogg.import',
+    'CznHeidemarie/audio/voice/vo_30093_team_join_01.ogg.import',
+    'CznHeidemarie/images/defeat/heidemarie_defeat_cg_1.webp.import',
+
+    # å¡é¢ï¼šå¡æ¡†æè´¨ + ã€Œè§£æ”¾æå…‰ã€çš„å…¨å±å¡åŸç”»ï¼ˆé™æ€å…œåº•ï¼‰
+    'materials/cards/frames/card_frame_heidemarie_mat.tres',
+    'CznHeidemarie/images/card_art/heidemarie_liberated_aurora.png.import',
+
+    # åŠ¨æ€å¡é¢ï¼šSpine ä¸‰ä»¶å¥— + éª¨æ¶æ•°æ® + æ¸²æŸ“å™¨åœºæ™¯
+    'CznHeidemarie/animations/cards/heidemarie_card_liberated_aurora.skel.import',
+    'CznHeidemarie/animations/cards/heidemarie_card_liberated_aurora.atlas.import',
+    'CznHeidemarie/animations/cards/heidemarie_card_liberated_aurora.png.import',
+    'CznHeidemarie/animations/cards/heidemarie_card_liberated_aurora_skel_data.tres',
+    'CznHeidemarie/scenes/cards/heidemarie_card_art.tscn'
 )
 
-# pck Õı³£Ìå»ıÏÂÏŞ£ºµÍÓÚÕâ¸öÖµ»ù±¾¾ÍÊÇ¹Ç¼Ü¶ªÁË£¨Õı³£Ô¼ 3.6 MB£©
-$MinPckBytes = 1MB
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# å¿…éœ€èµ„æºæ¸…å•ï¼ˆå‰ç¼€ï¼‰
+#
+# æŒ‡å‘ .godot/imported/ ä¸‹çš„å¯¼å…¥äº§ç‰© â€”â€” çœŸæ­£æ‰¿è½½éª¨æ¶äºŒè¿›åˆ¶ã€å›¾é›†æè¿°ã€çº¹ç†æ•°æ®ã€‚
+# åç¼€æ˜¯å¯¼å…¥å™¨æŒ‰æºæ–‡ä»¶å†…å®¹ç®—å‡ºçš„å“ˆå¸Œï¼Œæ— æ³•å†™æ­»ï¼Œåªèƒ½åŒ¹é…å‰ç¼€ã€‚
+# éª¨æ¶æ•´ä½“ä¸¢å¤±æ—¶ï¼Œæœ€å…ˆæ¶ˆå¤±çš„å°±æ˜¯è¿™äº›ã€‚
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+$RequiredPrefix = @(
+    '.godot/imported/30093.skel-',                    # éª¨æ¶äºŒè¿›åˆ¶ .spskel
+    '.godot/imported/30093.atlas-',                   # å›¾é›†æè¿° .spatlas
+    '.godot/imported/30093.png-',                     # çº¹ç† .ctex
+    '.godot/imported/30093_battle_ready.skel-',
+    '.godot/imported/30093_battle_ready.atlas-',
+    '.godot/imported/30093_battle_ready.png-',
+    '.godot/imported/se_30093_attack_play1.ogg-',     # éŸ³æ•ˆ .oggvorbisstr
+    '.godot/imported/vo_30093_attack_01.ogg-',        # è¯­éŸ³ .oggvorbisstr
+    '.godot/imported/vo_30093_team_join_01.ogg-',     # é€‰è§’è¯­éŸ³ .oggvorbisstr
+    '.godot/imported/heidemarie_defeat_cg_1.webp-',   # è´¥åŒ— CG .ctex
+    '.godot/imported/heidemarie_liberated_aurora.png-', # å…¨å±å¡åŸç”» .ctex
+    '.godot/imported/heidemarie_card_liberated_aurora.skel-',  # å¡é¢éª¨æ¶ .spskel
+    '.godot/imported/heidemarie_card_liberated_aurora.atlas-', # å¡é¢å›¾é›† .spatlas
+    '.godot/imported/heidemarie_card_liberated_aurora.png-'    # å¡é¢å›¾é›†è´´å›¾ .ctex
+)
 
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
-# Êä³ö¸¨Öú
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# è§„æ¨¡ä¸‹é™ / ä½“ç§¯åŒºé—´
+#
+# å®æµ‹å½“å‰ pckï¼š135,026,540 å­—èŠ‚ï¼ˆçº¦ 128.8 MBï¼‰ã€1812 æ¡æ–‡ä»¶è¡¨æ¡ç›®ã€
+#   .spskel 157 / .spatlas 157 / .ctex 211ã€‚
+# éª¨æ¶ä¸¢å¤±çš„æ•…éšœæ€æ˜¯ pck ç¼©åˆ° 0.53 MBã€ä¸Šè¿°å¯¼å…¥äº§ç‰©å…¨ç­ã€‚
+# ä¸‹é¢ç•™äº†ä½™é‡ï¼šæ—¢èƒ½æ‹¦ä½æ•…éšœæ€ï¼Œåˆå…è®¸æ­£å¸¸å¢åˆ å‡ ä¸ªåŠ¨ç”»ã€‚
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+$MinEntryCount  = 1500
+$MinSpskelCount = 140
+$MinSpatlasCount = 140
+$MinCtexCount   = 180
+$MinPckBytes    = 40MB      # æ•…éšœæ€çº¦ 0.5 MBï¼Œæ­£å¸¸çº¦ 128.8 MB
+$MaxPckBytes    = 400MB     # é˜²æ­¢è¯¯æŠŠåˆ«çš„å¤§æ–‡ä»¶å¯¼è¿›æ¥
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# è¾“å‡ºè¾…åŠ©
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function Write-Step([string]$Text) {
     Write-Host ""
@@ -113,12 +190,11 @@ function Write-Warn([string]$Text) {
     Write-Host "  [!!] $Text" -ForegroundColor Yellow
 }
 
-# µ÷ÓÃ Godot CLI¡£
+# è°ƒç”¨ Godot CLIã€‚
 #
-# Godot »áÍù stderr Ğ´´óÁ¿ ERROR ¡ª¡ª ÆäÖĞ°üÀ¨ mod ¹¤³Ì¶ÔÓÎÏ·±¾Ìå×ÊÔ´µÄ¿ç pck ÒıÓÃ
-# £¨res://src/... ¡¢res://shaders/... µÈ£©¡£ÕâĞ©ÔÚ±à¼­Æ÷ºÍµ¼³ö½×¶Î¶¼ÊÇÔ¤ÆÚÔëÒô£¬
-# ²»Ó°Ïì²úÎï¡£µ«Íâ²¿³ÌĞòµÄ stderr ÔÚ $ErrorActionPreference='Stop' ÏÂ»á±»
-# PowerShell °ü×°³ÉÖÕÖ¹´íÎó£¬Ö±½Ó°Ñ½Å±¾´ò¶Ï£¬ËùÒÔÕâÀïÁÙÊ±½µ¼¶Îª Continue¡£
+# Godot ä¼šå¾€ stderr å†™ ERROR è¡Œï¼ˆé‡Œé¢åŒ…å« mod è·¨ pck å¼•ç”¨æ¸¸æˆæœ¬ä½“èµ„æºå¯¼è‡´çš„
+# é¢„æœŸå™ªéŸ³ï¼Œå¦‚ res://src/... ï¼‰ï¼Œè¿™äº›è¡Œåœ¨ $ErrorActionPreference='Stop' ä¸‹ä¼šè¢«
+# PowerShell å½“æˆç»ˆæ­¢é”™è¯¯ï¼Œç›´æ¥æ‰“æ–­è„šæœ¬ã€‚æ‰€ä»¥ä¸´æ—¶é™çº§ä¸º Continueã€‚
 function Invoke-Godot {
     param([string[]]$Arguments)
 
@@ -132,161 +208,451 @@ function Invoke-Godot {
     }
 }
 
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
-# Ö÷Á÷³Ì
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+<#
+.SYNOPSIS
+    è§£æ Godot 4.x pck çš„æ–‡ä»¶è¡¨ï¼Œè¿”å›çœŸå®æ¡ç›®æ¸…å•ã€‚
+.DESCRIPTION
+    å¸ƒå±€ï¼ˆpack_version=3ï¼Œæœ¬æœºæ¸¸æˆä¸ mod pck å®æµ‹ä¸€è‡´ï¼‰ï¼š
+      0   u32  magic 'GDPC'
+      4   u32  pack_version
+      8   u32  ver_major
+      12  u32  ver_minor
+      16  u32  ver_patch
+      20  u32  pack_flags
+      24  u64  file_base        ï¼ˆæ•°æ®åŒºèµ·ç‚¹ï¼‰
+      32  u64  dir_offset       ï¼ˆæ–‡ä»¶è¡¨èµ·ç‚¹ï¼‰
+      48  ...  æ–‡ä»¶è¡¨ï¼š
+                 u32 count
+                 é‡å¤ count æ¬¡ï¼šu32 nameLen + name(UTF8) + u64 offset + u64 size + 16B MD5 + u32 flags
+
+    æ€§èƒ½ï¼šåªåšä¸¤æ¬¡æµå¼è¯»å– â€”â€” â‘  48 å­—èŠ‚æ–‡ä»¶å¤´ï¼›â‘¡ dir_offset â†’ æ–‡ä»¶æœ«å°¾çš„æ–‡ä»¶è¡¨
+    ï¼ˆå®æµ‹çº¦ 150 KBï¼‰ã€‚ç»ä¸æŠŠæ•´ä¸ª pckï¼ˆçº¦ 129 MBï¼‰è¯»è¿›å†…å­˜ã€‚
+    æ—§å®ç°ç”¨ [IO.File]::ReadAllBytes æ•´åŒ…è¯»å…¥ï¼Œæ­£æ˜¯ã€Œå¡åœ¨æ ¡éªŒ pckã€çš„æ ¹å› ï¼š
+    åœ¨ PS 5.1 ä¸Šå•æ¬¡åˆ†é…ä¸Šç™¾ MB æ‰˜ç®¡æ•°ç»„ã€å†å¯¹è¯¥å¤§æ•°ç»„åå¤å–å€¼ï¼Œä»£ä»·æé«˜ï¼Œ
+    å åŠ  mods ç›®å½•ä½äº G: ç›˜æ—¶æ›´æ˜æ˜¾ã€‚æ–‡ä»¶è¡¨åªéœ€è¦è¯»ä¸€éåå­—ï¼Œæ¡ç›®é‡Œçš„
+    offset/size/MD5/flags æœ¬å‡½æ•°ç”¨ä¸åˆ°ï¼Œç›´æ¥è·³è¿‡ 36 å­—èŠ‚ï¼Œä¸å†æ„é€ å¯¹è±¡ã€‚
+    å…¨ç¨‹ç”¨ [long] è¿ç®—ï¼Œé¿å… PS 5.1 æŠŠ >2GB çš„å­—èŠ‚åç§»å½“æˆ Int32 è½¬æ¢å¤±è´¥ã€‚
+.PARAMETER Path
+    pck æ–‡ä»¶è·¯å¾„ã€‚
+.OUTPUTS
+    PSCustomObjectï¼šNames(List[string]) / NameSet(HashSet[string]) /
+    Count / FileSize / DirOffset / Version / PackVersion / TailBytes
+#>
+function Read-PckIndex {
+    param([Parameter(Mandatory)][string]$Path)
+
+    # FileShare.ReadWriteï¼šå¯¼å‡ºåˆšç»“æŸæ—¶ Godot å¯èƒ½ä»çŸ­æš‚æŒæœ‰å†™å¥æŸ„ï¼Œæ”¾å®½å…±äº«é¿å…è¯¯åˆ¤å¤±è´¥
+    $fs = [IO.File]::Open($Path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::ReadWrite)
+    try {
+        $size = [long]$fs.Length
+        if ($size -lt 48) {
+            throw "ä¸æ˜¯åˆæ³•çš„ pckï¼ˆåªæœ‰ $size å­—èŠ‚ï¼‰ï¼š$Path"
+        }
+
+        # â‘  åªè¯» 48 å­—èŠ‚æ–‡ä»¶å¤´
+        $head = New-Object byte[] 48
+        $got = 0
+        while ($got -lt 48) {
+            $n = $fs.Read($head, $got, 48 - $got)
+            if ($n -le 0) { break }
+            $got += $n
+        }
+        if ($got -lt 48) { throw "pck æ–‡ä»¶å¤´ä¸å®Œæ•´ï¼ˆåªè¯»åˆ° $got å­—èŠ‚ï¼‰ï¼š$Path" }
+
+        $magic = [Text.Encoding]::ASCII.GetString($head, 0, 4)
+        if ($magic -ne 'GDPC') {
+            throw "pck magic ä¸æ˜¯ GDPC è€Œæ˜¯ '$magic'ï¼š$Path"
+        }
+
+        $packVersion = [BitConverter]::ToUInt32($head, 4)
+        $version = '{0}.{1}.{2}' -f `
+            [BitConverter]::ToUInt32($head, 8), `
+            [BitConverter]::ToUInt32($head, 12), `
+            [BitConverter]::ToUInt32($head, 16)
+
+        # æ–‡ä»¶è¡¨åç§»ï¼šv3 å›ºå®šæ”¾åœ¨ u64@32
+        $dirOff = [long][BitConverter]::ToUInt64($head, 32)
+        if ($dirOff -lt 48 -or $dirOff -gt $size - 4) {
+            throw "pck æ–‡ä»¶è¡¨åç§»ä¸åˆç†ï¼ˆ$dirOff / å…± $size å­—èŠ‚ï¼‰ï¼š$Path"
+        }
+
+        # â‘¡ åªè¯»æ–‡ä»¶è¡¨åŒºæ®µï¼ˆdir_offset â†’ EOFï¼Œå®æµ‹çº¦ 150 KBï¼‰
+        $dirLen = [int]($size - $dirOff)
+        if ($dirLen -gt 32MB) {
+            # æ­£å¸¸æ–‡ä»¶è¡¨åªå æœ«å°¾ä¸€å°æ®µï¼›å¼‚å¸¸å¤§è¯´æ˜å¤´éƒ¨æŸåï¼Œå®å¯æŠ¥é”™ä¹Ÿä¸è¦æŠŠæ•´åŒ…è¯»è¿›æ¥
+            throw "pck æ–‡ä»¶è¡¨åŒºæ®µå¼‚å¸¸å¤§ï¼ˆ$dirLen å­—èŠ‚ï¼‰ï¼Œç–‘ä¼¼å¤´éƒ¨æŸåï¼š$Path"
+        }
+        $dir = New-Object byte[] $dirLen
+        $fs.Position = $dirOff
+        $got = 0
+        while ($got -lt $dirLen) {
+            $n = $fs.Read($dir, $got, $dirLen - $got)
+            if ($n -le 0) { break }
+            $got += $n
+        }
+        if ($got -lt 4) { throw "pck æ–‡ä»¶è¡¨è¯»å–ä¸å®Œæ•´ï¼ˆåªè¯»åˆ° $got å­—èŠ‚ï¼‰ï¼š$Path" }
+    }
+    finally {
+        $fs.Dispose()
+    }
+
+    $count = [int][BitConverter]::ToUInt32($dir, 0)
+    if ($count -le 0 -or $count -gt 2000000) {
+        throw "pck æ–‡ä»¶è¡¨æ¡ç›®æ•°ä¸åˆç†ï¼ˆ$countï¼‰ï¼š$Path"
+    }
+
+    $names = New-Object 'System.Collections.Generic.List[string]' ([Math]::Min($count, 4096))
+    $set   = New-Object 'System.Collections.Generic.HashSet[string]'
+
+    # ä½ç½®ç›¸å¯¹æ–‡ä»¶è¡¨ç¼“å†²åŒºèµ·ç‚¹ï¼š4=count ä¹‹åï¼Œæ¯æ¡ = u32 nameLen + name + 36 å­—èŠ‚å®šé•¿å­—æ®µ
+    $pos = 4
+    for ($i = 0; $i -lt $count; $i++) {
+        if ($pos + 4 -gt $dir.Length) { throw "pck æ–‡ä»¶è¡¨åœ¨è§£æåˆ°ç¬¬ $i æ¡æ—¶è¶Šç•Œï¼š$Path" }
+
+        $nameLen = [int][BitConverter]::ToUInt32($dir, $pos)
+        $pos += 4
+        if ($pos + $nameLen + 36 -gt $dir.Length) { throw "pck ç¬¬ $i æ¡æ¡ç›®è¶Šç•Œï¼š$Path" }
+
+        # å®æµ‹æ¡ç›®åä¸å¸¦å°¾éƒ¨ NULï¼Œä½†æ—§ç‰ˆæœ¬å¯èƒ½å¸¦ï¼Œç»Ÿä¸€è£æ‰
+        $name = [Text.Encoding]::UTF8.GetString($dir, $pos, $nameLen).TrimEnd([char]0)
+        $pos += $nameLen
+        $pos += 36   # offset(8) + size(8) + md5(16) + flags(4)ï¼Œæ ¡éªŒç”¨ä¸åˆ°ï¼Œè·³è¿‡
+
+        [void]$names.Add($name)
+        [void]$set.Add($name)
+    }
+
+    return [pscustomobject]@{
+        Names       = $names
+        NameSet     = $set
+        Count       = $count
+        FileSize    = $size
+        DirOffset   = $dirOff
+        Version     = $version
+        PackVersion = $packVersion
+        TailBytes   = $size - ($dirOff + $pos)   # æ­£å¸¸ä¸º 0ï¼›é 0 è¯´æ˜å°¾éƒ¨è¿˜æœ‰åˆ«çš„åŒºæ®µ
+    }
+}
+
+<#
+.SYNOPSIS
+    æ£€æŸ¥ .gitignore æˆ– bin/.gdignore æ˜¯å¦ä¼šæŠŠ bin/ ç›®å½•æ’é™¤æ‰ã€‚
+.DESCRIPTION
+    Godot å¯¼å‡ºæ—¶ä¼šç”¨ .gitignore å½“æ’é™¤ä¾æ®ï¼Œbin/ ä¸€æ—¦è¢«æ’é™¤ï¼Œ
+    spine å¯¼å…¥å™¨å°±ä¸æ³¨å†Œï¼Œ.skel/.atlas è¿åŒ .spskel/.spatlas äº§ç‰©
+    ä¼šæ•´ä½“ä» pck ä¸¢å¤± â€”â€” è¿™æ˜¯æœ¬é¡¹ç›®å†å²ä¸Šæœ€å¤§çš„æ•…éšœã€‚
+.OUTPUTS
+    è¢«æ’é™¤æ—¶è¿”å›åŸå› å­—ç¬¦ä¸²ï¼Œå¦åˆ™è¿”å› $nullã€‚
+#>
+function Test-BinExcluded {
+    param(
+        [Parameter(Mandatory)][string]$GitignorePath,
+        [Parameter(Mandatory)][string]$ProjectDir
+    )
+
+    # èƒ½å‘½ä¸­ bin ç›®å½•çš„å¸¸è§å†™æ³•
+    $patterns = @(
+        'bin', 'bin/', '/bin', '/bin/',
+        'bin/**', '/bin/**',
+        '**/bin', '**/bin/', '**/bin/**'
+    )
+
+    if (Test-Path $GitignorePath) {
+        $lines = @(Get-Content -Path $GitignorePath -ErrorAction SilentlyContinue)
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            $line = "$($lines[$i])".Trim()
+            if ($line -eq '' -or $line.StartsWith('#')) { continue }
+            if ($patterns -contains $line) {
+                return ".gitignore ç¬¬ $($i + 1) è¡Œã€Œ$lineã€ä¼šæ’é™¤ bin/"
+            }
+        }
+    }
+
+    # bin/.gdignore æ˜¯åŒä¸€æœºåˆ¶ï¼šè®© Godot çš„èµ„æºæ‰«ææ•´ä½“è·³è¿‡ bin/
+    $gdignore = Join-Path $ProjectDir 'bin\.gdignore'
+    if (Test-Path $gdignore) {
+        return 'bin/.gdignore å­˜åœ¨ï¼Œä¼šè®© Godot èµ„æºæ‰«æè·³è¿‡ bin/'
+    }
+
+    return $null
+}
+
+<#
+.SYNOPSIS
+    åˆ¤æ–­æ–‡ä»¶æ˜¯å¦è¢«å…¶å®ƒè¿›ç¨‹ç‹¬å ï¼ˆæ— æ³•ä»¥è¯»å†™æ–¹å¼æ‰“å¼€ï¼‰ã€‚
+.DESCRIPTION
+    è¿›ç¨‹è¿˜åœ¨ä¸ä»£è¡¨æ–‡ä»¶è¢«é” â€”â€” åˆ«çš„ Godot å·¥ç¨‹ã€åˆ«çš„ç”¨æˆ·ä¼šè¯éƒ½ä¼šç•™ä¸‹è¿›ç¨‹ï¼Œ
+    ä½†ä¸ä¼šé”æœ¬å·¥ç¨‹çš„ bin\windows\*.dllã€‚åªæœ‰çœŸè¢«é”ä½æ‰ä¼šè®©æ‰©å±•åŠ è½½å¤±è´¥ã€
+    éª¨æ¶æ•´ä½“ä» pck æ¶ˆå¤±ï¼Œæ‰€ä»¥è¿™é‡Œç›´æ¥æµ‹æ–‡ä»¶ï¼Œä¸çœ‹è¿›ç¨‹æ•°é‡ã€‚
+.OUTPUTS
+    è¢«é”ä½è¿”å› $trueï¼Œå¦åˆ™è¿”å› $falseã€‚
+#>
+function Test-FileLocked {
+    param([Parameter(Mandatory)][string]$Path)
+
+    if (-not (Test-Path $Path)) { return $false }
+    try {
+        $fs = [IO.File]::Open($Path, 'Open', 'ReadWrite', 'None')
+        $fs.Close()
+        return $false
+    }
+    catch {
+        return $true
+    }
+}
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ä¸»æµç¨‹
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 try {
-    # ©¤©¤ 0. Ç°ÖÃ¼ì²é ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-    Write-Step 'Ç°ÖÃ¼ì²é'
+    # â”€â”€ æ­¥éª¤ 0. å‰ç½®æ£€æŸ¥ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Write-Step 'å‰ç½®æ£€æŸ¥'
 
     if (-not (Test-Path $GodotExe)) {
-        throw "ÕÒ²»µ½ Godot 4.5.1£º$GodotExe`nÇëĞŞ¸Ä½Å±¾¶¥²¿µÄ `$GodotExe Ö¸Ïò±¾»úµÄ Godot 4.5.1£¨mono£©¿ÉÖ´ĞĞÎÄ¼ş¡£"
+        throw "æ‰¾ä¸åˆ° Godot 4.5.1ï¼š$GodotExe`nè¯·ä¿®æ”¹æœ¬è„šæœ¬çš„ `$GodotExe æŒ‡å‘æœ¬æœº Godot 4.5.1ï¼ˆmonoï¼‰å¯æ‰§è¡Œæ–‡ä»¶ã€‚"
     }
-    Write-Ok "Godot 4.5.1 ¾ÍÎ»"
+    Write-Ok 'Godot 4.5.1 å°±ä½'
 
     if (-not (Test-Path (Join-Path $ProjectDir "$ModName.csproj"))) {
-        throw "µ±Ç°Ä¿Â¼²»ÊÇ $ModName ¹¤³Ì¸ù£º$ProjectDir"
+        throw "å½“å‰ç›®å½•ä¸æ˜¯ $ModName å·¥ç¨‹ï¼š$ProjectDir"
     }
 
-    # ¿ÓÒ»£º.gitignore ÀïµÄ bin/ »áÈÃ Godot µ¼³öÊ±Ìø¹ı spine µ¼ÈëÆ÷£¬
-    # µ¼ÖÂ .skel/.atlas Á¬Í¬ .spskel/.spatlas ÕûÌå´Ó pck ¶ªÊ§¡£
-    $gitignorePath = Join-Path $ProjectDir '.gitignore'
-    if (Test-Path $gitignorePath) {
-        if (Select-String -Path $gitignorePath -Pattern '^\s*/?bin/?\s*$' -Quiet) {
-            throw ".gitignore ÀïÓĞ bin/ ¡ª¡ª µ¼³öºó¹Ç¼Ü»áÈ«²¿¶ªÊ§£¡`n²Î¼û ´ò°ü²È¿ÓÓë½â¾ö·½°¸.md µÚ¶ş½Ú£¬É¾µôÄÇÒ»ĞĞÔÙÖØÊÔ¡£"
-        }
-        Write-Ok '.gitignore Ã»ÓĞÅÅ³ı bin/'
+    # .gitignore / bin/.gdignore è‹¥æ’é™¤äº† bin/ï¼Œå¯¼å‡ºåéª¨æ¶ä¼šå…¨ç­
+    $binExcluded = Test-BinExcluded -GitignorePath (Join-Path $ProjectDir '.gitignore') -ProjectDir $ProjectDir
+    if ($binExcluded) {
+        throw "$binExcluded`nè¿™ä¼šè®© spine éª¨æ¶æ•´ä½“ä¸¢å¤±ï¼Œè§ã€Œæ‰“åŒ…è¸©å‘ä¸è§£å†³æ–¹æ¡ˆ.mdã€ç¬¬äºŒèŠ‚ã€‚"
     }
+    Write-Ok 'bin/ æ²¡æœ‰è¢« .gitignore æˆ– .gdignore æ’é™¤'
 
-    # ¿Ó¶ş£ºspine À©Õ¹±ØĞëÔÚÎ»£¬ÇÒÒÑµÇ¼Çµ½ .godot/extension_list.cfg
+    # spine æ‰©å±•æœ¬ä½“ + å·²ç™»è®°çš„æ‰©å±•æ¸…å•
     if (-not (Test-Path $GdextPath)) {
-        throw "È±ÉÙ spine À©Õ¹£º$GdextPath`n¿É´Ó F:\Tools\Godot_v4.5.1-stable_mono_win64\spine-godot-4.2\bin »Ö¸´¡£"
+        throw "ç¼ºå°‘ spine æ‰©å±•ï¼š$GdextPath`nå¯ä» F:\Tools\Godot_v4.5.1-stable_mono_win64\spine-godot-4.2\bin æ¢å¤ã€‚"
     }
     if (-not (Test-Path $ExtListPath)) {
         New-Item -ItemType Directory -Force -Path (Split-Path $ExtListPath) | Out-Null
-        Set-Content -Path $ExtListPath -Value 'res://bin/spine_godot_extension.gdextension' -Encoding UTF8
-        Write-Warn 'extension_list.cfg È±Ê§£¬ÒÑ²¹Ğ´'
+        # ç”¨æ—  BOM çš„ UTF-8 å†™ï¼Œä¸ Godot è‡ªå·±ç”Ÿæˆçš„æ ¼å¼ä¿æŒä¸€è‡´ï¼ˆå¸¦ BOM å¯èƒ½ä¸è¢«è¯†åˆ«ï¼‰
+        $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+        [IO.File]::WriteAllText($ExtListPath, "res://bin/spine_godot_extension.gdextension`n", $utf8NoBom)
+        Write-Warn 'extension_list.cfg ç¼ºå¤±ï¼Œå·²è¡¥å†™ï¼ˆæ—  BOMï¼‰'
     }
-    Write-Ok 'spine À©Õ¹ÓëµÇ¼Ç¾ÍÎ»'
+    Write-Ok 'spine æ‰©å±•å·²ç™»è®°'
 
-    # ¿ÓÈı£ºÁ½Àà½ø³Ì±ØĞëÔÚ¹¹½¨Ç°¹Øµô¡£
-    #   - Godot ±à¼­Æ÷£ºËø×¡ bin\windows\*.dll£¬À©Õ¹¼ÓÔØÊ§°Ü»áµ¼ÖÂ¹Ç¼Ü´Ó pck ÏûÊ§£»
-    #   - ÔËĞĞÖĞµÄÓÎÏ·£ºËø×¡ mods Ä¿Â¼ÀïµÄ <mod>.dll£¬ÈÃ±àÒëºóµÄ¸´ÖÆ²½Öè±¨ MSB3021
-    #     £¨Access to the path ... is denied£©£¬±àÒë°×ÅÜÒ»ÌË¡£
-    # Á½ÕßÍ³Ò»°´½ø³ÌÃûÆ¥ÅäºóÇ¿É±¡£
-    $blockingProcs = @(Get-Process -Name 'Godot*', 'SlayTheSpire2' -ErrorAction SilentlyContinue | Where-Object { $_.Threads.Count -gt 0 })
+    # å¯¼å‡ºé¢„è®¾ï¼šå¯¼å‡ºå¼€å…³ä¸€æ—¦è¢«æ”¹åï¼Œpck å†…å®¹ä¼šé™é»˜ç¼ºæ–¤å°‘ä¸¤ï¼Œè¿™é‡Œæå‰æ‹¦
+    if (-not (Test-Path $PresetPath)) {
+        throw "ç¼ºå°‘å¯¼å‡ºé¢„è®¾ï¼š$PresetPath"
+    }
+    $presetText = Get-Content -Path $PresetPath -Raw
+    if ($presetText -notmatch 'export_filter\s*=\s*"all_resources"') {
+        throw "export_presets.cfg çš„ export_filter ä¸æ˜¯ all_resourcesï¼Œå¯¼å‡ºä¼šæ¼èµ„æºã€‚"
+    }
+    if ($presetText -notmatch 'exclude_filter\s*=\s*"CznHeidemarie\.json"') {
+        Write-Warn 'export_presets.cfg çš„ exclude_filter ä¸æ˜¯ "CznHeidemarie.json"ï¼ˆé¢„æœŸå€¼ï¼‰ï¼Œè¯·ç¡®è®¤æ˜¯å¦æœ‰æ„ä¸ºä¹‹ã€‚'
+    }
+    if ($presetText -notmatch [regex]::Escape(('export_path="{0}"' -f $PckOut))) {
+        throw "export_presets.cfg çš„ export_path ä¸è„šæœ¬çš„ `$PckOut ä¸ä¸€è‡´ï¼š`n  æœŸæœ› $PckOut"
+    }
+    Write-Ok "å¯¼å‡ºé¢„è®¾ã€Œ$PresetNameã€å¼€å…³æ­£å¸¸"
+
+    # å…³æ‰ä¼šå ç”¨çš„è¿›ç¨‹ï¼š
+    #   - Godot ç¼–è¾‘å™¨ä¼šé”ä½ bin\windows\*.dllï¼Œå¯¼è‡´æ‰©å±•åŠ è½½å¤±è´¥ã€éª¨æ¶ä» pck æ¶ˆå¤±
+    #   - è¿è¡Œä¸­çš„æ¸¸æˆä¼šé”ä½ mods ç›®å½•çš„ <mod>.dllï¼Œè®© post-build å¤åˆ¶æŠ¥ MSB3021
+    $blockingProcs = @(Get-Process -Name 'Godot*', 'SlayTheSpire2' -ErrorAction SilentlyContinue)
     if ($blockingProcs.Count -gt 0) {
         $names = ($blockingProcs | Select-Object -ExpandProperty ProcessName -Unique) -join ', '
-        Write-Warn "¼ì²âµ½ $($blockingProcs.Count) ¸öÕ¼ÓÃ½ø³Ì£¨$names£©£¬»áËø×¡À©Õ¹ DLL »ò mods Ä¿Â¼£¬ÕıÔÚ¹Ø±Õ"
-        # µ¥¸ö½ø³Ì¿ÉÄÜÔÚ¼ì²âÓëÖÕÖ¹Ö®¼ä×ÔĞĞÍË³ö£¬»òÈ¨ÏŞ²»×ã£¬¶¼½»¸øÏÂÃæµÄ¸´ºËÍ³Ò»±¨´í¡£
+        Write-Warn "æ£€æµ‹åˆ° $($blockingProcs.Count) ä¸ªå ç”¨è¿›ç¨‹ï¼ˆ$namesï¼‰æ­£åœ¨å…³é—­"
         $blockingProcs | Stop-Process -Force -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 2
-
-        # ¸´ºË£ºStop-Process ¿ÉÄÜÒòÈ¨ÏŞ²»×ã±»¾²Ä¬ºöÂÔ£¬ÕâÀïÈ·ÈÏ½ø³ÌÕæµÄÍË³ö£¬
-        # ·ñÔòºóĞø dotnet build ÈÔ»á¿¨ÔÚ¸´ÖÆÄÇÒ»²½£¬±¨´íĞÅÏ¢»¹¿´²»³ö¸ùÒò¡£
-        $stillAlive = @(Get-Process -Name 'Godot*', 'SlayTheSpire2' -ErrorAction SilentlyContinue | Where-Object { $_.Threads.Count -gt 0 })
-        if ($stillAlive.Count -gt 0) {
-            throw "ÈÔÓĞ $($stillAlive.Count) ¸ö½ø³ÌÎ´ÄÜ¹Ø±Õ£º$(($stillAlive | Select-Object -ExpandProperty ProcessName -Unique) -join ', ')`nÇëÓÃ¹ÜÀíÔ±È¨ÏŞÊÖ¹¤½áÊøËüÃÇºóÔÙÖØÊÔ¡£"
-        }
-        Write-Ok 'Õ¼ÓÃ½ø³ÌÒÑ¹Ø±Õ'
     }
 
-    # ¶µµ×£º¹¤³ÌÀï²»¸Ã³öÏÖ src/ Ä¿Â¼£¨»á±»´ò½ø pck ¸²¸ÇÓÎÏ·±¾Ìå½Å±¾£©
+    # å…³è¿›ç¨‹åªæ˜¯å°½åŠ›è€Œä¸ºï¼šStop-Process åœ¨æƒé™ä¸è¶³æ—¶ä¼šè¢«é™é»˜å¿½ç•¥ï¼Œè€Œä¸”åˆ«çš„å·¥ç¨‹ã€
+    # åˆ«çš„ç”¨æˆ·ä¼šè¯ç•™ä¸‹çš„ Godot è¿›ç¨‹ä¸æœ¬å·¥ç¨‹æ— å…³ã€‚çœŸæ­£è¦ä¿è¯çš„æ˜¯å…³é”®æ–‡ä»¶æ²¡è¢«ç‹¬å ï¼Œ
+    # æ‰€ä»¥è¿™é‡Œç›´æ¥æµ‹æ–‡ä»¶é”ï¼Œä¸çœ‹è¿›ç¨‹è¿˜åœ¨ä¸åœ¨ã€‚
+    $spineDlls = @(Get-ChildItem (Join-Path $ProjectDir 'bin\windows') -Filter '*.dll' -ErrorAction SilentlyContinue)
+    $lockedDlls = @($spineDlls | Where-Object { Test-FileLocked -Path $_.FullName })
+    if ($lockedDlls.Count -gt 0) {
+        $alive = @(Get-Process -Name 'Godot*', 'SlayTheSpire2' -ErrorAction SilentlyContinue)
+        $aliveNames = ($alive | Select-Object -ExpandProperty ProcessName -Unique) -join ', '
+        throw "spine æ‰©å±•è¢«å ç”¨ï¼Œæ— æ³•åŠ è½½æ‰©å±•ï¼ˆå¯¼å‡ºåéª¨æ¶ä¼šæ•´ä½“ä¸¢å¤±ï¼‰ï¼š`n  - $(($lockedDlls | Select-Object -ExpandProperty Name) -join "`n  - ")`nä»å­˜æ´»çš„è¿›ç¨‹ï¼š$aliveNames`nè¯·æ‰‹åŠ¨å…³é—­è¿™äº›è¿›ç¨‹ï¼ˆå¯èƒ½éœ€ç®¡ç†å‘˜æƒé™ï¼‰ï¼Œæˆ–é‡å¯åå†è¯•ã€‚"
+    }
+    if ($blockingProcs.Count -gt 0) {
+        Write-Ok 'å ç”¨è¿›ç¨‹å·²å…³é—­'
+    }
+    Write-Ok 'spine æ‰©å±•æœªè¢«å ç”¨'
+
+    # å…œåº•ï¼šå·¥ç¨‹æ ¹ä¸èƒ½å‡ºç° src/ï¼Œå®ƒä¼šè¢«æ‰“è¿› pck å¹¶å’Œæ¸¸æˆæœ¬ä½“çš„ res://src/ æ’å
     if (Test-Path (Join-Path $ProjectDir 'src')) {
-        throw "¹¤³ÌÀï´æÔÚ src/ Ä¿Â¼ ¡ª¡ª Ëü»á±»´ò½ø pck ²¢¸²¸ÇÓÎÏ·±¾ÌåµÄ res://src/£¬ÇëÉ¾µôºóÔÙ´ò°ü¡£"
+        throw "å·¥ç¨‹æ ¹å­˜åœ¨ src/ ç›®å½•ï¼Œä¼šè¢«æ‰“è¿› pck å¹¶å’Œæ¸¸æˆæœ¬ä½“çš„ res://src/ å†²çªï¼Œè¯·åˆ é™¤åé‡è¯•ã€‚"
     }
-    Write-Ok '¹¤³ÌÄÚÎŞ src/ Ä¿Â¼'
+    Write-Ok 'å·¥ç¨‹æ ¹æ²¡æœ‰ src/ ç›®å½•'
 
-    # ©¤©¤ 1. ±àÒë C# ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+    # â”€â”€ æ­¥éª¤ 1. ç¼–è¯‘ C# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if ($SkipBuild) {
-        Write-Step 'Ìø¹ı±àÒë£¨-SkipBuild£©'
-        Write-Note 'dll ²»»á¸üĞÂ£¬Ö»ÓĞ pck »áÖØĞÂµ¼³ö'
+        Write-Step 'è·³è¿‡ç¼–è¯‘ï¼ˆ-SkipBuildï¼‰'
+        Write-Note 'dll ä¸ä¼šæ›´æ–°ï¼Œä¸‹é¢çš„äº§ç‰©æ ¡éªŒåªèƒ½ç¡®è®¤å®ƒå­˜åœ¨ã€ä¸æ¯”æºç æ—§'
     }
     else {
-        Write-Step "±àÒë C#£¨$Configuration£©"
+        Write-Step "ç¼–è¯‘ C#ï¼ˆ$Configurationï¼‰"
         Push-Location $ProjectDir
         try {
             & dotnet build "$ModName.csproj" -c $Configuration -v minimal --nologo
             if ($LASTEXITCODE -ne 0) {
-                throw "dotnet build Ê§°Ü£¨ÍË³öÂë $LASTEXITCODE£©"
+                throw "dotnet build å¤±è´¥ï¼ˆé€€å‡ºç  $LASTEXITCODEï¼‰ã€‚"
             }
         }
         finally {
             Pop-Location
         }
-
-        $dllPath = Join-Path $ModDir "$ModName.dll"
-        if (-not (Test-Path $dllPath)) {
-            throw "±àÒë³É¹¦µ« mods Ä¿Â¼ÀïÃ»ÓĞ dll£º$dllPath"
-        }
-        Write-Ok "dll ÒÑ¾ÍÎ»£¨$([math]::Round((Get-Item $dllPath).Length / 1KB, 1)) KB£©"
     }
 
-    # ©¤©¤ 2. µ¼Èë×ÊÔ´ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-    if ($SkipImport) {
-        Write-Step 'Ìø¹ı×ÊÔ´µ¼Èë£¨-SkipImport£©'
+    # ç¼–è¯‘äº§ç‰©æ–­è¨€ï¼šdll/json å¿…é¡»åœ¨ mods ç›®å½•ï¼Œä¸” dll å¿…é¡»æ˜¯æœ¬æ¬¡ç¼–è¯‘çš„äº§ç‰©
+    $dllPath  = Join-Path $ModDir "$ModName.dll"
+    $jsonPath = Join-Path $ModDir "$ModName.json"
+
+    if (-not (Test-Path $dllPath)) {
+        throw "mods ç›®å½•é‡Œæ²¡æœ‰ dllï¼š$dllPath`nï¼ˆcsproj çš„ post-build ä¼šæŠŠ dll å¤åˆ¶è¿‡å»ï¼›-SkipBuild æ—¶è¯·å…ˆå®Œæ•´æ„å»ºä¸€æ¬¡ï¼‰"
+    }
+    if (-not (Test-Path $jsonPath)) {
+        throw "mods ç›®å½•é‡Œæ²¡æœ‰æ¸…å• jsonï¼š$jsonPath`nï¼ˆcsproj çš„ post-build ä¼šå¤åˆ¶å®ƒï¼Œè¯·ç¡®è®¤å·¥ç¨‹æ ¹æœ‰ $ModName.jsonï¼‰"
+    }
+
+    $dllItem = Get-Item $dllPath
+    if ($SkipBuild) {
+        Write-Note "dll å·²å­˜åœ¨ï¼ˆ$($dllItem.LastWriteTime.ToString('yyyy-MM-dd HH:mm:ss'))ï¼Œæœªæ ¡éªŒæ˜¯å¦ä¸ºæœ€æ–°ç¼–è¯‘äº§ç‰©ï¼‰"
     }
     else {
-        Write-Step 'µ¼Èë×ÊÔ´£¨Godot --import£©'
-        # --import ÔÚ headless ÏÂÊÕÎ²Ê±¿ÉÄÜ×Ô¼º±ÀÒ»´Î£¨C# ±à¼­Æ÷²å¼şµÄÒÑÖªÔëÒô£©£¬
-        # ËùÒÔ²»¿´ÍË³öÂë£¬¸Ä¿´µ¼Èë²úÎïÊÇ·ñÕæµÄÉú³É¡£
-        # Ö»ÌôÕæÕıÒªºÍ spine À©Õ¹ / mod ×ÔÓĞ×ÊÔ´ÓĞ¹ØµÄ±¨´í£¬ÆäÓà£¨Èç res://src/...£©
-        # ÊÇ¿ç pck ÒıÓÃµÄÔ¤ÆÚÔëÒô£¬²»Ë¢ÆÁ¡£
+        # ä¸èƒ½ç”¨ã€Œdll æ—¶é—´æˆ³ â‰¥ æœ¬æ¬¡ç¼–è¯‘å¼€å§‹æ—¶é—´ã€åˆ¤æ–­ â€”â€” dotnet build æ˜¯å¢é‡çš„ï¼Œ
+        # æºç æ²¡æ”¹æ—¶è¾“å‡º dll çš„æ—¶é—´æˆ³ä¿æŒä¸Šä¸€æ¬¡çš„å€¼ï¼Œpost-build çš„ Copy
+        # SkipUnchangedFiles ä¹Ÿæ­£å› æ­¤ä¸å†å¤åˆ¶ï¼Œä¼šæŠŠæ­£å¸¸æƒ…å†µè¯¯åˆ¤æˆå¤åˆ¶å¤±è´¥ã€‚
+        # çœŸæ­£è¦ä¿è¯çš„æ˜¯ã€Œmods é‡Œçš„ dll ä¸æ¯”æºç æ—§ã€ï¼Œå³æ²¡æœ‰æ¼æ‰æŸæ¬¡ç¼–è¯‘ã€‚
+        $newestSource = Get-ChildItem -Path $ProjectDir -Recurse -Filter '*.cs' -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -notmatch '\\(obj|bin|\.godot|\.vs|\.nuget-feed|\.nuget-packages|\.stage_out)\\' } |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+        if ($newestSource -and $dllItem.LastWriteTime -lt $newestSource.LastWriteTime.AddSeconds(-10)) {
+            throw "mods ç›®å½•çš„ dll æ¯”æœ€æ–°æºç è¿˜æ—§ï¼Œpost-build å¤åˆ¶æ²¡ç”Ÿæ•ˆï¼š`n  dll  $($dllItem.LastWriteTime.ToString('yyyy-MM-dd HH:mm:ss'))`n  æºç  $($newestSource.LastWriteTime.ToString('yyyy-MM-dd HH:mm:ss'))  $($newestSource.Name)"
+        }
+    }
+
+    $jsonText = Get-Content -Path $jsonPath -Raw
+    if ($jsonText -notmatch '"has_pck"\s*:\s*true') {
+        Write-Warn "$ModName.json é‡Œ has_pck ä¸æ˜¯ trueï¼Œæ¸¸æˆå¯èƒ½ä¸ä¼šæŒ‚è½½ pck"
+    }
+    if ($jsonText -notmatch '"has_dll"\s*:\s*true') {
+        Write-Warn "$ModName.json é‡Œ has_dll ä¸æ˜¯ trueï¼Œæ¸¸æˆå¯èƒ½ä¸ä¼šåŠ è½½ dll"
+    }
+    Write-Ok "dll å·²å°±ä½ï¼ˆ$([math]::Round($dllItem.Length / 1KB, 1)) KBï¼‰ï¼Œæ¸…å• json å·²å°±ä½"
+
+    # â”€â”€ æ­¥éª¤ 2. å¯¼å…¥èµ„æº â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    if ($SkipImport) {
+        Write-Step 'è·³è¿‡èµ„æºå¯¼å…¥ï¼ˆ-SkipImportï¼‰'
+    }
+    else {
+        Write-Step 'å¯¼å…¥èµ„æºï¼ˆGodot --importï¼‰'
+        # --import åªå…³å¿ƒ spine æ‰©å±•ä¸ mod èµ„æºç›¸å…³çš„æŠ¥é”™ï¼Œ
+        # åˆ«çš„åœ°æ–¹ï¼ˆå¦‚ res://src/... è¿™ç±»è·¨ pck å¼•ç”¨ï¼‰æ˜¯é¢„æœŸå™ªéŸ³ï¼Œåˆ·å±æ— ç”¨ã€‚
         Invoke-Godot @('--headless', '--path', $ProjectDir, '--import') |
             Select-String -Pattern 'Cannot open GDExtension|Error loading extension|Failed loading resource: res://CznHeidemarie' |
             ForEach-Object { Write-Warn $_.ToString().Trim() }
     }
 
-    $spskel = @(Get-ChildItem $ImportedDir -Filter '*.spskel' -ErrorAction SilentlyContinue)
+    $spskel  = @(Get-ChildItem $ImportedDir -Filter '*.spskel'  -ErrorAction SilentlyContinue)
     $spatlas = @(Get-ChildItem $ImportedDir -Filter '*.spatlas' -ErrorAction SilentlyContinue)
     if ($spskel.Count -eq 0 -or $spatlas.Count -eq 0) {
-        throw "È±ÉÙ spine µ¼Èë²úÎï£¨.spskel/.spatlas£©¡ª¡ª À©Õ¹Ã»ÉúĞ§£¬µ¼³ö»á¶ª¹Ç¼Ü¡£`nÏÈÈ·ÈÏÃ»ÓĞ Godot ½ø³ÌÕ¼ÓÃ bin\windows\*.dll£¬ÔÙÖØÅÜ¡£"
+        throw "ç¼ºå°‘ spine å¯¼å…¥äº§ç‰©ï¼ˆ.spskel/.spatlasï¼‰ï¼Œè¯´æ˜æ‰©å±•æ²¡ç”Ÿæ•ˆï¼Œå¯¼å‡ºåå¿…ç„¶ä¸¢éª¨æ¶ã€‚`nè¯·ç¡®è®¤æ²¡æœ‰ Godot è¿›ç¨‹å ç”¨ bin\windows\*.dll åé‡è¯•ã€‚"
     }
-    Write-Ok "¹Ç¼Ü²úÎï¾ÍÎ»£º$($spskel.Name) $([math]::Round($spskel[0].Length / 1MB, 2)) MB"
+    Write-Ok "å¯¼å…¥äº§ç‰©å°±ä½ï¼š.spskel $($spskel.Count) ä¸ªã€.spatlas $($spatlas.Count) ä¸ª"
 
-    # ©¤©¤ 3. µ¼³ö pck ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-    Write-Step 'µ¼³ö pck'
+    # â”€â”€ æ­¥éª¤ 3. å¯¼å‡º pck â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Write-Step 'å¯¼å‡º pck'
     New-Item -ItemType Directory -Force -Path $ModDir | Out-Null
     Remove-Item $PckOut -Force -ErrorAction SilentlyContinue
 
-    # Ô¤ÉèÃûº¬¿Õ¸ñ£¬±ØĞë°´Êı×éÖğÏî´«²Î£»
-    # Start-Process -ArgumentList @('--export-pack','Windows Desktop',$out)
-    # »á±»°´¿Õ¸ñ²ğ³É 'Windows' + 'Desktop'£¬±¨ Invalid export preset name: Windows¡£
+    # é¢„è®¾åå«ç©ºæ ¼ï¼Œå¿…é¡»ç”¨è°ƒç”¨è¿ç®—ç¬¦ & æ•´ä½“ä¼ å…¥ä¸€ä¸ªå‚æ•°ã€‚
+    # ç”¨ Start-Process -ArgumentList @('--export-pack','Windows Desktop',$out) ä¼šè¢«
+    # æŒ‰ç©ºæ ¼æ‹†æˆ 'Windows' + 'Desktop'ï¼ŒæŠ¥ Invalid export preset name: Windowsã€‚
     $godotOut = Invoke-Godot @('--headless', '--path', $ProjectDir, '--export-pack', $PresetName, $PckOut)
     $exportExitCode = $LASTEXITCODE
     $godotOut | Select-Object -Last 3 | ForEach-Object { Write-Note $_.ToString().Trim() }
 
     if ($exportExitCode -ne 0) {
-        throw "µ¼³öÊ§°Ü£¨ÍË³öÂë $exportExitCode£©"
+        throw "å¯¼å‡ºå¤±è´¥ï¼ˆé€€å‡ºç  $exportExitCodeï¼‰ã€‚"
     }
     if (-not (Test-Path $PckOut)) {
-        throw "µ¼³öÃüÁî½áÊøÁË£¬µ«Ã»ÓĞ²ú³ö pck£º$PckOut"
+        throw "Godot æŠ¥æˆåŠŸï¼Œä½†æ²¡äº§å‡º pckï¼š$PckOut"
     }
-    Write-Ok 'pck ÒÑĞ´³ö'
+    Write-Ok 'pck å·²å†™å‡º'
 
-    # ©¤©¤ 4. ×Ô¼ì ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-    Write-Step '×Ô¼ì'
+    # â”€â”€ æ­¥éª¤ 4. è‡ªæ£€ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Write-Step 'è‡ªæ£€'
 
-    $pckSize = (Get-Item $PckOut).Length
-    Write-Note ("pck Ìå»ı£º{0:N2} MB" -f ($pckSize / 1MB))
-    if ($pckSize -lt $MinPckBytes) {
-        throw ("pck Ö»ÓĞ {0:N0} KB£¬Ô¶µÍÓÚÕı³£Öµ£¨Ô¼ 3.6 MB£©¡ª¡ª ¹Ç¼Ü´ó¸ÅÂÊ¶ªÁË¡£`nÅÅ´íË³Ğò£º¢Ù .gitignore ÓĞÎŞ bin/ ¢Ú bin/.gdignore ÊÇ·ñ´æÔÚ ¢Û bin/ ÏÂÀ©Õ¹ÊÇ·ñÍêÕû¡£" -f ($pckSize / 1KB))
+    $pckItem = Get-Item $PckOut
+    $pckSize = [long]$pckItem.Length
+    Write-Note ("pck ä½“ç§¯ {0:N2} MB" -f ($pckSize / 1MB))
+
+    if ($pckSize -lt $MinPckBytes -or $pckSize -gt $MaxPckBytes) {
+        throw ("pck ä½“ç§¯ {0:N2} MB è¶…å‡ºé¢„æœŸåŒºé—´ {1:N0}â€“{2:N0} MBã€‚`nå¤ªå°é€šå¸¸æ˜¯éª¨æ¶ä¸¢å¤±ï¼ˆæ•…éšœæ€çº¦ 0.5 MBï¼‰ï¼Œæ’æŸ¥é¡ºåºï¼š`n  â‘  .gitignore æ˜¯å¦å« bin/ â‘¡ bin/.gdignore æ˜¯å¦å­˜åœ¨ â‘¢ bin/ ä¸‹æ‰©å±•æ˜¯å¦é½å…¨" -f `
+            ($pckSize / 1MB), ($MinPckBytes / 1MB), ($MaxPckBytes / 1MB))
     }
 
-    # pck Î´¼ÓÃÜ£¬ÎÄ¼ş±íÊÇÃ÷ÎÄÂ·¾¶£¬Ö±½Ó°´ÎÄ±¾ËÑ¹Ø¼ü×ÊÔ´
-    $pckText = [Text.Encoding]::UTF8.GetString([IO.File]::ReadAllBytes($PckOut))
-    $missing = @($RequiredInPck | Where-Object { -not $pckText.Contains($_) })
-    if ($missing.Count -gt 0) {
-        throw "pck È±ÉÙ¹Ø¼ü×ÊÔ´£º`n  - $($missing -join "`n  - ")"
-    }
-    Write-Ok "¹Ø¼ü×ÊÔ´È«²¿ÃüÖĞ£¨$($RequiredInPck.Count) Ïî£©"
+    # è§£æçœŸå®æ–‡ä»¶è¡¨ã€‚pck é‡Œå« 468 ä¸ª .csï¼Œå…¨æ–‡æœæ–‡æœ¬ä¼šè¢«æºç é‡Œçš„è·¯å¾„å¸¸é‡éª—åˆ°ï¼Œ
+    # æ‰€ä»¥å¿…é¡»è¯»ç´¢å¼•æ‹¿çœŸå€¼ã€‚Read-PckIndex åªè¯»å¤´éƒ¨ + ç´¢å¼•åŒºï¼Œä¸æ•´åŒ…è¯»å…¥å†…å­˜ã€‚
+    $swVerify = [Diagnostics.Stopwatch]::StartNew()
+    $idx = Read-PckIndex -Path $PckOut
+    $swVerify.Stop()
+    Write-Note "æ–‡ä»¶è¡¨è§£ææˆåŠŸï¼š$($idx.Count) æ¡æ¡ç›®ï¼Œæ ¼å¼ ver=$($idx.Version) pack=$($idx.PackVersion)ï¼ˆè€—æ—¶ $($swVerify.ElapsedMilliseconds) msï¼‰"
 
-    # ©¤©¤ 5. ½»¸¶Îï ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-    Write-Step '½»¸¶Îï'
+    if ($idx.Version -ne '4.5.1') {
+        throw "pck æ ¼å¼ç‰ˆæœ¬æ˜¯ $($idx.Version)ï¼Œä¸æ˜¯æ¸¸æˆè¦æ±‚çš„ 4.5.1 â€”â€” å¤šåŠæ˜¯ç”¨äº†æ›´é«˜ç‰ˆæœ¬çš„ Godot å¯¼å‡ºã€‚"
+    }
+
+    # 4-1. è§„æ¨¡ä¸‹é™
+    if ($idx.Count -lt $MinEntryCount) {
+        throw "pck åªæœ‰ $($idx.Count) æ¡æ¡ç›®ï¼ˆä¸‹é™ $MinEntryCountï¼‰ï¼Œèµ„æºç–‘ä¼¼å¤§é¢ç§¯ç¼ºå¤±ã€‚"
+    }
+
+    # è®¡æ•°ä¸å‰ç¼€å‘½ä¸­ä¸€æ¬¡éå†å®Œæˆï¼šæ—§å®ç°ç”¨ Where-Object ç®¡é“æŠŠ 1800+ ä¸ªåå­—è¿‡æ»¤ 12 éï¼Œ
+    # æ¯ééƒ½è¦èµ°è„šæœ¬å—ï¼Œæ˜¯æ ¡éªŒé˜¶æ®µçš„æ¬¡è¦è€—æ—¶ç‚¹ã€‚
+    $spskelInPck = 0; $spatlasInPck = 0; $ctexInPck = 0
+    $hitPrefix = New-Object 'System.Collections.Generic.HashSet[string]'
+    foreach ($name in $idx.Names) {
+        if ($name.EndsWith('.spskel')) { $spskelInPck++ }
+        elseif ($name.EndsWith('.spatlas')) { $spatlasInPck++ }
+        elseif ($name.EndsWith('.ctex')) { $ctexInPck++ }
+
+        foreach ($prefix in $RequiredPrefix) {
+            if ($name.StartsWith($prefix)) { [void]$hitPrefix.Add($prefix); break }
+        }
+    }
+
+    $scale = ".spskel $spskelInPck / .spatlas $spatlasInPck / .ctex $ctexInPck"
+    if ($spskelInPck -lt $MinSpskelCount -or $spatlasInPck -lt $MinSpatlasCount -or $ctexInPck -lt $MinCtexCount) {
+        throw "pck é‡Œå¯¼å…¥äº§ç‰©æ•°é‡ä¸è¶³ï¼ˆ$scaleï¼‰ï¼Œä¸‹é™ .spskel $MinSpskelCount / .spatlas $MinSpatlasCount / .ctex $MinCtexCountã€‚`néª¨æ¶å¤šåŠä¸¢äº†ï¼Œè§ã€Œæ‰“åŒ…è¸©å‘ä¸è§£å†³æ–¹æ¡ˆ.mdã€ç¬¬äº”èŠ‚å†³ç­–æ ‘ã€‚"
+    }
+    Write-Ok "pck å†…å¯¼å…¥äº§ç‰©æ•°é‡æ­£å¸¸ï¼ˆ$scaleï¼‰"
+
+    # 4-2. å…³é”®èµ„æºç²¾ç¡®åŒ¹é…
+    $missingExact = @($RequiredExact | Where-Object { -not $idx.NameSet.Contains($_) })
+    if ($missingExact.Count -gt 0) {
+        throw "pck ç¼ºå°‘å…³é”®èµ„æºï¼š`n  - $($missingExact -join "`n  - ")"
+    }
+
+    # 4-3. å¯¼å…¥äº§ç‰©å‰ç¼€åŒ¹é…ï¼ˆåç¼€æ˜¯å†…å®¹å“ˆå¸Œï¼Œåªèƒ½æ¯”å¯¹å‰ç¼€ï¼‰
+    $missingPrefix = @($RequiredPrefix | Where-Object { -not $hitPrefix.Contains($_) })
+    if ($missingPrefix.Count -gt 0) {
+        throw "pck ç¼ºå°‘å¯¼å…¥äº§ç‰©ï¼ˆå‰ç¼€ï¼‰ï¼š`n  - $($missingPrefix -join "`n  - ")`nè¯´æ˜æºèµ„æºåœ¨ï¼Œä½†å¯¼å…¥äº§ç‰©æ²¡è¿› pckã€‚"
+    }
+
+    Write-Ok "å…³é”®èµ„æºå…¨éƒ¨å‘½ä¸­ï¼ˆç²¾ç¡® $($RequiredExact.Count) é¡¹ + å‰ç¼€ $($RequiredPrefix.Count) é¡¹ï¼‰"
+    if ($idx.TailBytes -ne 0) {
+        Write-Warn "æ–‡ä»¶è¡¨è§£æåæœ‰ $($idx.TailBytes) å­—èŠ‚å°¾æ•°æ®ï¼ˆå¯èƒ½æ˜¯æ ¼å¼æ‰©å±•ï¼‰ï¼Œéè‡´å‘½ã€‚"
+    }
+
+    # â”€â”€ æ­¥éª¤ 5. äº¤ä»˜æ¸…å• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    Write-Step 'äº¤ä»˜ç‰©'
     Get-ChildItem $ModDir |
         Select-Object Name,
-            @{ Name = '´óĞ¡'; Expression = {
+            @{ Name = 'å¤§å°'; Expression = {
                     if ($_.Length -ge 1MB) { "{0:N2} MB" -f ($_.Length / 1MB) }
                     elseif ($_.Length -ge 1KB) { "{0:N1} KB" -f ($_.Length / 1KB) }
                     else { "{0:N0} B" -f $_.Length }
@@ -294,12 +660,12 @@ try {
             LastWriteTime |
         Format-Table -AutoSize
 
-    Write-Host "´ò°üÍê³É" -ForegroundColor Green
+    Write-Host "æ„å»ºå®Œæˆ" -ForegroundColor Green
     Write-Host "  $ModDir" -ForegroundColor Green
     Write-Host ""
 }
 catch {
     Write-Host ""
-    Write-Host "´ò°üÊ§°Ü£º$($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "æ„å»ºå¤±è´¥ï¼š$($_.Exception.Message)" -ForegroundColor Red
     exit 1
 }

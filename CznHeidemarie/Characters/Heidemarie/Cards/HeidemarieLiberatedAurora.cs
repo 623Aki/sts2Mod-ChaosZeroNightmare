@@ -38,7 +38,18 @@ public sealed class HeidemarieLiberatedAurora : HeidemarieCard, IUniqueCard, IBu
 	private const decimal PercentPerSword = 100m;
 
 	/// <inheritdoc/>
-	protected override string FallbackPortraitPath => "res://images/atlases/card_atlas.sprites/ironclad/strike_ironclad.tres";
+	/// <remarks>
+	/// 本卡走「全屏卡」，实际显示的是<b>动态卡面</b>：由
+	/// <c>Registration/HeidemarieAnimatedCardArt.cs</c> + <c>scenes/cards/heidemarie_card_art.tscn</c>
+	/// 把素材区 <c>CNZ_Source/czn30093/card/unique_30093_06</c> 的卡面 Spine 骨架渲染成实时贴图，
+	/// 覆盖到古代布局的 <c>%AncientPortrait</c> 上。
+	///
+	/// <para>这里返回的静态图是<b>兜底</b>：渲染器没就绪或加载失败时，卡面至少还是一张正常的画。
+	/// 它已预裁成卡面比例 300:422（420x591）—— 古代立绘窗口是硬拉伸填满
+	/// （<c>expand_mode=IgnoreSize</c> + 默认 <c>stretch_mode=SCALE</c>），
+	/// 不预裁就会被拉宽约 7%。</para>
+	/// </remarks>
+	protected override string FallbackPortraitPath => "res://CznHeidemarie/images/card_art/heidemarie_liberated_aurora.png";
 
 	/// <inheritdoc/>
 	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(1)
@@ -71,9 +82,20 @@ public sealed class HeidemarieLiberatedAurora : HeidemarieCard, IUniqueCard, IBu
 	/// </remarks>
 	public override bool CanBeGeneratedByModifiers => false;
 
-	/// <summary>0 费、攻击、衍生牌（Token）、目标为任意敌人。</summary>
+	/// <summary>
+	/// 0 费、攻击、<b>古代牌</b>（= 全幅立绘卡）、目标为任意敌人。
+	///
+	/// <para><b>为什么稀有度是 <see cref="CardRarity.Ancient"/></b>：这就是本卡「全屏卡」的实现方式 ——
+	/// 游戏的 <c>NCard</c> 对古代牌有一整套现成的全幅立绘布局（显示 <c>%AncientPortrait</c> 铺满整卡、
+	/// <c>%AncientBorder</c> 边框、<c>%AncientTextBg</c> 文字底板、<c>%AncientBanner</c> 标题横幅，
+	/// 同时隐藏 <c>%Portrait</c> / <c>%PortraitBorder</c> / <c>%Frame</c>），
+	/// 参考 mod 的「超究武神霸斩」用的也是这一招，不需要任何补丁或自绘几何。</para>
+	///
+	/// <para>副作用为零：本卡不在 <see cref="HeidemarieCardPool"/> 里，
+	/// 因此奖励 / 商店 / 变形 / <c>DustyTome</c> 的「随机古代牌」都取不到它。</para>
+	/// </summary>
 	public HeidemarieLiberatedAurora()
-		: base(0, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy)
+		: base(0, CardType.Attack, CardRarity.Ancient, TargetType.AnyEnemy)
 	{
 	}
 

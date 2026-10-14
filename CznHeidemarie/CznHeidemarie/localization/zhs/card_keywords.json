@@ -8,7 +8,7 @@
   "HEIDEMARIE_KEYWORD_GRAVE_KEEP.title": "守墓",
   "HEIDEMARIE_KEYWORD_GRAVE_KEEP.description": "洗牌时，此卡不会移动至抽牌堆。",
   "HEIDEMARIE_KEYWORD_RECYCLE.title": "回收",
-  "HEIDEMARIE_KEYWORD_RECYCLE.description": "此卡牌移入墓地时返回手牌，效果发动时回收-1。",
+  "HEIDEMARIE_KEYWORD_RECYCLE.description": "此卡牌移入弃牌堆时返回手牌，效果发动时回收-1。",
   "HEIDEMARIE_KEYWORD_TERMINATE.title": "终结",
   "HEIDEMARIE_KEYWORD_TERMINATE.description": "使用此卡牌后立即结束本回合。",
   "HEIDEMARIE_KEYWORD_UNIQUE.title": "唯一",

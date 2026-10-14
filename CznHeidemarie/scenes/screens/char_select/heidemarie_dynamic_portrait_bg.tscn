@@ -18,10 +18,18 @@
 ;   两档动感与构图都不重复。
 ;
 ; 标定（设计坐标系 1920x1080，运行时按 cover 比例整体映射）：
-;   骨架自带包围盒 561.22 x 1017.93（原点在包围盒左下角，Spine 为 y 向上）。
-;   缩放 1.06 = 1080 / 1017.93，让人物高度基本撑满画面；
-;   X 883 = 人物的水平中心落在设计坐标 x≈1180（偏右，给左侧 UI 留位置）；
-;   Y 1090 = 骨架原点压在画面底边略下方，避免脚下留白。
+;   ⚠️ 2026-10-14 修正：原标定把「骨架原点在包围盒左下角」当前提（position (883,1090)、
+;      scale 1.06 = 1080 / 1017.93），实测不成立 —— 文件头标称的 561.22 x 1017.93
+;      确实等于 get_bounds() 的尺寸，但它的原点是 (-309.88, -421.93)（人物腰部附近），
+;      不是 (0,0)。于是整条人物被推到屏幕下方，只剩头部露出。
+;   边界与标定全部按 CZN_Viewer 的 headless 采样（Skeleton.get_bounds() 取 idle 全程并集）：
+;        x ∈ [-305.90, 259.63]（宽 565.53，中心 -23.14）
+;        y ∈ [-420.80, 596.00]（高 1016.80，Spine y 向上，底 -420.80）
+;
+;   目标：人物完整可见、水平中心落在设计坐标 x≈1203、脚底落在 y≈1060：
+;     scale 0.98 ≈ 人物高 996 / 并集高 1016.80
+;     X 1203 = 1180 - 0.98 * (-23.14)
+;     Y  648 = 1060 - 0.98 * (-420.80)   （Spine y 向上，屏幕 y = Y - scale * y）
 ;   ⚠️ 背景图是 1604x804（≈2:1），cover 到 1920x1080 时左右各裁约 117px；
 ;      人物与场景圆台的相对位置需进游戏（或 CZN_AnimLab）实测微调。
 
@@ -48,8 +56,8 @@ stretch_mode = 6
 metadata/czn_asset_source = "event/bg_event_nodelist_30093_2"
 
 [node name="Portrait" type="SpineSprite" parent="."]
-position = Vector2(883, 1090)
-scale = Vector2(1.06, 1.06)
+position = Vector2(1203, 648)
+scale = Vector2(0.98, 0.98)
 skeleton_data_res = ExtResource("2_portrait")
 preview_skin = "normal"
 preview_animation = "idle"

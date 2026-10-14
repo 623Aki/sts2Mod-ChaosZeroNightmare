@@ -316,6 +316,10 @@ internal static class HeidemarieCinematicRuntime
 			if (!allowed)
 			{
 				Log($"全屏演出跳过 route={route} 预判={forecast.Forecast}（{forecast.Reason}）");
+
+				// 演出不接管，但单体特效那边已经因为「演出开着」让位了 ——
+				// 这里补播一次常规特效，否则大招会退化成「只有一段身体动作」。
+				HeidemarieMoveEffectsRuntime.PlayFallback(card!, command.CardPlay?.Target);
 				return;
 			}
 
@@ -332,6 +336,20 @@ internal static class HeidemarieCinematicRuntime
 	/// 「左侧角色演出」选「带全屏演出的卡牌」那一档时用它筛牌。
 	/// </summary>
 	internal static bool HasCinematicRoute(CardModel? card) => ResolveRoute(card) is not null;
+
+	/// <summary>
+	/// 这张牌打出时，全屏演出**会不会接管画面**。
+	///
+	/// <para>单体特效的触发点（<c>CardPlayEnqueuingEvent</c>）早于本类的演出判定，
+	/// 它拿不到「致死预判是否通过」的结论，只能先问一句「演出开不开」：
+	/// 演出开着就让位（屏幕会被黑幕整块盖住，再叠常规特效只会互相打架），
+	/// 演出关着就照常播常规特效。</para>
+	///
+	/// <para>「演出开着但预判不通过」这一档由
+	/// <see cref="HeidemarieMoveEffectsRuntime.PlayFallback"/> 补播，见
+	/// <see cref="TryBeginFromAttack"/>。</para>
+	/// </summary>
+	internal static bool WillTakeOver(CardModel? card) => HasCinematicRoute(card) && IsEnabled();
 
 	/// <summary>立刻收尾当前演出（设置里关掉「战斗特效 / 出牌演出」时调用）。</summary>
 	internal static void CancelAll() => CancelFor(null, "settings_disabled");

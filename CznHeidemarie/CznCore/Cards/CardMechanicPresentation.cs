@@ -61,7 +61,26 @@ public static class CardMechanicPresentation
 		}
 	}
 
+	/// <summary>
+	/// 取词条的**卡面名**：带金色标记、不含句号（形如 <c>[gold]连接[/gold]</c>），
+	/// 供模板里的 <c>{XName}</c> 使用（如「感应：…」这种后接说明的写法）。
+	///
+	/// <para>带色是为了与行内形态 <c>{X}</c>（<see cref="GetCardText"/>）观感一致 ——
+	/// 卡面上的关键字名统一是金色。</para>
+	/// </summary>
 	public static string GetCardName(CardMechanicDefinition definition)
+	{
+		Validate(definition);
+		return ColorizeCardName(GetPlainCardName(definition));
+	}
+
+	/// <summary>
+	/// 取词条的**纯文本名**（不含金色标记与句号）。
+	///
+	/// <para>只有需要自行拼接（如把层数并进名字再整体上色）时才用它；
+	/// 直接展示请用 <see cref="GetCardName"/>。</para>
+	/// </summary>
+	public static string GetPlainCardName(CardMechanicDefinition definition)
 	{
 		Validate(definition);
 		return Title(definition).GetFormattedText();
@@ -70,7 +89,14 @@ public static class CardMechanicPresentation
 	public static string GetCardText(CardMechanicDefinition definition)
 	{
 		Validate(definition);
-		return FormatCardText(Title(definition).GetFormattedText());
+		return FormatCardText(GetPlainCardName(definition));
+	}
+
+	/// <summary>把词条名包成卡面用的金色标记（不含句号）。</summary>
+	public static string ColorizeCardName(string mechanicName)
+	{
+		ArgumentException.ThrowIfNullOrWhiteSpace(mechanicName, "mechanicName");
+		return "[gold]" + mechanicName + "[/gold]";
 	}
 
 	/// <summary>
@@ -78,13 +104,12 @@ public static class CardMechanicPresentation
 	///
 	/// <para>与 <see cref="GetCardText"/> 的唯一区别是词条名由调用方给出 ——
 	/// 带层数的词条（「回收2」）要复用同一套格式，而层数是运行期状态，
-	/// 定义里那个固定的 title 不够用。</para>
+	/// 定义里那个固定的 title 不够用。传入的应是**纯文本名**（未经 <see cref="ColorizeCardName"/>）。</para>
 	/// </summary>
 	public static string FormatCardText(string mechanicName)
 	{
-		ArgumentException.ThrowIfNullOrWhiteSpace(mechanicName, "mechanicName");
 		string rawText = new LocString("card_keywords", "PERIOD").GetRawText();
-		return "[gold]" + mechanicName + "[/gold]" + rawText;
+		return ColorizeCardName(mechanicName) + rawText;
 	}
 
 	private static LocString Title(CardMechanicDefinition definition)

@@ -36,7 +36,8 @@ public sealed class HeidemarieTokenPool : CardPoolModel
 	public override string EnergyColorName => "heidemarie";
 
 	/// <inheritdoc/>
-	public override string CardFrameMaterialPath => "card_frame_red";
+	/// <remarks>与 <see cref="HeidemarieCardPool"/> 保持一致（本池的牌 <c>Pool</c> 也指回角色池）。</remarks>
+	public override string CardFrameMaterialPath => "card_frame_heidemarie";
 
 	/// <inheritdoc/>
 	public override Color DeckEntryCardColor => new Color("C8B6E2");
@@ -52,6 +53,9 @@ public sealed class HeidemarieTokenPool : CardPoolModel
 	/// <remarks>
 	/// 只列衍生牌：它们各自都设了 <c>CanBeGeneratedInCombat = false</c>，
 	/// 且本池不会被任何抽取逻辑引用，因此不存在「随机变出极光剑」的途径。
+	/// <para>「解放极光」的稀有度是<b>古代</b>（全幅立绘卡，见卡类注释），
+	/// 但仍登记在本池里 —— 本池只负责让它出现在 <c>ModelDb.AllCards</c>（控制台 / 图鉴），
+	/// 不参与任何按稀有度的抽取。</para>
 	/// </remarks>
 	protected override CardModel[] GenerateAllCards() => new CardModel[3]
 	{

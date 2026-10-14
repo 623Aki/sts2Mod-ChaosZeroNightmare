@@ -31,7 +31,7 @@ public sealed class HeidemarieUnfoldAurora : HeidemarieCard, IRestCard
 
 	/// <summary>2 费、技能、公共牌、目标为自身。</summary>
 	public HeidemarieUnfoldAurora()
-		: base(2, CardType.Skill, CardRarity.Common, TargetType.Self)
+		: base(2, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 	{
 	}
 

@@ -17,8 +17,9 @@ namespace CznHeidemarie.Characters.Heidemarie.Powers;
 /// <para>可叠加：层数为 <c>StackType.Counter</c>，每层提供 2 张，
 /// 因此打出 N 次「北极圈」后回合开始会获得 <c>2 × N</c> 张极光剑。</para>
 ///
-/// <para>升级「赋予安息」：若场上存在 <see cref="HeidemarieNorthPolarRestPower"/> 标记，
-/// 则生成的极光剑额外带「安息」（被丢弃时发动其自身效果）。</para>
+/// <para><b>生成的剑不带任何额外关键字</b>。升级档「赋予安息」作用于
+/// 「北极圈」<b>卡牌自身</b>（见 <see cref="HeidemarieNorthPolar.IsRestCard"/>），
+/// 与本能力生成的剑无关。</para>
 /// </summary>
 public sealed class HeidemarieNorthPolarPower : PowerModel
 {
@@ -39,19 +40,12 @@ public sealed class HeidemarieNorthPolarPower : PowerModel
 			return;
 		}
 
-		bool grantRest = Owner.HasPower<HeidemarieNorthPolarRestPower>();
-
 		// 按层数叠加：多次打出「北极圈」时本能力层数累加，回合开始生成的剑数随之翻倍
 		int swordCount = SwordsPerTurnPerStack * Math.Max(1, (int)Amount);
 
 		for (int i = 0; i < swordCount; i++)
 		{
 			HeidemarieAuroraSword sword = combatState.CreateCard<HeidemarieAuroraSword>(player);
-			if (grantRest)
-			{
-				sword.GrantRuntimeRestThisCombat();
-			}
-
 			await CardPileCmd.AddGeneratedCardToCombat(sword, PileType.Hand, player);
 		}
 	}

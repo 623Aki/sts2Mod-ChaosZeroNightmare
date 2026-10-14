@@ -6,6 +6,7 @@ using CznHeidemarie.Characters.Heidemarie;
 using CznHeidemarie.Characters.Heidemarie.Cards;
 using Godot;
 using MegaCrit.Sts2.Core.Context;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
@@ -27,9 +28,14 @@ namespace CznHeidemarie.Integration;
 /// 的 Prefix）—— 它同时给出卡牌与**目标**，正是官方为「出牌演出」预留的时机，
 /// 早于 <c>OnPlay</c> 的数值结算。</para>
 ///
-/// <para>结构：每张牌最多建两个舞台 —— 施法者一个、目标一个 ——
-/// 各自挂到对应单位自己的骨架节点下，因此自动继承该单位的位置、朝向与缩放。
+/// <para>结构：每张牌建一个施法者舞台，目标侧按目标数各建一个 ——
+/// 全部挂到对应单位自己的骨架节点下，因此自动继承该单位的位置、朝向与缩放。
 /// 舞台自己计时，播完发 <c>finished</c>，由本类释放。</para>
+///
+/// <para>与全屏演出的分工：两张终结技（「解放极光」/「绝响」）在时间轴里
+/// 同样登记了常规特效，但只在全屏演出<b>不接管</b>时才播 —— 演出开着时由
+/// <see cref="HeidemarieCinematicRuntime.WillTakeOver"/> 让位，演出开着却判定不通过时
+/// 由 <see cref="PlayFallback"/> 补播。于是「关掉全屏演出」不再等于「大招没有特效」。</para>
 /// </summary>
 internal static class HeidemarieMoveEffectsRuntime
 {
@@ -114,53 +120,123 @@ internal static class HeidemarieMoveEffectsRuntime
 				return;
 			}
 
-			// 终结技由全屏演出整屏接管，这里不再叠单体特效
-			if (card is HeidemarieLiberatedAurora or HeidemarieFinalEcho)
+			// 终结技：全屏演出会整屏接管时让位（黑幕会把常规特效整块盖掉），
+			// 否则播放时间轴里给它们准备的常规特效。
+			if (HeidemarieCinematicRuntime.WillTakeOver(card))
 			{
 				return;
 			}
 
-			Player? player = card.Owner;
-			if (!IsLocalHeidemarie(player) || player!.Creature.IsDead)
-			{
-				return;
-			}
-
-			string key = card.GetType().Name;
-			if (!HasEntry(key))
-			{
-				// 时间轴里没登记这张牌 —— 静默跳过，不刷日志
-				return;
-			}
-
-			if (PlayedCards.Contains(card))
-			{
-				return;
-			}
-
-			if (player.Creature.GetCreatureNode() is not { } ownerNode)
-			{
-				return;
-			}
-
-			Node2D? ownerAnchor = Spines.Find(ownerNode);
-			if (ownerAnchor is not null && SpawnStage(ownerAnchor, key, OwnerBucket))
-			{
-				PlayedCards.Add(card);
-			}
-
-			if (target is not null && target.IsAlive && target.GetCreatureNode() is { } targetNode)
-			{
-				Node2D? targetAnchor = Spines.Find(targetNode);
-				if (targetAnchor is not null)
-				{
-					SpawnStage(targetAnchor, key, TargetBucket);
-				}
-			}
+			SpawnFor(card, target);
 		}
 		catch (Exception ex)
 		{
 			Warn("技能特效播放失败：" + ex.Message);
+		}
+	}
+
+	/// <summary>
+	/// 全屏演出「判定不通过」时的补播入口。
+	///
+	/// <para>出牌瞬间（<c>CardPlayEnqueuingEvent</c>）单体特效已经因为演出开着而让位；
+	/// 演出这边到 <c>Hook.ModifyAttackHitCount</c> 才做致死预判，若预判结论是「不播」，
+	/// 大招就会只剩一段身体动作 —— 由 <see cref="HeidemarieCinematicRuntime"/> 调本方法补上。</para>
+	/// </summary>
+	/// <param name="card">刚打出的牌。</param>
+	/// <param name="target">本次攻击的目标；全体敌人牌传 <c>null</c>，由本类自行展开。</param>
+	internal static void PlayFallback(CardModel card, Creature? target)
+	{
+		try
+		{
+			if (!IsEnabled() || card is not HeidemarieCard)
+			{
+				return;
+			}
+
+			SpawnFor(card, target);
+		}
+		catch (Exception ex)
+		{
+			Warn("技能特效补播失败：" + ex.Message);
+		}
+	}
+
+	/// <summary>
+	/// 给一张牌建舞台：施法者一个、目标侧按 <see cref="ResolveTargets"/> 展开。
+	/// </summary>
+	private static void SpawnFor(CardModel card, Creature? target)
+	{
+		string key = card.GetType().Name;
+		if (!HasEntry(key))
+		{
+			// 时间轴里没登记这张牌 —— 静默跳过，不刷日志
+			return;
+		}
+
+		if (PlayedCards.Contains(card))
+		{
+			return;
+		}
+
+		Player? player = card.Owner;
+		if (!IsLocalHeidemarie(player) || player!.Creature.IsDead)
+		{
+			return;
+		}
+
+		if (player.Creature.GetCreatureNode() is not { } ownerNode)
+		{
+			return;
+		}
+
+		Node2D? ownerAnchor = Spines.Find(ownerNode);
+		if (ownerAnchor is not null && SpawnStage(ownerAnchor, key, OwnerBucket))
+		{
+			PlayedCards.Add(card);
+		}
+
+		foreach (Creature victim in ResolveTargets(card, target))
+		{
+			if (victim.GetCreatureNode() is { } victimNode && Spines.Find(victimNode) is { } victimAnchor)
+			{
+				SpawnStage(victimAnchor, key, TargetBucket);
+			}
+		}
+	}
+
+	/// <summary>
+	/// 展开「目标侧」的落点：单体牌直接用传入的目标；
+	/// 全体敌人牌的目标为 <c>null</c>，这里展开成每一个存活敌人各建一个舞台。
+	/// </summary>
+	private static IEnumerable<Creature> ResolveTargets(CardModel card, Creature? target)
+	{
+		if (target is not null)
+		{
+			if (target.IsAlive)
+			{
+				yield return target;
+			}
+
+			yield break;
+		}
+
+		if (card.TargetType != TargetType.AllEnemies)
+		{
+			yield break;
+		}
+
+		IEnumerable<Creature>? enemies = card.Owner?.Creature.CombatState?.Enemies;
+		if (enemies is null)
+		{
+			yield break;
+		}
+
+		foreach (Creature enemy in enemies)
+		{
+			if (enemy.IsAlive)
+			{
+				yield return enemy;
+			}
 		}
 	}
 

@@ -60,7 +60,15 @@ internal static class HeidemarieCombatAudio
 	/// <summary>终结技 ux（绝响）语音。</summary>
 	private static readonly string[] UxVoices = { VoicePath("ux"), VoicePath("ux_02") };
 
-	/// <summary>动作名 → 音效文件；缺项表示这段动作没有专属音效。</summary>
+	/// <summary>选角语音（选人界面点选本角色时）。</summary>
+	private static readonly string[] SelectVoices = { VoicePath("team_join_01") };
+
+	/// <summary>
+	/// 动作名 → 音效文件；缺项表示这段动作没有专属音效。
+	///
+	/// <para><c>XAttack</c> / <c>GAttack</c> 两条属于全屏演出（绝响 / 解放极光），
+	/// 播放前还要过「全屏演出」门，见 <see cref="OnTriggerAnim"/>。</para>
+	/// </summary>
 	private static readonly Dictionary<string, string> TriggerSfx = new(StringComparer.Ordinal)
 	{
 		["Attack"] = SfxPath("attack_play1"),
@@ -155,6 +163,15 @@ internal static class HeidemarieCombatAudio
 				return;
 			}
 
+			// 全屏演出牌的专属声音归演出所有：绝响（XAttack / ux）与
+			// 解放极光（GAttack / ug）的音效与语音，在参考 mod 里由演出驱动，
+			// 关掉「全屏演出」就整段不播。这里按同一道门控，
+			// 保证「关演出 = 对应声音同步关闭」。
+			if (IsCinematicTrigger(triggerName) && !CinematicPresentationEnabled(player))
+			{
+				return;
+			}
+
 			if (HeidemariePresentationHost.Audience.Allows(player, CombatPresentationChannel.CombatSfx)
 				&& TriggerSfx.TryGetValue(triggerName, out string? sfxPath))
 			{
@@ -179,6 +196,26 @@ internal static class HeidemarieCombatAudio
 		{
 			HeidemarieIntegration.Log.Warn("战斗音频播放失败：" + ex.Message);
 		}
+	}
+
+	/// <summary>这个动作触发器是不是全屏演出牌专用的（绝响 <c>XAttack</c> / 解放极光 <c>GAttack</c>）。</summary>
+	private static bool IsCinematicTrigger(string triggerName)
+	{
+		return triggerName is "XAttack" or "GAttack";
+	}
+
+	/// <summary>
+	/// 全屏演出是否对该玩家生效 —— 与参考 mod 的判定同源
+	/// （<c>EffectiveEffectsEnabled &amp;&amp; Allows(CutIn)</c>）。
+	///
+	/// <para>本地玩家看「你的全屏角色演出」（<c>ShowCardPlayPresentation</c>），
+	/// 队友看「队友全屏演出」；特效总开关关掉时一律不生效。
+	/// 演出牌的专属声音只有在这道门打开时才播。</para>
+	/// </summary>
+	private static bool CinematicPresentationEnabled(Player? player)
+	{
+		return HeidemariePresentationHost.Gates.EffectsEnabled
+			&& HeidemariePresentationHost.Audience.Allows(player, CombatPresentationChannel.CutIn);
 	}
 
 	/// <summary>
@@ -213,6 +250,26 @@ internal static class HeidemarieCombatAudio
 		catch (Exception ex)
 		{
 			HeidemarieIntegration.Log.Warn("死亡音效播放失败：" + ex.Message);
+		}
+	}
+
+	/// <summary>
+	/// 选角语音：在选人界面点选本角色时播一句。
+	///
+	/// <para>由占位音效补丁（<c>Registration/HeidemarieCombatPresentationPatch.cs</c> 的
+	/// <c>SfxCmd.Play</c> 前缀）在拦下 <c>CharacterSelectSfx</c> 的占位事件时调用。
+	/// 那条链路上拿不到 <c>Player</c> 实例，所以走无参重载 —— 它只认「角色语音」开关与
+	/// 语音音量 / 间隔，不需要玩家上下文。</para>
+	/// </summary>
+	internal static void PlayCharacterSelectVoice()
+	{
+		try
+		{
+			Voice.PlayRandom(SelectVoices);
+		}
+		catch (Exception ex)
+		{
+			HeidemarieIntegration.Log.Warn("选角语音播放失败：" + ex.Message);
 		}
 	}
 

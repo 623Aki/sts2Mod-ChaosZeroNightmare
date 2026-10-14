@@ -27,12 +27,25 @@ namespace CznHeidemarie.Registration;
 [HarmonyPatch(typeof(SfxCmd), nameof(SfxCmd.Play), new[] { typeof(string), typeof(float) })]
 internal static class HeidemariePlaceholderSfxSuppressPatch
 {
-	/// <summary>返回 <c>false</c> 表示整段跳过原实现（即不播放）。</summary>
+	/// <summary>返回 <c>false</c> 表示整段跳过原实现（即不播放 FMOD 事件）。</summary>
 	private static bool Prefix(string sfx)
 	{
 		try
 		{
-			return !HeidemarieSfxRedirect.IsPlaceholderSfx(sfx);
+			if (!HeidemarieSfxRedirect.IsPlaceholderSfx(sfx))
+			{
+				return true;
+			}
+
+			// 占位事件按后缀分派到本工程的 ogg。
+			// 选角语音（CharacterSelectSfx）这条链路由 NCharacterSelectScreen 直接
+			// SfxCmd.Play(...) 触发，**不带 Player**，所以只能按事件名找人接手。
+			if (sfx.EndsWith("_select", StringComparison.Ordinal))
+			{
+				HeidemarieCombatAudio.PlayCharacterSelectVoice();
+			}
+
+			return false;
 		}
 		catch (Exception ex)
 		{

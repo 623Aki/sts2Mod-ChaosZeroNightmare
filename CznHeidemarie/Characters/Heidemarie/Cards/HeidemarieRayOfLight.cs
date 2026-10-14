@@ -20,9 +20,6 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// </summary>
 public sealed class HeidemarieRayOfLight : HeidemarieCard, ILinkCard
 {
-	/// <summary>每张连接牌提供的增伤百分点（升级后 +50）。</summary>
-	private readonly DynamicVar _percent = new("Percent", 50m);
-
 	/// <inheritdoc/>
 	protected override string FallbackPortraitPath => "res://images/atlases/card_atlas.sprites/ironclad/strike_ironclad.tres";
 
@@ -30,12 +27,13 @@ public sealed class HeidemarieRayOfLight : HeidemarieCard, ILinkCard
 	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(2)
 	{
 		new DamageVar(8m, ValueProp.Move),
-		_percent,
+		// 每张连接牌提供的增伤百分点（升级后 +50）
+		new DynamicVar("Percent", 50m),
 	};
 
 	/// <summary>1 费、攻击、公共牌、目标为任意敌人。</summary>
 	public HeidemarieRayOfLight()
-		: base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+		: base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 	{
 	}
 
@@ -53,7 +51,7 @@ public sealed class HeidemarieRayOfLight : HeidemarieCard, ILinkCard
 		// （见 HeidemarieCard.WithPercentDamageBoost，攻击结束必定清池）。
 		// 1 费单段：打击动作（Attack）+ 5 层「施法光效 + 斩击」特效，
 		// 时间轴见 effects/heidemarie_moves.json 的 HeidemarieRayOfLight 键
-		await WithPercentDamageBoost(choiceContext, linked * _percent.BaseValue, async () =>
+		await WithPercentDamageBoost(choiceContext, linked * DynamicVars["Percent"].BaseValue, async () =>
 		{
 			await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
 				.FromCard(this, cardPlay)
@@ -65,5 +63,11 @@ public sealed class HeidemarieRayOfLight : HeidemarieCard, ILinkCard
 	}
 
 	/// <inheritdoc/>
-	protected override void OnUpgrade() => _percent.UpgradeValueBy(50m);
+	/// <remarks>
+	/// 必须经 <c>DynamicVars</c> 索引器访问，<b>不能</b>把 DynamicVar 存成字段再改字段 ——
+	/// <see cref="MegaCrit.Sts2.Core.Models.AbstractModel.MutableClone"/> 是浅拷贝，
+	/// 子类字段指向的对象与母本共享；升级预览（百科大全勾选 / 战斗中查看升级）会克隆母本再
+	/// <c>UpgradeInternal()</c>，改共享对象会污染母本数值，表现为「勾选不变、取消才变、反复勾选一直涨」。
+	/// </remarks>
+	protected override void OnUpgrade() => DynamicVars["Percent"].UpgradeValueBy(50m);
 }

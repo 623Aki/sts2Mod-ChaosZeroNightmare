@@ -876,6 +876,925 @@
     }
    ],
    "target": []
+  },
+  "HeidemarieLiberatedAurora": {
+   "note": "解放极光（终结技 ug）的常规回退特效：只在全屏演出不接管时播放。身体动作 ug_attack(0.3333，单段)，命中点 333ms；施法者 6 层 + 目标 7 层，共 13 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.8
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_b",
+     "clip": "animation",
+     "z": -3,
+     "start_ms": 0.0,
+     "end_ms": 900.0
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_g",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 900.0,
+     "opacity": 0.85
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_f",
+     "clip": "animation",
+     "z": 3,
+     "start_ms": 0.0,
+     "end_ms": 900.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play1_b",
+     "clip": "animation",
+     "z": -5,
+     "start_ms": 100.0,
+     "end_ms": 533.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play1_f",
+     "clip": "animation",
+     "z": 5,
+     "start_ms": 100.0,
+     "end_ms": 633.0
+    }
+   ],
+   "target": [
+    {
+     "name": "heidemarie_30093_eff_attack_play1_target",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 333.0,
+     "end_ms": 1366.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_b",
+     "clip": "attack_play1",
+     "z": -10,
+     "start_ms": 333.0,
+     "end_ms": 1533.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f1",
+     "clip": "attack_play1",
+     "z": 7,
+     "start_ms": 333.0,
+     "end_ms": 1466.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f3",
+     "clip": "attack_play1",
+     "z": 5,
+     "start_ms": 333.0,
+     "end_ms": 1533.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_target",
+     "clip": "attack_play1_target",
+     "z": 3,
+     "start_ms": 333.0,
+     "end_ms": 1466.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_cat_target",
+     "clip": "attack_play1_target",
+     "z": 5,
+     "start_ms": 333.0,
+     "end_ms": 1466.0
+    },
+    {
+     "name": "heidemarie_30093_ug_impact",
+     "clip": "animation",
+     "z": 20,
+     "start_ms": 333.0,
+     "end_ms": 1433.0
+    }
+   ]
+  },
+  "HeidemarieFinalEcho": {
+   "note": "绝响（终结技 ux，全体敌人）的常规回退特效：只在全屏演出不接管时播放。身体动作 ux_attack(0.8333)，命中点 333ms；施法者 6 层 + 每个敌人各 6 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 1200.0,
+     "opacity": 0.8
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_self_b",
+     "clip": "ready",
+     "z": -2,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_self_f",
+     "clip": "ready",
+     "z": 2,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_self_b",
+     "clip": "play",
+     "z": -1,
+     "start_ms": 467.0,
+     "end_ms": 1100.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_self_f",
+     "clip": "play",
+     "z": 1,
+     "start_ms": 467.0,
+     "end_ms": 1067.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u3_attack_sword_1",
+     "clip": "play",
+     "z": 3,
+     "start_ms": 467.0,
+     "end_ms": 1434.0
+    }
+   ],
+   "target": [
+    {
+     "name": "heidemarie_30093_eff_attack_play1_target",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 333.0,
+     "end_ms": 1366.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_b",
+     "clip": "attack_play1",
+     "z": -10,
+     "start_ms": 333.0,
+     "end_ms": 1533.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f1",
+     "clip": "attack_play1",
+     "z": 7,
+     "start_ms": 333.0,
+     "end_ms": 1466.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f3",
+     "clip": "attack_play1",
+     "z": 5,
+     "start_ms": 333.0,
+     "end_ms": 1533.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_target",
+     "clip": "attack_play1_target",
+     "z": 3,
+     "start_ms": 333.0,
+     "end_ms": 1466.0
+    },
+    {
+     "name": "heidemarie_30093_ug_impact",
+     "clip": "animation",
+     "z": 20,
+     "start_ms": 333.0,
+     "end_ms": 1433.0
+    }
+   ]
+  },
+  "HeidemarieCondensedAurora": {
+   "note": "凝聚极光（-1 费稀有，无法主动打出）：极微光，2 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.6
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_g",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.5
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieBindStar": {
+   "note": "缀星（0 费公共技能）：微光档，2 层。身体动作 buff_ready(0.467) → buff_play(1.167)。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.6
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_g",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.5
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieRequiem": {
+   "note": "冥渡（0 费公共技能）：微光档，2 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.6
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_g",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.5
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieCondenseEdge": {
+   "note": "凝锋（0 费公共技能）：微光 + 一层剑刃，3 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.6
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_g",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 800.0,
+     "opacity": 0.5
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_f",
+     "clip": "animation",
+     "z": 3,
+     "start_ms": 0.0,
+     "end_ms": 900.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieRecover": {
+   "note": "撷光（0 费稀有技能，消耗）：施法档，4 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.75
+    },
+    {
+     "name": "heidemarie_30093_eff_casting_ready_b",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 1200.0,
+     "opacity": 0.6
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_b",
+     "clip": "animation",
+     "z": -3,
+     "start_ms": 0.0,
+     "end_ms": 1200.0
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_f",
+     "clip": "animation",
+     "z": 3,
+     "start_ms": 0.0,
+     "end_ms": 1200.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieAllHeroes": {
+   "note": "万众英雄（1 费公共技能）：施法档，4 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.75
+    },
+    {
+     "name": "heidemarie_30093_eff_casting_ready_b",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 1200.0,
+     "opacity": 0.6
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_b",
+     "clip": "animation",
+     "z": -3,
+     "start_ms": 0.0,
+     "end_ms": 1200.0
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_f",
+     "clip": "animation",
+     "z": 3,
+     "start_ms": 0.0,
+     "end_ms": 1200.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieForesee": {
+   "note": "窥星择光（1 费公共技能）：施法档，4 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.75
+    },
+    {
+     "name": "heidemarie_30093_eff_casting_ready_b",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 1200.0,
+     "opacity": 0.6
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_b",
+     "clip": "animation",
+     "z": -3,
+     "start_ms": 0.0,
+     "end_ms": 1200.0
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_f",
+     "clip": "animation",
+     "z": 3,
+     "start_ms": 0.0,
+     "end_ms": 1200.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieFaintLight": {
+   "note": "微光（1 费稀有技能）：施法档，4 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.75
+    },
+    {
+     "name": "heidemarie_30093_eff_casting_ready_b",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 1200.0,
+     "opacity": 0.6
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_b",
+     "clip": "animation",
+     "z": -3,
+     "start_ms": 0.0,
+     "end_ms": 1200.0
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_f",
+     "clip": "animation",
+     "z": 3,
+     "start_ms": 0.0,
+     "end_ms": 1200.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieCallBlade": {
+   "note": "引锋召刃（1 费稀有技能）：施法档 + 剑刃辉光，5 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.75
+    },
+    {
+     "name": "heidemarie_30093_eff_casting_ready_b",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 1200.0,
+     "opacity": 0.6
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_b",
+     "clip": "animation",
+     "z": -3,
+     "start_ms": 0.0,
+     "end_ms": 1200.0
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_g",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.7
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_f",
+     "clip": "animation",
+     "z": 3,
+     "start_ms": 0.0,
+     "end_ms": 1200.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieFallenStar": {
+   "note": "坠星（1 费稀有技能，消耗）：结阵档 u2_buff，6 层（同一骨架 ready/play 各一个节点）。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "ready",
+     "z": -1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "play",
+     "z": -1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_ready",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_play",
+     "z": 0,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "ready",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "play",
+     "z": 1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieUnfoldAurora": {
+   "note": "展开极光（2 费公共技能）：结阵档 u2_buff，6 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "ready",
+     "z": -1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "play",
+     "z": -1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_ready",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_play",
+     "z": 0,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "ready",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "play",
+     "z": 1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieMirrorBlades": {
+   "note": "万剑诀（2 费公共技能）：结阵档 u2_buff，6 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "ready",
+     "z": -1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "play",
+     "z": -1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_ready",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_play",
+     "z": 0,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "ready",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "play",
+     "z": 1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieSwordTomb": {
+   "note": "剑冢（2 费公共技能，非指向）：结阵档 u2_buff，6 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "ready",
+     "z": -1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "play",
+     "z": -1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_ready",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_play",
+     "z": 0,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "ready",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "play",
+     "z": 1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieSwordCrypt": {
+   "note": "归墟剑骸（2 费公共技能）：结阵档 u2_buff，6 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "ready",
+     "z": -1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "play",
+     "z": -1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_ready",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_play",
+     "z": 0,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "ready",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "play",
+     "z": 1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieStoreLight": {
+   "note": "积羽（2 费稀有技能）：结阵档 u2_buff，6 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "ready",
+     "z": -1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_b",
+     "clip": "play",
+     "z": -1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_ready",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_sword",
+     "clip": "u2_buff_play",
+     "z": 0,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "ready",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u2_buff_f",
+     "clip": "play",
+     "z": 1,
+     "start_ms": 467.0,
+     "end_ms": 1867.0
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieResonance": {
+   "note": "万剑齐鸣（3 费稀有技能，消耗）：蓄势档 u4_buff 全套 + 施法光，10 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_b",
+     "clip": "ready",
+     "z": -100,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_b",
+     "clip": "play",
+     "z": -100,
+     "start_ms": 467.0,
+     "end_ms": 1633.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_f",
+     "clip": "ready",
+     "z": 100,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_f",
+     "clip": "play",
+     "z": 100,
+     "start_ms": 467.0,
+     "end_ms": 1633.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_b",
+     "clip": "ready",
+     "z": -50,
+     "start_ms": 0.0,
+     "end_ms": 500.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_b",
+     "clip": "play",
+     "z": -50,
+     "start_ms": 467.0,
+     "end_ms": 1537.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_f",
+     "clip": "ready",
+     "z": 50,
+     "start_ms": 0.0,
+     "end_ms": 500.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_f",
+     "clip": "play",
+     "z": 50,
+     "start_ms": 467.0,
+     "end_ms": 1537.0
+    },
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.75
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_g",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.7
+    }
+   ],
+   "target": []
+  },
+  "HeidemarieNorthPolar": {
+   "note": "北极圈（2 费稀有能力）：蓄势档 u4_buff 全套 + 施法光，10 层。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_b",
+     "clip": "ready",
+     "z": -100,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_b",
+     "clip": "play",
+     "z": -100,
+     "start_ms": 467.0,
+     "end_ms": 1633.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_f",
+     "clip": "ready",
+     "z": 100,
+     "start_ms": 0.0,
+     "end_ms": 467.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_self_f",
+     "clip": "play",
+     "z": 100,
+     "start_ms": 467.0,
+     "end_ms": 1633.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_b",
+     "clip": "ready",
+     "z": -50,
+     "start_ms": 0.0,
+     "end_ms": 500.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_b",
+     "clip": "play",
+     "z": -50,
+     "start_ms": 467.0,
+     "end_ms": 1537.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_f",
+     "clip": "ready",
+     "z": 50,
+     "start_ms": 0.0,
+     "end_ms": 500.0
+    },
+    {
+     "name": "heidemarie_30093_eff_u4_buff_sword_f",
+     "clip": "play",
+     "z": 50,
+     "start_ms": 467.0,
+     "end_ms": 1537.0
+    },
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.75
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_g",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.7
+    }
+   ],
+   "target": []
   }
  }
 }

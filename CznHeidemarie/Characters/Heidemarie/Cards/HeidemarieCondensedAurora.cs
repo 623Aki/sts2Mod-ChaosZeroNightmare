@@ -4,6 +4,7 @@ using CznHeidemarie.Characters.Heidemarie.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
@@ -29,6 +30,21 @@ public sealed class HeidemarieCondensedAurora : HeidemarieCard, IUniqueCard, ILi
 	public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword>(1)
 	{
 		CardKeyword.Unplayable,
+	};
+
+	/// <inheritdoc/>
+	/// <remarks>
+	/// 卡面「极光之光」高亮（见本地化 <c>HEIDEMARIE_CONDENSED_AURORA.description</c>），
+	/// 悬停时除关键字词条外再附加两个提示（做法参考原版「剥夺」给「灵魂」挂提示）：
+	/// <list type="number">
+	///   <item>能力「极光之光」—— 说明层数效果；</item>
+	///   <item>卡牌「解放极光」预览 —— 说明攒满 3 层后实际会到手的牌。</item>
+	/// </list>
+	/// </remarks>
+	protected override IEnumerable<IHoverTip> ExtraCardHoverTips => new List<IHoverTip>(2)
+	{
+		HoverTipFactory.FromPower<HeidemarieAuroraLightPower>(),
+		HoverTipFactory.FromCard<HeidemarieLiberatedAurora>(),
 	};
 
 	/// <inheritdoc/>

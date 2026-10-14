@@ -7,6 +7,7 @@ using CznHeidemarie.Characters.Heidemarie.Powers;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
@@ -118,8 +119,14 @@ public abstract class HeidemarieCard : CardModel
 	/// <summary>是否带「连接」：静态接口或运行期标记任一成立。</summary>
 	public bool IsLinked => this is ILinkCard || RuntimeLinkedThisTurn || RuntimeLinkedThisCombat;
 
-	/// <summary>是否带「安息」：静态接口或运行期标记任一成立。</summary>
-	public bool IsRestCard => this is IRestCard || RuntimeRestThisCombat;
+	/// <summary>
+	/// 是否带「安息」：静态接口或运行期标记任一成立。
+	///
+	/// <para>虚属性 —— 子类可扩展判定条件。例如「北极圈」升级后是<b>卡牌本体</b>获得「安息」
+	/// （而非实现 <see cref="IRestCard"/>），它就覆盖本属性把 <c>IsUpgraded</c> 也算进来
+	/// （见 <see cref="HeidemarieNorthPolar.IsRestCard"/>）。</para>
+	/// </summary>
+	public virtual bool IsRestCard => this is IRestCard || RuntimeRestThisCombat;
 
 	/// <summary>临时赋予「连接」（本回合）。</summary>
 	public void GrantRuntimeLinkThisTurn() => RuntimeLinkedThisTurn = true;
@@ -172,8 +179,45 @@ public abstract class HeidemarieCard : CardModel
 		}
 	}
 
+	/// <summary>
+	/// 技能 / 能力牌的默认身体动作序列（<c>buff_ready → buff_play</c>）。
+	///
+	/// <para>默认给技能与能力牌；攻击牌返回 <c>null</c>（它们的动作走
+	/// <c>AttackCommand.WithAttackerAnim</c>），已有专属演出的牌自己覆盖
+	/// <see cref="OnEnqueuePlayVfx"/>（如「防御」用 <c>defense_ready → defense_play</c>）。</para>
+	/// </summary>
+	protected virtual string[]? SkillBodySequence =>
+		Type is CardType.Skill or CardType.Power ? new[] { "buff_ready", "buff_play" } : null;
+
 	/// <summary>本牌带的自定义关键字（默认由接口推导，见 <see cref="HeidemarieCardMechanics"/>）。</summary>
 	protected virtual IEnumerable<CardMechanicDefinition> CardMechanics => HeidemarieCardMechanics.For(this);
+
+	/// <inheritdoc/>
+	/// <remarks>
+	/// 技能 / 能力牌的统一身体演出：出牌瞬间先起 <see cref="SkillBodySequence"/>，
+	/// 让时间轴里的单体特效有动作可以贴 —— 否则角色停在待机、特效孤零零地亮一下。
+	/// 任一动画缺失时降级回状态机的 <c>Cast</c> / <c>PowerUp</c> 触发器。
+	///
+	/// <para>与「防御」同一时机（早于 <c>OnPlay</c> 的数值结算）且不阻塞出牌；
+	/// 动作序列末尾会自动排待机，不会停在最后一帧。</para>
+	/// </remarks>
+	public override async Task OnEnqueuePlayVfx(Creature? target)
+	{
+		string[]? sequence = SkillBodySequence;
+		if (sequence is null || sequence.Length == 0)
+		{
+			await base.OnEnqueuePlayVfx(target);
+			return;
+		}
+
+		if (!HeidemarieAnimation.PlaySequence(Owner.Creature, sequence))
+		{
+			await HeidemarieAnimation.PlayTriggerAsync(
+				Owner.Creature,
+				Type == CardType.Power ? "PowerUp" : "Cast",
+				HeidemarieAnimationSeconds.BuffReady);
+		}
+	}
 
 	/// <inheritdoc/>
 	/// <remarks>自定义关键字转成悬停提示；子类如需附加提示请覆盖 <see cref="ExtraCardHoverTips"/>。</remarks>

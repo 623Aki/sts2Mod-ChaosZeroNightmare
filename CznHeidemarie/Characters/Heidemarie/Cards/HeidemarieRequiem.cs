@@ -21,7 +21,7 @@ public sealed class HeidemarieRequiem : HeidemarieCard
 
 	/// <summary>0 费、技能、公共牌、目标为自身。</summary>
 	public HeidemarieRequiem()
-		: base(0, CardType.Skill, CardRarity.Common, TargetType.Self)
+		: base(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 	{
 	}
 
@@ -45,4 +45,6 @@ public sealed class HeidemarieRequiem : HeidemarieCard
 
 		return Task.CompletedTask;
 	}
+
+	protected override void OnUpgrade() => AddKeyword(CardKeyword.Retain);
 }
