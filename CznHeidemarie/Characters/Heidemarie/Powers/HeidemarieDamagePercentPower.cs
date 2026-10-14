@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -23,18 +22,21 @@ namespace CznHeidemarie.Characters.Heidemarie.Powers;
 /// 由<strong>它单独一个</strong>乘算 modifier 提供因子 <c>1 + Amount/100</c>，
 /// 从而得到 <c>1 + Σ百分比</c>。</para>
 ///
-/// <para>生命周期：无常驻意义 —— 任意一次「本体所属玩家」的攻击结算完
-/// （<see cref="AfterAttack"/>）即整池清空，对应「下一张攻击牌 +50%」的语义。
-/// 绝响 / 解放极光则在自身结算前临时注入。</para>
+/// <para><b>生命周期：显式入池 / 显式清池</b>（<see cref="InjectAsync"/> /
+/// <see cref="ClearAsync"/>）—— 调用方在打出自己那张牌时注入，攻击结算完
+/// <strong>由调用方负责清空</strong>，本能力<strong>不再</strong>监听
+/// <c>AfterAttack</c> 自动清理。原因：<c>AttackCommand.Execute</c> 存在若干个
+/// 「还没走到 <c>Hook.AfterAttack</c> 就提前 return」的分支
+/// （攻击者已死亡、战斗已结束等），靠钩子清池会把这些情况漏成「池残留到下一次攻击」。
+/// 调用方用 <c>try/finally</c>（或基类的
+/// <see cref="CznHeidemarie.Characters.Heidemarie.Cards.HeidemarieCard.WithPercentDamageBoost"/>）
+/// 包一层，则无论攻击是否正常结算都会清干净。</para>
 ///
 /// <para>本能力对玩家不可见（<see cref="IsVisibleInternal"/> 返回 false），
 /// 不占战斗界面图标。</para>
 /// </summary>
 public sealed class HeidemarieDamagePercentPower : PowerModel
 {
-	/// <summary>「剑光」感应提供的增伤百分点。</summary>
-	public const decimal SenseBoost = 50m;
-
 	/// <inheritdoc/>
 	public override PowerType Type => PowerType.Buff;
 
@@ -63,15 +65,42 @@ public sealed class HeidemarieDamagePercentPower : PowerModel
 		return 1m + (decimal)Amount / 100m;
 	}
 
-	/// <inheritdoc/>
-	/// <remarks>一次攻击结算完即清空整池（所有挂起的百分比增伤都被这一次攻击消费掉）。</remarks>
-	public override async Task AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)
+	/// <summary>
+	/// 入池：把 <paramref name="percentPoints"/> 个百分点累加进增伤池。
+	///
+	/// <para><b>调用方必须负责清池</b>：本方法只做「入池」。请与
+	/// <see cref="ClearAsync"/> 成对使用（推荐直接用基类的
+	/// <see cref="CznHeidemarie.Characters.Heidemarie.Cards.HeidemarieCard.WithPercentDamageBoost"/>，
+	/// 它已经用 <c>try/finally</c> 保证攻击结束后一定清）。</para>
+	/// </summary>
+	/// <param name="choiceContext">玩家选择上下文。</param>
+	/// <param name="owner">池的所属生物（一般是本角色）。</param>
+	/// <param name="percentPoints">增伤百分点（<c>50</c> = +50%）。&lt;= 0 时不做任何事。</param>
+	/// <param name="cardSource">来源卡牌，可为 null。</param>
+	public static async Task InjectAsync(
+		PlayerChoiceContext choiceContext,
+		Creature owner,
+		decimal percentPoints,
+		CardModel? cardSource)
 	{
-		if (command.Attacker != Owner || !command.DamageProps.IsPoweredAttack())
+		if (percentPoints <= 0m)
 		{
 			return;
 		}
 
-		await PowerCmd.Remove(this);
+		await PowerCmd.Apply<HeidemarieDamagePercentPower>(
+			choiceContext,
+			owner,
+			percentPoints,
+			owner,
+			cardSource,
+			silent: true);
 	}
+
+	/// <summary>
+	/// 清池：把整池清空（所有挂起的百分比增伤一次性消费掉）。
+	/// 没有挂载时为空操作。
+	/// </summary>
+	public static Task ClearAsync(Creature owner)
+		=> PowerCmd.Remove<HeidemarieDamagePercentPower>(owner);
 }

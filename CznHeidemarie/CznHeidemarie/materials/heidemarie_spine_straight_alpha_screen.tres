@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[sub_resource type="Shader" id="Shader_heidemarie_straight_alpha_screen"]
+code = "shader_type canvas_item;
+render_mode blend_add, unshaded;
+
+// screen 资源的黑底必须保持中性；SpineSprite 按 slot blend 通道处理它。
+void fragment() {
+\tvec4 tex = texture(TEXTURE, UV) * COLOR;
+\tfloat alpha = max(tex.a, 0.0001);
+\tvec3 straight_rgb = clamp(tex.rgb / alpha, vec3(0.0), vec3(1.0));
+\tCOLOR = vec4(straight_rgb * tex.a, tex.a);
+}
+"
+
+[resource]
+shader = SubResource("Shader_heidemarie_straight_alpha_screen")

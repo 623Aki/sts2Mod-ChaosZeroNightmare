@@ -19,6 +19,14 @@ signal actors_restored
 signal stage_finished
 signal resources_finished
 
+## 舞台已经开始接管画面（黑幕开始压下来）。
+##
+## C# 侧据此收起角色本体。之所以要单独一个信号，是因为官方在开场给本体留了
+## 一段「还没有任何特效层」的起手（ux 是 0 ~ 1233.3ms，期间本体在演 ux_attack、
+## 背景还是正常战场），黑幕在那之前不能上、本体也不能藏，否则就是一段黑屏。
+## 时刻来自时间轴 `bg.fade_in_at_ms`（由 bg_blend 的「变黑」事件链推出）。
+signal takeover_reached
+
 const DESIGN_WIDTH := 1280.0
 const DESIGN_HEIGHT := 720.0
 const DESIGN_SIZE := Vector2(DESIGN_WIDTH, DESIGN_HEIGHT)
@@ -26,6 +34,7 @@ const DESIGN_SIZE := Vector2(DESIGN_WIDTH, DESIGN_HEIGHT)
 ## 时间轴与骨架所在目录，路径由 mod id 推导，换 mod 只改这两行。
 const TIMELINE_ROOT := "res://CznHeidemarie/cinematic/"
 const SKEL_DATA_ROOT := "res://CznHeidemarie/animations/effects/"
+const SPINE_MULTIPLY_MATERIAL := "res://CznHeidemarie/materials/heidemarie_spine_straight_alpha_multiply.tres"
 
 ## 接管层：远高于战斗 HUD，保证不会被任何界面挡住。
 const TAKEOVER_LAYER := 4090
@@ -60,6 +69,7 @@ var _epoch_usec: int = 0
 
 ## 生命周期。
 var _route: String = ""
+var _surface_size := DESIGN_SIZE
 var _prepared: bool = false
 var _starting: bool = false
 var _playing: bool = false
@@ -75,6 +85,8 @@ var _matte: ColorRect = null
 ## 时间轴解析结果。
 var _layers: Array = []
 var _shakes: Array = []
+var _camera_moves: Array = []
+var _camera_zooms: Array = []
 var _bg: Dictionary = {}
 var _duration_ms: float = 0.0
 var _hit_ms: float = -1.0
@@ -87,8 +99,13 @@ var _attach_without_anchor: Dictionary = {}
 
 ## 时间轴 z 值 -> 压进 Godot 合法区间的 z 值。见 LAYER_Z_MIN 注释。
 var _z_ranks: Dictionary = {}
+var _spine_multiply_material: Material = null
+
+## 黑幕接管时刻（ms）。0 表示从演出第一帧就接管（ug 就是这种）。
+var _takeover_at_ms: float = 0.0
 
 ## 一次性信号闸门。
+var _takeover_sent: bool = false
 var _hit_sent: bool = false
 var _actors_released: bool = false
 var _presentation_finished: bool = false
@@ -105,6 +122,7 @@ func configure(route_id: String, owner: Node2D, owner_position: Vector2) -> bool
 		return false
 
 	_route = route_id
+	_surface_size = DESIGN_SIZE
 	var timeline := _load_timeline(route_id)
 	if timeline.is_empty():
 		return false
@@ -123,7 +141,7 @@ func configure(route_id: String, owner: Node2D, owner_position: Vector2) -> bool
 	_matte = ColorRect.new()
 	_matte.name = "CinematicMatte"
 	_matte.position = Vector2.ZERO
-	_matte.size = DESIGN_SIZE
+	_matte.size = _surface_size
 	_matte.color = Color(0.0, 0.0, 0.0, 0.0)
 	_matte.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_matte.z_as_relative = false
@@ -133,21 +151,24 @@ func configure(route_id: String, owner: Node2D, owner_position: Vector2) -> bool
 	# 世界层：受镜头抖动影响（地面、剑光、命中特效）。
 	_stage = Node2D.new()
 	_stage.name = "CinematicStage"
-	_stage.position = DESIGN_SIZE * 0.5
+	_stage.position = _surface_size * 0.5
 	_canvas.add_child(_stage)
 
 	# 屏幕层：不受镜头抖动影响（全屏闪白、背景、cut-in 立绘）。
 	_screen = Node2D.new()
 	_screen.name = "CinematicScreen"
-	_screen.position = DESIGN_SIZE * 0.5
+	_screen.position = _surface_size * 0.5
 	_canvas.add_child(_screen)
 
 	var owner_local := Vector2.ZERO
+	# SELF -> OWNER 是源数据的正式映射：全屏舞台仍需把角色锚点换算
+	# 到 1280x720 设计坐标，不能用编辑器预览的中心点替代。
 	if is_instance_valid(owner):
 		var cover: float = _canvas.scale.x
-		owner_local = (owner_position - _canvas.position) / cover - DESIGN_SIZE * 0.5
+		owner_local = (owner_position - _canvas.position) / cover - _surface_size * 0.5
 
 	_bg = timeline.get("bg", {})
+	_takeover_at_ms = float(_bg.get("fade_in_at_ms", 0.0))
 	_duration_ms = float(timeline.get("duration_ms", 0.0))
 	_hit_ms = float(timeline.get("hit_ms", -1.0))
 	_actor_restore_ms = float(timeline.get("actor_restore_ms", -1.0))
@@ -161,6 +182,9 @@ func configure(route_id: String, owner: Node2D, owner_position: Vector2) -> bool
 			"frequency": float(row.get("frequency", 30.0)),
 			"angle": deg_to_rad(float(row.get("angle", 0.0))),
 		})
+	var camera: Dictionary = timeline.get("camera", {})
+	_camera_moves = camera.get("moves", [])
+	_camera_zooms = camera.get("zooms", [])
 
 	# 按 z 从小到大添加，保证后建的盖在前面。
 	# z 相同（.cfx 里两个不同阶段共用同一深度）时退回原序，避免排序不稳定。
@@ -208,6 +232,9 @@ func get_runtime_contract() -> Dictionary:
 		"duration_seconds": _duration_ms / 1000.0,
 		"hit_release_seconds": _hit_ms / 1000.0,
 		"battlefield_actor_release_seconds": _actor_restore_ms / 1000.0,
+		# > 0 表示黑幕要延后接管（开场那一段本体还在画面上），
+		# C# 侧据此决定本体是立刻隐藏还是等 takeover_reached。
+		"takeover_seconds": _takeover_at_ms / 1000.0,
 	}
 
 
@@ -265,6 +292,12 @@ func _process(_delta: float) -> void:
 	_clock_ms = float(Time.get_ticks_usec() - _epoch_usec) / 1000.0
 	_apply(_clock_ms)
 
+	if not _takeover_sent and _clock_ms >= _takeover_at_ms:
+		_takeover_sent = true
+		takeover_reached.emit()
+		if not _playing:
+			return
+
 	if not _hit_sent and _clock_ms >= _hit_ms:
 		_hit_sent = true
 		hit_reached.emit()
@@ -312,13 +345,29 @@ func _apply(ms: float) -> void:
 			if track != null:
 				track.set_track_time(maxf(0.0, (ms - float(entry["start_ms"])) / 1000.0))
 			node.update_skeleton(0.0)
-	_apply_shake(ms)
+	_apply_camera(ms)
 	_apply_matte(ms)
 
 
-func _apply_shake(ms: float) -> void:
+func _apply_camera(ms: float) -> void:
 	if not is_instance_valid(_stage):
 		return
+	var move := Vector2.ZERO
+	var zoom := 1.0
+	for row in _camera_moves:
+		if ms < float(row.get("start_ms", 0.0)):
+			continue
+		var duration := float(row.get("duration_ms", 0.0))
+		var k := 1.0 if duration <= 0.0 else clampf((ms - float(row.get("start_ms", 0.0))) / duration, 0.0, 1.0)
+		k = _ease_camera(k, str(row.get("curve", "")))
+		move = move.lerp(Vector2(float(row.get("x", 0.0)), float(row.get("y", 0.0))), k)
+	for row in _camera_zooms:
+		if ms < float(row.get("start_ms", 0.0)):
+			continue
+		var duration := float(row.get("duration_ms", 0.0))
+		var k := 1.0 if duration <= 0.0 else clampf((ms - float(row.get("start_ms", 0.0))) / duration, 0.0, 1.0)
+		k = _ease_camera(k, str(row.get("curve", "")))
+		zoom = lerpf(zoom, float(row.get("zoom", 1.0)), k)
 	var shake := Vector2.ZERO
 	for s in _shakes:
 		var elapsed: float = ms - float(s["start_ms"])
@@ -330,7 +379,26 @@ func _apply_shake(ms: float) -> void:
 		shake += Vector2(sin(phase), cos(phase * 1.37)) * amount
 		if not is_zero_approx(float(s["angle"])):
 			shake = shake.rotated(float(s["angle"]))
-	_stage.position = DESIGN_SIZE * 0.5 + shake
+	move += shake
+	_stage.position = _surface_size * 0.5 - move * zoom
+	_stage.scale = Vector2.ONE * zoom
+
+
+func _ease_camera(k: float, curve_text: String) -> float:
+	var parts := curve_text.split(",")
+	if parts.size() != 4:
+		return k
+	var lo := 0.0
+	var hi := 1.0
+	for _i in 20:
+		var t := (lo + hi) * 0.5
+		var x := 3.0 * (1.0 - t) * (1.0 - t) * t * float(parts[0]) + 3.0 * (1.0 - t) * t * t * float(parts[2]) + t * t * t
+		if x < k:
+			lo = t
+		else:
+			hi = t
+	var t := (lo + hi) * 0.5
+	return 3.0 * (1.0 - t) * (1.0 - t) * t * float(parts[1]) + 3.0 * (1.0 - t) * t * t * float(parts[3]) + t * t * t
 
 
 ## 把 .cfx 的真值深度按名次压进 [LAYER_Z_MIN, LAYER_Z_MAX]。
@@ -363,12 +431,17 @@ func _apply_matte(ms: float) -> void:
 	if not is_instance_valid(_matte):
 		return
 	var peak := float(_bg.get("alpha", 1.0))
+	var fade_in_at := float(_bg.get("fade_in_at_ms", 0.0))
 	var fade_in := float(_bg.get("fade_in_ms", 0.0))
 	var fade_out_at := float(_bg.get("fade_out_at_ms", -1.0))
 	var fade_out := float(_bg.get("fade_out_ms", 0.0))
 	var alpha := peak
-	if fade_in > 0.0 and ms < fade_in:
-		alpha = peak * clampf(ms / fade_in, 0.0, 1.0)
+	if ms < fade_in_at:
+		# 开场这一段官方画面还是正常战场（本体在演起手），黑幕必须完全不上，
+		# 否则会把官方给本体留的这段起手整段盖掉。fade_in_at 为 0 时不会走到这里。
+		alpha = 0.0
+	elif fade_in > 0.0 and ms < fade_in_at + fade_in:
+		alpha = peak * clampf((ms - fade_in_at) / fade_in, 0.0, 1.0)
 	elif fade_out_at >= 0.0 and ms >= fade_out_at:
 		alpha = 0.0 if fade_out <= 0.0 else peak * clampf(1.0 - (ms - fade_out_at) / fade_out, 0.0, 1.0)
 	_matte.color = Color(0.0, 0.0, 0.0, alpha)
@@ -390,6 +463,7 @@ func _build_layer(row: Dictionary, index: int, owner_local: Vector2) -> Dictiona
 	if spine.skeleton_data_res == null:
 		push_warning("[Heidemarie] 全屏演出图层骨架加载失败，已跳过：%s" % path)
 		return {}
+	_apply_spine_blend_materials(spine)
 
 	var attach := str(row.get("target", "SCREEN"))
 	var host: Node2D = _screen if attach == "SCREEN" else _stage
@@ -438,6 +512,15 @@ func _build_layer(row: Dictionary, index: int, owner_local: Vector2) -> Dictiona
 	}
 
 
+func _apply_spine_blend_materials(spine: SpineSprite) -> void:
+	# 只适配 straight-alpha 的 multiply 图层；普通、additive、screen 层
+	# 保留 Spine 扩展原生混合，避免把 UG 的发光层全局改成 premultiplied。
+	if _spine_multiply_material == null:
+		_spine_multiply_material = load(SPINE_MULTIPLY_MATERIAL)
+	if _spine_multiply_material != null:
+		spine.multiply_material = _spine_multiply_material
+
+
 ## 把图层骨架摁在 0 时刻并冻结时间轴，之后由 `_apply` 逐帧给时间。
 func _start_clip(spine: SpineSprite, preferred: String):
 	var state = spine.get_animation_state()
@@ -477,6 +560,32 @@ func _load_timeline(route_id: String) -> Dictionary:
 	if typeof(parsed) != TYPE_DICTIONARY:
 		push_error("[Heidemarie] 全屏演出时间轴解析失败：%s" % path)
 		return {}
+
+	# 资源完整性是路线级契约。旧实现会跳过 missing 后继续搭剩余图层，
+	# 结果就是“能播但少层”，比直接降级更难发现，也会造成层级/构图混乱。
+	# 审计 JSON 由 tools/audit_cinematic_assets.py 根据 .srmd/.cfx 生成，
+	# 因而这里不接受手写的残缺路线。
+	var missing: Variant = parsed.get("missing", [])
+	if missing is Array and not missing.is_empty():
+		push_error("[Heidemarie] 全屏演出资源不完整，整条路线降级：%s missing=%d" % [route_id, missing.size()])
+		return {}
+
+	var layers: Variant = parsed.get("layers", [])
+	if typeof(layers) != TYPE_ARRAY or layers.is_empty():
+		push_error("[Heidemarie] 全屏演出没有可组装图层：%s" % route_id)
+		return {}
+	var seen: Dictionary = {}
+	for row in layers:
+		if typeof(row) != TYPE_DICTIONARY:
+			push_error("[Heidemarie] 全屏演出图层记录非法：%s" % route_id)
+			return {}
+		var layer_name := str(row.get("name", ""))
+		var source_group := str(row.get("group", ""))
+		var layer_key := source_group + "::" + layer_name + "::" + str(row.get("start_ms", 0.0))
+		if seen.has(layer_key):
+			push_error("[Heidemarie] 全屏演出存在重复组装记录：%s" % layer_key)
+			return {}
+		seen[layer_key] = true
 	return parsed
 
 
@@ -487,9 +596,9 @@ func _layout() -> void:
 	var size: Vector2 = get_viewport().get_visible_rect().size
 	if size.x <= 0.0 or size.y <= 0.0:
 		return
-	var cover: float = maxf(size.x / DESIGN_WIDTH, size.y / DESIGN_HEIGHT)
+	var cover: float = maxf(size.x / _surface_size.x, size.y / _surface_size.y)
 	_canvas.scale = Vector2.ONE * cover
-	_canvas.position = (size - DESIGN_SIZE * cover) * 0.5
+	_canvas.position = (size - _surface_size * cover) * 0.5
 
 
 ## 同时接受 [x, y] 数字数组与单个数字。

@@ -41,7 +41,7 @@ public sealed class HeidemarieStrike : HeidemarieCard
 		await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
 			.FromCard(this, cardPlay)
 			// 显式指定攻击触发器：与「重斩」共用 attack_ready 起手，走 attack_play1 横挥分支
-			.WithAttackerAnim(HeidemarieAttackPlan.Basic.Trigger, HeidemarieAttackPlan.Basic.HitDelaySeconds)
+			.WithAttackerAnim(HeidemarieAttackPlan.Basic.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Basic))
 			.Targeting(cardPlay.Target)
 			.WithHitFx("vfx/vfx_attack_slash")
 			.Execute(choiceContext);

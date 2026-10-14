@@ -30,12 +30,14 @@ internal static class HeidemarieCardMechanics
 			yield return HeidemarieKeywords.Sense;
 		}
 
-		if (card is ILinkCard)
+		// 「连接」「安息」都可能是**运行期临时赋予**的，因此以基类的复合判定为准
+		// （静态接口 ILinkCard / IRestCard 或运行期标记任一成立）。
+		if (card is HeidemarieCard linkHolder && linkHolder.IsLinked)
 		{
 			yield return HeidemarieKeywords.Link;
 		}
 
-		if (card is IRestCard)
+		if (card is HeidemarieCard restHolder && restHolder.IsRestCard)
 		{
 			yield return HeidemarieKeywords.Rest;
 		}
@@ -71,9 +73,9 @@ internal static class HeidemarieCardMechanics
 	/// <summary>
 	/// 把自定义词条写进卡面描述模板的参数表。每个词条提供三种形态：
 	/// <list type="bullet">
-	///   <item><c>{Link}</c> —— 行内形态，文本形如「链接。」；</item>
+	///   <item><c>{Link}</c> —— 行内形态，文本形如「连接。」；</item>
 	///   <item><c>{LinkLine}</c> —— 独立成行形态，文本自带前缀换行；</item>
-	///   <item><c>{LinkName}</c> —— 纯词条名「链接」，用于「感应：…」这种后接说明的写法。</item>
+	///   <item><c>{LinkName}</c> —— 纯词条名「连接」，用于「感应：…」这种后接说明的写法。</item>
 	/// </list>
 	///
 	/// <para><b>为什么必须走模板参数</b>：卡面文本若把词条写死，随运行期出现/消失的词条

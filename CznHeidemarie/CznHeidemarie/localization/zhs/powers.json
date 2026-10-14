@@ -1,6 +1,14 @@
 {
   "HEIDEMARIE_AURORA_LIGHT_POWER.title": "极光之光",
-  "HEIDEMARIE_AURORA_LIGHT_POWER.description": "当层数达到3层时，将解放极光加入手牌。同时移除卡牌凝聚极光和所有极光之光。",
-  "HEIDEMARIE_DAMAGE_PERCENT_POWER.title": "极光增伤",
-  "HEIDEMARIE_DAMAGE_PERCENT_POWER.description": "使下一张攻击牌的伤害提高{Amount}%。"
+  "HEIDEMARIE_AURORA_LIGHT_POWER.description": "当层数达到3层时，在手牌生成1张解放极光。同时移除卡牌凝聚极光和所有极光之光。",
+  "HEIDEMARIE_DAYLIGHT_POWER.title": "白昼",
+  "HEIDEMARIE_DAYLIGHT_POWER.description": "使下一张极光剑的伤害提高{Amount}%。",
+  "HEIDEMARIE_NIGHT_POWER.title": "极夜",
+  "HEIDEMARIE_NIGHT_POWER.description": "本回合内极光剑的伤害提高{Amount}%。",
+  "HEIDEMARIE_NORTH_POLAR_POWER.title": "北极圈",
+  "HEIDEMARIE_NORTH_POLAR_POWER.description": "回合开始时，在手牌生成2张极光剑。",
+  "HEIDEMARIE_DAMAGE_PERCENT_POWER.title": "增伤池",
+  "HEIDEMARIE_DAMAGE_PERCENT_POWER.description": "隐藏的百分比增伤池（不出现在战斗界面）。",
+  "HEIDEMARIE_AURORA_DAMAGE_POOL_POWER.title": "极光剑增伤区",
+  "HEIDEMARIE_AURORA_DAMAGE_POOL_POWER.description": "隐藏的极光剑增伤区（白昼与极夜相加，不出现在战斗界面）。"
 }

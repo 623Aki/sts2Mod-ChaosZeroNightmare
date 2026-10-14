@@ -1,0 +1,937 @@
+{
+  "schema": "czn-animation-assembly-audit.v1",
+  "character_id": "30093",
+  "command": "ux_attack",
+  "source": {
+    "srmd": "CNZ_Source/czn30093/model_data/30093.srmd",
+    "cfx_dir": "CNZ_Source/czn30093/effect"
+  },
+  "summary": {
+    "group_count": 4,
+    "primitive_count": 42,
+    "spine_count": 41,
+    "unsupported_count": 1,
+    "missing_count": 0,
+    "duplicate_source_count": 0,
+    "z_min": -10000,
+    "z_max": 1001
+  },
+  "groups": [
+    {
+      "name": "heidemarie_30093_ux_attack_03",
+      "type": "SCREEN",
+      "bone_type": "POSITION",
+      "zorder": 0,
+      "global_z": 0,
+      "delay_ms": 0.0,
+      "primitive_count": 2,
+      "primitives": [
+        {
+          "index": 0,
+          "source": "heidemarie_30093_ux_attack_01_pati",
+          "format": "particle",
+          "z": 1000,
+          "ani": "",
+          "raw": {
+            "x": "-700",
+            "y": "-200",
+            "z": "1000",
+            "opacity": null,
+            "scale": null,
+            "rotate": "50",
+            "delay": null,
+            "format": "particle"
+          },
+          "final_z": 1000,
+          "has_skel": false,
+          "has_tres": false
+        },
+        {
+          "index": 1,
+          "source": "heidemarie_30093_ux_attack_05",
+          "format": "spine",
+          "z": 999,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "999",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 999,
+          "has_skel": true,
+          "has_tres": true
+        }
+      ]
+    },
+    {
+      "name": "heidemarie_30093_ux_attack_02_1",
+      "type": "CENTER",
+      "bone_type": "POSITION",
+      "zorder": 0,
+      "global_z": 0,
+      "delay_ms": 0.0,
+      "primitive_count": 16,
+      "primitives": [
+        {
+          "index": 0,
+          "source": "heidemarie_30093_ux_attack_03_6",
+          "format": "spine",
+          "z": 905,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "905",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 905,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 1,
+          "source": "heidemarie_30093_ux_attack_03_5",
+          "format": "spine",
+          "z": 904,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "904",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 904,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 2,
+          "source": "heidemarie_30093_ux_attack_cutin_03_glow",
+          "format": "spine",
+          "z": 903,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "903",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 903,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 3,
+          "source": "heidemarie_30093_ux_attack_cutin_03_03",
+          "format": "spine",
+          "z": 902,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "902",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 902,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 4,
+          "source": "heidemarie_30093_ux_attack_cutin_03_02",
+          "format": "spine",
+          "z": 901,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "901",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 901,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 5,
+          "source": "heidemarie_30093_ux_attack_cutin_03_01",
+          "format": "spine",
+          "z": 900,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "900",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 900,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 6,
+          "source": "heidemarie_30093_ux_attack_03_4",
+          "format": "spine",
+          "z": 899,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "899",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 899,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 7,
+          "source": "heidemarie_30093_ux_attack_03_3",
+          "format": "spine",
+          "z": -9992,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-9992",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -9992,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 8,
+          "source": "heidemarie_30093_ux_attack_03_2_2",
+          "format": "spine",
+          "z": -9993,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-9993",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -9993,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 9,
+          "source": "heidemarie_30093_ux_attack_03_2_1",
+          "format": "spine",
+          "z": -9994,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-9994",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -9994,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 10,
+          "source": "heidemarie_30093_ux_attack_03_1_3",
+          "format": "spine",
+          "z": -9995,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-9995",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -9995,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 11,
+          "source": "heidemarie_30093_ux_attack_03_1_2",
+          "format": "spine",
+          "z": -9996,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-9996",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -9996,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 12,
+          "source": "heidemarie_30093_ux_attack_03_1_1_4",
+          "format": "spine",
+          "z": -9997,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-9997",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -9997,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 13,
+          "source": "heidemarie_30093_ux_attack_03_1_1_3",
+          "format": "spine",
+          "z": -9998,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-9998",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -9998,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 14,
+          "source": "heidemarie_30093_ux_attack_03_1_1_2",
+          "format": "spine",
+          "z": -9999,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-9999",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -9999,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 15,
+          "source": "heidemarie_30093_ux_attack_03_1_1_1",
+          "format": "spine",
+          "z": -10000,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-10000",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -10000,
+          "has_skel": true,
+          "has_tres": true
+        }
+      ]
+    },
+    {
+      "name": "heidemarie_30093_ux_attack_02_2",
+      "type": "SCREEN",
+      "bone_type": "ATTACH",
+      "zorder": 1,
+      "global_z": 0,
+      "delay_ms": 0.0,
+      "primitive_count": 2,
+      "primitives": [
+        {
+          "index": 0,
+          "source": "heidemarie_30093_ux_attack_04_1",
+          "format": "spine",
+          "z": 1000,
+          "ani": "",
+          "raw": {
+            "x": "10",
+            "y": "15",
+            "z": "1000",
+            "opacity": null,
+            "scale": "0.97",
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 1001,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 1,
+          "source": "heidemarie_30093_ux_attack_04",
+          "format": "spine",
+          "z": 999,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "999",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 1000,
+          "has_skel": true,
+          "has_tres": true
+        }
+      ]
+    },
+    {
+      "name": "heidemarie_30093_ux_attack_01",
+      "type": "SELF",
+      "bone_type": "POSITION",
+      "zorder": 0,
+      "global_z": 0,
+      "delay_ms": 0.0,
+      "primitive_count": 22,
+      "primitives": [
+        {
+          "index": 0,
+          "source": "heidemarie_30093_ux_attack_01_f",
+          "format": "spine",
+          "z": 907,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "907",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 907,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 1,
+          "source": "heidemarie_30093_ux_attack_02_f1",
+          "format": "spine",
+          "z": 906,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "906",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 906,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 2,
+          "source": "heidemarie_30093_ux_cutin_04",
+          "format": "spine",
+          "z": 905,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "905",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 905,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 3,
+          "source": "heidemarie_30093_ux_cutin_03",
+          "format": "spine",
+          "z": 904,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "904",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 904,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 4,
+          "source": "heidemarie_30093_ux_cutin_02",
+          "format": "spine",
+          "z": 902,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "902",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 902,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 5,
+          "source": "heidemarie_30093_ux_cutin_02_1",
+          "format": "spine",
+          "z": 901,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "901",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 901,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 6,
+          "source": "heidemarie_30093_ux_cutin_01",
+          "format": "spine",
+          "z": 900,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "900",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 900,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 7,
+          "source": "heidemarie_30093_ux_attack_01_b1",
+          "format": "spine",
+          "z": -991,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-991",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -991,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 8,
+          "source": "heidemarie_30093_ux_attack_01_b1_2",
+          "format": "spine",
+          "z": -992,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-992",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -992,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 9,
+          "source": "heidemarie_30093_ux_attack_01_b1_3",
+          "format": "spine",
+          "z": -993,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-993",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -993,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 10,
+          "source": "heidemarie_30093_ux_attack_01_b1_4",
+          "format": "spine",
+          "z": -994,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-994",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -994,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 11,
+          "source": "heidemarie_30093_ux_attack_01_b2",
+          "format": "spine",
+          "z": -995,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-995",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -995,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 12,
+          "source": "heidemarie_30093_ux_attack_01_b2_1",
+          "format": "spine",
+          "z": -996,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-996",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -996,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 13,
+          "source": "heidemarie_30093_ux_attack_01_b3",
+          "format": "spine",
+          "z": -997,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-997",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -997,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 14,
+          "source": "heidemarie_30093_ux_attack_02_1",
+          "format": "spine",
+          "z": -998,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-998",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -998,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 15,
+          "source": "heidemarie_30093_ux_attack_01_b4",
+          "format": "spine",
+          "z": -999,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-999",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -999,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 16,
+          "source": "heidemarie_30093_ux_attack_02_b1_1",
+          "format": "spine",
+          "z": -1000,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-1000",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -1000,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 17,
+          "source": "heidemarie_30093_ux_attack_02_b1_2",
+          "format": "spine",
+          "z": -1001,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-1001",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -1001,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 18,
+          "source": "heidemarie_30093_ux_attack_02_b1_3",
+          "format": "spine",
+          "z": -1002,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-1002",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -1002,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 19,
+          "source": "heidemarie_30093_ux_attack_02_b2_1",
+          "format": "spine",
+          "z": -1003,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-1003",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -1003,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 20,
+          "source": "heidemarie_30093_ux_attack_02_b2",
+          "format": "spine",
+          "z": -1004,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-1004",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -1004,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 21,
+          "source": "heidemarie_30093_ux_attack_02_b3",
+          "format": "spine",
+          "z": -1005,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "-1005",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": -1005,
+          "has_skel": true,
+          "has_tres": true
+        }
+      ]
+    }
+  ],
+  "missing": [],
+  "unsupported": [
+    {
+      "group": "heidemarie_30093_ux_attack_03",
+      "index": 0,
+      "source": "heidemarie_30093_ux_attack_01_pati",
+      "format": "particle",
+      "z": 1000,
+      "ani": "",
+      "raw": {
+        "x": "-700",
+        "y": "-200",
+        "z": "1000",
+        "opacity": null,
+        "scale": null,
+        "rotate": "50",
+        "delay": null,
+        "format": "particle"
+      },
+      "final_z": 1000,
+      "has_skel": false,
+      "has_tres": false
+    }
+  ],
+  "duplicate_sources": [],
+  "rules": {
+    "final_z": "srmd.effect.zorder + cfx.primitive.z",
+    "time": "from_guid playback tree; siblings start in parallel and use their own delay",
+    "particle_policy": "do not silently convert; record as unsupported",
+    "missing_policy": "fail the whole route and use native card presentation",
+    "dedup_policy": "one route stage per card play; only official TARGET layers may be repeated per target"
+  }
+}

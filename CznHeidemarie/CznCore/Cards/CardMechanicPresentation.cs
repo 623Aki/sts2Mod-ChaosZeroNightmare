@@ -74,7 +74,7 @@ public static class CardMechanicPresentation
 	}
 
 	/// <summary>
-	/// 用给定的词条名生成卡面词条文本（形如 <c>[gold]链接[/gold]。</c>）。
+	/// 用给定的词条名生成卡面词条文本（形如 <c>[gold]连接[/gold]。</c>）。
 	///
 	/// <para>与 <see cref="GetCardText"/> 的唯一区别是词条名由调用方给出 ——
 	/// 带层数的词条（「回收2」）要复用同一套格式，而层数是运行期状态，

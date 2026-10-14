@@ -83,7 +83,10 @@ $RequiredInPck = @(
     'scenes/heidemarie_battle_ready.tscn',          # 出牌特写立绘
     'CznHeidemarie/animations/battle_ready/30093_battle_ready.skel',
     '30093_battle_ready.skel-',                     # 特写骨架的 .spskel
-    '30093_battle_ready.png-'                       # 特写贴图的 .ctex
+    '30093_battle_ready.png-',                      # 特写贴图的 .ctex
+    'CznHeidemarie/audio/sfx/se_30093_attack_play1.ogg',   # 战斗音效（.bank 导出）
+    'CznHeidemarie/audio/voice/vo_30093_attack_01.ogg',    # 角色语音（.bank 导出）
+    'CznHeidemarie/images/defeat/heidemarie_defeat_cg_1.webp'  # 败北 CG
 )
 
 # pck 正常体积下限：低于这个值基本就是骨架丢了（正常约 3.6 MB）
@@ -172,7 +175,7 @@ try {
     #   - 运行中的游戏：锁住 mods 目录里的 <mod>.dll，让编译后的复制步骤报 MSB3021
     #     （Access to the path ... is denied），编译白跑一趟。
     # 两者统一按进程名匹配后强杀。
-    $blockingProcs = @(Get-Process -Name 'Godot*', 'SlayTheSpire2' -ErrorAction SilentlyContinue)
+    $blockingProcs = @(Get-Process -Name 'Godot*', 'SlayTheSpire2' -ErrorAction SilentlyContinue | Where-Object { $_.Threads.Count -gt 0 })
     if ($blockingProcs.Count -gt 0) {
         $names = ($blockingProcs | Select-Object -ExpandProperty ProcessName -Unique) -join ', '
         Write-Warn "检测到 $($blockingProcs.Count) 个占用进程（$names），会锁住扩展 DLL 或 mods 目录，正在关闭"
@@ -182,7 +185,7 @@ try {
 
         # 复核：Stop-Process 可能因权限不足被静默忽略，这里确认进程真的退出，
         # 否则后续 dotnet build 仍会卡在复制那一步，报错信息还看不出根因。
-        $stillAlive = @(Get-Process -Name 'Godot*', 'SlayTheSpire2' -ErrorAction SilentlyContinue)
+        $stillAlive = @(Get-Process -Name 'Godot*', 'SlayTheSpire2' -ErrorAction SilentlyContinue | Where-Object { $_.Threads.Count -gt 0 })
         if ($stillAlive.Count -gt 0) {
             throw "仍有 $($stillAlive.Count) 个进程未能关闭：$(($stillAlive | Select-Object -ExpandProperty ProcessName -Unique) -join ', ')`n请用管理员权限手工结束它们后再重试。"
         }

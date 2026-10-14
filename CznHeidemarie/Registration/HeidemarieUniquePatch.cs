@@ -124,7 +124,7 @@ internal static class HeidemarieUniqueTransformPatch
 ///
 /// <para><b>为什么不用 <c>[HarmonyPatch]</c> 属性自动挂载</b>：这是本组补丁里唯一
 /// 「<c>ref Task&lt;…&gt; __result</c> + 异步方法 + 需按参数类型精确指定重载」三件事叠加的补丁，
-/// 一旦挂载失败，<c>Harmony.PatchAll()</c> 会整体抛错、把其它补丁一起带走。
+/// 一旦挂载失败，整批扫描式挂载可能中断后续补丁。
 /// 因此改为在 <see cref="Install"/> 里单独挂载，失败只告警。</para>
 /// </summary>
 internal static class HeidemarieUniqueDeckGuard

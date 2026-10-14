@@ -62,13 +62,22 @@ internal sealed class HeidemarieSettingsUiRuntime : SkinSettingsUiRuntimeBase
 
 	public HeidemarieSettingsUiRuntime(SkinCharacterSettings settings)
 		: base(settings, new SkinSettingsUiRuntimeHooks(
-			ApplyEffectBrightnessSettings: null,
+			// 「特效亮度 / 特效不透明度」：对当前在画面上的特效重算一次 modulate
+			ApplyEffectBrightnessSettings: HeidemarieEffectMaterials.Refresh,
 			ApplyBattleReadyTransform: HeidemarieBattleReadyRuntime.ApplyTransform,
 			CleanupBattleReadyOverlay: () => HeidemarieBattleReadyRuntime.Cleanup(),
-			CleanupSkinEffectsRuntime: null,
-			CleanupSkinVisualEffectsRuntime: null,
-			CleanupSkinSfxRuntime: null,
-			StopVoice: null,
+			// 「战斗特效」关掉：正在播的单体特效与全屏演出立刻收尾
+			CleanupSkinEffectsRuntime: () =>
+			{
+				HeidemarieMoveEffectsRuntime.CancelAll();
+				HeidemarieCinematicRuntime.CancelAll();
+			},
+			// 「额外粒子」关掉：卡牌拖尾的两个粒子节点停止发射
+			CleanupSkinVisualEffectsRuntime: HeidemarieTrailParticles.Refresh,
+			// 「特效音效」关掉：清掉音效播放器缓存并停掉正在播的
+			CleanupSkinSfxRuntime: HeidemarieCombatAudio.TrimSfx,
+			// 「角色语音」关掉：停掉正在播的语音
+			StopVoice: HeidemarieCombatAudio.StopVoice,
 			// 关掉「出牌演出」时，出牌特写与全屏演出都要立刻收尾
 			ApplyCardPlayPresentationEnabled: enabled =>
 			{

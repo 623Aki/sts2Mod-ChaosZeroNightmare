@@ -30,14 +30,21 @@ public sealed class HeidemarieCardPool : CardPoolModel
 	/// <summary>
 	/// 能量图标配色键。
 	///
-	/// <para>取游戏已有的 <c>ironclad</c>：本值会被
+	/// <para>本值会被
 	/// <see cref="MegaCrit.Sts2.Core.Helpers.EnergyIconHelper.GetPath(string)"/> 拼成
 	/// <c>res://images/atlases/ui_atlas.sprites/card/energy_&lt;值&gt;.tres</c>，
-	/// 而游戏 ui_atlas 中没有 <c>energy_heidemarie</c>，且 ui_atlas 不参与
-	/// AtlasResourceLoader 的 fallback，会持续刷 "Missing sprite" 并显示占位图标。
-	/// 改用已有键即可消除。</para>
+	/// 用于卡牌费用与遗物 / 药水提示中的能量图标。</para>
+	///
+	/// <para><b>注意：这条图集路径在本工程里会被游戏 <c>AtlasResourceLoader</c> 拦截</b>
+	/// （<c>ui_atlas</c> 内无本角色 sprite，且无 fallback，会回落到
+	/// <c>missing_power.png</c>）。因此真正生效的是
+	/// <see cref="Registration.HeidemarieEnergyIconPathPatch"/> 这条 Postfix 补丁，
+	/// 它把本配色键重定向到 <c>images/ui/energy/heidemarie_energy_card_74.png</c>。
+	/// 改本值时必须同步改补丁里的配色键。</para>
+	///
+	/// <para>卡池 / 遗物池 / 药水池三处必须严格一致，否则同一次提示里会出现两种图标。</para>
 	/// </summary>
-	public override string EnergyColorName => "ironclad";
+	public override string EnergyColorName => "heidemarie";
 
 	/// <inheritdoc/>
 	public override string CardFrameMaterialPath => "card_frame_red";
@@ -53,21 +60,38 @@ public sealed class HeidemarieCardPool : CardPoolModel
 
 	/// <inheritdoc/>
 	/// <remarks>
-	/// 只列举「可常规获取」的卡：基础攻防 + 6 张角色卡
-	/// （剑光 / 剑雨 / 剑冢 / 凝锋 / 安魂剑 / 绝响）。
+	/// 只列举「可常规获取」的卡：基础攻防 + 全部角色卡。
 	/// 衍生的极光剑、凝聚极光、解放极光不进池，见类注释。
 	/// </remarks>
-	protected override CardModel[] GenerateAllCards() => new CardModel[8]
+	protected override CardModel[] GenerateAllCards() => new CardModel[25]
 	{
 		// 基础攻防
 		ModelDb.Card<HeidemarieStrike>(),
 		ModelDb.Card<HeidemarieDefend>(),
-		// 角色卡（Basic / Common / Rare）
+		// 原有角色卡
 		ModelDb.Card<HeidemarieSwordlight>(),
 		ModelDb.Card<HeidemarieSwordrain>(),
 		ModelDb.Card<HeidemarieSwordTomb>(),
 		ModelDb.Card<HeidemarieCondenseEdge>(),
 		ModelDb.Card<HeidemarieRequiemBlade>(),
 		ModelDb.Card<HeidemarieFinalEcho>(),
+		// 新角色卡（连接 / 极光引擎扩展）
+		ModelDb.Card<HeidemarieAllHeroes>(),
+		ModelDb.Card<HeidemarieBindStar>(),
+		ModelDb.Card<HeidemarieFaintLight>(),
+		ModelDb.Card<HeidemarieRequiem>(),
+		ModelDb.Card<HeidemarieRecover>(),
+		ModelDb.Card<HeidemarieCallBlade>(),
+		ModelDb.Card<HeidemarieRayOfLight>(),
+		ModelDb.Card<HeidemarieTripleGlow>(),
+		ModelDb.Card<HeidemarieResonance>(),
+		ModelDb.Card<HeidemarieSkyfall>(),
+		ModelDb.Card<HeidemarieUnfoldAurora>(),
+		ModelDb.Card<HeidemarieNorthPolar>(),
+		ModelDb.Card<HeidemarieSwordCrypt>(),
+		ModelDb.Card<HeidemarieMirrorBlades>(),
+		ModelDb.Card<HeidemarieStoreLight>(),
+		ModelDb.Card<HeidemarieFallenStar>(),
+		ModelDb.Card<HeidemarieForesee>(),
 	};
 }

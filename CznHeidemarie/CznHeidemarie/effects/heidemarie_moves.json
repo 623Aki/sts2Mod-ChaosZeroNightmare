@@ -70,9 +70,207 @@
      "end_ms": 1133.0
     }
    ]
-  },
-  "HeidemarieHeavyStrike": {
-   "note": "重斩：attack_ready(0.2) → attack_play2(0.667)",
+   },
+   "HeidemarieAuroraSword": {
+   "note": "极光剑（1 费衍生牌）：全卡池最轻的一击 —— 单束剑光 + 命中斩痕，共 3 层。身体动作 Attack（attack_ready 0.2 → attack_play1 0.667）。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_attack_play1_f",
+     "clip": "animation",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 733.0,
+     "opacity": 1.0
+    }
+   ],
+   "target": [
+    {
+     "name": "heidemarie_30093_eff_attack_play1_target",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 200.0,
+     "end_ms": 1033.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_target",
+     "clip": "attack_play1_target",
+     "z": 3,
+     "start_ms": 200.0,
+     "end_ms": 1133.0,
+     "opacity": 1.0
+    }
+   ]
+   },
+   "HeidemarieSwordlight": {
+   "note": "剑光（1 费，8 伤害）：在极光剑基础上加剑刃辉光，强调「剑」而非「极光」，共 6 层。身体动作 Attack。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_attack_play1_b",
+     "clip": "animation",
+     "z": -5,
+     "start_ms": 200.0,
+     "end_ms": 633.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play1_f",
+     "clip": "animation",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 733.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_sword_eff_g",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.8
+    }
+   ],
+   "target": [
+    {
+     "name": "heidemarie_30093_eff_attack_play1_target",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 200.0,
+     "end_ms": 1033.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f1",
+     "clip": "attack_play1",
+     "z": 7,
+     "start_ms": 200.0,
+     "end_ms": 1133.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_target",
+     "clip": "attack_play1_target",
+     "z": 3,
+     "start_ms": 200.0,
+     "end_ms": 1133.0,
+     "opacity": 1.0
+    }
+   ]
+   },
+   "HeidemarieRayOfLight": {
+   "note": "一缕光芒（1 费，8 伤害 + 连接增伤）：起手施法光效（0 ~ 1000ms）与斩击同时铺开，共 5 层。身体动作 Attack。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_casting_ready",
+     "clip": "animation",
+     "z": 1,
+     "start_ms": 0.0,
+     "end_ms": 1000.0,
+     "opacity": 0.75
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play1_f",
+     "clip": "animation",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 733.0,
+     "opacity": 1.0
+    }
+   ],
+   "target": [
+    {
+     "name": "heidemarie_30093_eff_attack_play1_target",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 200.0,
+     "end_ms": 1033.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f1",
+     "clip": "attack_play1",
+     "z": 7,
+     "start_ms": 200.0,
+     "end_ms": 1133.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_cat_target",
+     "clip": "attack_play1_target",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 1133.0
+    }
+   ]
+   },
+   "HeidemarieSwordrain": {
+   "note": "剑雨（1 费，4 伤害 ×2）：双段命中，目标侧铺满六层斩击（含前后景），用层数堆出「雨」的密度，共 8 层。身体动作 Attack。",
+   "owner": [
+    {
+     "name": "heidemarie_30093_eff_attack_play1_b",
+     "clip": "animation",
+     "z": -5,
+     "start_ms": 200.0,
+     "end_ms": 633.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play1_f",
+     "clip": "animation",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 733.0,
+     "opacity": 1.0
+    }
+   ],
+   "target": [
+    {
+     "name": "heidemarie_30093_eff_attack_play1_target",
+     "clip": "animation",
+     "z": 0,
+     "start_ms": 200.0,
+     "end_ms": 1033.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_b",
+     "clip": "attack_play1",
+     "z": -10,
+     "start_ms": 200.0,
+     "end_ms": 1200.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f1",
+     "clip": "attack_play1",
+     "z": 7,
+     "start_ms": 200.0,
+     "end_ms": 1133.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_attack_play_target_f3",
+     "clip": "attack_play1",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 1200.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_target",
+     "clip": "attack_play1_target",
+     "z": 3,
+     "start_ms": 200.0,
+     "end_ms": 1133.0,
+     "opacity": 1.0
+    },
+    {
+     "name": "heidemarie_30093_eff_sword_cat_target",
+     "clip": "attack_play1_target",
+     "z": 5,
+     "start_ms": 200.0,
+     "end_ms": 1133.0
+    }
+   ]
+   },
+   "HeidemarieRequiemBlade": {
+   "note": "安魂剑（2 费，6 伤害 ×2）：改走 Attack2 纵劈分支 —— attack_ready(0.2) → attack_play2(0.667)，配合双段命中，比打击更沉，共 8 层。",
    "owner": [
     {
      "name": "heidemarie_30093_eff_attack_play2_b",
@@ -176,8 +374,8 @@
    ],
    "target": []
   },
-  "HeidemarieU1Strike": {
-   "note": "斩击：u1_attack_ready(0.467) → u1_attack_play(0.667) → u1_attack_end(0.533)",
+  "HeidemarieTripleGlow": {
+   "note": "叠光奏浪（2 费，14 伤害，连接 ≥3 时 ×3）：改走 U1Attack 斩击链 —— u1_attack_ready(0.467) → u1_attack_play(0.667) → u1_attack_end(0.533)，起手/收招各有两层，比普攻重一档，共 10 层。",
    "owner": [
     {
      "name": "heidemarie_30093_eff_u1_attack_ready_b",
@@ -316,8 +514,8 @@
    ],
    "target": []
   },
-  "HeidemarieU3Strike": {
-   "note": "裂空斩：u3_attack_ready(0.467) → u3_attack_play(0.933) → u3_attack_end(0.467)",
+  "HeidemarieSkyfall": {
+   "note": "陨锋·坠月（2 费稀有，15 伤害 ×2；安息改为全体 20）：全卡池单体特效的顶配 —— 走 U3Attack 裂空斩链（u3_attack_ready 0.467 → u3_attack_play 0.933 → u3_attack_end 0.467），自身 6 层 + 目标侧 14 层（含碎岩、风压、闪光），共 20 层。",
    "owner": [
     {
      "name": "heidemarie_30093_eff_u3_attack_self_b",

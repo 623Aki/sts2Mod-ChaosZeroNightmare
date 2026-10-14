@@ -67,23 +67,17 @@ public sealed class HeidemarieFinalEcho : HeidemarieCard, ITerminateCard, IUniqu
 			swords = PileType.Discard.GetPile(Owner).Cards.Count(c => c is HeidemarieAuroraSword);
 		}
 
-		if (swords > 0)
+		// 墓地每有 1 张极光剑 +100%；入池与清池由基类包裹
+		// （见 HeidemarieCard.WithPercentDamageBoost，攻击结束必定清池）。
+		await WithPercentDamageBoost(choiceContext, swords * PercentPerSword, async () =>
 		{
-			await PowerCmd.Apply<HeidemarieDamagePercentPower>(
-				choiceContext,
-				Owner.Creature,
-				swords * PercentPerSword,
-				Owner.Creature,
-				this,
-				silent: true);
-		}
-
-		await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-			.FromCard(this, cardPlay)
-			.WithAttackerAnim(HeidemarieAttackPlan.Ux.Trigger, HeidemarieAttackPlan.Ux.HitDelaySeconds)
-			.TargetingAllOpponents(CombatState!)
-			.WithHitFx("vfx/vfx_bloody_impact")
-			.Execute(choiceContext);
+			await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+				.FromCard(this, cardPlay)
+				.WithAttackerAnim(HeidemarieAttackPlan.Ux.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Ux))
+				.TargetingAllOpponents(CombatState!)
+				.WithHitFx("vfx/vfx_bloody_impact")
+				.Execute(choiceContext);
+		});
 
 		// 终结：打出后立即结束本回合（走游戏原生回合结束逻辑）
 		PlayerCmd.EndTurn(Owner, canBackOut: false);

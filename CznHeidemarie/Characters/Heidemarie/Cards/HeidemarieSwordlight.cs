@@ -14,8 +14,8 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// 「剑光」：1 费攻击（基础牌）。
 ///
 /// <para>造成 8 点伤害；升级后 +2。</para>
-/// <para>关键字<b>感应</b>：抽取本牌后，使下一张攻击牌伤害 +50%
-/// （注入 <see cref="HeidemarieDamagePercentPower"/> 增伤池）。</para>
+/// <para>关键字<b>感应</b>：抽取本牌后，获得能力<b>白昼</b>，
+/// 使下一张<b>极光剑</b>的伤害 +50%。</para>
 /// </summary>
 public sealed class HeidemarieSwordlight : HeidemarieCard, ISenseCard
 {
@@ -30,18 +30,18 @@ public sealed class HeidemarieSwordlight : HeidemarieCard, ISenseCard
 
 	/// <summary>1 费、攻击、基础牌、目标为任意敌人。</summary>
 	public HeidemarieSwordlight()
-		: base(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
+		: base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 	{
 	}
 
 	/// <inheritdoc/>
 	public async Task OnSense(PlayerChoiceContext choiceContext)
 	{
-		// +50 入增伤池；命中下一张攻击后由该能力自行清空
-		await PowerCmd.Apply<HeidemarieDamagePercentPower>(
+		// 挂载「白昼」+50：只作用于下一张极光剑，打出后由该能力自行清除
+		await PowerCmd.Apply<HeidemarieDaylightPower>(
 			choiceContext,
 			Owner.Creature,
-			HeidemarieDamagePercentPower.SenseBoost,
+			HeidemarieDaylightPower.SenseBoost,
 			Owner.Creature,
 			this,
 			silent: true);
@@ -52,9 +52,11 @@ public sealed class HeidemarieSwordlight : HeidemarieCard, ISenseCard
 	{
 		ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
 
+		// 1 费单段：走打击动作（Attack）+ 6 层剑光特效，
+		// 时间轴见 effects/heidemarie_moves.json 的 HeidemarieSwordlight 键
 		await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
 			.FromCard(this, cardPlay)
-			.WithAttackerAnim(HeidemarieAttackPlan.Basic.Trigger, HeidemarieAttackPlan.Basic.HitDelaySeconds)
+			.WithAttackerAnim(HeidemarieAttackPlan.Basic.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Basic))
 			.Targeting(cardPlay.Target)
 			.WithHitFx("vfx/vfx_attack_slash")
 			.Execute(choiceContext);

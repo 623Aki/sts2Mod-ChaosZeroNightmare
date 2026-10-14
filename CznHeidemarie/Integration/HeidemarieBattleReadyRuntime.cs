@@ -39,14 +39,16 @@ internal static class HeidemarieBattleReadyRuntime
 		/// <inheritdoc/>
 		/// <remarks>
 		/// 第一个委托给出当前模式，第二个委托判断「这张牌该不该出特写」：
-		/// 必须是本地玩家打出的 Heidemarie 的牌，且战斗还在进行中。
+		/// 必须是本地玩家打出的 Heidemarie 的牌，且战斗还在进行中；
+		/// 第三个委托是「带全屏演出的卡牌」那一档用的筛子 ——
+		/// 只有绑定过全屏演出路线的牌（解放极光 / 绝响）算数。
 		/// </remarks>
 		public LeftSideCardPresentationPolicy<CardModel> PresentationPolicy { get; } = new LeftSideCardPresentationPolicy<CardModel>(
 			() => HeidemarieSettings.CurrentCharacter.BattleReadyOverlayMode,
 			(CardModel card) => IsLocalHeidemarie(card.Owner)
 				&& !card.Owner.Creature.IsDead
 				&& !CombatManager.Instance.IsOverOrEnding,
-			(CardModel _) => false);
+			HeidemarieCinematicRuntime.HasCinematicRoute);
 
 		public float BattleReadyScale => HeidemarieSettings.CurrentCharacter.BattleReadyScale;
 
@@ -123,11 +125,16 @@ internal static class HeidemarieBattleReadyRuntime
 		/// </remarks>
 		public void ApplyIdleEffectMaterial(Node root)
 		{
+			// 特效亮度 / 不透明度：只写最外层 modulate，靠父子继承往下传
+			HeidemarieEffectMaterials.Apply(root);
 		}
 
 		/// <inheritdoc/>
 		public void ApplyIdleEffectMaterialDeferred(Node root, int frames)
 		{
+			// 骨架贴图不是预乘 alpha，替换材质会让剑影发黑，所以只做和帧无关的 modulate；
+			// 延时那一版留给将来需要等骨架就绪的场景，目前与即时版同义。
+			HeidemarieEffectMaterials.Apply(root);
 		}
 
 		/// <inheritdoc/>
@@ -270,13 +277,31 @@ internal static class HeidemarieBattleReadyRuntime
 			}
 		}));
 
-		// 手牌聚焦 / 失焦
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写聚焦", (HandCardFocusedEvent e) => Show(e.Holder.CardModel)));
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写失焦", (HandCardUnfocusedEvent e) => Hide(e.Holder.CardModel)));
+		// 「选牌演出触发方式」：悬停档只看聚焦/悬停，选择档只看按下/拖拽/指向。
+		// 两档互斥，否则两个时机都会弹特写，等于这个设置没作用。
+		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写聚焦", (HandCardFocusedEvent e) =>
+		{
+			if (HoverTriggered)
+			{
+				Show(e.Holder.CardModel);
+			}
+		}));
+		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写失焦", (HandCardUnfocusedEvent e) =>
+		{
+			if (HoverTriggered)
+			{
+				Hide(e.Holder.CardModel);
+			}
+		}));
 
 		// 悬停
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写悬停", (HandCardHoverEffectsEvent e) =>
 		{
+			if (!HoverTriggered)
+			{
+				return;
+			}
+
 			if (e.IsHovered)
 			{
 				Show(e.Holder.CardModel);
@@ -287,10 +312,28 @@ internal static class HeidemarieBattleReadyRuntime
 			}
 		}));
 
-		// 鼠标按下 / 拖拽开始 / 指向目标 / 多目标选择：都算「正在考虑出这张牌」
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写按下", (HandCardMousePressedEvent e) => Show(e.Holder.CardModel)));
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写拖拽", (MouseCardPlayStartedEvent e) => Show(e.Node.Holder?.CardModel)));
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写指向", (CardSelectionPresentationStartedEvent e) => Show(e.Card)));
+		// 鼠标按下 / 拖拽开始 / 指向目标 / 多目标选择：都算「已经选中这张牌」
+		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写按下", (HandCardMousePressedEvent e) =>
+		{
+			if (SelectionTriggered)
+			{
+				Show(e.Holder.CardModel);
+			}
+		}));
+		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写拖拽", (MouseCardPlayStartedEvent e) =>
+		{
+			if (SelectionTriggered)
+			{
+				Show(e.Node.Holder?.CardModel);
+			}
+		}));
+		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写指向", (CardSelectionPresentationStartedEvent e) =>
+		{
+			if (SelectionTriggered)
+			{
+				Show(e.Card);
+			}
+		}));
 
 		// 取消
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写取消", (CardPlayCancelledEvent e) =>
@@ -311,7 +354,13 @@ internal static class HeidemarieBattleReadyRuntime
 		}));
 
 		// 生命周期清理
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写进房间", (RoomEnteringEvent _) => Cleanup(releaseResources: true)));
+		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写进房间", (RoomEnteringEvent _) =>
+		{
+			Cleanup(releaseResources: true);
+			// 「特效亮度」与「额外粒子」的登记表里存的是本房间的节点，随房间一起清掉
+			HeidemarieEffectMaterials.Clear();
+			HeidemarieTrailParticles.Clear();
+		}));
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写阵亡", (PlayerDeathResolvedEvent e) => CleanupFor(e.Player)));
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写胜利", (PlayerCombatVictoryEvent e) => CleanupFor(e.Player)));
 	}
@@ -384,6 +433,13 @@ internal static class HeidemarieBattleReadyRuntime
 			_screen = null;
 		}
 	}
+
+	/// <summary>「选牌演出触发方式 = 悬停卡牌时」：聚焦 / 悬停就弹特写。</summary>
+	private static bool HoverTriggered =>
+		HeidemarieSettings.CurrentCharacter.CardSelectionPresentationTrigger == CardSelectionPresentationTrigger.CardHover;
+
+	/// <summary>「选牌演出触发方式 = 选择卡牌时」：按下 / 拖拽 / 指向目标才弹特写。</summary>
+	private static bool SelectionTriggered => !HoverTriggered;
 
 	/// <summary>
 	/// 是不是本地玩家操作的 Heidemarie 的牌。

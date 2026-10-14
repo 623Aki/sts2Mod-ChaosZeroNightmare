@@ -101,6 +101,11 @@ internal static class HeidemarieIntegration
 		HeidemarieCutInToggleRuntime.Initialize(harmony);
 		// 单体技能特效：把已整合的特效骨架接到卡牌演出上（见 HeidemarieMoveEffectsRuntime）
 		HeidemarieMoveEffectsRuntime.Initialize();
+		// 战斗音效与角色语音：接「特效音效 / 特效音量 / 角色语音 / 语音音量 / 语音间隔」
+		// （音频由 tools/extract_fmod_bank.py 从素材区 .bank 导出，见 HeidemarieCombatAudio）
+		HeidemarieCombatAudio.Initialize();
+		// 败北 CG：接「败北 CG（关闭 / 类型 1 / 类型 2 / 随机）」（见 HeidemarieDefeatCgRuntime）
+		HeidemarieDefeatCgRuntime.Initialize();
 
 		Log.Info("海德玛丽框架接入完成。");
 	}

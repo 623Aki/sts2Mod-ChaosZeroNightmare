@@ -12,7 +12,7 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// <summary>
 /// 「剑雨」：1 费攻击（基础牌）。
 ///
-/// <para>关键字<b>链接</b>：直接使用本牌时，丢弃手牌中其他所有带「链接」的牌。</para>
+/// <para>关键字<b>连接</b>：直接使用本牌时，丢弃手牌中其他所有带「连接」的牌。</para>
 /// <para>造成 4 点伤害 2 次；升级后感应生成的极光剑 +1。</para>
 /// <para>关键字<b>感应</b>：抽取本牌后，生成 1 张极光剑到<strong>抽牌堆</strong>。</para>
 /// </summary>
@@ -44,14 +44,14 @@ public sealed class HeidemarieSwordrain : HeidemarieCard, ILinkCard, ISenseCard
 	/// <inheritdoc/>
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
-		// 链接：先丢弃手里其他链接牌（会连带触发它们的安息 / 回收等）
-		await HeidemarieCardActions.DiscardOtherLinked(this, choiceContext);
-
+		// 「连接」的连带丢弃由 HeidemarieCard.BeforeCardPlayed 统一在出牌前完成
 		ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
 
+		// 1 费双段：打击动作（Attack）+ 8 层「剑雨」特效（目标侧铺满斩击），
+		// 时间轴见 effects/heidemarie_moves.json 的 HeidemarieSwordrain 键
 		await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
 			.FromCard(this, cardPlay)
-			.WithAttackerAnim(HeidemarieAttackPlan.Basic.Trigger, HeidemarieAttackPlan.Basic.HitDelaySeconds)
+			.WithAttackerAnim(HeidemarieAttackPlan.Basic.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Basic))
 			.WithHitCount(2)
 			.Targeting(cardPlay.Target)
 			.WithHitFx("vfx/vfx_attack_slash")

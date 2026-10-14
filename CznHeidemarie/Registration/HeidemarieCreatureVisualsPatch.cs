@@ -1,3 +1,4 @@
+using CznHeidemarie.Characters.Heidemarie;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Nodes.Combat;
@@ -30,6 +31,16 @@ internal static class HeidemarieCreatureVisualsShared
 	internal const string HurtAnimation = "hurt";
 
 	/// <summary>
+	/// 判断 visuals 是否属于 Heidemarie 玩家。
+	/// 游戏把 NCreatureVisuals 直接挂在 NCreature 下，实体角色可从其 Player.Character 取得。
+	/// </summary>
+	internal static bool IsHeidemarie(NCreatureVisuals visuals)
+	{
+		return visuals.GetParent() is NCreature creature
+			&& creature.Entity.Player?.Character is Heidemarie;
+	}
+
+	/// <summary>
 	/// 骨架是否遵循游戏的动画命名约定。
 	/// 遵循的话（游戏原始角色）补丁一律放手，交回原实现。
 	/// </summary>
@@ -47,7 +58,7 @@ internal static class HeidemarieIdleAnimationPatch
 {
 	private static void Postfix(NCreatureVisuals __instance, ref bool __result)
 	{
-		if (__result)
+		if (__result || !HeidemarieCreatureVisualsShared.IsHeidemarie(__instance))
 		{
 			return;
 		}
@@ -71,7 +82,7 @@ internal static class HeidemarieHurtAnimationPatch
 {
 	private static void Postfix(NCreatureVisuals __instance, ref bool __result)
 	{
-		if (__result)
+		if (__result || !HeidemarieCreatureVisualsShared.IsHeidemarie(__instance))
 		{
 			return;
 		}

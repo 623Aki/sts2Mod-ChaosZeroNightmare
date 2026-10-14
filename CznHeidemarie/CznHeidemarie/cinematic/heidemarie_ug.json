@@ -20,8 +20,9 @@
  "actor_restore_ms": 2800.0,
  "presentation_end_ms": 5500.0,
  "bg": {
-  "alpha": 1.0,
+  "alpha": 0.9,
   "fade_in_ms": 120.0,
+  "fade_in_at_ms": 0.0,
   "fade_out_at_ms": 5050.0,
   "fade_out_ms": 450.0
  },
@@ -43,20 +44,43 @@
    }
   }
  ],
+ "camera": {
+  "moves": [],
+  "zooms": [
+   {
+    "start_ms": 4666.0,
+    "duration_ms": 0.0,
+    "curve": "0,0,0,0",
+    "pivot": "CENTER",
+    "guid": "1c6882c2-7f9b-495d-b08c-8fd24a7be9c0",
+    "zoom": 1.5
+   },
+   {
+    "start_ms": 4666.0,
+    "duration_ms": 333.3,
+    "curve": "0.06111111,0.8833333,0.13333334,0.9222222",
+    "pivot": "CENTER",
+    "guid": "1dc7a4b8-8ed1-4559-b1c6-08f9cac01894",
+    "zoom": 1.0
+   }
+  ],
+  "coordinate_note": "与参考 mod 一致：相机坐标为画布坐标，STAGE 使用 center - move * zoom；SCREEN 不跟随。"
+ },
  "renderer": {
-  "matte_peak": 1.0,
+  "matte_peak": 0.9,
   "shake_source": "起止时刻来自 srmd command.shake 事件链；振幅/频率资产里没有，人工标定",
   "corrections": {
-   "camera": "cam_move / cam_zoom / cam_spine 无对应通道，已丢弃",
+   "camera": "cam_move / cam_zoom 已提取并由舞台应用；cam_spine 仍无对应通道",
    "color_blend": "CZN 颜色分级无对应通道，已丢弃",
-   "bg_blend": "未映射到 bg 段，黑幕仍用人工参数",
+   "bg_blend": "「变黑」事件已映射进 bg.fade_in_at_ms / fade_in_ms；「恢复透明」事件仍未映射，淡出仍用人工参数",
+   "opening": "0 ~ 833.3ms 官方只有本体 ani、没有任何 effect 层（首个 effect 组挂在 wait_until_end 的 ani 之后）。已用 bg.fade_in_at_ms 延后黑幕接管、并让本体延后隐藏来对齐（见 HeidemarieCinematicRuntime 的 takeover_reached）",
    "attach_without_anchor": "bone_type=ATTACH 且 slot/bone 为空，按绝对坐标渲染"
   },
   "known_gaps": [
    "ug_attack_screen_pati1 是 CZNFX 粒子，STS2 无 CZNFX 运行时",
    "30093_ug_portrait1_1..9 与 30093_ug_portrait2_1..3 在 srmd 里同属一个 effect 事件（delay 0），.cfx 只给深度不给逐帧时序，因此全部从 0 起播。原游戏大概率是逐帧接力（约 300ms 一张），资产里没有依据，需进游戏标定。",
    "shake 的 file_name 指向相机骨架，那不是 Spine 骨架（转换器报 Bad optional access），所以只有起止时刻是真值，时长/振幅/频率全是人工值",
-   "cam_move / cam_zoom / cam_spine / color_blend / bg_blend / node_ani 均无对应通道"
+   "cam_move / cam_zoom 已输出到 camera 段；cam_spine / color_blend / bg_blend / node_ani 仍无对应通道"
   ]
  },
  "layers": [
@@ -1532,18 +1556,6 @@
    "group": "heidemarie_30093_ug_attack_impact",
    "source": "heidemarie_30093_ug_impact",
    "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "cam_zoom",
-   "guid": "1c6882c2-7f9b-495d-b08c-8fd24a7be9c0",
-   "file_name": null,
-   "reason": "STS2 战斗场景无相机"
-  },
-  {
-   "kind": "cam_zoom",
-   "guid": "1dc7a4b8-8ed1-4559-b1c6-08f9cac01894",
-   "file_name": null,
-   "reason": "STS2 战斗场景无相机"
   },
   {
    "kind": "shake",

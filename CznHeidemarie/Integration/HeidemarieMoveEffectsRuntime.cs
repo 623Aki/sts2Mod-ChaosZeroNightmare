@@ -57,6 +57,15 @@ internal static class HeidemarieMoveEffectsRuntime
 	/// <summary>正在播放的舞台，用于换卡 / 离房时统一收尾。</summary>
 	private static readonly List<Node> Active = new();
 
+	/// <summary>
+	/// 本场战斗已经接管过的卡牌实例。
+	/// CardPlayEnqueuingEvent 可能在同一张牌的多个 transport 阶段到达；
+	/// 参考 mod 的 presentation token 只允许一份动作序列，本集合保证不会
+	/// 因重复事件把 owner/target 舞台再组装一遍。按实例而非 CardModel.Id 去重，
+	/// 避免同 ID 的不同牌实例互相吞掉演出。
+	/// </summary>
+	private static readonly HashSet<CardModel> PlayedCards = new();
+
 	/// <summary>事件订阅句柄。</summary>
 	private static readonly List<IDisposable> Subscriptions = new();
 
@@ -124,15 +133,20 @@ internal static class HeidemarieMoveEffectsRuntime
 				return;
 			}
 
+			if (PlayedCards.Contains(card))
+			{
+				return;
+			}
+
 			if (player.Creature.GetCreatureNode() is not { } ownerNode)
 			{
 				return;
 			}
 
 			Node2D? ownerAnchor = Spines.Find(ownerNode);
-			if (ownerAnchor is not null)
+			if (ownerAnchor is not null && SpawnStage(ownerAnchor, key, OwnerBucket))
 			{
-				SpawnStage(ownerAnchor, key, OwnerBucket);
+				PlayedCards.Add(card);
 			}
 
 			if (target is not null && target.IsAlive && target.GetCreatureNode() is { } targetNode)
@@ -154,13 +168,13 @@ internal static class HeidemarieMoveEffectsRuntime
 	/// 在 <paramref name="anchor"/>（某个战斗单位的骨架节点）下建一个特效舞台。
 	/// 舞台自己解析时间轴；没有任何可用图层时返回 0 秒，此处直接把节点回收。
 	/// </summary>
-	private static void SpawnStage(Node2D anchor, string key, string bucket)
+	private static bool SpawnStage(Node2D anchor, string key, string bucket)
 	{
 		PackedScene? scene = ResourceLoader.Load<PackedScene>(StageScenePath, null, ResourceLoader.CacheMode.Reuse);
 		if (scene?.Instantiate(PackedScene.GenEditState.Disabled) is not Node2D stage)
 		{
 			Warn("缺少技能特效舞台场景：" + StageScenePath);
-			return;
+			return false;
 		}
 
 		anchor.AddChild(stage, forceReadableName: false, Node.InternalMode.Disabled);
@@ -168,13 +182,23 @@ internal static class HeidemarieMoveEffectsRuntime
 		if (stage.Call("configure", DataPath, key, bucket).AsDouble() <= 0.0)
 		{
 			stage.QueueFree();
-			return;
+			return false;
 		}
+
+		// 特效亮度 / 不透明度：每建一个舞台就按当前设置调一次
+		HeidemarieEffectMaterials.Apply(stage);
 
 		Active.Add(stage);
 		stage.Connect("finished", Callable.From(() => Release(stage)));
 		stage.Call("start");
+		return true;
 	}
+
+	/// <summary>
+	/// 立刻收掉所有在播的特效（设置里关掉「战斗特效」时调用，
+	/// 挂到 <c>SkinSettingsUiRuntimeHooks.CleanupSkinEffectsRuntime</c>）。
+	/// </summary>
+	internal static void CancelAll() => Cleanup();
 
 	// ──────────────────────────────────────────────────────────────────────────
 	// 生命周期
@@ -213,6 +237,7 @@ internal static class HeidemarieMoveEffectsRuntime
 		}
 
 		Active.Clear();
+		PlayedCards.Clear();
 		Spines.Clear();
 	}
 

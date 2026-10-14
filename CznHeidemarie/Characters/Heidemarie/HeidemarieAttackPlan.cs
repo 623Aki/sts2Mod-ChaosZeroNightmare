@@ -1,3 +1,5 @@
+using CznHeidemarie.Integration;
+
 namespace CznHeidemarie.Characters.Heidemarie;
 
 /// <summary>
@@ -52,4 +54,21 @@ internal sealed record HeidemarieAttackPlan(string Trigger, float HitDelaySecond
 	/// </summary>
 	public static readonly HeidemarieAttackPlan Ug =
 		new("GAttack", HeidemarieAnimationSeconds.UgAttack);
+
+	/// <summary>
+	/// 取这次攻击实际要等的命中秒数 —— 「命中时机同步」设置项的接入点。
+	///
+	/// <para>开启（默认）：返回时间轴实测的 <see cref="HitDelaySeconds"/>，
+	/// 伤害与下一张牌都等这一击的命中点，动作与结算对得上。</para>
+	///
+	/// <para>关闭：返回 0 —— 动画起手后立刻结算，战斗更快，
+	/// 代价是伤害可能先于动画落下（面板上的原文就是这个意思）。</para>
+	///
+	/// <para>数值本身只在这里收口：卡牌一律写
+	/// <c>WithAttackerAnim(plan.Trigger, HeidemarieAttackPlan.HitDelay(plan))</c>，
+	/// 不要再各自读 <see cref="HitDelaySeconds"/>，否则设置项会漏掉一部分牌。</para>
+	/// </summary>
+	/// <param name="plan">本次攻击的演出编排。</param>
+	public static float HitDelay(HeidemarieAttackPlan plan)
+		=> HeidemarieSettings.CurrentCharacter.OfficialAttackTimingEnabled ? plan.HitDelaySeconds : 0f;
 }

@@ -38,6 +38,10 @@ internal static class HeidemarieCinematicHitGatePatch
 	///
 	/// <para>返回 <c>false</c> 表示整段跳过原实现（连同它的音效与骨架动画）：
 	/// 演出已经接管画面，原生动作本就不可见。</para>
+	///
+	/// <para>顺带把「战斗音效 / 角色语音」挂在这里：动作名是唯一能同时覆盖
+	/// 原生动作与演出接管的通用信号，而且接管时原实现整体被跳过
+	/// （连同它自己的音效），所以必须在返回前先补上我们自己的音频。</para>
 	/// </summary>
 	private static bool Prefix(Creature creature, string triggerName, float waitTime, ref Task __result)
 	{
@@ -47,6 +51,9 @@ internal static class HeidemarieCinematicHitGatePatch
 			{
 				return true;
 			}
+
+			// 先发声：不管是原生动作还是演出接管，这一击/这一下都要有音效与语音
+			HeidemarieCombatAudio.OnTriggerAnim(creature, triggerName);
 
 			Player? player = creature.Player;
 			if (player is null || !HeidemarieCinematicRuntime.TryWaitForHit(player, triggerName, out Task hit))

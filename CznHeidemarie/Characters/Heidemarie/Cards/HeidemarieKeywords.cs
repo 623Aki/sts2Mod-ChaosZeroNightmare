@@ -11,8 +11,8 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// <c>&lt;Id&gt;.title</c> / <c>&lt;Id&gt;.description</c>）。</para>
 ///
 /// <para>每个词条都带一个 <c>CardTextArgumentName</c>：卡面描述模板
-/// （<c>localization/zhs/cards.json</c>）用 <c>{Link}</c> 取「链接。」、
-/// <c>{LinkName}</c> 取「链接」，由
+/// （<c>localization/zhs/cards.json</c>）用 <c>{Link}</c> 取「连接。」、
+/// <c>{LinkName}</c> 取「连接」，由
 /// <see cref="HeidemarieCardMechanics.AddCardTextArguments"/> 在渲染时填值。
 /// 这样卡面上的词条文本与悬停提示同源，且会跟着运行期状态变化
 /// （「回收」的层数、有无）。</para>
@@ -27,7 +27,7 @@ internal static class HeidemarieKeywords
 	public static readonly CardMechanicDefinition Sense =
 		CardMechanicDefinition.FromCardKeywordsTable("HEIDEMARIE_KEYWORD_SENSE", "Sense");
 
-	/// <summary>链接：使用时丢弃手牌中其他所有「连接」牌。</summary>
+	/// <summary>连接：使用时丢弃手牌中其他所有「连接」牌。</summary>
 	public static readonly CardMechanicDefinition Link =
 		CardMechanicDefinition.FromCardKeywordsTable("HEIDEMARIE_KEYWORD_LINK", "Link");
 

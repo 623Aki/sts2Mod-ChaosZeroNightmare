@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 using CznHeidemarie.Characters.Heidemarie;
 using CznHeidemarie.Integration;
 using HarmonyLib;
@@ -35,18 +38,8 @@ public static class MainFile
 	/// </remarks>
 	public static void Initialize()
 	{
-		// 应用本程序集内的所有 Harmony 补丁
-		// （见 Registration/HeidemarieRegistrationPatch.cs：把角色追加进 ModelDb.AllCharacters）
 		Harmony harmony = new(ModId);
-		try
-		{
-			harmony.PatchAll();
-		}
-		catch (System.Exception ex)
-		{
-			// 单个补丁挂载失败不应导致整个 mod 加载失败，至少要能进游戏看到日志
-			Log.Error($"Harmony PatchAll 失败（部分补丁可能未生效）：{ex}");
-		}
+		ApplyModPatches(harmony);
 
 		// 「唯一」关键字的加牌去重补丁单独挂载：它需要按参数类型精确指定重载并改写异步返回值，
 		// 是本组里最容易挂载失败的一个，因此隔离出来（失败只告警，不牵连其它补丁）。
@@ -57,5 +50,47 @@ public static class MainFile
 		HeidemarieIntegration.Init(harmony);
 
 		Log.Info($"{ModId} initialized.");
+	}
+
+	/// <summary>
+	/// 只自动挂载角色 mod 自己命名空间里的补丁，并逐类隔离失败。
+	/// CznCore 的补丁由 Integration 按需注册；若对整程序集调用 PatchAll，
+	/// 会把其中带 HarmonyPatch 的嵌套类提前挂载，随后再由补丁组重复注册。
+	/// 这种按命名空间筛选的方式与 Nine / Tiphera 的入口一致。
+	/// </summary>
+	private static void ApplyModPatches(Harmony harmony)
+	{
+		int patched = 0;
+		List<string>? skipped = null;
+		foreach (Type patchType in Assembly.GetExecutingAssembly().GetTypes())
+		{
+			string? typeNamespace = patchType.Namespace;
+			if (typeNamespace is null
+				|| !(typeNamespace == "CznHeidemarie"
+					|| typeNamespace.StartsWith("CznHeidemarie.", StringComparison.Ordinal))
+				|| patchType.GetCustomAttributes(typeof(HarmonyPatch), inherit: false).Length == 0)
+			{
+				continue;
+			}
+
+			try
+			{
+				harmony.CreateClassProcessor(patchType).Patch();
+				patched++;
+			}
+			catch (Exception ex)
+			{
+				(skipped ??= new List<string>()).Add(patchType.Name);
+				Log.Warn($"跳过补丁 {patchType.Name}：{ex.GetType().Name}: {ex.Message}");
+			}
+		}
+
+		string summary = $"Harmony 补丁：成功 {patched} 个";
+		if (skipped is not null)
+		{
+			summary += $"，跳过 {skipped.Count} 个 [{string.Join(", ", skipped)}]";
+		}
+
+		Log.Info(summary);
 	}
 }

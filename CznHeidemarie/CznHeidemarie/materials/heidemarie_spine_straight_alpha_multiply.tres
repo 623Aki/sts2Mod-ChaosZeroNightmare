@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[sub_resource type="Shader" id="Shader_heidemarie_straight_alpha_multiply"]
+code = "shader_type canvas_item;
+render_mode blend_mul, unshaded;
+
+// CZN 的 multiply 图层使用 straight-alpha 贴图。
+// 输出不透明的乘算因子，避免透明 RGB 被当成黑色覆盖画面。
+void fragment() {
+\tfloat source_alpha = COLOR.a;
+\tvec3 multiply_factor = COLOR.rgb * source_alpha + vec3(1.0 - source_alpha);
+\tCOLOR = vec4(clamp(multiply_factor, vec3(0.0), vec3(1.0)), 1.0);
+}
+"
+
+[resource]
+shader = SubResource("Shader_heidemarie_straight_alpha_multiply")

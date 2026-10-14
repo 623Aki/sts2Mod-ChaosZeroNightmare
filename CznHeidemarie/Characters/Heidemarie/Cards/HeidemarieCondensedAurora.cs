@@ -11,11 +11,14 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// <summary>
 /// 「凝聚极光」：稀有技能，「无法使用」（不能主动打出）。
 ///
-/// <para>原生关键字 <b>不能被打出</b>；自定义关键字 <b>唯一</b>、<b>链接</b>、<b>回收 3</b>。</para>
+/// <para>原生关键字 <b>不能被打出</b>；自定义关键字 <b>唯一</b>、<b>连接</b>、<b>回收 3</b>。</para>
 ///
-/// <para>它本身打不出去，靠「链接」被其它链接牌连带丢弃：每次移入墓地 →
+/// <para>它本身打不出去，靠「连接」被其它连接牌连带丢弃：每次移入墓地 →
 /// 「极光之光」+1 → 「回收」把它送回手牌（回收 3 次）。三张极光之光叠满即触发
 /// <see cref="HeidemarieAuroraLightPower"/> 的收束效果。</para>
+///
+/// <para>可升级 1 次，升级后获得原生关键字「固有」（战斗开始时直接入手）。
+/// 实战中它由「解放极光」的焚烧生成，且生成时即已升级，因此通常自带「固有」。</para>
 /// </summary>
 public sealed class HeidemarieCondensedAurora : HeidemarieCard, IUniqueCard, ILinkCard
 {
@@ -29,11 +32,15 @@ public sealed class HeidemarieCondensedAurora : HeidemarieCard, IUniqueCard, ILi
 	};
 
 	/// <inheritdoc/>
-	public override int MaxUpgradeLevel => 0;
-
-	/// <inheritdoc/>
 	/// <remarks>固有「回收 3」。</remarks>
 	protected override int CanonicalRecycle => 3;
+
+	/// <inheritdoc/>
+	/// <remarks>
+	/// 可升级 1 次：升级后获得原生关键字「固有」，
+	/// 使本牌在战斗开始时直接进入手牌。
+	/// </remarks>
+	protected override void OnUpgrade() => AddKeyword(CardKeyword.Innate);
 
 	/// <summary>无能量消耗（不能被打出的牌）。</summary>
 	public HeidemarieCondensedAurora()

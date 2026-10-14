@@ -13,15 +13,19 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
 /// <summary>
-/// 「解放极光」：0 费攻击（稀有牌），目标为任意敌人。
+/// 「解放极光」：0 费攻击（衍生牌 Token），目标为任意敌人。
 ///
-/// <para>原生关键字 <b>虚无</b>；自定义关键字 <b>唯一</b>、<b>焚烧</b>。</para>
+/// <para>原生关键字 <b>消耗</b> / <b>虚无</b>；自定义关键字 <b>唯一</b>、<b>焚烧</b>。</para>
 ///
 /// <para>造成 10 点伤害；消耗墓地中的<strong>所有</strong>「极光剑」，每消耗 1 张，
 /// 基础伤害 +100%（百分点注入 <see cref="HeidemarieDamagePercentPower"/> 增伤池）。</para>
 ///
-/// <para>关键字<b>焚烧</b>：本牌被消耗时（虚无的回合末消耗，或被绝响消耗），
-/// 在手牌中加入一张「凝聚极光」，重启引擎循环。</para>
+/// <para>关键字<b>消耗</b>：打出即进消耗堆，永不回手、不回墓地。</para>
+/// <para>关键字<b>虚无</b>：若回合结束时本牌仍在手中，同样被消耗。</para>
+///
+/// <para>关键字<b>焚烧</b>：本牌被消耗时（打出的消耗、虚无的回合末消耗，或被绝响消耗），
+/// 在手牌中加入一张已升级的「凝聚极光」（自带「固有」），随后本牌<strong>移出战斗</strong>
+/// （<see cref="CardPileCmd.RemoveFromCombat"/>，与能力「极光之光」清除凝聚极光同一做法）。</para>
 ///
 /// <para>唯一获取渠道 = 能力「极光之光」：禁止随机生成（见 <c>CanBeGeneratedInCombat</c>/
 /// <c>CanBeGeneratedByModifiers</c>），只由能力的代码直接创建。</para>
@@ -43,9 +47,17 @@ public sealed class HeidemarieLiberatedAurora : HeidemarieCard, IUniqueCard, IBu
 	};
 
 	/// <inheritdoc/>
-	public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword>(1)
+	/// <remarks>
+	/// 原生关键字 <b>虚无</b> + <b>消耗</b>：
+	/// 「消耗」保证本牌一旦打出必定离开牌组（不再回墓地），
+	/// 「虚无」则兜住「抽到手里没打、回合末被清掉」的情况 —— 两条路径都汇入消耗堆，
+	/// 因此 <see cref="IBurnCard.OnBurn"/>（焚烧）在任何情况下都恰好触发一次。
+	/// 悬停提示由 <c>CardModel.HoverTips</c> 从 <c>Keywords</c> 自动生成，无需手写。
+	/// </remarks>
+	public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword>(2)
 	{
 		CardKeyword.Ethereal,
+		CardKeyword.Exhaust,
 	};
 
 	/// <inheritdoc/>
@@ -59,9 +71,9 @@ public sealed class HeidemarieLiberatedAurora : HeidemarieCard, IUniqueCard, IBu
 	/// </remarks>
 	public override bool CanBeGeneratedByModifiers => false;
 
-	/// <summary>0 费、攻击、稀有牌、目标为任意敌人。</summary>
+	/// <summary>0 费、攻击、衍生牌（Token）、目标为任意敌人。</summary>
 	public HeidemarieLiberatedAurora()
-		: base(0, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
+		: base(0, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy)
 	{
 	}
 
@@ -73,9 +85,14 @@ public sealed class HeidemarieLiberatedAurora : HeidemarieCard, IUniqueCard, IBu
 			return;
 		}
 
-		// 焚烧：手牌加入一张凝聚极光，重启引擎
+		// 焚烧：手牌加入一张「凝聚极光」并赋予升级（获得「固有」），重启引擎
 		CardModel condensed = combatState.CreateCard<HeidemarieCondensedAurora>(Owner);
+		// 生成即升级：必须在入堆前完成，卡面文本是卡片节点建立时读取的
+		CardCmd.Upgrade(condensed);
 		await CardPileCmd.AddGeneratedCardToCombat(condensed, PileType.Hand, Owner);
+
+		// 焚烧：本牌移出战斗（此时本牌已在消耗堆，属战斗牌堆，可安全移除）
+		await CardPileCmd.RemoveFromCombat(this);
 	}
 
 	/// <inheritdoc/>
@@ -86,29 +103,23 @@ public sealed class HeidemarieLiberatedAurora : HeidemarieCard, IUniqueCard, IBu
 			.Where(c => c is HeidemarieAuroraSword)
 			.ToList();
 
-		if (swords.Count > 0)
+		foreach (CardModel sword in swords)
 		{
-			foreach (CardModel sword in swords)
-			{
-				await CardCmd.Exhaust(choiceContext, sword);
-			}
-
-			await PowerCmd.Apply<HeidemarieDamagePercentPower>(
-				choiceContext,
-				Owner.Creature,
-				swords.Count * PercentPerSword,
-				Owner.Creature,
-				this,
-				silent: true);
+			await CardCmd.Exhaust(choiceContext, sword);
 		}
 
 		ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
 
-		await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-			.FromCard(this, cardPlay)
-			.WithAttackerAnim(HeidemarieAttackPlan.Ug.Trigger, HeidemarieAttackPlan.Ug.HitDelaySeconds)
-			.Targeting(cardPlay.Target)
-			.WithHitFx("vfx/vfx_rock_shatter")
-			.Execute(choiceContext);
+		// 每消耗 1 张极光剑 +100%；入池与清池由基类包裹
+		// （见 HeidemarieCard.WithPercentDamageBoost，攻击结束必定清池）。
+		await WithPercentDamageBoost(choiceContext, swords.Count * PercentPerSword, async () =>
+		{
+			await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+				.FromCard(this, cardPlay)
+				.WithAttackerAnim(HeidemarieAttackPlan.Ug.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Ug))
+				.Targeting(cardPlay.Target)
+				.WithHitFx("vfx/vfx_rock_shatter")
+				.Execute(choiceContext);
+		});
 	}
 }

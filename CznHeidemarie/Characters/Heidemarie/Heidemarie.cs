@@ -245,7 +245,7 @@ public sealed class Heidemarie : CharacterModel
 		ModelDb.Card<HeidemarieDefend>(),
 		ModelDb.Card<HeidemarieDefend>(),
 		ModelDb.Card<HeidemarieSwordrain>(),
-		ModelDb.Card<HeidemarieCondensedAurora>(),
+		ModelDb.Card<HeidemarieSwordlight>(),
 	};
 
 	/// <summary>

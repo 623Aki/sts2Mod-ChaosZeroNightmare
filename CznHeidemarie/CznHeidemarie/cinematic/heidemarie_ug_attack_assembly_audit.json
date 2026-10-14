@@ -1,0 +1,988 @@
+{
+  "schema": "czn-animation-assembly-audit.v1",
+  "character_id": "30093",
+  "command": "ug_attack",
+  "source": {
+    "srmd": "CNZ_Source/czn30093/model_data/30093.srmd",
+    "cfx_dir": "CNZ_Source/czn30093/effect"
+  },
+  "summary": {
+    "group_count": 5,
+    "primitive_count": 44,
+    "spine_count": 43,
+    "unsupported_count": 1,
+    "missing_count": 0,
+    "duplicate_source_count": 0,
+    "z_min": -5001,
+    "z_max": 300
+  },
+  "groups": [
+    {
+      "name": "heidemarie_30093_ug_attack_bg",
+      "type": "CENTER",
+      "bone_type": "ATTACH",
+      "zorder": -5000,
+      "global_z": 0,
+      "delay_ms": 0.0,
+      "primitive_count": 2,
+      "primitives": [
+        {
+          "index": 0,
+          "source": "heidemarie_30093_ug_bg_b",
+          "format": "spine",
+          "z": 0,
+          "ani": "",
+          "raw": {
+            "x": "",
+            "y": "",
+            "z": "0",
+            "opacity": "",
+            "scale": "",
+            "rotate": "",
+            "delay": "",
+            "format": "spine"
+          },
+          "final_z": -5000,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 1,
+          "source": "heidemarie_30093_ug_bg_b2",
+          "format": "spine",
+          "z": -1,
+          "ani": "",
+          "raw": {
+            "x": "",
+            "y": "",
+            "z": "-1",
+            "opacity": "",
+            "scale": "",
+            "rotate": "",
+            "delay": "",
+            "format": "spine"
+          },
+          "final_z": -5001,
+          "has_skel": true,
+          "has_tres": true
+        }
+      ]
+    },
+    {
+      "name": "heidemarie_30093_ug_attack_01",
+      "type": "FRONT",
+      "bone_type": "ATTACH",
+      "zorder": 0,
+      "global_z": 0,
+      "delay_ms": 0.0,
+      "primitive_count": 20,
+      "primitives": [
+        {
+          "index": 0,
+          "source": "heidemarie_30093_ug_sword_intro2_f",
+          "format": "spine",
+          "z": 18,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "18",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 18,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 1,
+          "source": "heidemarie_30093_ug_sword_intro_g2",
+          "format": "spine",
+          "z": 17,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "17",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 17,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 2,
+          "source": "heidemarie_30093_ug_sword_intro_g1",
+          "format": "spine",
+          "z": 16,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "16",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 16,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 3,
+          "source": "heidemarie_30093_ug_sword_intro_hq3",
+          "format": "spine",
+          "z": 15,
+          "ani": "",
+          "raw": {
+            "x": "",
+            "y": "",
+            "z": "15",
+            "opacity": "",
+            "scale": "",
+            "rotate": "",
+            "delay": "",
+            "format": "spine"
+          },
+          "final_z": 15,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 4,
+          "source": "heidemarie_30093_ug_sword_intro_hq2",
+          "format": "spine",
+          "z": 14,
+          "ani": "",
+          "raw": {
+            "x": "",
+            "y": "",
+            "z": "14",
+            "opacity": "",
+            "scale": "",
+            "rotate": "",
+            "delay": "",
+            "format": "spine"
+          },
+          "final_z": 14,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 5,
+          "source": "heidemarie_30093_ug_sword_intro_hq1",
+          "format": "spine",
+          "z": 13,
+          "ani": "",
+          "raw": {
+            "x": "",
+            "y": "",
+            "z": "13",
+            "opacity": "",
+            "scale": "",
+            "rotate": "",
+            "delay": "",
+            "format": "spine"
+          },
+          "final_z": 13,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 6,
+          "source": "heidemarie_30093_ug_sword_intro_f2",
+          "format": "spine",
+          "z": 12,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "12",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 12,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 7,
+          "source": "heidemarie_30093_ug_sword_intro_f",
+          "format": "spine",
+          "z": 11,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "11",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 11,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 8,
+          "source": "30093_ug_portrait1_1",
+          "format": "spine",
+          "z": 10,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "10",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 10,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 9,
+          "source": "30093_ug_portrait1_2",
+          "format": "spine",
+          "z": 9,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "9",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 9,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 10,
+          "source": "30093_ug_portrait1_3",
+          "format": "spine",
+          "z": 8,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "8",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 8,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 11,
+          "source": "30093_ug_portrait1_4",
+          "format": "spine",
+          "z": 7,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "7",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 7,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 12,
+          "source": "30093_ug_portrait1_5",
+          "format": "spine",
+          "z": 6,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "6",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 6,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 13,
+          "source": "30093_ug_portrait1_6",
+          "format": "spine",
+          "z": 5,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "5",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 5,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 14,
+          "source": "30093_ug_portrait1_7",
+          "format": "spine",
+          "z": 4,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "4",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 4,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 15,
+          "source": "30093_ug_portrait1_8",
+          "format": "spine",
+          "z": 3,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "3",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 3,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 16,
+          "source": "30093_ug_portrait1_9",
+          "format": "spine",
+          "z": 2,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "2",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 2,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 17,
+          "source": "heidemarie_30093_ug_sword_intro_b",
+          "format": "spine",
+          "z": 1,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "1",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 1,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 18,
+          "source": "heidemarie_30093_ug_sword_intro_b2",
+          "format": "spine",
+          "z": 0,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "0",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 0,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 19,
+          "source": "heidemarie_30093_ug_sword_intro2_b",
+          "format": "spine",
+          "z": 1,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "1",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 1,
+          "has_skel": true,
+          "has_tres": true
+        }
+      ]
+    },
+    {
+      "name": "heidemarie_30093_ug_attack_screen",
+      "type": "SCREEN",
+      "bone_type": "ATTACH",
+      "zorder": 300,
+      "global_z": 0,
+      "delay_ms": 0.0,
+      "primitive_count": 2,
+      "primitives": [
+        {
+          "index": 0,
+          "source": "heidemarie_30093_ug_screen_eff",
+          "format": "spine",
+          "z": 0,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": null,
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 300,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 1,
+          "source": "heidemarie_30093_ug_attack_screen_pati1",
+          "format": "particle",
+          "z": 0,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": null,
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": "4600",
+            "format": "particle"
+          },
+          "final_z": 300,
+          "has_skel": false,
+          "has_tres": false
+        }
+      ]
+    },
+    {
+      "name": "heidemarie_30093_ug_attack_impact",
+      "type": "CENTER",
+      "bone_type": "ATTACH",
+      "zorder": 200,
+      "global_z": 0,
+      "delay_ms": 0.0,
+      "primitive_count": 1,
+      "primitives": [
+        {
+          "index": 0,
+          "source": "heidemarie_30093_ug_impact",
+          "format": "spine",
+          "z": 0,
+          "ani": "",
+          "raw": {
+            "x": "",
+            "y": "",
+            "z": "",
+            "opacity": "",
+            "scale": "",
+            "rotate": "",
+            "delay": "",
+            "format": "spine"
+          },
+          "final_z": 200,
+          "has_skel": true,
+          "has_tres": true
+        }
+      ]
+    },
+    {
+      "name": "heidemarie_30093_ug_attack_02",
+      "type": "CENTER",
+      "bone_type": "ATTACH",
+      "zorder": 0,
+      "global_z": 0,
+      "delay_ms": 0.0,
+      "primitive_count": 19,
+      "primitives": [
+        {
+          "index": 0,
+          "source": "heidemarie_30093_ug_bg_f2",
+          "format": "spine",
+          "z": 19,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "19",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 19,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 1,
+          "source": "heidemarie_30093_ug3_1",
+          "format": "spine",
+          "z": 18,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "18",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 18,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 2,
+          "source": "30093_ug_portrait2_1",
+          "format": "spine",
+          "z": 17,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "17",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 17,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 3,
+          "source": "30093_ug_portrait2_2",
+          "format": "spine",
+          "z": 16,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "16",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 16,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 4,
+          "source": "30093_ug_portrait2_3",
+          "format": "spine",
+          "z": 15,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "15",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 15,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 5,
+          "source": "heidemarie_30093_ug2_f",
+          "format": "spine",
+          "z": 14,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "14",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 14,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 6,
+          "source": "heidemarie_30093_ug_bg_f",
+          "format": "spine",
+          "z": 13,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "13",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 13,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 7,
+          "source": "heidemarie_30093_ug2_b",
+          "format": "spine",
+          "z": 12,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "12",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 12,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 8,
+          "source": "heidemarie_30093_ug_glass_pat",
+          "format": "spine",
+          "z": 11,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "11",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 11,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 9,
+          "source": "heidemarie_30093_ug_aura",
+          "format": "spine",
+          "z": 10,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "10",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 10,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 10,
+          "source": "heidemarie_30093_ug1_1",
+          "format": "spine",
+          "z": 9,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "9",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 9,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 11,
+          "source": "heidemarie_30093_ug1_2",
+          "format": "spine",
+          "z": 8,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "8",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 8,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 12,
+          "source": "heidemarie_30093_ug1_3",
+          "format": "spine",
+          "z": 7,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "7",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 7,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 13,
+          "source": "heidemarie_30093_ug1_4",
+          "format": "spine",
+          "z": 6,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "6",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 6,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 14,
+          "source": "heidemarie_30093_ug1_5",
+          "format": "spine",
+          "z": 5,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "5",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 5,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 15,
+          "source": "heidemarie_30093_ug1_6",
+          "format": "spine",
+          "z": 4,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "4",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 4,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 16,
+          "source": "heidemarie_30093_sword_eff_g",
+          "format": "spine",
+          "z": 3,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "3",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 3,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 17,
+          "source": "heidemarie_30093_sword_eff_f",
+          "format": "spine",
+          "z": 2,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "2",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 2,
+          "has_skel": true,
+          "has_tres": true
+        },
+        {
+          "index": 18,
+          "source": "heidemarie_30093_sword_eff_b",
+          "format": "spine",
+          "z": 1,
+          "ani": "",
+          "raw": {
+            "x": null,
+            "y": null,
+            "z": "1",
+            "opacity": null,
+            "scale": null,
+            "rotate": null,
+            "delay": null,
+            "format": "spine"
+          },
+          "final_z": 1,
+          "has_skel": true,
+          "has_tres": true
+        }
+      ]
+    }
+  ],
+  "missing": [],
+  "unsupported": [
+    {
+      "group": "heidemarie_30093_ug_attack_screen",
+      "index": 1,
+      "source": "heidemarie_30093_ug_attack_screen_pati1",
+      "format": "particle",
+      "z": 0,
+      "ani": "",
+      "raw": {
+        "x": null,
+        "y": null,
+        "z": null,
+        "opacity": null,
+        "scale": null,
+        "rotate": null,
+        "delay": "4600",
+        "format": "particle"
+      },
+      "final_z": 300,
+      "has_skel": false,
+      "has_tres": false
+    }
+  ],
+  "duplicate_sources": [],
+  "rules": {
+    "final_z": "srmd.effect.zorder + cfx.primitive.z",
+    "time": "from_guid playback tree; siblings start in parallel and use their own delay",
+    "particle_policy": "do not silently convert; record as unsupported",
+    "missing_policy": "fail the whole route and use native card presentation",
+    "dedup_policy": "one route stage per card play; only official TARGET layers may be repeated per target"
+  }
+}

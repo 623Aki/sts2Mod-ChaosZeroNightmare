@@ -6,6 +6,8 @@ using CznCore.Presentation;
 using CznHeidemarie.Characters.Heidemarie;
 using CznHeidemarie.Characters.Heidemarie.Cards;
 using Godot;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
@@ -29,7 +31,8 @@ namespace CznHeidemarie.Integration;
 ///   <item>不补 <c>Hook.BeforeCardPlayed</c> / <c>AfterCardPlayed</c> 拦牌 ——
 ///   卡牌自身逻辑（花费、<c>OnPlay</c>）完全不受演出影响；</item>
 ///   <item>没有官方 OGG 音频（素材区只有 FMOD <c>.bank</c>），音频接口留空；</item>
-///   <item>时间轴是手写的（<c>heidemarie_{ug,ux}.json</c>），不是 cfx 提取产物。</item>
+///   <item><c>heidemarie_{ug,ux}.json</c> 由 <c>.srmd + .cfx</c> 提取，舞台运行时消费
+///   图层、相机和时序适配段。</item>
 /// </list>
 ///
 /// <para><b>但伤害时机必须跟着演出走</b>：原生出牌演出里，
@@ -84,6 +87,7 @@ internal static class HeidemarieCinematicRuntime
 	private static readonly string[] RequiredSignals =
 	{
 		"presentation_started",
+		"takeover_reached",
 		"hit_reached",
 		"actors_restored",
 		"stage_finished",
@@ -104,6 +108,9 @@ internal static class HeidemarieCinematicRuntime
 
 		/// <summary>借用前本体的可见性，归还时原样恢复。</summary>
 		internal bool BodyWasVisible;
+
+		/// <summary>本体是否已被收起（立刻收起或等 <c>takeover_reached</c> 后收起）。</summary>
+		internal bool BodyHidden;
 
 		/// <summary>施法者玩家。</summary>
 		internal Player? Player;
@@ -171,8 +178,9 @@ internal static class HeidemarieCinematicRuntime
 	/// </summary>
 	internal static void Initialize()
 	{
-		// 打出去的牌：判断是不是走全屏演出的两张大招
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 全屏演出", (CardPlayCommittedEvent e) => TryPlay(e.Card)));
+		// 触发点不在这里：全屏演出改由攻击指令钩子（Hook.ModifyAttackHitCount）
+		// 判定并起手，见 Registration/HeidemarieCombatPresentationPatch.cs 与
+		// TryBeginFromAttack —— 只有拿到 AttackCommand 才能做「可击杀敌人才播」的致死预判。
 
 		// 进战斗时把时间轴引用到的骨架先预热，避免第一次放大招才现加载
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 全屏演出预加载", (CombatStartingEvent _) => Preload()));
@@ -264,6 +272,70 @@ internal static class HeidemarieCinematicRuntime
 	// 触发
 	// ──────────────────────────────────────────────────────────────────────────
 
+	/// <summary>
+	/// 攻击指令就绪时判定这次攻击要不要走全屏演出（由
+	/// <c>Hook.ModifyAttackHitCount</c> 的补丁调用，见
+	/// <c>Registration/HeidemarieCombatPresentationPatch.cs</c>）。
+	///
+	/// <para>判定链：① 这张牌有没有绑定演出路线；② 特效 / 出牌演出开关；
+	/// ③ <b>攻击牌全屏演出时机</b> —— <c>Always</c> 直接放行，
+	/// <c>LethalOnly</c> 走 CznCore 的致死预判（随机目标、反伤类钩子等
+	/// 不可靠情形一律判为不放行）。任一条不过就什么都不做，
+	/// 攻击按原生演出走（<c>WithAttackerAnim</c> 里那套动作与等待照旧）。</para>
+	/// </summary>
+	/// <param name="card">攻击的来源牌。</param>
+	/// <param name="command">已经组好的攻击指令。</param>
+	/// <param name="combatState">当前战斗状态。</param>
+	/// <param name="hitCount">本次攻击的段数（致死预判需要）。</param>
+	internal static void TryBeginFromAttack(CardModel? card, AttackCommand command, ICombatState combatState, int hitCount)
+	{
+		try
+		{
+			string? route = ResolveRoute(card);
+			if (route is null || !IsEnabled())
+			{
+				return;
+			}
+
+			if (card!.Owner is not { } player || !IsLocalHeidemarie(player) || player.Creature.IsDead)
+			{
+				return;
+			}
+
+			bool allowed = CombatAttackFullScreenPresentationPolicy.Allows(
+				HeidemariePresentationHost.Gates,
+				HeidemariePresentationHost.Audience,
+				card,
+				command,
+				combatState,
+				hitCount,
+				HeidemariePresentationHost.AttackTargets,
+				out CombatAttackLethalForecastResult forecast,
+				Warn);
+
+			if (!allowed)
+			{
+				Log($"全屏演出跳过 route={route} 预判={forecast.Forecast}（{forecast.Reason}）");
+				return;
+			}
+
+			TryPlay(card);
+		}
+		catch (Exception ex)
+		{
+			Warn("全屏演出判定异常，交回原生演出：" + ex.Message);
+		}
+	}
+
+	/// <summary>
+	/// 这张牌有没有绑定全屏演出路线。
+	/// 「左侧角色演出」选「带全屏演出的卡牌」那一档时用它筛牌。
+	/// </summary>
+	internal static bool HasCinematicRoute(CardModel? card) => ResolveRoute(card) is not null;
+
+	/// <summary>立刻收尾当前演出（设置里关掉「战斗特效 / 出牌演出」时调用）。</summary>
+	internal static void CancelAll() => CancelFor(null, "settings_disabled");
+
 	private static void TryPlay(CardModel? card)
 	{
 		try
@@ -336,6 +408,9 @@ internal static class HeidemarieCinematicRuntime
 				CancelFor(player, "replacement");
 				HeidemarieBattleReadyRuntime.Cleanup();
 
+				// 特效亮度 / 不透明度：整段演出按设置统一调一次
+				HeidemarieEffectMaterials.Apply(stage);
+
 				phase = new Phase
 				{
 					Stage = stage,
@@ -354,9 +429,15 @@ internal static class HeidemarieCinematicRuntime
 				phase.DurationSeconds = contract["duration_seconds"].AsDouble();
 				double hitSeconds = contract["hit_release_seconds"].AsDouble();
 				double actorReleaseSeconds = contract["battlefield_actor_release_seconds"].AsDouble();
+				// 黑幕接管时刻：> 0 表示开场有一段「本体还在画面上」的起手，本体要延后隐藏。
+				// 老场景没有这个键，缺省按 0（立刻接管）处理。
+				double takeoverSeconds = contract.ContainsKey("takeover_seconds")
+					? contract["takeover_seconds"].AsDouble()
+					: 0.0;
 				ValidateContract(phase, hitSeconds, actorReleaseSeconds);
 
 				Phase accepted = phase;
+				stage.Connect("takeover_reached", Callable.From(() => Guard(accepted, () => HideBody(accepted))));
 				stage.Connect("presentation_started", Callable.From(() => Guard(accepted, () => OnStarted(accepted))));
 				stage.Connect("hit_reached", Callable.From(() => Guard(accepted, () => OnHitReached(accepted))));
 				stage.Connect("actors_restored", Callable.From(() => Guard(accepted, () => RestoreActors(accepted))));
@@ -367,8 +448,20 @@ internal static class HeidemarieCinematicRuntime
 				phase.FrameCallback = () => Guard(accepted, () => Watch(accepted));
 				room.GetTree().ProcessFrame += phase.FrameCallback;
 
-				// 借用本体：隐藏，等 actors_restored（或收尾时）归还
-				anchor.Visible = false;
+				// 借用本体。
+				// 默认立刻隐藏（演出从第一帧就接管画面）；
+				// 但 ux 的时间轴声明了「黑幕到 1233.3ms 才压下来」—— 在那之前官方给
+				// 本体留了一段没有特效层的起手，本体必须留在画面上，
+				// 所以改成等舞台发 takeover_reached 再隐藏。
+				if (double.IsFinite(takeoverSeconds) && takeoverSeconds > 0.0)
+				{
+					Log($"本体延后隐藏，等舞台接管 route={route} takeover={takeoverSeconds:0.###}s");
+				}
+				else
+				{
+					anchor.Visible = false;
+					phase.BodyHidden = true;
+				}
 
 				if (!stage.Call("start_stage").AsBool())
 				{
@@ -442,6 +535,36 @@ internal static class HeidemarieCinematicRuntime
 		}
 	}
 
+	/// <summary>
+	/// 舞台已完成画面接管（黑幕开始压下来）——把本体收起来。
+	///
+	/// <para>ux 的官方时序在开场给本体留了一段「还没有任何特效层」的起手
+	/// （0 ~ 1233.3ms：本体在演 <c>ux_attack</c>、背景还是正常战场）。
+	/// 这段时间黑幕不上，本体也不能藏，否则就是一段黑屏。
+	/// 时刻由舞台从 <c>bg.fade_in_at_ms</c> 推出，经 <c>takeover_reached</c> 下达。</para>
+	/// </summary>
+	private static void HideBody(Phase phase)
+	{
+		if (phase.BodyHidden || phase.ActorsReleased)
+		{
+			return;
+		}
+
+		try
+		{
+			if (GodotObject.IsInstanceValid(phase.Body))
+			{
+				phase.Body!.Visible = false;
+			}
+
+			phase.BodyHidden = true;
+		}
+		catch (Exception ex)
+		{
+			Warn("隐藏本体失败：" + ex.Message);
+		}
+	}
+
 	/// <summary>把本体交还给战斗：恢复可见性并触发待机，避免停在演出最后一帧。</summary>
 	private static void RestoreActors(Phase phase)
 	{
@@ -451,6 +574,8 @@ internal static class HeidemarieCinematicRuntime
 		}
 
 		phase.ActorsReleased = true;
+		// 本体已归还，晚到的 takeover_reached 不该再把它藏起来。
+		phase.BodyHidden = true;
 		try
 		{
 			if (GodotObject.IsInstanceValid(phase.Body))

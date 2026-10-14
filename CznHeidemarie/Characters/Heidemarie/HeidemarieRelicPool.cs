@@ -15,11 +15,10 @@ namespace CznHeidemarie.Characters.Heidemarie;
 public sealed class HeidemarieRelicPool : RelicPoolModel
 {
 	/// <summary>
-	/// 能量图标配色键。与卡池保持一致，取游戏已有的 <c>ironclad</c>，
-	/// 避免拼出不存在的 <c>ui_atlas.sprites/card/energy_heidemarie.tres</c>
-	/// 而触发 "Missing sprite" 警告（ui_atlas 无 fallback）。
+	/// 能量图标配色键。与卡池 / 药水池保持一致，使用自研的 <c>heidemarie</c>，
+	/// 对应 <c>res://images/atlases/ui_atlas.sprites/card/energy_heidemarie.tres</c>。
 	/// </summary>
-	public override string EnergyColorName => "ironclad";
+	public override string EnergyColorName => "heidemarie";
 
 	/// <inheritdoc/>
 	public override Color LabOutlineColor => new Color("C8B6E2");
