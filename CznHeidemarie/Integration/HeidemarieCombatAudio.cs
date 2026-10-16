@@ -45,7 +45,7 @@ internal static class HeidemarieCombatAudio
 		VoicePath("attack_04"), VoicePath("attack_05"),
 	};
 
-	/// <summary>格挡类技能语音。</summary>
+	/// <summary>格挡类技能语音（防御语音公共入口 <see cref="PlayDefenseVoice"/> 的池子）。</summary>
 	private static readonly string[] DefenseVoices = { VoicePath("defense_01"), VoicePath("defense_02") };
 
 	/// <summary>能力牌 / 增益语音。</summary>
@@ -54,14 +54,21 @@ internal static class HeidemarieCombatAudio
 	/// <summary>其他技能语音。</summary>
 	private static readonly string[] SkillVoices = { VoicePath("skill_01"), VoicePath("skill_02") };
 
-	/// <summary>终结技 ug（解放极光）语音。</summary>
-	private static readonly string[] UgVoices = { VoicePath("ug"), VoicePath("skill_special_01"), VoicePath("skill_cutin_01") };
-
-	/// <summary>终结技 ux（绝响）语音。</summary>
+	/// <summary>终结技 ux（绝响路线）语音，随机取一条。</summary>
 	private static readonly string[] UxVoices = { VoicePath("ux"), VoicePath("ux_02") };
 
-	/// <summary>选角语音（选人界面点选本角色时）。</summary>
-	private static readonly string[] SelectVoices = { VoicePath("team_join_01") };
+	/// <summary>
+	/// 选角语音（选人界面点选本角色时，随机取一条）。
+	///
+	/// <para><c>team_join_01</c> 是原卡厄思的入队语音；<c>lobby_enter_01</c> /
+	/// <c>manage_enter_01</c> 是进大厅 / 进管理界面的语音，本次一并并入池子。</para>
+	/// </summary>
+	private static readonly string[] SelectVoices =
+	{
+		VoicePath("team_join_01"),
+		VoicePath("lobby_enter_01"),
+		VoicePath("manage_enter_01"),
+	};
 
 	/// <summary>
 	/// 动作名 → 音效文件；缺项表示这段动作没有专属音效。
@@ -83,7 +90,7 @@ internal static class HeidemarieCombatAudio
 		["Dead"] = SfxPath("collapse"),
 	};
 
-	/// <summary>动作名 → 固定语音；随机多段的走 <see cref="UgVoices"/> / <see cref="UxVoices"/>。</summary>
+	/// <summary>动作名 → 固定语音；终结技 ux（<see cref="UxVoices"/>）仍是随机多段，ug 已改为固定。</summary>
 	private static readonly Dictionary<string, string> TriggerVoice = new(StringComparer.Ordinal)
 	{
 		["U1Attack"] = VoicePath("u1"),
@@ -163,16 +170,25 @@ internal static class HeidemarieCombatAudio
 				return;
 			}
 
-			// 全屏演出牌的专属声音归演出所有：绝响（XAttack / ux）与
-			// 解放极光（GAttack / ug）的音效与语音，在参考 mod 里由演出驱动，
-			// 关掉「全屏演出」就整段不播。这里按同一道门控，
-			// 保证「关演出 = 对应声音同步关闭」。
+			// 全屏演出牌的专属声音归演出所有：关掉「全屏演出」时，
+			// 解放极光（GAttack / ug）与绝响（XAttack / ux）的专属音效 / 语音
+			// 整段不播；演出开着时，舞台接管的音效改由 presentation_started
+			// 起播（见 PlayCinematicSfx），与动画同起同止。
+			// 这里按同一道门控，保证「关演出 = 对应声音同步关闭」。
 			if (IsCinematicTrigger(triggerName) && !CinematicPresentationEnabled(player))
 			{
 				return;
 			}
 
-			if (HeidemariePresentationHost.Audience.Allows(player, CombatPresentationChannel.CombatSfx)
+			// 全屏演出接管时，演出音效让位给舞台：舞台在 presentation_started
+			// （演出 epoch 零点）播同一段，与动画严格同起、取消即停；这里再播就双响。
+			// 降级回原生演出（舞台没起来）时没有舞台接盘，仍走本路播放。
+			// 语音不在此列 —— 语音绑定主模型，始终随攻击动作在 t≈0 播。
+			bool stagePresentsCinematicSfx =
+				IsCinematicTrigger(triggerName) && HeidemarieCinematicRuntime.IsStagePresenting(player, triggerName);
+
+			if (!stagePresentsCinematicSfx
+				&& HeidemariePresentationHost.Audience.Allows(player, CombatPresentationChannel.CombatSfx)
 				&& TriggerSfx.TryGetValue(triggerName, out string? sfxPath))
 			{
 				Sfx.TryPlay(sfxPath);
@@ -185,7 +201,8 @@ internal static class HeidemarieCombatAudio
 			}
 			else if (triggerName == "GAttack")
 			{
-				Voice.PlayRandomFor(player, UgVoices);
+				// 解放极光：固定 ug 语音，不再随机
+				Voice.PlayFor(player, VoicePath("ug"));
 			}
 			else if (TriggerVoice.TryGetValue(triggerName, out string? voicePath))
 			{
@@ -202,6 +219,75 @@ internal static class HeidemarieCombatAudio
 	private static bool IsCinematicTrigger(string triggerName)
 	{
 		return triggerName is "XAttack" or "GAttack";
+	}
+
+	/// <summary>
+	/// 全屏演出的专属音效：由舞台在 <c>presentation_started</c>（演出 epoch 零点）
+	/// 调用，与动画严格同起；音效长于画面时尾部自然放完，不被舞台寿命截断
+	/// （攻击尾巴只等 <c>stage_finished</c>，不等音效）。
+	///
+	/// <para>与 <see cref="OnTriggerAnim"/> 的音效路二选一，由
+	/// <see cref="HeidemarieCinematicRuntime.IsStagePresenting"/> 保证恰好一次：
+	/// 舞台接管走本路，降级回原生演出走 TriggerAnim 老路。</para>
+	/// </summary>
+	/// <param name="player">发起演出的玩家。</param>
+	/// <param name="route">演出路线（ug / ux，见 <see cref="HeidemarieCinematicRuntime"/> 的路线常量）。</param>
+	internal static void PlayCinematicSfx(Player? player, string route)
+	{
+		try
+		{
+			if (player is null || !HeidemariePresentationHost.IsHeidemarie(player))
+			{
+				return;
+			}
+
+			// 与 TriggerAnim 路同一道门控：关「全屏演出」= 对应声音同步关闭。
+			if (!CinematicPresentationEnabled(player))
+			{
+				return;
+			}
+
+			if (!HeidemariePresentationHost.Audience.Allows(player, CombatPresentationChannel.CombatSfx))
+			{
+				return;
+			}
+
+			// 路线 → 演出音效：ug（解放极光）/ ux（剑之乐园）。
+			// 与 TriggerSfx 里 GAttack→ug_attack、XAttack→ux_attack 同一批素材；
+			// ux 改挂「剑之乐园」后由舞台按路线取，不再依赖触发器名。
+			string? sfxPath = route switch
+			{
+				HeidemarieCinematicRuntime.RouteUg => SfxPath("ug_attack"),
+				HeidemarieCinematicRuntime.RouteUx => SfxPath("ux_attack"),
+				_ => null,
+			};
+			if (sfxPath is null)
+			{
+				return;
+			}
+
+			Sfx.TryPlay(sfxPath);
+		}
+		catch (Exception ex)
+		{
+			HeidemarieIntegration.Log.Warn("全屏演出音效播放失败：" + ex.Message);
+		}
+	}
+
+	/// <summary>
+	/// 停掉全部战斗音效 —— 全屏演出被取消 / 打断时由演出运行时调用，
+	/// 避免演出没了声音还在响。自然播完不停（尾部放完是设计行为）。
+	/// </summary>
+	internal static void StopSfx()
+	{
+		try
+		{
+			Sfx.Stop();
+		}
+		catch (Exception ex)
+		{
+			HeidemarieIntegration.Log.Warn("战斗音效停止失败：" + ex.Message);
+		}
 	}
 
 	/// <summary>
@@ -299,6 +385,32 @@ internal static class HeidemarieCombatAudio
 		}
 	}
 
+	/// <summary>
+	/// 防御语音公共入口：打「防御」与任何加格挡的牌都从这里随机播一条
+	/// （<c>vo_30093_defense_01</c> / <c>vo_30093_defense_02</c>）。
+	///
+	/// <para>出牌链路由 <see cref="PlayCardVoice"/> 按 <c>GainsBlock</c> 分流进来；
+	/// 后续想补防御语音的入口（如加格挡的遗物 / 能力）也直接调本方法，
+	/// 不要各自 <c>Voice.PlayRandomFor</c>，保证音量 / 开关 / 间隔 / 本地判定一致。</para>
+	/// </summary>
+	/// <param name="player">正在获得格挡的玩家。</param>
+	internal static void PlayDefenseVoice(Player? player)
+	{
+		try
+		{
+			if (player is null || !HeidemariePresentationHost.IsLocalHeidemarie(player))
+			{
+				return;
+			}
+
+			Voice.PlayRandomFor(player, DefenseVoices);
+		}
+		catch (Exception ex)
+		{
+			HeidemarieIntegration.Log.Warn("防御语音播放失败：" + ex.Message);
+		}
+	}
+
 	/// <summary>按卡牌类型选出牌语音。</summary>
 	private static void PlayCardVoice(CardModel? card)
 	{
@@ -310,9 +422,21 @@ internal static class HeidemarieCombatAudio
 				return;
 			}
 
-			// 走全屏演出的两张牌由各自的动作名（GAttack / XAttack）出语音
-			if (card is HeidemarieLiberatedAurora or HeidemarieFinalEcho)
+			// 终结技的语音由各自的攻击动作名播出（解放极光 GAttack / 剑之乐园
+			// U3Attack / 绝响 XAttack），出牌时再播一条就会叠成双重语音，
+			// 这里一律跳过。
+			// 2026-10-16：补「剑之乐园」—— 10-15 把 ux 演出换挂到它身上后
+			// 漏了这里，导致出牌瞬间多响一条 attack_01~05，随后 U3Attack
+			// 再响 u3。
+			if (card is HeidemarieLiberatedAurora or HeidemarieSwordParadise or HeidemarieFinalEcho)
 			{
+				return;
+			}
+
+			// 防御 / 加格挡的牌：走防御语音公共入口，与牌型无关
+			if (card.GainsBlock)
+			{
+				PlayDefenseVoice(player);
 				return;
 			}
 
@@ -325,7 +449,7 @@ internal static class HeidemarieCombatAudio
 					Voice.PlayRandomFor(player, BuffVoices);
 					break;
 				case CardType.Skill:
-					Voice.PlayRandomFor(player, card.GainsBlock ? DefenseVoices : SkillVoices);
+					Voice.PlayRandomFor(player, SkillVoices);
 					break;
 			}
 		}
@@ -362,6 +486,10 @@ internal static class HeidemarieCombatAudio
 			Sfx.Prewarm(SfxPath("u1_attack_play"));
 			Sfx.Prewarm(SfxPath("u3_attack_play"));
 			Sfx.Prewarm(SfxPath("buff_ready"));
+			// 两条全屏演出的专属音效一并预热：它们由舞台在 presentation_started
+			// 起播（见 PlayCinematicSfx），第一次放大招才现加载会砸在演出第一帧上。
+			Sfx.Prewarm(SfxPath("ug_attack"));
+			Sfx.Prewarm(SfxPath("ux_attack"));
 
 			List<string> voicePaths = new();
 			voicePaths.AddRange(AttackVoices);

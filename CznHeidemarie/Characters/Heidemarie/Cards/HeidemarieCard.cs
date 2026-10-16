@@ -116,8 +116,15 @@ public abstract class HeidemarieCard : CardModel
 		return linkedInHand;
 	}
 
-	/// <summary>是否带「连接」：静态接口或运行期标记任一成立。</summary>
-	public bool IsLinked => this is ILinkCard || RuntimeLinkedThisTurn || RuntimeLinkedThisCombat;
+	/// <summary>
+	/// 是否带「连接」：静态接口或运行期标记任一成立。
+	///
+	/// <para>虚属性 —— 子类可扩展判定条件。例如「拾星」升级后是<b>卡牌本体</b>获得「连接」
+	/// （而非实现 <see cref="ILinkCard"/>），它就覆盖本属性把 <c>IsUpgraded</c> 也算进来
+	/// （见 <see cref="HeidemarieGatherStar.IsLinked"/>）——
+	/// 与「北极圈」升级后覆盖 <see cref="IsRestCard"/> 是同一套做法。</para>
+	/// </summary>
+	public virtual bool IsLinked => this is ILinkCard || RuntimeLinkedThisTurn || RuntimeLinkedThisCombat;
 
 	/// <summary>
 	/// 是否带「安息」：静态接口或运行期标记任一成立。
@@ -187,7 +194,36 @@ public abstract class HeidemarieCard : CardModel
 	/// <see cref="OnEnqueuePlayVfx"/>（如「防御」用 <c>defense_ready → defense_play</c>）。</para>
 	/// </summary>
 	protected virtual string[]? SkillBodySequence =>
-		Type is CardType.Skill or CardType.Power ? new[] { "buff_ready", "buff_play" } : null;
+		Type is CardType.Skill or CardType.Power ? SkillBodyTier() : null;
+
+	/// <summary>
+	/// 技能 / 能力牌的身体动作档位：**稀有度与费用取更重者**。
+	///
+	/// <list type="bullet">
+	///   <item>Rare（或 ≥ 3 费）→ 蓄势档 <c>u4_buff_ready → u4_buff_play</c>（全骨架最长的增益动作）；</item>
+	///   <item>Uncommon（或 2 费）→ 结阵档 <c>u2_buff_ready → u2_buff_play</c>；</item>
+	///   <item>Basic / Common → 施法档 <c>buff_ready → buff_play</c>。</item>
+	/// </list>
+	///
+	/// <para>与 <c>effects/heidemarie_moves.json</c> 里同档位的特效组键逐条对应
+	/// （<c>eff_u4_buff_*</c> / <c>eff_u2_buff_*</c> / <c>eff_casting_ready</c>），
+	/// 改这里必须同步改那张表，否则动作与特效会错位。段落在骨架上缺失时
+	/// <see cref="OnEnqueuePlayVfx"/> 会降级回 <c>Cast</c> / <c>PowerUp</c> 触发器。</para>
+	/// </summary>
+	protected string[] SkillBodyTier()
+	{
+		if (Rarity == CardRarity.Rare || CanonicalCostValue >= 3)
+		{
+			return new[] { "u4_buff_ready", "u4_buff_play" };
+		}
+
+		if (Rarity == CardRarity.Uncommon || CanonicalCostValue >= 2)
+		{
+			return new[] { "u2_buff_ready", "u2_buff_play" };
+		}
+
+		return new[] { "buff_ready", "buff_play" };
+	}
 
 	/// <summary>本牌带的自定义关键字（默认由接口推导，见 <see cref="HeidemarieCardMechanics"/>）。</summary>
 	protected virtual IEnumerable<CardMechanicDefinition> CardMechanics => HeidemarieCardMechanics.For(this);
@@ -418,5 +454,12 @@ public abstract class HeidemarieCard : CardModel
 	protected HeidemarieCard(int canonicalEnergyCost, CardType type, CardRarity rarity, TargetType targetType, bool shouldShowInCardLibrary = true)
 		: base(canonicalEnergyCost, type, rarity, targetType, shouldShowInCardLibrary)
 	{
+		CanonicalCostValue = canonicalEnergyCost;
 	}
+
+	/// <summary>
+	/// 构造时声明的<b>基准费用</b>（升级 / 附魔带来的费用变化不算）。
+	/// 供 <see cref="SkillBodyTier"/> 做「稀有度 + 费用取更重者」的档位判定。
+	/// </summary>
+	protected int CanonicalCostValue { get; }
 }

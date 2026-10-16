@@ -60,6 +60,9 @@ internal sealed class CharacterSkinCharacterSettings
 		}
 	}
 
+	/// <summary>手牌「连接」光带（HeidemarieLinkOverlay）的开关。</summary>
+	public bool LinkOverlayEnabled { get; set; } = true;
+
 	public CharacterSelectBackgroundVariant CharacterSelectBackgroundVariant { get; set; }
 
 	public void Reset()
@@ -86,6 +89,7 @@ internal sealed class CharacterSkinCharacterSettings
 		OfficialAttackTimingEnabled = true;
 		CombatPresentationMode = CombatPresentationMode.Full;
 		DefeatCgOverlayMode = DefeatCgOverlayMode.Random;
+		LinkOverlayEnabled = true;
 		CharacterSelectBackgroundVariant = CharacterSelectBackgroundVariant.StaticPortrait;
 	}
 }

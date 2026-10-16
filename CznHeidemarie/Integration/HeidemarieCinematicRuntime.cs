@@ -30,7 +30,9 @@ namespace CznHeidemarie.Integration;
 /// <list type="bullet">
 ///   <item>不补 <c>Hook.BeforeCardPlayed</c> / <c>AfterCardPlayed</c> 拦牌 ——
 ///   卡牌自身逻辑（花费、<c>OnPlay</c>）完全不受演出影响；</item>
-///   <item>没有官方 OGG 音频（素材区只有 FMOD <c>.bank</c>），音频接口留空；</item>
+///   <item>舞台自身不带音频（gd 侧无音频接口）：演出音效由 C# 挂在
+///   <c>presentation_started</c>（演出 epoch 零点）起播、取消时停播，与动画
+///   严格同起；音效长于画面时尾部自然放完，攻击尾巴只等舞台不等音效；</item>
 ///   <item><c>heidemarie_{ug,ux}.json</c> 由 <c>.srmd + .cfx</c> 提取，舞台运行时消费
 ///   图层、相机和时序适配段。</item>
 /// </list>
@@ -58,6 +60,12 @@ internal static class HeidemarieCinematicRuntime
 	/// <summary>特效骨架 <c>_skel_data.tres</c> 目录。</summary>
 	private const string SkelDataRoot = "res://CznHeidemarie/animations/effects/";
 
+	/// <summary>
+	/// 特效组库：组键 → 组的图层构成 + 挂载参数。
+	/// 时间轴已瘦身为「组键 + 窗口」，图层构成都从这里取。
+	/// </summary>
+	private const string GroupLibraryPath = "res://CznHeidemarie/effects/heidemarie_effect_groups.json";
+
 	/// <summary>预加载句柄的键，同一时刻只保留一份。</summary>
 	private const string PreloadKey = "heidemarie_cinematic";
 
@@ -68,10 +76,10 @@ internal static class HeidemarieCinematicRuntime
 	private const float FinishTimeoutPaddingSeconds = 2f;
 
 	/// <summary>终焉剑舞的演出路线。</summary>
-	private const string RouteUg = "ug";
+	internal const string RouteUg = "ug";
 
 	/// <summary>破军的演出路线。</summary>
-	private const string RouteUx = "ux";
+	internal const string RouteUx = "ux";
 
 	/// <summary>合成器必须提供的方法（缺一即视为场景不兼容）。</summary>
 	private static readonly string[] RequiredMethods =
@@ -206,19 +214,43 @@ internal static class HeidemarieCinematicRuntime
 	/// <summary>
 	/// 攻击触发器的命中闸门配对表：角色自己的攻击触发器 → 对应演出路线。
 	///
-	/// <para>这两个触发器只被走全屏演出的两张牌使用（「绝响」→ <c>XAttack</c> / ux，
-	/// 「解放极光」→ <c>GAttack</c> / ug，见 <c>HeidemarieAttackPlan</c>），
-	/// 所以按触发器配对天然只命中大招：普通打击（<c>Attack</c> / <c>Attack2</c> /
-	/// <c>U1Attack</c> / <c>U3Attack</c>）与技能动作一律不受影响。</para>
+	/// <para>走全屏演出的两张牌各占一个触发器：「解放极光」→ <c>GAttack</c> / ug，
+	/// 「剑之乐园」→ <c>U3Attack</c> / ux（见 <c>HeidemarieAttackPlan</c>）。
+	/// 其余攻击档（<c>Attack</c> / <c>Attack2</c> / <c>U1Attack</c>）与技能动作不在表内，
+	/// 因此天然不受影响。</para>
+	///
+	/// <para><b>注意</b>：<c>U3Attack</c> 是「剑之乐园」的专属触发器 —— 目前顶档（u3）
+	/// 只有它一张牌，配对唯一。日后若有别的牌改用 u3 档，必须给它另开一个触发器，
+	/// 否则那段牌的伤害也会被挂到本演出上。</para>
 	/// </summary>
 	private static string? RouteForTrigger(string triggerName)
 	{
 		return triggerName switch
 		{
-			"XAttack" => RouteUx,
+			"U3Attack" => RouteUx,
 			"GAttack" => RouteUg,
 			_ => null,
 		};
+	}
+
+	/// <summary>
+	/// 这次攻击的全屏演出是否已经接管并在跑。
+	///
+	/// <para>战斗音效据此让位：舞台接管时，演出音效改由舞台在
+	/// <c>presentation_started</c> 起播（见 <see cref="OnStarted"/>），
+	/// <c>CreatureCmd.TriggerAnim</c> 那条路再播同一段就会双响。
+	/// 舞台没起来（致死预判不通过、挂载失败等降级路径）时返回 <c>false</c>，
+	/// 音效走 TriggerAnim 老路，保证降级路径也有声音。</para>
+	///
+	/// <para>挂载先于骨架动作（<c>Hook.ModifyAttackHitCount</c> 在
+	/// <c>AttackCommand.Execute</c> 里紧跟 <c>Hook.BeforeAttack</c> 调用），
+	/// 所以 TriggerAnim 到来时若舞台已接手，这里必然看得到。</para>
+	/// </summary>
+	internal static bool IsStagePresenting(Player? player, string triggerName)
+	{
+		Phase? phase = _phase;
+		string? route = RouteForTrigger(triggerName);
+		return phase is not null && !phase.Ended && route is not null && phase.Route == route && phase.Player == player;
 	}
 
 	/// <summary>
@@ -297,6 +329,15 @@ internal static class HeidemarieCinematicRuntime
 				return;
 			}
 
+			// 同一张牌的后续攻击指令不再重复起手 ——「剑之乐园」是逐敌循环发多个
+			// AttackCommand，每个敌人都会走到这里；而 TryPlay 开头会
+			// CancelFor(player, "replacement") 收掉上一段，不去重的话第一段刚起手
+			// 就被第二段取消，最终一段都放不出来。
+			if (IsSameCardAsActivePerformance(card))
+			{
+				return;
+			}
+
 			if (card!.Owner is not { } player || !IsLocalHeidemarie(player) || player.Creature.IsDead)
 			{
 				return;
@@ -329,6 +370,23 @@ internal static class HeidemarieCinematicRuntime
 		{
 			Warn("全屏演出判定异常，交回原生演出：" + ex.Message);
 		}
+	}
+
+	/// <summary>
+	/// 当前正在跑的演出是不是就由这张牌发起。
+	///
+	/// <para>比实例也比 Id：模型在牌堆间移动时可能是同一 Id 的不同实例
+	/// （与 <see cref="WaitForPresentationEnd"/> 同一口径）。</para>
+	/// </summary>
+	private static bool IsSameCardAsActivePerformance(CardModel? card)
+	{
+		Phase? phase = _phase;
+		if (phase is null || phase.Ended || phase.Card is null || card is null)
+		{
+			return false;
+		}
+
+		return ReferenceEquals(phase.Card, card) || phase.Card.Id == card.Id;
 	}
 
 	/// <summary>
@@ -511,17 +569,20 @@ internal static class HeidemarieCinematicRuntime
 	}
 
 	/// <summary>
-	/// 把卡牌映射到演出路线；不是大招就返回 <c>null</c>。
+	/// 把卡牌映射到演出路线；不是终结技就返回 <c>null</c>。
 	///
-	/// <para>「解放极光」挂 ug 全屏演出（设计文档指定）；「绝响」走 ux。
-	/// 原先绑定在已移除的测试卡（终焉剑舞 / 破军）上，现改绑正式卡。</para>
+	/// <para>「解放极光」挂 ug（终焉剑舞；身体 <c>ug_attack</c>，触发器 <c>GAttack</c>）；
+	/// 「剑之乐园」挂 ux（破军；身体 <c>u3_attack_*</c>，触发器 <c>U3Attack</c>）。</para>
+	///
+	/// <para>2026-10-15 变更：ux 原绑在「绝响」上，按设计改挂「剑之乐园」，
+	/// 绝响不再触发任何全屏演出（它的单体特效改走重·斩击 u1 档）。</para>
 	/// </summary>
 	private static string? ResolveRoute(CardModel? card)
 	{
 		return card switch
 		{
 			HeidemarieLiberatedAurora => RouteUg,
-			HeidemarieFinalEcho => RouteUx,
+			HeidemarieSwordParadise => RouteUx,
 			_ => null,
 		};
 	}
@@ -539,6 +600,12 @@ internal static class HeidemarieCinematicRuntime
 
 		phase.StartMsec = Time.GetTicksMsec();
 		Log($"正式开演 route token={phase.Token} 预演耗时={phase.StartMsec - phase.MountMsec}ms");
+
+		// 演出音效与动画同起：epoch 零点开播。音效均长于画面约 2.3s
+		// （ug_attack 7.8s / 演出 5.5s，ux_attack 10.4s / 演出 8.2s），
+		// 尾部在舞台收尾后自然放完 —— 攻击尾巴只等 stage_finished，不等音效。
+		// 取消 / 打断路径在 End(cancelled) 里停播。
+		HeidemarieCombatAudio.PlayCinematicSfx(phase.Player, phase.Route);
 	}
 
 	/// <summary>
@@ -689,6 +756,13 @@ internal static class HeidemarieCinematicRuntime
 			_phase = null;
 		}
 
+		// 取消 / 打断：演出音效立即停，避免画面收了声音还在响。
+		// 自然播完（finished / resources_finished）不停 —— 尾部放完是设计行为。
+		if (cancelled)
+		{
+			HeidemarieCombatAudio.StopSfx();
+		}
+
 		// 两道闸门无条件放行：演出正常播完时它们早已由 hit_reached / stage_finished 完成，
 		// 这里兜的是取消、降级、看门狗超时等异常路径 ——
 		// 宁可提前放行，也绝不能把等命中的攻击或等收尾的钩子吊死。
@@ -779,6 +853,13 @@ internal static class HeidemarieCinematicRuntime
 			return;
 		}
 
+		// 组库必须一起预热：时间轴已瘦身为「组键 + 窗口」，
+		// 图层构成（含骨架名）都在组库里，缺它整条路线搭不起来。
+		if (paths.IndexOf(GroupLibraryPath) < 0)
+		{
+			paths.Add(GroupLibraryPath);
+		}
+
 		using JsonDocument document = JsonDocument.Parse(global::Godot.FileAccess.GetFileAsString(jsonPath));
 		if (!document.RootElement.TryGetProperty("layers", out JsonElement layers))
 		{
@@ -787,6 +868,8 @@ internal static class HeidemarieCinematicRuntime
 
 		foreach (JsonElement layer in layers.EnumerateArray())
 		{
+			// 瘦身版每项仍带 name（一个骨架一项），所以这里两代都收；
+			// 若哪天改成「一组一项」，group 分支负责从组库展开骨架名。
 			if (layer.TryGetProperty("name", out JsonElement nameElement)
 				&& nameElement.GetString() is { Length: > 0 } name)
 			{

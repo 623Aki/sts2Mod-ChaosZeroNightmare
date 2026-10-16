@@ -64,11 +64,11 @@ public sealed class HeidemarieSkyfall : HeidemarieCard, ILinkCard
 	{
 		ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
 
-		// 稀有双段重击 → 走 u3 裂空斩链，特效是全卡池单体最华丽的一档
-		// 时间轴见 effects/heidemarie_moves.json 的 HeidemarieSkyfall 键（20 层）
+		// Rare 2 费：重·斩击档（U1Attack 斩击链，原 U3 顶配下调至重档）
+		// 时间轴见 effects/heidemarie_moves.json 的 HeidemarieSkyfall 键
 		await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
 			.FromCard(this, cardPlay)
-			.WithAttackerAnim(HeidemarieAttackPlan.U3.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.U3))
+			.WithAttackerAnim(HeidemarieAttackPlan.U1.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.U1))
 			.WithHitCount(2)
 			.Targeting(cardPlay.Target)
 			// 「坠月」用碎岩命中特效，与同源的「解放极光」保持一套视觉语言

@@ -57,6 +57,7 @@ internal static class HeidemarieAllCardsPatch
 		ModelDb.Card<HeidemarieAuroraSword>(),
 		ModelDb.Card<HeidemarieCondensedAurora>(),
 		ModelDb.Card<HeidemarieLiberatedAurora>(),
+		ModelDb.Card<HeidemarieSwordParadise>(),
 	};
 }
 

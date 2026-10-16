@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using CznHeidemarie.Characters.Heidemarie;
 using CznHeidemarie.Integration;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
@@ -47,6 +48,11 @@ internal static class HeidemarieCinematicHitGatePatch
 	{
 		try
 		{
+			if (creature.Player?.Character is not Heidemarie)
+			{
+				return true;
+			}
+
 			if (creature.IsDead)
 			{
 				return true;
@@ -87,7 +93,7 @@ internal static class HeidemarieCinematicTailPatch
 	{
 		try
 		{
-			if (command.ModelSource is not CardModel card)
+			if (command.ModelSource is not CardModel card || card.Owner?.Character is not Heidemarie)
 			{
 				return;
 			}

@@ -49,13 +49,13 @@ public sealed class HeidemarieRayOfLight : HeidemarieCard, ILinkCard
 
 		// 入池量 = 连接牌数 × Percent 个百分点；入池与清池由基类包裹
 		// （见 HeidemarieCard.WithPercentDamageBoost，攻击结束必定清池）。
-		// 1 费单段：打击动作（Attack）+ 5 层「施法光效 + 斩击」特效，
+		// Uncommon 1 费：中·纵劈档（Attack2 纵劈分支）。
 		// 时间轴见 effects/heidemarie_moves.json 的 HeidemarieRayOfLight 键
 		await WithPercentDamageBoost(choiceContext, linked * DynamicVars["Percent"].BaseValue, async () =>
 		{
 			await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
 				.FromCard(this, cardPlay)
-				.WithAttackerAnim(HeidemarieAttackPlan.Basic.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Basic))
+				.WithAttackerAnim(HeidemarieAttackPlan.Heavy.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Heavy))
 				.Targeting(cardPlay.Target)
 				.WithHitFx("vfx/vfx_attack_slash")
 				.Execute(choiceContext);

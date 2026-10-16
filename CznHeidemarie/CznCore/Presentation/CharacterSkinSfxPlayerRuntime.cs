@@ -77,6 +77,12 @@ internal sealed class CharacterSkinSfxPlayerRuntime
 		return _runtime.Play(resPath, Mathf.DbToLinear(volumeDb) * _settings.EffectVolume);
 	}
 
+	/// <summary>停掉本播放器上全部正在播放的音效（不清缓存）。</summary>
+	public void Stop()
+	{
+		_runtime.Stop();
+	}
+
 	public void TrimCache(bool stopPlayback = false)
 	{
 		_runtime.TrimCache(stopPlayback);

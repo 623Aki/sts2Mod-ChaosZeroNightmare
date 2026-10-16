@@ -14,6 +14,14 @@
       4. 自检 ── 流式解析 pck 真实文件索引（只读头部 + 索引区，不整包读入）
                 + 体积区间 + 规模下限 + 关键资源命中
 
+    为什么 Godot 调用要按「产物就绪」判定，而不是直接等进程结束：
+    Godot 导出 pck 时内部还会跑一遍 dotnet publish（本项目这一步在 Godot 里会失败，
+    耗时 15 秒 ~ 2 分钟），pck 是在它之后才写出的；而 pck 写完后 Godot 进程往往
+    卡在收尾不再退出（实测只剩 1 个线程、CPU 恒为 0）。若直接用调用运算符 &，
+    脚本会永久阻塞在那一行 —— 卡点在导出之后，很容易被误判成「卡在校验 pck」。
+    现在改为等「pck 已写出且大小稳定」即认定导出完成，再给进程一点自然退出的时间，
+    仍不退就强杀；pck 完不完整一律以自检结果为准。
+
     自检为什么必须解析索引而不是搜文本：
     pck 里打进了 468 个 .cs 源码，任何出现在 C# 字符串常量里的资源路径
     都会让「全文 Contains」误判为存在。只有读文件表才能得到真值。
@@ -76,12 +84,15 @@ $PresetPath  = Join-Path $ProjectDir 'export_presets.cfg'
 # ──────────────────────────────────────────────────────────────────────────
 # 必需资源清单（精确路径）
 #
-# 取值依据：当前 pck 的真实文件表（1812 条）逐条比对得到，不是猜的。
-# 注意两个反直觉的事实：
+# 取值依据：当前 pck 的真实文件表（1929 条）逐条比对得到，不是猜的。
+# 注意三个反直觉的事实：
 #   1. 源资源本体（.skel/.atlas/.png/.ogg/.webp）不进 pck，
 #      进 pck 的是它们的 .import 索引文件。所以这里校验的是 .import。
 #   2. 扩展只打进了描述文件 bin/spine_godot_extension.gdextension，
 #      扩展的 DLL（bin/windows/*.dll）从来不在 pck 里 —— 运行期由游戏本体提供。
+#   3. .gd 脚本不进 pck 本体：script_export_mode=2 下导出器把它们编译成
+#      .gdc 字节码，并额外生成 .gd.remap 索引；场景 tscn 里的引用已重映射。
+#      所以校验 GDScript 演出场景时锁的是 .gdc。
 # ──────────────────────────────────────────────────────────────────────────
 $RequiredExact = @(
     # spine 扩展描述文件（缺它说明 bin/ 被 .gitignore 排除了）
@@ -102,7 +113,10 @@ $RequiredExact = @(
     # 文本
     'CznHeidemarie/localization/zhs/cards.json',
     'CznHeidemarie/localization/zhs/characters.json',
+    'CznHeidemarie/localization/zhs/powers.json',
+    'CznHeidemarie/localization/zhs/relics.json',
     'CznHeidemarie/localization/zhs/settings.json',
+    'CznHeidemarie/localization/zhs/ancients.json',
 
     # 场景
     'scenes/creature_visuals/heidemarie.tscn',
@@ -116,7 +130,31 @@ $RequiredExact = @(
     'CznHeidemarie/audio/sfx/se_30093_attack_play1.ogg.import',
     'CznHeidemarie/audio/voice/vo_30093_attack_01.ogg.import',
     'CznHeidemarie/audio/voice/vo_30093_team_join_01.ogg.import',
-    'CznHeidemarie/images/defeat/heidemarie_defeat_cg_1.webp.import',
+    'CznHeidemarie/images/defeat/collapse_30093_01.png.import',
+    'CznHeidemarie/images/defeat/collapse_30093_02.png.import',
+
+    # 败北 CG（Tiphera 类型 gloom 演出）：官方共享 gloom Spine FX 六件套的
+    # 入口（skel.import + _skel_data.tres；atlas/png .import 与导入产物由
+    # RequiredPrefix 覆盖）+ cha_node 12 槽时间线 + PMA 双材质 +
+    # GDScript 演出场景（编译态 .gdc，见文件头说明 3）
+    'CznHeidemarie/data/screen_fx_collapse_gloom_cha_node.json',
+    'CznHeidemarie/scenes/defeat_gloom_overlay.tscn',
+    'CznHeidemarie/scenes/defeat_gloom_overlay.gdc',
+    'CznHeidemarie/scenes/defeat_cg_framing.gdc',
+    'CznHeidemarie/materials/heidemarie_gloom_pma_alpha.tres',
+    'CznHeidemarie/materials/heidemarie_gloom_pma_additive.tres',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_bg1/screen_fx_collapse_gloom_sin_bg1.skel.import',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_bg1/screen_fx_collapse_gloom_sin_bg1_skel_data.tres',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_bg2/screen_fx_collapse_gloom_sin_bg2.skel.import',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_bg2/screen_fx_collapse_gloom_sin_bg2_skel_data.tres',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_bg3/screen_fx_collapse_gloom_sin_bg3.skel.import',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_bg3/screen_fx_collapse_gloom_sin_bg3_skel_data.tres',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_glass/screen_fx_collapse_gloom_sin_glass.skel.import',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_glass/screen_fx_collapse_gloom_sin_glass_skel_data.tres',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_lighting/screen_fx_collapse_gloom_sin_lighting.skel.import',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_lighting/screen_fx_collapse_gloom_sin_lighting_skel_data.tres',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_screen_refl/screen_fx_collapse_gloom_sin_screen_refl.skel.import',
+    'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_screen_refl/screen_fx_collapse_gloom_sin_screen_refl_skel_data.tres',
 
     # 卡面：卡框材质 + 「解放极光」的全屏卡原画（静态兜底）
     'materials/cards/frames/card_frame_heidemarie_mat.tres',
@@ -127,7 +165,30 @@ $RequiredExact = @(
     'CznHeidemarie/animations/cards/heidemarie_card_liberated_aurora.atlas.import',
     'CznHeidemarie/animations/cards/heidemarie_card_liberated_aurora.png.import',
     'CznHeidemarie/animations/cards/heidemarie_card_liberated_aurora_skel_data.tres',
-    'CznHeidemarie/scenes/cards/heidemarie_card_art.tscn'
+    'CznHeidemarie/scenes/cards/heidemarie_card_art.tscn',
+
+    # 「终焉」动态卡面（素材区 card/unique_30093_01，参考「解放极光」）
+    'CznHeidemarie/animations/cards/heidemarie_card_terminus.skel.import',
+    'CznHeidemarie/animations/cards/heidemarie_card_terminus.atlas.import',
+    'CznHeidemarie/animations/cards/heidemarie_card_terminus.png.import',
+    'CznHeidemarie/animations/cards/heidemarie_card_terminus_skel_data.tres',
+
+    # 「剑之乐园」动态卡面（三模型组装）：ux 插画三件套的骨架数据。
+    # 骨架 / 图集 / 贴图本体已由 RequiredPrefix 与数量下限覆盖，这里只锁定入口文件。
+    'CznHeidemarie/animations/effects/heidemarie_30093_ux_illust_1_skel_data.tres',
+    'CznHeidemarie/animations/effects/heidemarie_30093_ux_illust_2_skel_data.tres',
+    'CznHeidemarie/animations/effects/heidemarie_30093_ux_illust_3_skel_data.tres',
+
+    # 初始遗物「市长铭牌」图标：大图 256 / 小图 85 / 描边 85
+    #
+    # ⚠️ 这三张挂的是 res://images/relics/（**工程根**的 images），不是 res://CznHeidemarie/images/。
+    #    理由见 HeidemarieMayorBadge.cs：图标走 ImageHelper.GetImagePath("relics/…")，
+    #    它是引擎约定的「角色素材图」目录，前缀由引擎给，不能自己加 CznHeidemarie/。
+    #    2026-10-15 修正：此处原先写成 CznHeidemarie/images/relics/…，导致每次构建
+    #    自检都在这里误报缺件（资源其实一直在）。
+    'images/relics/heidemarie_mayor_badge.png.import',
+    'images/relics/heidemarie_mayor_badge_small.png.import',
+    'images/relics/heidemarie_mayor_badge_outline.png.import'
 )
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -147,11 +208,34 @@ $RequiredPrefix = @(
     '.godot/imported/se_30093_attack_play1.ogg-',     # 音效 .oggvorbisstr
     '.godot/imported/vo_30093_attack_01.ogg-',        # 语音 .oggvorbisstr
     '.godot/imported/vo_30093_team_join_01.ogg-',     # 选角语音 .oggvorbisstr
-    '.godot/imported/heidemarie_defeat_cg_1.webp-',   # 败北 CG .ctex
+    '.godot/imported/collapse_30093_01.png-',        # 败北 CG .ctex
+    '.godot/imported/collapse_30093_02.png-',        # 败北 CG .ctex
+    # 败北 CG gloom 演出：六套官方 Spine FX 的导入产物（各 .spskel/.spatlas/.ctex）
+    '.godot/imported/screen_fx_collapse_gloom_sin_bg1.skel-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_bg1.atlas-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_bg1.png-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_bg2.skel-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_bg2.atlas-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_bg2.png-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_bg3.skel-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_bg3.atlas-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_bg3.png-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_glass.skel-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_glass.atlas-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_glass.png-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_lighting.skel-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_lighting.atlas-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_lighting.png-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_screen_refl.skel-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_screen_refl.atlas-',
+    '.godot/imported/screen_fx_collapse_gloom_sin_screen_refl.png-',
     '.godot/imported/heidemarie_liberated_aurora.png-', # 全屏卡原画 .ctex
     '.godot/imported/heidemarie_card_liberated_aurora.skel-',  # 卡面骨架 .spskel
     '.godot/imported/heidemarie_card_liberated_aurora.atlas-', # 卡面图集 .spatlas
-    '.godot/imported/heidemarie_card_liberated_aurora.png-'    # 卡面图集贴图 .ctex
+    '.godot/imported/heidemarie_card_liberated_aurora.png-',   # 卡面图集贴图 .ctex
+    '.godot/imported/heidemarie_card_terminus.skel-',          # 终焉卡面骨架 .spskel
+    '.godot/imported/heidemarie_card_terminus.atlas-',         # 终焉卡面图集 .spatlas
+    '.godot/imported/heidemarie_card_terminus.png-'            # 终焉卡面图集贴图 .ctex
 )
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -190,21 +274,121 @@ function Write-Warn([string]$Text) {
     Write-Host "  [!!] $Text" -ForegroundColor Yellow
 }
 
-# 调用 Godot CLI。
+# ──────────────────────────────────────────────────────────────────────────
+# Godot CLI 包装：输出改道到日志文件，按「产物就绪」判定完成，绝不无限阻塞。
 #
-# Godot 会往 stderr 写 ERROR 行（里面包含 mod 跨 pck 引用游戏本体资源导致的
-# 预期噪音，如 res://src/... ），这些行在 $ErrorActionPreference='Stop' 下会被
-# PowerShell 当成终止错误，直接打断脚本。所以临时降级为 Continue。
-function Invoke-Godot {
-    param([string[]]$Arguments)
+# 为什么不能用 `& $GodotExe @Arguments 2>&1`：
+#   实测 --export-pack 时 Godot 内部还会跑一遍 dotnet publish（本项目在 Godot 里
+#   这一步会失败，耗时 15 秒 ~ 2 分钟，报 "Failed to build project"），pck 是在
+#   这之后才写出的；而 pck 写完后 Godot 进程往往卡在收尾不再退出（实测只剩
+#   1 个线程、CPU 恒为 0、WaitReason=EventPairLow）。调用运算符 & 会一直阻塞在
+#   这一行、永不返回 —— 卡点在导出之后，看起来就像「卡在校验 pck」，其实自检
+#   根本没开始跑。
+#
+#   ⚠ 不能用「CPU 长时间不涨」判假死：Godot 等子进程 dotnet 干活时自己就是 0 CPU，
+#     那样会在 pck 还没写出时就把导出杀掉。正确判据是产物本身：
+#       · 给了 -ArtifactPath：等「文件出现 + 大小稳定」，即认定导出完成；
+#       · 没给（如 --import）：只看硬超时，宁慢不误杀。
+#   判定完成后给进程一点自然退出的时间（正常 1~2 秒就退），仍不退就强杀；
+#   产物到底完不完整，一律交给后面的 pck 自检验证。
+# ──────────────────────────────────────────────────────────────────────────
+function Invoke-GodotTimed {
+    param(
+        [Parameter(Mandatory)][string[]]$Arguments,
+        [Parameter(Mandatory)][string]$LogName,     # 日志文件名前缀
+        [int]$TimeoutSec = 900,                     # 硬超时，兜底防止无限等待
+        [string]$ArtifactPath,                      # 期望产物；给出后按「产物就绪」判定
+        [long]$ArtifactMinBytes = 0,                # 产物至少多大才算写完
+        [int]$ArtifactStableSec = 4,                # 产物大小稳定多久才算写完
+        [int]$ExitGraceSec = 10                     # 产物就绪后等进程自然退出的秒数
+    )
 
-    $previous = $ErrorActionPreference
-    $ErrorActionPreference = 'Continue'
-    try {
-        & $GodotExe @Arguments 2>&1
+    # 日志放 .godot\build\ —— 实测导出器不递归扫 .godot（工程里 .godot/editor 存在，
+    # 但 pck 里 0 条），所以放这里不会被误打进 pck。
+    $logDir = Join-Path $ProjectDir '.godot\build'
+    New-Item -ItemType Directory -Force -Path $logDir | Out-Null
+    $outLog = Join-Path $logDir "$LogName.out.log"
+    $errLog = Join-Path $logDir "$LogName.err.log"
+    Remove-Item $outLog, $errLog -Force -ErrorAction SilentlyContinue
+
+    # 含空格的参数（预设名 "Windows Desktop"、含空格的 pck 路径）必须自己加引号：
+    # Start-Process 的 -ArgumentList 只做空格拼接，不像调用运算符 & 会自动加引号。
+    $argString = ($Arguments | ForEach-Object {
+            if ($_ -match '[\s"]') { '"' + ($_ -replace '"', '\"') + '"' } else { $_ }
+        }) -join ' '
+
+    $started = Get-Date
+    $proc = Start-Process -FilePath $GodotExe -ArgumentList $argString -NoNewWindow -PassThru `
+        -RedirectStandardOutput $outLog -RedirectStandardError $errLog
+
+    $status = 'exited'
+    $lastArtifactLen = -1
+    $lastArtifactChange = Get-Date
+
+    while (-not $proc.HasExited) {
+        Start-Sleep -Milliseconds 500
+
+        if ($ArtifactPath) {
+            if (Test-Path $ArtifactPath) {
+                $len = [long](Get-Item $ArtifactPath).Length
+                if ($len -ne $lastArtifactLen) {
+                    $lastArtifactLen = $len
+                    $lastArtifactChange = Get-Date
+                }
+                elseif ($len -ge $ArtifactMinBytes -and
+                    ((Get-Date) - $lastArtifactChange).TotalSeconds -ge $ArtifactStableSec) {
+                    $status = 'artifact-ready'
+                    break
+                }
+            }
+            else {
+                $lastArtifactLen = -1
+            }
+        }
+
+        if (((Get-Date) - $started).TotalSeconds -ge $TimeoutSec) {
+            $status = 'timeout-killed'
+            break
+        }
     }
-    finally {
-        $ErrorActionPreference = $previous
+
+    $exitCode = $null
+    if ($status -eq 'artifact-ready') {
+        if ($proc.WaitForExit($ExitGraceSec * 1000)) {
+            $status = 'exited'
+            $exitCode = $proc.ExitCode
+        }
+        else {
+            $status = 'artifact-killed'
+        }
+    }
+    elseif ($status -eq 'exited') {
+        $exitCode = $proc.ExitCode
+    }
+
+    if ($status -in @('artifact-killed', 'timeout-killed')) {
+        Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+        try { [void]$proc.WaitForExit(5000) } catch { }
+    }
+
+    $artifactSize = $null
+    if ($ArtifactPath -and (Test-Path $ArtifactPath)) {
+        $artifactSize = [long](Get-Item $ArtifactPath).Length
+    }
+
+    $log = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($f in @($outLog, $errLog)) {
+        if (Test-Path $f) {
+            foreach ($line in @(Get-Content -Path $f -ErrorAction SilentlyContinue)) { [void]$log.Add("$line") }
+        }
+    }
+
+    return [pscustomobject]@{
+        Status   = $status          # exited / artifact-ready / artifact-killed / timeout-killed
+        ExitCode = $exitCode        # 仅供参考：本机 PS 5.1 读 Start-Process 的 ExitCode 恒为 $null
+        Log      = $log
+        LogDir   = $logDir
+        Artifact = $artifactSize
     }
 }
 
@@ -551,7 +735,12 @@ try {
         Write-Step '导入资源（Godot --import）'
         # --import 只关心 spine 扩展与 mod 资源相关的报错，
         # 别的地方（如 res://src/... 这类跨 pck 引用）是预期噪音，刷屏无用。
-        Invoke-Godot @('--headless', '--path', $ProjectDir, '--import') |
+        $imp = Invoke-GodotTimed -Arguments @('--headless', '--path', $ProjectDir, '--import') `
+            -LogName 'import' -TimeoutSec 900
+        if ($imp.Status -ne 'exited') {
+            Write-Warn "--import 超时（$($imp.Status)），已强制结束；导入产物是否齐全由下一步判定"
+        }
+        $imp.Log |
             Select-String -Pattern 'Cannot open GDExtension|Error loading extension|Failed loading resource: res://CznHeidemarie' |
             ForEach-Object { Write-Warn $_.ToString().Trim() }
     }
@@ -568,20 +757,39 @@ try {
     New-Item -ItemType Directory -Force -Path $ModDir | Out-Null
     Remove-Item $PckOut -Force -ErrorAction SilentlyContinue
 
-    # 预设名含空格，必须用调用运算符 & 整体传入一个参数。
-    # 用 Start-Process -ArgumentList @('--export-pack','Windows Desktop',$out) 会被
-    # 按空格拆成 'Windows' + 'Desktop'，报 Invalid export preset name: Windows。
-    $godotOut = Invoke-Godot @('--headless', '--path', $ProjectDir, '--export-pack', $PresetName, $PckOut)
-    $exportExitCode = $LASTEXITCODE
-    $godotOut | Select-Object -Last 3 | ForEach-Object { Write-Note $_.ToString().Trim() }
+    # 参数按「一个元素一个参数」传：预设名含空格、$PckOut 里的 "Slay the Spire 2"
+    # 也含空格，引号由 Invoke-GodotTimed 内部统一补，不要在这里自己拼字符串。
+    $swExport = [Diagnostics.Stopwatch]::StartNew()
+    $exp = Invoke-GodotTimed -Arguments @('--headless', '--path', $ProjectDir, '--export-pack', $PresetName, $PckOut) `
+        -LogName 'export' -ArtifactPath $PckOut -ArtifactMinBytes $MinPckBytes -TimeoutSec 600
+    $swExport.Stop()
+    $exp.Log | Select-Object -Last 3 | ForEach-Object { Write-Note $_.ToString().Trim() }
 
-    if ($exportExitCode -ne 0) {
-        throw "导出失败（退出码 $exportExitCode）。"
+    # Godot 会在导出时自己跑一遍 dotnet publish。这一步的产物不进 pck（预设
+    # dotnet/embed_build_outputs=false，实测 pck 内 .dll 条目为 0），mod 的 dll 由
+    # csproj 的 post-build 交付到 mods 目录，所以它成功与否都不影响 pck。
+    # 它偶尔会因为源码瞬时状态失败（headless 下看不到 MSBuild 详情，细节在
+    # %APPDATA%\Godot\mono\build_logs\<hash>_ExportRelease\msbuild_log.txt）。
+    if ($exp.Log | Select-String -Pattern 'Failed to build project|completed with warnings' -Quiet) {
+        Write-Note 'Godot 内部那次 dotnet publish 没成功，属已知现象，不影响 pck'
     }
+
+    # 判定只认产物，不认退出码，原因有二：
+    #   ① 本机 PS 5.1 读 Start-Process -PassThru 的 ExitCode 恒为 $null（实测），
+    #      拿它比较必然误判成「导出失败」；
+    #   ② Godot 写完 pck 后经常不退出，是我们按需强杀的，退出码本来就无意义。
+    # pck 完不完整由下面的自检负责：magic / 格式版本 / 条目数 / 尾部无残留 /
+    # 关键资源命中 / 体积区间，任意一项不达标都会 throw。
     if (-not (Test-Path $PckOut)) {
-        throw "Godot 报成功，但没产出 pck：$PckOut"
+        throw "Godot 导出没有产出 pck（结束状态 $($exp.Status)）。完整日志：$($exp.LogDir)"
     }
-    Write-Ok 'pck 已写出'
+    if ($exp.Status -eq 'artifact-killed') {
+        Write-Note "Godot 写完 pck 后没有自行退出，已强制结束（导出耗时 $([int]$swExport.Elapsed.TotalSeconds) 秒）"
+    }
+    elseif ($exp.Status -eq 'timeout-killed') {
+        Write-Warn "Godot 导出超时被强制结束（$([int]$swExport.Elapsed.TotalSeconds) 秒），pck 是否完整交由自检判定"
+    }
+    Write-Ok "pck 已写出（导出耗时 $([int]$swExport.Elapsed.TotalSeconds) 秒）"
 
     # ── 步骤 4. 自检 ─────────────────────────────────────────────────────
     Write-Step '自检'

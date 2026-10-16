@@ -45,7 +45,7 @@ public static class MainFile
 		// 是本组里最容易挂载失败的一个，因此隔离出来（失败只告警，不牵连其它补丁）。
 		Registration.HeidemarieUniqueDeckGuard.Install(harmony, Log);
 
-		// 接入 CznCore 框架：注册事件转发补丁组、启动出牌特写立绘、
+		// 接入 CznCore 框架：通过 CharacterSkinModBootstrap 注册完整 Profile 与补丁组、启动出牌特写立绘、
 		// 把本角色的设置分区挂进游戏设置界面（见 Integration/）
 		HeidemarieIntegration.Init(harmony);
 
@@ -54,7 +54,7 @@ public static class MainFile
 
 	/// <summary>
 	/// 只自动挂载角色 mod 自己命名空间里的补丁，并逐类隔离失败。
-	/// CznCore 的补丁由 Integration 按需注册；若对整程序集调用 PatchAll，
+	/// CznCore 的补丁由 CharacterSkinModBootstrap 按组注册；若对整程序集调用 PatchAll，
 	/// 会把其中带 HarmonyPatch 的嵌套类提前挂载，随后再由补丁组重复注册。
 	/// 这种按命名空间筛选的方式与 Nine / Tiphera 的入口一致。
 	/// </summary>

@@ -167,7 +167,7 @@ internal sealed class CharacterSkinSettingsStore
 
 	private readonly Dictionary<string, CharacterSkinCharacterSettings> _characters = new Dictionary<string, CharacterSkinCharacterSettings>(StringComparer.OrdinalIgnoreCase);
 
-	private static readonly CharacterSettingDescriptor[] CharacterSettingDescriptors = new CharacterSettingDescriptor[23]
+	private static readonly CharacterSettingDescriptor[] CharacterSettingDescriptors = new CharacterSettingDescriptor[24]
 	{
 		BoolSetting("effects_enabled", (CharacterSkinCharacterSettings settings) => settings.EffectsEnabled, (CharacterSkinCharacterSettings settings, bool value) =>
 		{
@@ -272,7 +272,11 @@ internal sealed class CharacterSkinSettingsStore
 			{
 				settings.CharacterSelectBackgroundVariant = variant;
 			}
-		}, (CharacterSkinCharacterSettings settings) => CharacterSelectBackgroundVariantSettings.ToSettingValue(settings.CharacterSelectBackgroundVariant))
+		}, (CharacterSkinCharacterSettings settings) => CharacterSelectBackgroundVariantSettings.ToSettingValue(settings.CharacterSelectBackgroundVariant)),
+		BoolSetting("link_overlay_enabled", (CharacterSkinCharacterSettings settings) => settings.LinkOverlayEnabled, (CharacterSkinCharacterSettings settings, bool value) =>
+		{
+			settings.LinkOverlayEnabled = value;
+		})
 	};
 
 	private int _settingsLoaded;
@@ -578,6 +582,11 @@ internal sealed class CharacterSkinSettingsStore
 		return GetCharacterValue(characterId, (CharacterSkinCharacterSettings settings) => settings.CharacterSelectBackgroundVariant);
 	}
 
+	public bool GetCharacterLinkOverlayEnabled(string characterId)
+	{
+		return GetCharacterValue(characterId, (CharacterSkinCharacterSettings settings) => settings.LinkOverlayEnabled);
+	}
+
 	public void SetDebugLogEnabled(bool value, bool persist)
 	{
 		EnsureLoaded();
@@ -867,6 +876,14 @@ internal sealed class CharacterSkinSettingsStore
 		SetCharacterValue(characterId, persist, (CharacterSkinCharacterSettings settings) =>
 		{
 			settings.CharacterSelectBackgroundVariant = value;
+		});
+	}
+
+	public void SetCharacterLinkOverlayEnabled(string characterId, bool value, bool persist)
+	{
+		SetCharacterValue(characterId, persist, (CharacterSkinCharacterSettings settings) =>
+		{
+			settings.LinkOverlayEnabled = value;
 		});
 	}
 

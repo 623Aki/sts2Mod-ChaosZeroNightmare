@@ -25,7 +25,7 @@ namespace CznHeidemarie.Registration;
 internal static class HeidemarieUniqueRule
 {
 	/// <summary>这张牌是否带「唯一」。</summary>
-	internal static bool IsUnique(CardModel? card) => card is IUniqueCard;
+	internal static bool IsUnique(CardModel? card) => card is HeidemarieCard && card is IUniqueCard;
 
 	/// <summary>卡组里是否已有同 Id 的另一张（<paramref name="except"/> 为自身实例，不算）。</summary>
 	internal static bool DeckContainsCopy(Player player, ModelId id, CardModel? except)

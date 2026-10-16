@@ -423,7 +423,7 @@ final_z = group_zorder + primitive_z
 | `target`（挂屏幕层还是世界层） | `srmd.effect.type`：`SCREEN`→屏幕层、`CENTER`→世界层、`SELF`→挂在角色上、`FRONT`→屏幕层、`TARGET`→世界层 | ❌ 绝不可 |
 | `bone_type` | `srmd.effect.bone_type`（`ATTACH` = 挂骨骼，不是屏幕绝对坐标） | ❌ 绝不可 |
 | `clip` | 骨架实测动画名（降级序 `animation` → `animation_nocam` → `loop` → `idle` → `play` → `ready` → `setup`） | ❌ 绝不可 |
-| `start_ms` | 播放树推导 | ❌（单体特效表除外，见下） |
+| `start_ms` | 播放树推导（= 动作链累计偏移 + `.srmd` 的 effect delay + 组内该层 delay） | ❌ |
 | `end_ms` | `start_ms` + 骨架实测 clip 时长 | ❌ 绝不可 |
 | `duration_ms` | `max(所有层 end, hit, 身体动画结束)` | ✅ 可（只影响节奏） |
 | `hit_ms` | `srmd.hit.delay` | ⚠️ 是真值，但可在 `renderer` 里覆盖做节奏 |
@@ -431,13 +431,16 @@ final_z = group_zorder + primitive_z
 | `shakes[].duration/amplitude/frequency` | **人工**（见「还原不出的」） | ✅ 可 |
 | `bg.alpha / fade_in_ms / fade_out_*` | **人工**（`srmd.bg_blend` 未映射到黑幕） | ✅ 可 |
 
-> **单体技能特效表（`effects/<...>_moves.json`）是例外**：
-> 它的 `start_ms`/`end_ms`/`clip` **保留原值，不要重新生成** ——
-> 它们按身体动画相位对齐（ready 0.467 / play 0.667，与 srmd 的 `ani.duration` 一致），
-> 且被 C# 侧 `HeidemarieAnimationSeconds` / `WithAttackerAnim` 依赖。
-> 只用提取器回填 `z`，时序原样保留。
+> **⚠️ 2026-10-15 起，单体技能特效表不再是例外**：
+> 它改成**组键形态**（`owner` / `target` 里每条只有一个 `group` + `start_ms`，层不再逐卡重复），
+> 整份由源重新生成，不再「保留旧时序、只回填 `z`」。
+> 下面 (5) 的命令已同步更新；旧写法 `--command moves-z` **会写坏文件，不要再跑**。
+> 详见 `CznHeidemarie/动画资源到最终场景落地流程.md` §4.3。
 
 #### (5) 提取器
+
+**两个数据面都走「组键」形态**：层（骨架 / clip / z / 组内 delay）只有一份，在组库里；
+时间轴与卡牌映射只写「组键 + 起播时刻」。
 
 ```powershell
 $s='G:\sts2Mod\CNZ_Source\czn30093\model_data\30093.srmd'
@@ -446,19 +449,38 @@ $k='G:\sts2Mod\CznHeidemarie\CznHeidemarie\animations\effects'
 $cam='G:\sts2Mod\CNZ_Source\czn30093-spine_4211\camera'
 $v='G:\sts2Mod\tools\SpineSkeletonDataConverter.exe'
 $cache='G:\sts2Mod\tools\_cinematic_duration_cache.json'
+$grp='G:\sts2Mod\tools\_effect_groups_30093.json'
 
-# 全屏演出（ux / ug）—— 整份重新生成
+# ── 全屏演出（ux / ug）—— 各两步：重建（verbose）→ 瘦身为组键 ──
 python tools\extract_cinematic_plan.py --srmd $s --cfx-dir $c --skel-dir $k `
-    --camera-skel-dir $cam --converter $v --cache $cache `
-    --command ux_attack --out CznHeidemarie\CznHeidemarie\cinematic\heidemarie_ux.json
-python tools\extract_cinematic_plan.py --srmd $s --cfx-dir $c --skel-dir $k `
-    --camera-skel-dir $cam --converter $v --cache $cache `
-    --command ug_attack --out CznHeidemarie\CznHeidemarie\cinematic\heidemarie_ug.json
+    --camera-skel-dir $cam --converter $v --cache $cache --refresh `
+    --command ux_attack --out tools\_raw_ux.json
+python tools\slim_cinematic_layers.py --groups $grp --in tools\_raw_ux.json `
+    --out CznHeidemarie\CznHeidemarie\cinematic\heidemarie_ux.json `
+    --report tools\_slim_report_ux.md
 
-# 单体技能特效——只换 z，时序原样保留
-python tools\extract_cinematic_plan.py --srmd $s --cfx-dir $c --command moves-z `
-    --out CznHeidemarie\CznHeidemarie\effects\heidemarie_moves.json
+python tools\extract_cinematic_plan.py --srmd $s --cfx-dir $c --skel-dir $k `
+    --camera-skel-dir $cam --converter $v --cache $cache --refresh `
+    --command ug_attack --out tools\_raw_ug.json
+python tools\slim_cinematic_layers.py --groups $grp --in tools\_raw_ug.json `
+    --out CznHeidemarie\CznHeidemarie\cinematic\heidemarie_ug.json `
+    --report tools\_slim_report_ug.md
+
+# ── 单体技能特效 —— 也是组键形态，整份重新生成 ──
+python tools\audit_animation_mapping.py `
+    --mapping tools\_battle_mapping_30093.json `
+    --moves   CznHeidemarie\CznHeidemarie\effects\heidemarie_moves.json `
+    --spine-json-dir G:\czn30093\effect `
+    --cards   CznHeidemarie\Characters\Heidemarie\Cards `
+    --out     CznHeidemarie\动画对照表.md `
+    --emit-moves CznHeidemarie\CznHeidemarie\effects\heidemarie_moves.json
 ```
+
+瘦身的判收标准：`--report` 里 **「不一致 = 0」**。跳过瘦身不会报错（合成器有 legacy 分支），
+但会退回「`z` / `offset` / `scale` / `opacity` 在时间轴里各存一份、与组库漂移」的旧状态。
+
+`--moves` 与 `--emit-moves` 指向同一文件是故意的：脚本先整份读进内存
+（`--moves` 只用于取卡牌清单与 `note`）再写回，读在写之前。
 
 产物的三段结构泾渭分明，便于日后复核：
 

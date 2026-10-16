@@ -1,0 +1,5 @@
+{
+  "HEIDEMARIE_MAYOR_BADGE.title": "市长铭牌",
+  "HEIDEMARIE_MAYOR_BADGE.description": "战斗开始时，获得5层[gold]希望[/gold]。\n回合开始时：希望每满10层，获得{Block}点[gold]格挡[/gold]；希望达到100层后，额外获得{Strength}点[gold]临时力量[/gold]；希望达到200层后，额外回复{Heal}点生命并获得{Energy}点能量。",
+  "HEIDEMARIE_MAYOR_BADGE.flavor": "她曾是园号的英雄。人们把铭牌别在她胸前，于是她就必须一直是英雄。"
+}

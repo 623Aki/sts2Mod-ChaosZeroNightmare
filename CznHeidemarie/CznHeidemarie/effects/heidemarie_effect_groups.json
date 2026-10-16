@@ -1,0 +1,4116 @@
+{
+ "schema": "czn-heidemarie.effect-groups.v2",
+ "character": "30093",
+ "classes": {
+  "own": {
+   "heidemarie_30093_eff_attack_play1": {
+    "group": "heidemarie_30093_eff_attack_play1",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_attack_play1.cfx",
+    "exists": true,
+    "driver": "attack_play1",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_attack_play1_f",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 533.3,
+      "z": 5,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play1_b",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 433.3,
+      "z": -5,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "attack_play1",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "attack_play1": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_attack_play2": {
+    "group": "heidemarie_30093_eff_attack_play2",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_attack_play2.cfx",
+    "exists": true,
+    "driver": "attack_play2",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_attack_play2_f",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 333.3,
+      "z": 5,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play2_b",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 666.7,
+      "z": -5,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "attack_play2",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "attack_play2": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_casting_ready": {
+    "group": "heidemarie_30093_eff_casting_ready",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_casting_ready.cfx",
+    "exists": true,
+    "driver": "buff_ready",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_casting_ready",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 1000.0,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_casting_ready_b",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 1333.3,
+      "z": -10,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_casting_pati1"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "buff_ready",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     },
+     {
+      "file": "30093.srmd",
+      "command": "cure_ready",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     },
+     {
+      "file": "30093.srmd",
+      "command": "debuff_ready",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "buff_ready": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     },
+     "cure_ready": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     },
+     "debuff_ready": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "3000438_action0_idle": {
+    "group": "3000438_action0_idle",
+    "mount": "SELF",
+    "cfx": "G:\\czn30093\\effect\\3000438_action0_idle.cfx",
+    "exists": true,
+    "driver": "special0_idle",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "3000438_action0_idle",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 0.0,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "special0_idle",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,120",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "special0_idle": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,120",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u1_attack_play": {
+    "group": "heidemarie_30093_eff_u1_attack_play",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u1_attack_play.cfx",
+    "exists": true,
+    "driver": "u1_attack_play",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u1_attack_play_f",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 700.0,
+      "z": 50,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u1_attack_play_b",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 766.7,
+      "z": -50,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_eff_u1_attack_play_pati1",
+     "heidemarie_30093_eff_u1_attack_play_pati1",
+     "heidemarie_30093_eff_u1_attack_play_pati1",
+     "heidemarie_30093_eff_u1_attack_play_pati1"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u1_attack_play",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u1_attack_play": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u1_attack_ready": {
+    "group": "heidemarie_30093_eff_u1_attack_ready",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u1_attack_ready.cfx",
+    "exists": true,
+    "driver": "u1_attack_ready",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u1_attack_ready_f",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 2000.0,
+      "z": 50,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u1_attack_ready_b",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 2000.0,
+      "z": -50,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u1_attack_play_b",
+      "clip": "ready",
+      "clip_source": "ani",
+      "clip_ms": 466.7,
+      "z": -100,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u1_attack_ready",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u1_attack_ready": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u2_buff_play": {
+    "group": "heidemarie_30093_eff_u2_buff_play",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u2_buff_play.cfx",
+    "exists": true,
+    "driver": "u2_buff_play",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u2_buff_f",
+      "clip": "play",
+      "clip_source": "ani",
+      "clip_ms": 966.7,
+      "z": 1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u2_buff_b",
+      "clip": "play",
+      "clip_source": "ani",
+      "clip_ms": 866.7,
+      "z": -1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u2_buff_sword",
+      "clip": "u2_buff_play",
+      "clip_source": "ani",
+      "clip_ms": 900.0,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_u2_buff_par_1"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u2_buff_play",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u2_buff_play": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u2_buff_ready": {
+    "group": "heidemarie_30093_eff_u2_buff_ready",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u2_buff_ready.cfx",
+    "exists": true,
+    "driver": "u2_buff_ready",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u2_buff_f",
+      "clip": "ready",
+      "clip_source": "ani",
+      "clip_ms": 533.3,
+      "z": 1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u2_buff_b",
+      "clip": "ready",
+      "clip_source": "ani",
+      "clip_ms": 533.3,
+      "z": -1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u2_buff_sword",
+      "clip": "u2_buff_ready",
+      "clip_source": "ani",
+      "clip_ms": 533.3,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u2_buff_ready",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u2_buff_ready": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u3_attack_play": {
+    "group": "heidemarie_30093_eff_u3_attack_play",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u3_attack_play.cfx",
+    "exists": true,
+    "driver": "u3_attack_play",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u3_attack_self_f",
+      "clip": "play",
+      "clip_source": "ani",
+      "clip_ms": 600.0,
+      "z": 1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_self_b",
+      "clip": "play",
+      "clip_source": "ani",
+      "clip_ms": 633.3,
+      "z": -1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_u3_attack_self_par_1"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u3_attack_play",
+      "mount": "SELF",
+      "delay_ms": 500,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u3_attack_play": {
+      "mount": "SELF",
+      "delay_ms": 500,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u3_attack_ready": {
+    "group": "heidemarie_30093_eff_u3_attack_ready",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u3_attack_ready.cfx",
+    "exists": true,
+    "driver": "u3_attack_play",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u3_attack_self_f",
+      "clip": "ready",
+      "clip_source": "ani",
+      "clip_ms": 533.3,
+      "z": 1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_self_b",
+      "clip": "ready",
+      "clip_source": "ani",
+      "clip_ms": 533.3,
+      "z": -1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u3_attack_play",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u3_attack_play": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u4_buff_play": {
+    "group": "heidemarie_30093_eff_u4_buff_play",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u4_buff_play.cfx",
+    "exists": true,
+    "driver": "u4_buff_play",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u4_buff_self_f",
+      "clip": "play",
+      "clip_source": "ani",
+      "clip_ms": 2000.0,
+      "z": 100,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u4_buff_sword_f",
+      "clip": "play",
+      "clip_source": "ani",
+      "clip_ms": 1066.7,
+      "z": 50,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u4_buff_sword_b",
+      "clip": "play",
+      "clip_source": "ani",
+      "clip_ms": 1066.7,
+      "z": -50,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u4_buff_self_b",
+      "clip": "play",
+      "clip_source": "ani",
+      "clip_ms": 2000.0,
+      "z": -100,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_u4_buff_play_pati01",
+     "heidemarie_30093_u4_buff_play_pati02"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u4_buff_play",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u4_buff_play": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u4_buff_ready": {
+    "group": "heidemarie_30093_eff_u4_buff_ready",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u4_buff_ready.cfx",
+    "exists": true,
+    "driver": "u4_buff_ready",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u4_buff_self_f",
+      "clip": "ready",
+      "clip_source": "ani",
+      "clip_ms": 466.7,
+      "z": 100,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u4_buff_sword_f",
+      "clip": "ready",
+      "clip_source": "ani",
+      "clip_ms": 500.0,
+      "z": 50,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u4_buff_self_b",
+      "clip": "ready",
+      "clip_source": "ani",
+      "clip_ms": 466.7,
+      "z": -50,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u4_buff_sword_b",
+      "clip": "ready",
+      "clip_source": "ani",
+      "clip_ms": 500.0,
+      "z": -100,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u4_buff_ready",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u4_buff_ready": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_u5_attack_play1": {
+    "group": "heidemarie_30093_u5_attack_play1",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_u5_attack_play1.cfx",
+    "exists": true,
+    "driver": "u5_attack_play1",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_attack_play1_f",
+      "clip": "u5",
+      "clip_source": "ani",
+      "clip_ms": 533.3,
+      "z": 5,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play1_b",
+      "clip": "u5",
+      "clip_source": "ani",
+      "clip_ms": 433.3,
+      "z": -5,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u5_attack_play1",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u5_attack_play1": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_u5_attack_play2": {
+    "group": "heidemarie_30093_u5_attack_play2",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_u5_attack_play2.cfx",
+    "exists": true,
+    "driver": "u5_attack_play2",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_attack_play2_f",
+      "clip": "u5",
+      "clip_source": "ani",
+      "clip_ms": 333.3,
+      "z": 5,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play2_b",
+      "clip": "u5",
+      "clip_source": "ani",
+      "clip_ms": 666.7,
+      "z": -5,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u5_attack_play2",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u5_attack_play2": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   }
+  },
+  "enemy": {
+   "heidemarie_30093_eff_attack_play1_target": {
+    "group": "heidemarie_30093_eff_attack_play1_target",
+    "mount": "TARGET",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_attack_play1_target.cfx",
+    "exists": true,
+    "driver": "attack_play1",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_b",
+      "clip": "attack_play1",
+      "clip_source": "ani",
+      "clip_ms": 1000.0,
+      "z": -10,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_sword_target",
+      "clip": "attack_play1_target",
+      "clip_source": "ani",
+      "clip_ms": 933.3,
+      "z": 3,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_f3",
+      "clip": "attack_play1",
+      "clip_source": "ani",
+      "clip_ms": 1000.0,
+      "z": 5,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_f1",
+      "clip": "attack_play1",
+      "clip_source": "ani",
+      "clip_ms": 933.3,
+      "z": 7,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_eff_attack_play1_target_pati1",
+     "heidemarie_30093_eff_attack_play1_target_pati2",
+     "heidemarie_30093_eff_attack_play1_target_pati3"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "attack_play1",
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "-50~50,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "attack_play1": {
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "-50~50,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_attack_play2_target": {
+    "group": "heidemarie_30093_eff_attack_play2_target",
+    "mount": "TARGET",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_attack_play2_target.cfx",
+    "exists": true,
+    "driver": "attack_play2",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_b",
+      "clip": "attack_play2",
+      "clip_source": "ani",
+      "clip_ms": 1000.0,
+      "z": -10,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_sword_target",
+      "clip": "attack_play2_target",
+      "clip_source": "ani",
+      "clip_ms": 1100.0,
+      "z": 3,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_f3",
+      "clip": "attack_play2",
+      "clip_source": "ani",
+      "clip_ms": 1000.0,
+      "z": 5,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_f1",
+      "clip": "attack_play2",
+      "clip_source": "ani",
+      "clip_ms": 933.3,
+      "z": 7,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_eff_attack_play1_target_pati1",
+     "heidemarie_30093_eff_attack_play1_target_pati2",
+     "heidemarie_30093_eff_attack_play1_target_pati3"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "attack_play2",
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "-50~50,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "attack_play2": {
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "-50~50,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u1_attack_play_target": {
+    "group": "heidemarie_30093_eff_u1_attack_play_target",
+    "mount": "TARGET",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u1_attack_play_target.cfx",
+    "exists": true,
+    "driver": "u1_attack_play",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u1_attack_play_target_f1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 1666.7,
+      "z": 150,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u1_attack_play_target_f2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 1833.3,
+      "z": 100,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u1_attack_play_target_f3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 1666.7,
+      "z": 70,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u1_attack_sword",
+      "clip": "u1_attack_play_target",
+      "clip_source": "ani",
+      "clip_ms": 3233.3,
+      "z": 50,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u1_attack_play_target_b",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2000.0,
+      "z": -50,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_u1_attack_play_target_pati01"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u1_attack_play",
+      "mount": "TARGET",
+      "delay_ms": 166,
+      "scale": 0.9,
+      "offset_xy": "0,10",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u1_attack_play": {
+      "mount": "TARGET",
+      "delay_ms": 166,
+      "scale": 0.9,
+      "offset_xy": "-620,-50",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u3_attack_target": {
+    "group": "heidemarie_30093_eff_u3_attack_target",
+    "mount": "TARGET",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u3_attack_target.cfx",
+    "exists": true,
+    "driver": "u3_attack_play",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_ff3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": 11,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_ff2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": 10,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_ff",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": 8,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_f2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2033.3,
+      "z": 6,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_f",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 1333.3,
+      "z": 3,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_b",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2200.0,
+      "z": -2,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_rcok",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 1366.7,
+      "z": 4,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_sword_1",
+      "clip": "play",
+      "clip_source": "ani",
+      "clip_ms": 966.7,
+      "z": 1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_sword_2",
+      "clip": "play",
+      "clip_source": "ani",
+      "clip_ms": 933.3,
+      "z": 2,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_rock_2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": 5,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_ff_rock",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 1433.3,
+      "z": 7,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_rock_b",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2000.0,
+      "z": -1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_rock_f",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2300.0,
+      "z": 9,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_wind_f",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 1500.0,
+      "z": 300,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_wind_b",
+      "clip": "u5_attack_play2",
+      "clip_source": "ani",
+      "clip_ms": 1766.7,
+      "z": -4,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_u3_attack_target_par_1",
+     "heidemarie_30093_u3_attack_target_par_2",
+     "heidemarie_30093_eff_attack_play1_target_pati3",
+     "heidemarie_30093_u3_attack_target_par_3"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u3_attack_play",
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u3_attack_play": {
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "-620,-50",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u3_attack_target_flash": {
+    "group": "heidemarie_30093_eff_u3_attack_target_flash",
+    "mount": "TARGET",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u3_attack_target_flash.cfx",
+    "exists": true,
+    "driver": "u3_attack_play",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u3_attack_target_ff_flash",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u3_attack_play",
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 100001,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u3_attack_play": {
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "-620,-50",
+      "opacity": 255,
+      "zorder": 100001,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_eff_u3_attack_ready_target": {
+    "group": "heidemarie_30093_eff_u3_attack_ready_target",
+    "mount": "TARGET",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_eff_u3_attack_ready_target.cfx",
+    "exists": true,
+    "driver": "u3_attack_ready",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_u3_attack_sword_1",
+      "clip": "ready",
+      "clip_source": "ani",
+      "clip_ms": 533.3,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_u3_attack_sword_2",
+      "clip": "ready",
+      "clip_source": "ani",
+      "clip_ms": 533.3,
+      "z": 1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u3_attack_ready",
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 1,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u3_attack_ready": {
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "-620,-50",
+      "opacity": 255,
+      "zorder": 1,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_u5_attack_play1_target": {
+    "group": "heidemarie_30093_u5_attack_play1_target",
+    "mount": "TARGET",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_u5_attack_play1_target.cfx",
+    "exists": true,
+    "driver": "u5_attack_play1",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_b",
+      "clip": "u5_attack_play1",
+      "clip_source": "ani",
+      "clip_ms": 1000.0,
+      "z": -10,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_sword_target",
+      "clip": "u5_attack_play1_target",
+      "clip_source": "ani",
+      "clip_ms": 933.3,
+      "z": 3,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_f3",
+      "clip": "u5_attack_play1",
+      "clip_source": "ani",
+      "clip_ms": 1000.0,
+      "z": 5,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_f1",
+      "clip": "u5_attack_play1",
+      "clip_source": "ani",
+      "clip_ms": 933.3,
+      "z": 7,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_f2",
+      "clip": "u5_attack_play1",
+      "clip_source": "ani",
+      "clip_ms": 866.7,
+      "z": 6,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_u5_attack_play1_target_pati1",
+     "heidemarie_30093_eff_attack_play1_target_pati3"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u5_attack_play1",
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "-50~50,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u5_attack_play1": {
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "-50~50,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_u5_attack_play2_target": {
+    "group": "heidemarie_30093_u5_attack_play2_target",
+    "mount": "TARGET",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_u5_attack_play2_target.cfx",
+    "exists": true,
+    "driver": "u5_attack_play2",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_b",
+      "clip": "u5_attack_play2",
+      "clip_source": "ani",
+      "clip_ms": 1000.0,
+      "z": -10,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_sword_target",
+      "clip": "u5_attack_play2_target",
+      "clip_source": "ani",
+      "clip_ms": 1100.0,
+      "z": 3,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_f3",
+      "clip": "u5_attack_play2",
+      "clip_source": "ani",
+      "clip_ms": 1000.0,
+      "z": 5,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_f1",
+      "clip": "u5_attack_play2",
+      "clip_source": "ani",
+      "clip_ms": 933.3,
+      "z": 7,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_eff_attack_play_target_f2",
+      "clip": "u5_attack_play2",
+      "clip_source": "ani",
+      "clip_ms": 866.7,
+      "z": 6,
+      "x": -620,
+      "y": -50,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_u5_attack_play1_target_pati1",
+     "heidemarie_30093_eff_attack_play1_target_pati3"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "u5_attack_play2",
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "-50~50,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "u5_attack_play2": {
+      "mount": "TARGET",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "-50~50,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   }
+  },
+  "cinematic": {
+   "heidemarie_30093_ug_attack_bg": {
+    "group": "heidemarie_30093_ug_attack_bg",
+    "mount": "CENTER",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_ug_attack_bg.cfx",
+    "exists": true,
+    "driver": "ug_attack",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_ug_bg_b",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_bg_b2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4633.3,
+      "z": -1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "ug_attack",
+      "mount": "CENTER",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": -5000,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "ug_attack": {
+      "mount": "CENTER",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": -5000,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_ug_attack_01": {
+    "group": "heidemarie_30093_ug_attack_01",
+    "mount": "FRONT",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_ug_attack_01.cfx",
+    "exists": true,
+    "driver": "ug_attack",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_ug_sword_intro2_f",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2833.3,
+      "z": 18,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_sword_intro_g2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2466.7,
+      "z": 17,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_sword_intro_g1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2466.7,
+      "z": 16,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_sword_intro_hq3",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 2466.7,
+      "z": 15,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_sword_intro_hq2",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 2466.7,
+      "z": 14,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_sword_intro_hq1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2466.7,
+      "z": 13,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_sword_intro_f2",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 2466.7,
+      "z": 12,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_sword_intro_f",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2466.7,
+      "z": 11,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait1_1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2700.0,
+      "z": 10,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait1_2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2700.0,
+      "z": 9,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait1_3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2700.0,
+      "z": 8,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait1_4",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2700.0,
+      "z": 7,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait1_5",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2700.0,
+      "z": 6,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait1_6",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2700.0,
+      "z": 5,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait1_7",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2700.0,
+      "z": 4,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait1_8",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2700.0,
+      "z": 3,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait1_9",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2700.0,
+      "z": 2,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_sword_intro_b",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2466.7,
+      "z": 1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_sword_intro_b2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2500.0,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_sword_intro2_b",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2633.3,
+      "z": 1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "ug_attack",
+      "mount": "FRONT",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "ug_attack": {
+      "mount": "FRONT",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_ug_attack_screen": {
+    "group": "heidemarie_30093_ug_attack_screen",
+    "mount": "SCREEN",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_ug_attack_screen.cfx",
+    "exists": true,
+    "driver": "ug_attack",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_ug_screen_eff",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 5500.0,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_ug_attack_screen_pati1"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "ug_attack",
+      "mount": "SCREEN",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 300,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "ug_attack": {
+      "mount": "SCREEN",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 300,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_ug_attack_impact": {
+    "group": "heidemarie_30093_ug_attack_impact",
+    "mount": "CENTER",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_ug_attack_impact.cfx",
+    "exists": true,
+    "driver": "ug_attack",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_ug_impact",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4100.0,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "ug_attack",
+      "mount": "CENTER",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 200,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "ug_attack": {
+      "mount": "CENTER",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 200,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_ug_attack_02": {
+    "group": "heidemarie_30093_ug_attack_02",
+    "mount": "CENTER",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_ug_attack_02.cfx",
+    "exists": true,
+    "driver": "ug_attack",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_ug_bg_f2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4633.3,
+      "z": 19,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug3_1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4900.0,
+      "z": 18,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait2_1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4666.7,
+      "z": 17,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait2_2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4666.7,
+      "z": 16,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "30093_ug_portrait2_3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4666.7,
+      "z": 15,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug2_f",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4666.7,
+      "z": 14,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_bg_f",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4666.7,
+      "z": 13,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug2_b",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4666.7,
+      "z": 12,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_glass_pat",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4933.3,
+      "z": 11,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug_aura",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4666.7,
+      "z": 10,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug1_1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 3933.3,
+      "z": 9,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug1_2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 3933.3,
+      "z": 8,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug1_3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 3933.3,
+      "z": 7,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug1_4",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 3933.3,
+      "z": 6,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug1_5",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 3933.3,
+      "z": 5,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ug1_6",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 3933.3,
+      "z": 4,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_sword_eff_g",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4133.3,
+      "z": 3,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_sword_eff_f",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4133.3,
+      "z": 2,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_sword_eff_b",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4133.3,
+      "z": 1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "ug_attack",
+      "mount": "CENTER",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "ug_attack": {
+      "mount": "CENTER",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_ux_attack_03": {
+    "group": "heidemarie_30093_ux_attack_03",
+    "mount": "SCREEN",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_ux_attack_03.cfx",
+    "exists": true,
+    "driver": "ux_attack",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_ux_attack_05",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 600.0,
+      "z": 999,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_ux_attack_01_pati"
+    ],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "ux_attack",
+      "mount": "SCREEN",
+      "delay_ms": 0,
+      "scale": 0.8,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "ux_attack": {
+      "mount": "SCREEN",
+      "delay_ms": 0,
+      "scale": 0.8,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_ux_attack_02_1": {
+    "group": "heidemarie_30093_ux_attack_02_1",
+    "mount": "CENTER",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_ux_attack_02_1.cfx",
+    "exists": true,
+    "driver": "ux_attack",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_ux_attack_03_6",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": 905,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_03_5",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": 904,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_cutin_03_glow",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2033.3,
+      "z": 903,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_cutin_03_03",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 2066.7,
+      "z": 902,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_cutin_03_02",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 1066.7,
+      "z": 901,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_cutin_03_01",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 1066.7,
+      "z": 900,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_03_4",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": 899,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_03_3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2033.3,
+      "z": -9992,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_03_2_2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": -9993,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_03_2_1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2033.3,
+      "z": -9994,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_03_1_3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": -9995,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_03_1_2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 1066.7,
+      "z": -9996,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_03_1_1_4",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": -9997,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_03_1_1_3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": -9998,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_03_1_1_2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": -9999,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_03_1_1_1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 2066.7,
+      "z": -10000,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "ux_attack",
+      "mount": "CENTER",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "ux_attack": {
+      "mount": "CENTER",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_ux_attack_02_2": {
+    "group": "heidemarie_30093_ux_attack_02_2",
+    "mount": "SCREEN",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_ux_attack_02_2.cfx",
+    "exists": true,
+    "driver": "ux_attack",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_ux_attack_04_1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 1233.3,
+      "z": 1000,
+      "x": 10,
+      "y": 15,
+      "rotate": null,
+      "scale": 0.97,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_04",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 700.0,
+      "z": 999,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "ux_attack",
+      "mount": "SCREEN",
+      "delay_ms": 0,
+      "scale": 0.5,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 1,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "ux_attack": {
+      "mount": "SCREEN",
+      "delay_ms": 0,
+      "scale": 0.5,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 1,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_ux_attack_01": {
+    "group": "heidemarie_30093_ux_attack_01",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_ux_attack_01.cfx",
+    "exists": true,
+    "driver": "ux_attack",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_ux_attack_01_f",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": 907,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_02_f1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": 906,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_cutin_04",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 4033.3,
+      "z": 905,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_cutin_03",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 4033.3,
+      "z": 904,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_cutin_02",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 4033.3,
+      "z": 902,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_cutin_02_1",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 3000.0,
+      "z": 901,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_cutin_01",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 4033.3,
+      "z": 900,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_01_b1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -991,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_01_b1_2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -992,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_01_b1_3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -993,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_01_b1_4",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -994,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_01_b2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -995,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_01_b2_1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -996,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_01_b3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -997,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_02_1",
+      "clip": "animation",
+      "clip_source": "fallback",
+      "clip_ms": 4033.3,
+      "z": -998,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_01_b4",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 3900.0,
+      "z": -999,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_02_b1_1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -1000,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_02_b1_2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -1001,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_02_b1_3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -1002,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_02_b2_1",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -1003,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_02_b2",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -1004,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_attack_02_b3",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 4033.3,
+      "z": -1005,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093.srmd",
+      "command": "ux_attack",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 0.8,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "ux_attack": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 0.8,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 0,
+      "loop": false,
+      "bone_type": "POSITION",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_ux_illust": {
+    "group": "heidemarie_30093_ux_illust",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_ux_illust.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_ux_illust_1",
+      "clip": "intro,loop",
+      "clip_source": "ani",
+      "clip_ms": 0.0,
+      "z": 4,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_illust_2",
+      "clip": "intro,loop",
+      "clip_source": "ani",
+      "clip_ms": 0.0,
+      "z": 3,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     },
+     {
+      "source": "heidemarie_30093_ux_illust_3",
+      "clip": "intro,loop",
+      "clip_source": "ani",
+      "clip_ms": 0.0,
+      "z": 1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "heidemarie_30093_ux_illust_pati1",
+     "heidemarie_30093_ux_illust_pati1"
+    ],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   }
+  },
+  "battle_ready": {
+   "heidemarie_30093_battle_ready_eff_b_1": {
+    "group": "heidemarie_30093_battle_ready_eff_b_1",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_battle_ready_eff_b_1.cfx",
+    "exists": true,
+    "driver": "b_idle",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_battle_ready_eff_b",
+      "clip": "3",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093_battle_ready.brmd",
+      "command": "b_idle",
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": -1,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "b_idle": {
+      "mount": "SELF",
+      "delay_ms": 0,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": -1,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_battle_ready_eff_b_2": {
+    "group": "heidemarie_30093_battle_ready_eff_b_2",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_battle_ready_eff_b_2.cfx",
+    "exists": true,
+    "driver": "b_idle",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_battle_ready_eff_b",
+      "clip": "4",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093_battle_ready.brmd",
+      "command": "b_idle",
+      "mount": "SELF",
+      "delay_ms": 1700,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": -1,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "b_idle": {
+      "mount": "SELF",
+      "delay_ms": 1700,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": -1,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_battle_ready_eff_f_1": {
+    "group": "heidemarie_30093_battle_ready_eff_f_1",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_battle_ready_eff_f_1.cfx",
+    "exists": true,
+    "driver": "b_idle",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_battle_ready_eff_f",
+      "clip": "1",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093_battle_ready.brmd",
+      "command": "b_idle",
+      "mount": "SELF",
+      "delay_ms": 3000,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 1,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "b_idle": {
+      "mount": "SELF",
+      "delay_ms": 3000,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 1,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_battle_ready_eff_f_2": {
+    "group": "heidemarie_30093_battle_ready_eff_f_2",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_battle_ready_eff_f_2.cfx",
+    "exists": true,
+    "driver": "b_idle",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_battle_ready_eff_f",
+      "clip": "2",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093_battle_ready.brmd",
+      "command": "b_idle",
+      "mount": "SELF",
+      "delay_ms": 4500,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 1,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "b_idle": {
+      "mount": "SELF",
+      "delay_ms": 4500,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 1,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_ug_battle_ready_eff": {
+    "group": "heidemarie_30093_ug_battle_ready_eff",
+    "mount": "SELF",
+    "cfx": "CNZ_Source\\czn30093\\effect\\heidemarie_30093_ug_battle_ready_eff.cfx",
+    "exists": true,
+    "driver": "ug_attack",
+    "driver_kind": "source",
+    "spine_layers": [
+     {
+      "source": "30093_ug_battle_ready_eff",
+      "clip": "animation",
+      "clip_source": "unique",
+      "clip_ms": 666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [
+     {
+      "file": "30093_battle_ready.brmd",
+      "command": "ug_attack",
+      "mount": "SELF",
+      "delay_ms": 150,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 1000,
+      "loop": false
+     }
+    ],
+    "mounts": {
+     "ug_attack": {
+      "mount": "SELF",
+      "delay_ms": 150,
+      "scale": 1,
+      "offset_xy": "0,0",
+      "opacity": 255,
+      "zorder": 1000,
+      "loop": false,
+      "bone_type": "ATTACH",
+      "slot": ""
+     }
+    },
+    "conflicts": []
+   },
+   "heidemarie_30093_battle_ready_eff_b_1_mask": {
+    "group": "heidemarie_30093_battle_ready_eff_b_1_mask",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_battle_ready_eff_b_1_mask.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_battle_ready_eff_b_mask",
+      "clip": "3",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_30093_battle_ready_eff_b_2_mask": {
+    "group": "heidemarie_30093_battle_ready_eff_b_2_mask",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_battle_ready_eff_b_2_mask.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_battle_ready_eff_b_mask",
+      "clip": "4",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_30093_battle_ready_eff_f_1_mask": {
+    "group": "heidemarie_30093_battle_ready_eff_f_1_mask",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_battle_ready_eff_f_1_mask.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_battle_ready_eff_f_mask",
+      "clip": "1",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_30093_battle_ready_eff_f_2_mask": {
+    "group": "heidemarie_30093_battle_ready_eff_f_2_mask",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_battle_ready_eff_f_2_mask.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_battle_ready_eff_f_mask",
+      "clip": "2",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   }
+  },
+  "extra": {
+   "card_heidemarie_switch": {
+    "group": "card_heidemarie_switch",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\card_heidemarie_switch.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "card_heidemarie_switch",
+      "clip": "sian",
+      "clip_source": "ani",
+      "clip_ms": 600.0,
+      "z": 1,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [
+     "card_heidemarie_switch_pati1"
+    ],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_300470_idle_eff_1": {
+    "group": "heidemarie_300470_idle_eff_1",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_300470_idle_eff_1.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_300470_idle_eff",
+      "clip": "1_intro,1_idle",
+      "clip_source": "ani",
+      "clip_ms": 0.0,
+      "z": -2,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_300470_idle_eff_2": {
+    "group": "heidemarie_300470_idle_eff_2",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_300470_idle_eff_2.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_300470_idle_eff",
+      "clip": "2_intro,2_idle",
+      "clip_source": "ani",
+      "clip_ms": 0.0,
+      "z": -2,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_300470_idle_eff_3": {
+    "group": "heidemarie_300470_idle_eff_3",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_300470_idle_eff_3.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_300470_idle_eff",
+      "clip": "3_intro,3_idle",
+      "clip_source": "ani",
+      "clip_ms": 0.0,
+      "z": -2,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_300470_idle_eff_4": {
+    "group": "heidemarie_300470_idle_eff_4",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_300470_idle_eff_4.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_300470_idle_eff",
+      "clip": "4_intro,4_idle",
+      "clip_source": "ani",
+      "clip_ms": 0.0,
+      "z": -2,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_30093_portrait_eff_1": {
+    "group": "heidemarie_30093_portrait_eff_1",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_portrait_eff_1.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_portrait_eff",
+      "clip": "1",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_30093_portrait_eff_1_mask": {
+    "group": "heidemarie_30093_portrait_eff_1_mask",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_portrait_eff_1_mask.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_portrait_eff_mask",
+      "clip": "1",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_30093_portrait_eff_2": {
+    "group": "heidemarie_30093_portrait_eff_2",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_portrait_eff_2.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_portrait_eff",
+      "clip": "2",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_30093_portrait_eff_2_mask": {
+    "group": "heidemarie_30093_portrait_eff_2_mask",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_portrait_eff_2_mask.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_portrait_eff_mask",
+      "clip": "2",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_30093_portrait_eff_3": {
+    "group": "heidemarie_30093_portrait_eff_3",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_portrait_eff_3.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_portrait_eff",
+      "clip": "3",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_30093_portrait_eff_3_mask": {
+    "group": "heidemarie_30093_portrait_eff_3_mask",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_portrait_eff_3_mask.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_portrait_eff_mask",
+      "clip": "3",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_30093_portrait_eff_4": {
+    "group": "heidemarie_30093_portrait_eff_4",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_portrait_eff_4.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_portrait_eff",
+      "clip": "4",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   },
+   "heidemarie_30093_portrait_eff_4_mask": {
+    "group": "heidemarie_30093_portrait_eff_4_mask",
+    "mount": "?",
+    "cfx": "G:\\czn30093\\effect\\heidemarie_30093_portrait_eff_4_mask.cfx",
+    "exists": true,
+    "driver": null,
+    "driver_kind": "inferred",
+    "spine_layers": [
+     {
+      "source": "heidemarie_30093_portrait_eff_mask",
+      "clip": "4",
+      "clip_source": "ani",
+      "clip_ms": 6666.7,
+      "z": 0,
+      "x": null,
+      "y": null,
+      "rotate": null,
+      "scale": null,
+      "opacity": null,
+      "delay_ms": 0
+     }
+    ],
+    "particle_layers": [],
+    "used_by": [],
+    "mounts": {},
+    "conflicts": []
+   }
+  }
+ }
+}

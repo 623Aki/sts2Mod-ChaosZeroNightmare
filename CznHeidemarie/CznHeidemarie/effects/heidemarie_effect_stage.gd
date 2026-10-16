@@ -26,6 +26,9 @@ const SKEL_DATA_ROOT := "res://CznHeidemarie/animations/effects/"
 const LAYER_Z_MIN := -4000
 const LAYER_Z_MAX := 4000
 
+## 特效组库的载入与展开统一走 `HeidemarieEffectGroups`（`effects/heidemarie_effect_groups.gd`），
+## 全屏演出与出牌特写两个舞台共用同一份实现，避免三处各写一份走偏。
+
 var _layers: Array = []
 var _duration_ms: float = 0.0
 var _clock_ms: float = 0.0
@@ -66,6 +69,20 @@ func configure(data_path: String, effect_key: String, bucket: String) -> float:
 	_apply(0.0)
 	set_process(false)
 	return _duration_ms / 1000.0
+
+
+## 把舞台原点平移到「目标受击点」在当前父节点坐标系里的位置。
+##
+## 舞台默认挂在目标骨架（SpineSprite）下，原点贴着骨架原点；而图层位移（offset）
+## 在 CZN 源数据里是**相对敌人受击点**标定的
+## （见 `heidemarie_effect_groups.gd` 的 `TARGET_OFFSET_OVERRIDES` 注释），
+## 两者不重合就会表现为「落点偏到敌人脚下 / 身后」。
+## C# 侧在挂载时与命中帧（`Hook.AfterDamageReceived`）各调一次，把原点对到 `%CenterPos`。
+##
+## 只改本节点自身的位置，不动任何图层：图层位移本来就是相对舞台原点标定的，
+## 整体搬运舞台不会产生二次偏移。
+func set_anchor_local(offset: Vector2) -> void:
+	position = offset
 
 
 ## 开始计时播放。时长走完后自动隐藏并发出 `finished`。
@@ -242,7 +259,36 @@ func _load_rows(data_path: String, effect_key: String, bucket: String) -> Array:
 	var rows: Variant = entry.get(bucket)
 	if typeof(rows) != TYPE_ARRAY:
 		return []
-	return rows
+
+	var source: Array = rows
+	if source.is_empty():
+		return []
+
+	# 两代 schema 都接受：
+	#   v3（旧）：bucket 里直接是图层行 { name, clip, z, start_ms, end_ms, … }
+	#   v4（新）：bucket 里是「特效组键」{ group, command, start_ms }，在这里展开
+	var expanded: Array = []
+	for neutral in HeidemarieEffectGroups.expand_rows(source):
+		if not (neutral is Dictionary):
+			continue
+		var row: Dictionary = neutral
+		if not row.has("offset_x"):
+			# v3 的原始行，原样带走。
+			expanded.append(row)
+			continue
+		# 中立行 → 本舞台的形状：offset 与 scale 都用 [x, y] 数组。
+		expanded.append({
+			"name": row["name"],
+			"clip": row["clip"],
+			"z": row["z"],
+			"offset": [row["offset_x"], row["offset_y"]],
+			"scale": [row["scale"], row["scale"]],
+			"rotation": row["rotation"],
+			"opacity": row["opacity"],
+			"start_ms": row["start_ms"],
+			"end_ms": row["end_ms"],
+		})
+	return expanded
 
 
 ## 同时接受 [x, y] 数字数组与单个数字。

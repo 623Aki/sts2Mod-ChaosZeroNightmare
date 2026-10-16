@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using CznCore.Godot;
 using CznCore.Presentation;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -8,204 +8,271 @@ using MegaCrit.Sts2.Core.Nodes.Rooms;
 namespace CznHeidemarie.Integration;
 
 /// <summary>
-/// 「败北 CG」设置项的接入层：本地海德玛丽阵亡时，在整屏叠一张 CG。
+/// 「败北 CG」接入层 —— <b>Tiphera 类型</b>实现：直接实例化
+/// <c>res://CznHeidemarie/scenes/defeat_gloom_overlay.tscn</c>
+/// （6 层官方 gloom Spine FX + cha_node 骨骼时间线驱动的 12 槽 CG 演出），
+/// 取代早期手搓叠层与 <c>DefeatOverlayRuntime</c> 静态立绘路线。
 ///
-/// <para>参考 mod（Nine / Tiphera）走的是 CznCore 的 <c>DefeatOverlayRuntime</c>，
-/// 但那套运行时的构造要求一个完整的 <c>CharacterSkinProfile</c>
-/// （二十来个字段：战斗骨架、形态特效、卡牌演出…），本工程没有走
-/// <c>CharacterSkinModBootstrap</c> 那条大路，为了一个 CG 去伪造整份 profile 不值当，
-/// 所以这里自己实现一个等价的轻量叠层：<b>行为对齐</b>（层号 / 模式 / 开关 / 淡入淡出 /
-/// <b>自带寿命、自管清理</b>），不引入 profile 依赖。</para>
+/// <para>与参考 mod（Tiphera）的同构部分：GDScript 场景自管演出
+/// （黑底、取景、2s 寿命自释放），C# 侧只负责「选图 + 注入三参 + 挂载」；
+/// 角色相关参数仅 <c>cg_texture_path</c> / <c>cg_outer_scale</c> /
+/// <c>srue_offset</c> 三个，其余（6 层 FX、12 槽时间线、PMA 材质）是
+/// 官方共享资产，角色无关。</para>
 ///
-/// <para>CG 素材：<c>CNZ_Source/czn30093/cutin/</c> 下的两张 1580x720 图
-/// （<c>collapse_fhd/collapse_30093.webp</c> 与 <c>fhd/30093.webp</c>，
-/// 原图是动画 webp，已取末帧重编码为静态 webp）。</para>
+/// <para><b>类型映射</b>（沿用 Tiphera 的配对，offset 与贴图是配套调过的）：
+/// 类型 1 → collapse_30093_02.png（0.9 倍 + 下移 160）；
+/// 类型 2 → collapse_30093_01.png（1.0 倍无偏移）；随机 → 各 50%。</para>
 ///
-/// <para><b>为什么不靠「结算界面打开」来收尾</b>：阵亡后游戏会紧接着打开败北结算界面
-/// （<c>NGameOverScreen</c>），而它的背景板本身就盖满全屏；如果 CG 等到
-/// <c>RunFinishedPresentationEvent</c> 就自行清理，会出现「CG 刚建好就被自己拆掉」的竞态，
-/// 观感上就是完全没有败北 CG。因此改为与参考实现同构的<b>定时演出</b>：
-/// 叠层按固定节奏淡入 → 停留 → 淡出 → 自释放，期间一直盖在结算界面之上。</para>
+/// <para><b>触发时机</b>：<c>PlayerDeathResolvedEvent</c> 在原生死亡 hook
+/// 完成之后才发布（倒地动画已结束），起播延迟取
+/// <c>max(DeathAnimationLength, 1.1333s)</c>（Tiphera 验证值），
+/// 让败北结算界面稳住后再压演出；放弃跑图路径同样经
+/// <c>GuaranteeKillAllPlayers</c> → 死亡 hook → 本事件抵达，无需额外补丁。</para>
+///
+/// <para><b>音频</b>：塌落音效 <c>se_30093_collapse.ogg</c> 仍由死亡占位
+/// 事件拦截补丁（<c>HeidemarieCombatAudio.OnPlayerDeath</c>）在阵亡瞬间
+/// 播放，CG 侧不重复出声；gloom 环境音（Tiphera 的心跳 + gloom cue）
+/// czn30093 没有对应素材，未移植。</para>
 /// </summary>
 internal static class HeidemarieDefeatCgRuntime
 {
-	/// <summary>CG 资源目录。</summary>
-	private const string CgRoot = "res://CznHeidemarie/images/defeat/";
+	/// <summary>gloom 演出场景（GDScript，6 层 FX + 12 槽 CG 时间线）。</summary>
+	private const string OverlayScenePath =
+		"res://CznHeidemarie/scenes/defeat_gloom_overlay.tscn";
 
-	/// <summary>叠层节点名（同名的旧节点先清掉，避免叠两张）。</summary>
-	private const string LayerName = "HeidemarieDefeatCgLayer";
+	/// <summary>类型 1 立绘（Tiphera 同款映射：类型 1 用 02 图）。</summary>
+	private const string Type1TexturePath =
+		"res://CznHeidemarie/images/defeat/collapse_30093_02.png";
+
+	/// <summary>类型 2 立绘。</summary>
+	private const string Type2TexturePath =
+		"res://CznHeidemarie/images/defeat/collapse_30093_01.png";
+
+	/// <summary>类型 1 外扩缩放（与 offset 配套，Tiphera 验证值）。</summary>
+	private const float Type1OuterScale = 0.9f;
+
+	/// <summary>类型 2 外扩缩放。</summary>
+	private const float Type2OuterScale = 1f;
+
+	/// <summary>类型 1 立绘微调偏移（向下，让卧姿构图落在安全区）。</summary>
+	private static readonly Vector2 Type1Offset = new(0f, 160f);
+
+	/// <summary>运行时节点名前缀（清理时按名查找叠层）。</summary>
+	private const string RuntimeNodePrefix = "CznHeidemarie";
+
+	/// <summary>叠层节点名（实例化后强制改名，保证全工程唯一可查）。</summary>
+	private const string OverlayNodeName = RuntimeNodePrefix + "BattleDeadGloomOverlay";
 
 	/// <summary>
-	/// 叠层层号。必须高于败北结算界面（<c>NGameOverScreen</c>，含其全屏背景板），
-	/// 否则 CG 会被结算界面盖住而等于没播。取值与 CznCore 的
-	/// <c>DefeatOverlayRuntime</c> 一致。
+	/// 最小起播延迟（秒）：阵亡事件在倒地动画结束后才到，参考实现的验证值；
+	/// 实际延迟取 <c>max(DeathAnimationLength, 此值)</c>。
 	/// </summary>
-	private const int LayerIndex = 1000;
+	private const float MinStartDelaySeconds = 1.1333f;
 
-	/// <summary>起播延迟：留一点时间让倒地的起手动作露出来，之后 CG 再压上来。</summary>
-	private const float StartDelaySeconds = 0.35f;
+	/// <summary>重复入场抑制窗口（毫秒）：同一次败北只演一场。</summary>
+	private const ulong DuplicateSuppressMs = 2000uL;
 
-	/// <summary>淡入秒数。</summary>
-	private const float FadeInSeconds = 0.6f;
+	/// <summary>去重门（对应 Tiphera 的 <c>TimedDuplicateSuppressor</c>）。</summary>
+	private static readonly TimedDuplicateSuppressor DuplicateGate = new();
 
-	/// <summary>淡入后停留秒数。</summary>
-	private const float HoldSeconds = 2.0f;
-
-	/// <summary>淡出秒数；淡出走完即释放节点。</summary>
-	private const float FadeOutSeconds = 0.35f;
+	/// <summary>场景缓存（启动预热时装入）。</summary>
+	private static PackedScene? _overlayScene;
 
 	private static readonly List<IDisposable> Subscriptions = new();
-
-	private static CanvasLayer? _layer;
 
 	/// <summary>
 	/// 订阅阵亡与生命周期事件。由 <see cref="HeidemarieIntegration.Init"/> 调用。
 	/// </summary>
 	internal static void Initialize()
 	{
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 败北 CG", (PlayerDeathResolvedEvent e) => Queue(e)));
+		// 启动即按当前设置预热（关着就不预热）：场景 + 两张立绘
+		Prewarm();
+
+		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 败北 CG", (PlayerDeathResolvedEvent e) => OnDeath(e)));
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 败北 CG 入房", (RoomEnteringEvent _) => Cleanup()));
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 败北 CG 胜利", (PlayerCombatVictoryEvent _) => Cleanup()));
 	}
 
-	/// <summary>立刻清掉叠层（换房 / 胜利 / 设置关闭时调用）。</summary>
+	/// <summary>
+	/// 预热败北 CG 资源（设置变更后由外部调用也行，加载一次即进缓存）。
+	/// </summary>
+	internal static void Prewarm()
+	{
+		try
+		{
+			if (_overlayScene == null)
+			{
+				_overlayScene = ResourceLoader.Load<PackedScene>(
+					OverlayScenePath, null, ResourceLoader.CacheMode.Reuse);
+			}
+			PrewarmTexture(Type1TexturePath);
+			PrewarmTexture(Type2TexturePath);
+		}
+		catch (Exception ex)
+		{
+			HeidemarieIntegration.Log.Warn("败北 CG 预热失败：" + ex.Message);
+		}
+	}
+
+	/// <summary>
+	/// 立刻掐掉正在播放的叠层（换房 / 胜利时调用）。
+	/// </summary>
+	/// <remarks>
+	/// 演出场景 2s 后自释放，正常路径不用管；这里兜底换房 / 胜利时还挂着的情况。
+	/// </remarks>
 	internal static void Cleanup()
 	{
-		if (GodotObject.IsInstanceValid(_layer))
+		try
 		{
-			_layer!.QueueFree();
+			Node? overlay = FindOverlay();
+			if (overlay is not null && GodotObject.IsInstanceValid(overlay))
+			{
+				overlay.QueueFree();
+			}
 		}
-
-		_layer = null;
+		catch (Exception ex)
+		{
+			HeidemarieIntegration.Log.Warn("败北 CG 清理失败：" + ex.Message);
+		}
 	}
 
 	/// <summary>阵亡后按设置决定要不要播 CG。</summary>
-	private static void Queue(PlayerDeathResolvedEvent e)
+	private static void OnDeath(PlayerDeathResolvedEvent e)
 	{
 		if (!HeidemariePresentationHost.IsLocalHeidemarie(e.Player))
 		{
 			return;
 		}
+		if (!HeidemariePresentationHost.Features.DeathCgOverlay
+			|| !HeidemarieSettings.CurrentCharacter.ShowDefeatCgOverlay)
+		{
+			return;
+		}
+		TryPlay(MathF.Max(e.DeathAnimationLength, MinStartDelaySeconds), "combat_death");
+	}
 
-		string? path = ResolveTexturePath();
-		if (path is null)
+	/// <summary>去重 + 预热 + 入队。</summary>
+	private static void TryPlay(float startDelaySeconds, string source)
+	{
+		try
+		{
+			if (!DuplicateGate.TryEnter(Time.GetTicksMsec(), DuplicateSuppressMs))
+			{
+				HeidemarieIntegration.Log.Info("跳过重复败北 CG（source=" + source + "）。");
+				return;
+			}
+			Prewarm();
+			QueueOverlay(startDelaySeconds);
+			HeidemarieIntegration.Log.Info(
+				"败北 CG 已入队（source=" + source
+				+ " 延迟=" + startDelaySeconds.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)
+				+ " 模式=" + HeidemarieSettings.CurrentCharacter.DefeatCgOverlayMode + "）。");
+		}
+		catch (Exception ex)
+		{
+			HeidemarieIntegration.Log.Warn("败北 CG 播放失败（source=" + source + "）：" + ex.Message);
+		}
+	}
+
+	/// <summary>延迟到点后把演出场景挂上视口。</summary>
+	private static void QueueOverlay(float startDelaySeconds)
+	{
+		Viewport? viewport = GetOverlayViewport();
+		if (viewport == null)
+		{
+			HeidemarieIntegration.Log.Warn("败北 CG 跳过：找不到视口。");
+			return;
+		}
+
+		(string TexturePath, float OuterScale, Vector2 Offset) selection =
+			ResolveOverlaySelection(HeidemarieSettings.CurrentCharacter.DefeatCgOverlayMode);
+		if (string.IsNullOrWhiteSpace(selection.TexturePath))
 		{
 			return;
 		}
 
-		Build(path);
+		if (startDelaySeconds <= 0.01f)
+		{
+			ShowOverlay();
+		}
+		else
+		{
+			GodotScheduler.OneShot(viewport, startDelaySeconds, ShowOverlay);
+		}
+
+		void ShowOverlay()
+		{
+			if (!GodotObject.IsInstanceValid(viewport))
+			{
+				return;
+			}
+			PackedScene? scene = _overlayScene
+				?? ResourceLoader.Load<PackedScene>(OverlayScenePath, null, ResourceLoader.CacheMode.Reuse);
+			_overlayScene = scene;
+			Node? overlay = scene?.Instantiate();
+			if (overlay == null)
+			{
+				HeidemarieIntegration.Log.Warn("败北 CG 场景缺失：" + OverlayScenePath);
+				return;
+			}
+			overlay.Name = OverlayNodeName;
+			// 三个角色相关参数在 _ready 之前注入（场景 _ready 读到的就是目标值）
+			overlay.Set("cg_texture_path", selection.TexturePath);
+			overlay.Set("cg_outer_scale", selection.OuterScale);
+			overlay.Set("srue_offset", selection.Offset);
+			viewport.AddChild(overlay, false, Node.InternalMode.Disabled);
+		}
 	}
 
-	/// <summary>
-	/// 按设置解析用哪张 CG；返回 <c>null</c> 表示这次不显示。
-	/// </summary>
-	private static string? ResolveTexturePath()
+	/// <summary>演出挂载点：战斗房间视口优先，退回场景树根。</summary>
+	private static Viewport? GetOverlayViewport()
 	{
-		// 能力声明（有素材且做了）→ 角色开关 → 模式，三者都过才显示
-		if (!HeidemariePresentationHost.Features.DeathCgOverlay
-			|| !HeidemarieSettings.CurrentCharacter.ShowDefeatCgOverlay)
+		NCombatRoom? room = NCombatRoom.Instance;
+		Viewport? viewport = room?.GetViewport();
+		if (viewport is not null && GodotObject.IsInstanceValid(viewport))
+		{
+			return viewport;
+		}
+		SceneTree? tree = Engine.GetMainLoop() as SceneTree;
+		if (tree is null || !GodotObject.IsInstanceValid(tree.Root))
 		{
 			return null;
 		}
-
-		return HeidemarieSettings.CurrentCharacter.DefeatCgOverlayMode switch
-		{
-			DefeatCgOverlayMode.Off => null,
-			DefeatCgOverlayMode.Type1 => CgRoot + "heidemarie_defeat_cg_1.webp",
-			DefeatCgOverlayMode.Type2 => CgRoot + "heidemarie_defeat_cg_2.webp",
-			// 随机：两张各 50%
-			_ => CgRoot + (Random.Shared.Next(2) == 0
-				? "heidemarie_defeat_cg_1.webp"
-				: "heidemarie_defeat_cg_2.webp"),
-		};
+		return tree.Root;
 	}
 
 	/// <summary>
-	/// 真正把叠层建出来。整段演出（延迟 → 淡入 → 停留 → 淡出 → 释放）全交给一条
-	/// 绑在节点上的 Tween，所以不需要额外的定时器与「延迟中又被清理」的代际判定。
+	/// 按设置选图：类型 1 → 02 图（0.9 + 下移 160）；类型 2 → 01 图（1.0）；
+	/// 随机 → 各 50%。与 Tiphera 的 <c>ResolveOverlaySelection</c> 同映射。
 	/// </summary>
-	private static void Build(string texturePath)
+	private static (string TexturePath, float OuterScale, Vector2 Offset) ResolveOverlaySelection(
+		DefeatCgOverlayMode mode)
 	{
-		try
+		if (mode != DefeatCgOverlayMode.Type2
+			&& (mode != DefeatCgOverlayMode.Random || Random.Shared.Next(2) != 1))
 		{
-			if (GodotObject.IsInstanceValid(_layer))
-			{
-				// 已经有一张在播（同一局里的重复阵亡事件）：不叠第二张
-				return;
-			}
-
-			Texture2D? texture = ResourceLoader.Load<Texture2D>(texturePath, null, ResourceLoader.CacheMode.Reuse);
-			if (texture is null)
-			{
-				HeidemarieIntegration.Log.Warn("败北 CG 加载失败：" + texturePath);
-				return;
-			}
-
-			NCombatRoom? room = NCombatRoom.Instance;
-			SceneTree? tree = room?.GetTree() ?? (Engine.GetMainLoop() as SceneTree);
-			if (tree?.Root is not { } root)
-			{
-				return;
-			}
-
-			// 不挡输入：CG 只是观感层，死亡结算与结算界面照常
-			CanvasLayer layer = new()
-			{
-				Name = LayerName,
-				Layer = LayerIndex,
-			};
-
-			Control host = new()
-			{
-				Name = "CgHost",
-				MouseFilter = Control.MouseFilterEnum.Ignore,
-			};
-			host.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-
-			TextureRect rect = new()
-			{
-				Name = "Cg",
-				Texture = texture,
-				ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-				StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered,
-				MouseFilter = Control.MouseFilterEnum.Ignore,
-				// 从全透明淡入，避免瞬间闪一张大图
-				Modulate = new Color(1f, 1f, 1f, 0f),
-			};
-			rect.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-
-			host.AddChild(rect, forceReadableName: false, Node.InternalMode.Disabled);
-			layer.AddChild(host, forceReadableName: false, Node.InternalMode.Disabled);
-			root.AddChild(layer, forceReadableName: false, Node.InternalMode.Disabled);
-			_layer = layer;
-
-			CanvasLayer captured = layer;
-			Tween tween = rect.CreateTween();
-			tween.TweenInterval(StartDelaySeconds);
-			tween.TweenProperty(rect, "modulate:a", 1.0f, FadeInSeconds);
-			tween.TweenInterval(HoldSeconds);
-			tween.TweenProperty(rect, "modulate:a", 0.0f, FadeOutSeconds);
-			tween.TweenCallback(Callable.From(() => Release(captured)));
-
-			HeidemarieIntegration.Log.Info("败北 CG 已显示：" + texturePath);
+			return (Type1TexturePath, Type1OuterScale, Type1Offset);
 		}
-		catch (Exception ex)
-		{
-			HeidemarieIntegration.Log.Warn("败北 CG 显示失败：" + ex.Message);
-		}
+		return (Type2TexturePath, Type2OuterScale, Vector2.Zero);
 	}
 
-	/// <summary>演出走完，释放叠层（只有还是当前那一张时才动 <see cref="_layer"/>）。</summary>
-	private static void Release(CanvasLayer layer)
+	/// <summary>按约定节点名找当前叠层；没有则返回 null。</summary>
+	private static Node? FindOverlay()
 	{
-		if (GodotObject.IsInstanceValid(layer))
+		SceneTree? tree = Engine.GetMainLoop() as SceneTree;
+		if (tree?.Root is not { } root)
 		{
-			layer.QueueFree();
+			return null;
 		}
+		// 演出挂在根视口上（NCombatRoom 的 GetViewport() 就是根视口）
+		return root.FindChild(OverlayNodeName, recursive: false, owned: false);
+	}
 
-		if (ReferenceEquals(_layer, layer))
+	private static void PrewarmTexture(string path)
+	{
+		if (!string.IsNullOrWhiteSpace(path))
 		{
-			_layer = null;
+			ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse);
 		}
 	}
 }

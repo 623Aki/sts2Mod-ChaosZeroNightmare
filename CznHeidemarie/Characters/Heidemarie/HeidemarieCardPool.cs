@@ -12,7 +12,8 @@ namespace CznHeidemarie.Characters.Heidemarie;
 /// <c>ModHelper.AddModelToPool</c> 追加的内容，因此这里必须给出完整列表。</para>
 ///
 /// <para><b>哪些卡不进池</b>：奖励 / 商店只从本池里按稀有度挑选
-/// （<c>CardFactory</c> 走 <c>CardPoolModel.GetUnlockedCards</c>）。
+/// （<c>CardFactory</c> 走 <c>CardPoolModel.GetUnlockedCards</c>，
+/// 且奖励生成会过滤掉 <see cref="CardRarity.Ancient"/>）。
 /// 因此<strong>不应被常规获取</strong>的卡一律不列在这里：</para>
 /// <list type="bullet">
 ///   <item>「极光剑」—— 衍生牌（Token），只能由剑雨 / 凝锋 / 极光之光 生成；</item>
@@ -21,6 +22,12 @@ namespace CznHeidemarie.Characters.Heidemarie;
 /// </list>
 /// 它们仍会被 <c>ModelDb</c> 扫描注册（<c>ModelDb.Card&lt;T&gt;()</c> 可用），
 /// 只是不参与任何池内抽取。
+///
+/// <para><b>「终焉」是例外</b>：它列在池里只是为了图鉴可见与
+/// <c>ModelDb</c> 注册（对齐参考 mod CznNineCharacter 把「反射：零」
+/// 列进 NineCardPool 的做法）；稀有度是 <see cref="CardRarity.Ancient"/>，
+/// 奖励生成路径会过滤掉它，实际获取渠道只有「太古之牙」淬炼
+/// （见 <c>Registration/HeidemarieAncientTranscendencePatch.cs</c>）。</para>
 /// </summary>
 public sealed class HeidemarieCardPool : CardPoolModel
 {
@@ -77,8 +84,10 @@ public sealed class HeidemarieCardPool : CardPoolModel
 	/// <remarks>
 	/// 只列举「可常规获取」的卡：基础攻防 + 全部角色卡。
 	/// 衍生的极光剑、凝聚极光、解放极光不进池，见类注释。
+	/// 「绝响」已调整为基础牌（初始卡组自带），不再列池。
+	/// 「终焉」虽为先古牌（太古之牙淬炼专属），仍列在此供图鉴与 ModelDb 注册。
 	/// </remarks>
-	protected override CardModel[] GenerateAllCards() => new CardModel[25]
+	protected override CardModel[] GenerateAllCards() => new CardModel[35]
 	{
 		// 基础攻防
 		ModelDb.Card<HeidemarieStrike>(),
@@ -89,7 +98,6 @@ public sealed class HeidemarieCardPool : CardPoolModel
 		ModelDb.Card<HeidemarieSwordTomb>(),
 		ModelDb.Card<HeidemarieCondenseEdge>(),
 		ModelDb.Card<HeidemarieRequiemBlade>(),
-		ModelDb.Card<HeidemarieFinalEcho>(),
 		// 新角色卡（连接 / 极光引擎扩展）
 		ModelDb.Card<HeidemarieAllHeroes>(),
 		ModelDb.Card<HeidemarieBindStar>(),
@@ -108,5 +116,18 @@ public sealed class HeidemarieCardPool : CardPoolModel
 		ModelDb.Card<HeidemarieStoreLight>(),
 		ModelDb.Card<HeidemarieFallenStar>(),
 		ModelDb.Card<HeidemarieForesee>(),
+		// 格挡 / 过牌 / 丢弃三体系补强（本轮新增 10 张）
+		ModelDb.Card<HeidemarieAuroraWard>(),
+		ModelDb.Card<HeidemarieVigil>(),
+		ModelDb.Card<HeidemarieFallingEdge>(),
+		ModelDb.Card<HeidemarieGatherStar>(),
+		ModelDb.Card<HeidemarieBuryLight>(),
+		ModelDb.Card<HeidemarieStarTrail>(),
+		ModelDb.Card<HeidemarieLightPrism>(),
+		ModelDb.Card<HeidemarieWallOfSwords>(),
+		ModelDb.Card<HeidemarieDaybreak>(),
+		ModelDb.Card<HeidemarieOldOath>(),
+		// 先古牌：由「绝响」经太古之牙淬炼而来，列池供图鉴 / ModelDb 注册
+		ModelDb.Card<HeidemarieTerminus>(),
 	};
 }

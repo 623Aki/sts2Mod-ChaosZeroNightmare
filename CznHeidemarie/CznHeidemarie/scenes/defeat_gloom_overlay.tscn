@@ -1,0 +1,10 @@
+; 败北CG gloom演出
+; 空宿主场景：CanvasLayer + 脚本，6 层官方 gloom Spine FX 与 12 槽 CG
+; 时间线全部由脚本 _ready() 现建；贴图 / 外扩缩放 / 偏移由 C# 侧
+; configure() 注入（对应 CharacterSkinSettingsStore 的类型 1 / 类型 2 选择）。
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://CznHeidemarie/scenes/defeat_gloom_overlay.gd" id="1_script"]
+
+[node name="HeidemarieDefeatGloomOverlay" type="CanvasLayer"]
+script = ExtResource("1_script")

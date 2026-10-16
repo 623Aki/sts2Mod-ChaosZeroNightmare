@@ -1,0 +1,286 @@
+
+screen_fx_collapse_gloom_sin_glass.png
+size: 1732,828
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+flash
+  rotate: false
+  xy: 840, 570
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+glass_light_111
+  rotate: false
+  xy: 1098, 570
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+glass_light_211
+  rotate: false
+  xy: 1356, 570
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+glass_light_311
+  rotate: false
+  xy: 557, 299
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+glass_pat101
+  rotate: false
+  xy: 1614, 596
+  size: 116, 230
+  orig: 116, 230
+  offset: 0, 0
+  index: -1
+glass_pat111
+  rotate: false
+  xy: 1533, 338
+  size: 116, 230
+  orig: 116, 230
+  offset: 0, 0
+  index: -1
+glass_pat121
+  rotate: true
+  xy: 1283, 234
+  size: 116, 230
+  orig: 116, 230
+  offset: 0, 0
+  index: -1
+glass_pat131
+  rotate: false
+  xy: 1283, 2
+  size: 116, 230
+  orig: 116, 230
+  offset: 0, 0
+  index: -1
+glass_pat141
+  rotate: false
+  xy: 1401, 2
+  size: 116, 230
+  orig: 116, 230
+  offset: 0, 0
+  index: -1
+glass_pat201
+  rotate: false
+  xy: 1651, 499
+  size: 50, 95
+  orig: 50, 95
+  offset: 0, 0
+  index: -1
+glass_pat211
+  rotate: false
+  xy: 1651, 402
+  size: 50, 95
+  orig: 50, 95
+  offset: 0, 0
+  index: -1
+glass_pat221
+  rotate: false
+  xy: 1651, 305
+  size: 50, 95
+  orig: 50, 95
+  offset: 0, 0
+  index: -1
+glass_pat231
+  rotate: false
+  xy: 1643, 208
+  size: 50, 95
+  orig: 50, 95
+  offset: 0, 0
+  index: -1
+glass_pat241
+  rotate: false
+  xy: 585, 10
+  size: 50, 95
+  orig: 50, 95
+  offset: 0, 0
+  index: -1
+glass_pat301
+  rotate: true
+  xy: 273, 2
+  size: 68, 102
+  orig: 68, 102
+  offset: 0, 0
+  index: -1
+glass_pat311
+  rotate: true
+  xy: 377, 2
+  size: 68, 102
+  orig: 68, 102
+  offset: 0, 0
+  index: -1
+glass_pat321
+  rotate: true
+  xy: 481, 2
+  size: 68, 102
+  orig: 68, 102
+  offset: 0, 0
+  index: -1
+glass_pat331
+  rotate: false
+  xy: 1100, 30
+  size: 68, 102
+  orig: 68, 102
+  offset: 0, 0
+  index: -1
+glass_pat341
+  rotate: false
+  xy: 1170, 30
+  size: 68, 102
+  orig: 68, 102
+  offset: 0, 0
+  index: -1
+glass_pat401
+  rotate: false
+  xy: 273, 72
+  size: 248, 216
+  orig: 248, 216
+  offset: 0, 0
+  index: -1
+glass_pat411
+  rotate: true
+  xy: 815, 307
+  size: 248, 216
+  orig: 248, 216
+  offset: 0, 0
+  index: -1
+glass_pat421
+  rotate: false
+  xy: 1033, 352
+  size: 248, 216
+  orig: 248, 216
+  offset: 0, 0
+  index: -1
+glass_pat431
+  rotate: false
+  xy: 1283, 352
+  size: 248, 216
+  orig: 248, 216
+  offset: 0, 0
+  index: -1
+glass_pat441
+  rotate: false
+  xy: 1033, 134
+  size: 248, 216
+  orig: 248, 216
+  offset: 0, 0
+  index: -1
+glass_pat501
+  rotate: true
+  xy: 523, 107
+  size: 181, 122
+  orig: 181, 122
+  offset: 0, 0
+  index: -1
+glass_pat511
+  rotate: true
+  xy: 647, 116
+  size: 181, 122
+  orig: 181, 122
+  offset: 0, 0
+  index: -1
+glass_pat521
+  rotate: true
+  xy: 771, 116
+  size: 181, 122
+  orig: 181, 122
+  offset: 0, 0
+  index: -1
+glass_pat531
+  rotate: true
+  xy: 895, 124
+  size: 181, 122
+  orig: 181, 122
+  offset: 0, 0
+  index: -1
+glass_pat541
+  rotate: true
+  xy: 1519, 155
+  size: 181, 122
+  orig: 181, 122
+  offset: 0, 0
+  index: -1
+glass_pat701
+  rotate: true
+  xy: 1519, 4
+  size: 149, 104
+  orig: 149, 104
+  offset: 0, 0
+  index: -1
+glass_pat711
+  rotate: true
+  xy: 1625, 4
+  size: 149, 104
+  orig: 149, 104
+  offset: 0, 0
+  index: -1
+glass_pat721
+  rotate: false
+  xy: 647, 10
+  size: 149, 104
+  orig: 149, 104
+  offset: 0, 0
+  index: -1
+glass_pat731
+  rotate: false
+  xy: 798, 10
+  size: 149, 104
+  orig: 149, 104
+  offset: 0, 0
+  index: -1
+glass_pat741
+  rotate: false
+  xy: 949, 18
+  size: 149, 104
+  orig: 149, 104
+  offset: 0, 0
+  index: -1
+gr_glass_dust211
+  rotate: false
+  xy: 2, 561
+  size: 281, 265
+  orig: 281, 265
+  offset: 0, 0
+  index: -1
+gr_glass_dust221
+  rotate: false
+  xy: 2, 294
+  size: 281, 265
+  orig: 281, 265
+  offset: 0, 0
+  index: -1
+gr_glass_dust231
+  rotate: false
+  xy: 285, 561
+  size: 281, 265
+  orig: 281, 265
+  offset: 0, 0
+  index: -1
+gr_glass_dust311
+  rotate: false
+  xy: 2, 22
+  size: 269, 270
+  orig: 269, 270
+  offset: 0, 0
+  index: -1
+gr_glass_dust321
+  rotate: true
+  xy: 285, 290
+  size: 269, 270
+  orig: 269, 270
+  offset: 0, 0
+  index: -1
+gr_glass_dust331
+  rotate: true
+  xy: 568, 557
+  size: 269, 270
+  orig: 269, 270
+  offset: 0, 0
+  index: -1

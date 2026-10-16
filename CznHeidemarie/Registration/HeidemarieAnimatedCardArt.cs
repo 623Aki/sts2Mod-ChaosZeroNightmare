@@ -3,18 +3,23 @@ using CznHeidemarie.Characters.Heidemarie.Cards;
 using CznHeidemarie.Integration;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 
 namespace CznHeidemarie.Registration;
 
 /// <summary>
-/// 「解放极光」的<b>动态卡面</b>：把 CZN 的卡面 Spine 骨架渲染成实时贴图，塞给卡牌的
+/// 本角色「古代牌」的<b>动态卡面</b>：把 CZN 的 Spine 骨架渲染成实时贴图，塞给卡牌的
 /// <c>%AncientPortrait</c>。
 ///
 /// <para>做法与参考 mod 的 <c>NineAnimatedCardArt</c>（「超究武神霸斩」）一致：
 /// 卡面场景 <c>heidemarie_card_art.tscn</c> 是一个挂在 <c>SceneTree.Root</c> 下的普通 Node，
-/// 内部自带 <c>SubViewport</c> + <c>SpineSprite</c>，循环播放骨架里唯一的 <c>animation</c>，
-/// 并把 viewport 的贴图交给注册进来的那张卡的立绘节点。</para>
+/// 内部按「卡面档案」建 <c>SubViewport</c> + <c>SpineSprite</c>（一个档案一个 viewport），
+/// 循环播放骨架动画，并把 viewport 的贴图交给注册进来的那张卡的立绘节点。</para>
+///
+/// <para><b>卡牌 → 档案的映射</b>写在 <see cref="ResolveProfile"/>：
+/// 目前两张古代牌各用一个档案 ——「解放极光」单骨架、
+/// 「剑之乐园」三张 ux 插画骨架组装（见 <c>heidemarie_card_art.gd</c> 的 <c>PROFILES</c>）。</para>
 ///
 /// <para><b>为什么挂在 <c>NCard.UpdatePortrait</c> 上</b>：这个私有方法才是把
 /// <c>Model.Portrait</c> 写进 <c>%AncientPortrait</c> 的地方，作为 Postfix 接在它后面，
@@ -27,10 +32,10 @@ namespace CznHeidemarie.Registration;
 [HarmonyPatch]
 internal static class HeidemarieAnimatedCardArt
 {
-	/// <summary>卡面渲染器场景（<c>Node</c> + <c>SubViewport</c> + <c>SpineSprite</c>）。</summary>
+	/// <summary>卡面渲染器场景（<c>Node</c> + 按档案建 <c>SubViewport</c> + <c>SpineSprite</c>）。</summary>
 	private const string ScenePath = "res://CznHeidemarie/scenes/cards/heidemarie_card_art.tscn";
 
-	/// <summary>全局唯一一份渲染器（所有卡面共用同一个 SubViewport）。</summary>
+	/// <summary>全局唯一一份渲染器（所有卡面共用同一个实例，内部按档案分 viewport）。</summary>
 	private static Node? _renderer;
 
 	/// <summary>刷完立绘后，把动态卡面接上（或摘掉）。</summary>
@@ -45,9 +50,10 @@ internal static class HeidemarieAnimatedCardArt
 				return;
 			}
 
-			if (__instance.Model is HeidemarieLiberatedAurora)
+			string? profile = ResolveProfile(__instance.Model);
+			if (profile is not null)
 			{
-				EnsureRenderer()?.Call("register_portrait", ____ancientPortrait);
+				EnsureRenderer()?.Call("register_portrait", ____ancientPortrait, profile);
 			}
 			else if (GodotObject.IsInstanceValid(_renderer))
 			{
@@ -77,6 +83,20 @@ internal static class HeidemarieAnimatedCardArt
 			HeidemarieIntegration.Log.Warn("动态卡面注销失败：" + ex.Message);
 		}
 	}
+
+	/// <summary>
+	/// 卡牌类型 → 卡面档案 id。
+	///
+	/// <para>档案 id 必须与 <c>heidemarie_card_art.gd</c> 的 <c>PROFILES</c> 键逐字一致，
+	/// 否则渲染器只会 <c>push_warning</c> 并放弃接管（卡面回落到静态兜底图）。</para>
+	/// </summary>
+	private static string? ResolveProfile(CardModel? model) => model switch
+	{
+		HeidemarieLiberatedAurora => "liberated_aurora",
+		HeidemarieSwordParadise => "sword_paradise",
+		HeidemarieTerminus => "terminus",
+		_ => null,
+	};
 
 	/// <summary>取渲染器；第一次用到时创建并挂到场景树根上。</summary>
 	private static Node? EnsureRenderer()

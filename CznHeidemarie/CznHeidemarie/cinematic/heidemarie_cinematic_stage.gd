@@ -545,6 +545,35 @@ func _start_clip(spine: SpineSprite, preferred: String):
 	return null
 
 
+## 把「组键」形态的图层摊成完整图层行（字段与旧版逐层形态完全一致）。
+##
+## 时间轴里每项只写 { group, name, start_ms, target, bone_type, official }；
+## 其余字段由 `HeidemarieEffectGroups.expand_key()` 从组库推导。
+func _inflate_keyed_layers(keys: Array) -> Array:
+	var out: Array = []
+	for key in keys:
+		if not (key is Dictionary):
+			continue
+		var entry: Dictionary = key
+		for neutral in HeidemarieEffectGroups.expand_key(entry):
+			out.append({
+				"name": neutral["name"],
+				"clip": neutral["clip"],
+				"target": entry.get("target", "STAGE"),
+				"z": neutral["z"],
+				"start_ms": neutral["start_ms"],
+				"end_ms": neutral["end_ms"],
+				"offset": [neutral["offset_x"], neutral["offset_y"]],
+				"scale": neutral["scale"],
+				"rotation": neutral["rotation"],
+				"opacity": neutral["opacity"],
+				"bone_type": entry.get("bone_type", ""),
+				"group": str(entry.get("group", "")),
+				"official": entry.get("official", {}),
+			})
+	return out
+
+
 func _load_timeline(route_id: String) -> Dictionary:
 	var path: String = TIMELINE_ROOT + "heidemarie_" + route_id + ".json"
 	if not FileAccess.file_exists(path):
@@ -574,6 +603,16 @@ func _load_timeline(route_id: String) -> Dictionary:
 	if typeof(layers) != TYPE_ARRAY or layers.is_empty():
 		push_error("[Heidemarie] 全屏演出没有可组装图层：%s" % route_id)
 		return {}
+
+	# 组键形态（瘦身版）在这里还原成完整图层。
+	# 时间轴只负责「哪个组、哪一层、什么时候起播」，
+	# 图层构成（clip / z / offset / scale / rotation / opacity / 时长）一律从组库取 ——
+	# 层只存一份，不会和别的舞台抄出分歧。
+	var raw_layers: Array = layers
+	if HeidemarieEffectGroups.is_keyed(raw_layers):
+		layers = _inflate_keyed_layers(raw_layers)
+		(parsed as Dictionary)["layers"] = layers
+
 	var seen: Dictionary = {}
 	for row in layers:
 		if typeof(row) != TYPE_DICTIONARY:

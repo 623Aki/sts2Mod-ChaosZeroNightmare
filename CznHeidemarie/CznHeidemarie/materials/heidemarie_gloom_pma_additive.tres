@@ -1,0 +1,21 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[sub_resource type="Shader" id="Shader_heidemarie_gloom_pma_add"]
+code = "shader_type canvas_item;
+render_mode blend_premul_alpha, unshaded;
+
+// PMA 源图 + 预乘混合 + 输出 alpha 置零，是成熟角色 mod 已验证的
+// D3D12 安全加法混合适配（直接 BLEND_MODE_ADD 在 D3D12 上会过曝）。
+void fragment() {
+	vec4 tex = texture(TEXTURE, UV);
+	float tint_alpha = COLOR.a;
+	if (tex.a > 0.0001) {
+		tint_alpha = clamp(COLOR.a / tex.a, 0.0, 1.0);
+	}
+	COLOR.rgb *= tint_alpha;
+	COLOR.a = 0.0;
+}
+"
+
+[resource]
+shader = SubResource("Shader_heidemarie_gloom_pma_add")

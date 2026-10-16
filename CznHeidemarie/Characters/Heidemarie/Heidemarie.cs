@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CznHeidemarie.Characters.Heidemarie.Cards;
+using CznHeidemarie.Characters.Heidemarie.Relics;
 using Godot;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
@@ -7,7 +8,6 @@ using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
-using MegaCrit.Sts2.Core.Models.Relics;
 
 namespace CznHeidemarie.Characters.Heidemarie;
 
@@ -229,15 +229,16 @@ public sealed class Heidemarie : CharacterModel
 	public override PotionPoolModel PotionPool => ModelDb.PotionPool<HeidemariePotionPool>();
 
 	/// <summary>
-	/// 初始卡组：3 张打击 + 3 张防御 + 1 张凝聚极光 + 1 张剑雨 + 1 张剑光（共 9 张）。
+	/// 初始卡组：3 张打击 + 3 张防御 + 1 张凝聚极光 + 1 张剑雨 + 1 张剑光 + 1 张绝响（共 10 张）。
 	///
 	/// <para>测试期曾临时塞入 8 张「专属牌」用于点亮骨架动画，现已移除。
-	/// 角色卡（剑光 / 剑雨 / 剑冢 / 凝锋 / 安魂剑 / 绝响）通过奖励与商店获取；
-	/// 「剑光」后续会加入初始卡组（当前阶段先保持纯基础攻防）。</para>
+	/// 角色卡（剑冢 / 凝锋 / 安魂剑等）通过奖励与商店获取；
+	/// 「绝响」为基础牌（1 费 / 全体 10 伤 / 保留），开局自带，
+	/// 可经「太古之牙」淬炼为先古牌「终焉」。</para>
 	/// </summary>
-	public override IEnumerable<CardModel> StartingDeck => new CardModel[9]
+	public override IEnumerable<CardModel> StartingDeck => new CardModel[10]
 	{
-		// 基础攻防 3 打击 + 3 防御 + 凝聚极光 + 剑光 + 剑雨
+		// 基础攻防 3 打击 + 3 防御 + 凝聚极光 + 剑光 + 剑雨 + 绝响
 		ModelDb.Card<HeidemarieStrike>(),
 		ModelDb.Card<HeidemarieStrike>(),
 		ModelDb.Card<HeidemarieStrike>(),
@@ -247,14 +248,19 @@ public sealed class Heidemarie : CharacterModel
 		ModelDb.Card<HeidemarieCondensedAurora>(),
 		ModelDb.Card<HeidemarieSwordrain>(),
 		ModelDb.Card<HeidemarieSwordlight>(),
+		ModelDb.Card<HeidemarieFinalEcho>(),
 	};
 
 	/// <summary>
-	/// 初始遗物：战士的默认遗物「燃烧之血」（战斗胜利时回复生命）。
+	/// 初始遗物：「市长铭牌」。
+	///
+	/// <para>战斗开始时获得能力「希望」5 层、回合开始时每 10 层希望给予 1 点格挡；
+	/// 「希望」则在本角色造成 / 受到不被格挡的伤害时累加，满 100 层生成 1 张「剑之乐园」——
+	/// 遗物 / 能力 / 卡牌三者构成一条完整的引擎（见 <see cref="HeidemarieMayorBadge"/>）。</para>
 	/// </summary>
 	public override IReadOnlyList<RelicModel> StartingRelics => new RelicModel[1]
 	{
-		ModelDb.Relic<BurningBlood>(),
+		ModelDb.Relic<HeidemarieMayorBadge>(),
 	};
 
 	/// <summary>

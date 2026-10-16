@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using CznCore.Presentation;
 using CznCore.Settings;
 using HarmonyLib;
@@ -11,15 +10,12 @@ namespace CznHeidemarie.Integration;
 /// <summary>
 /// 框架接入入口。
 ///
-/// <para>对应参考 mod 的 <c>CznNineCharacter.Entry.Init</c>。分两件事：</para>
+	/// <para>对应参考 mod 的 <c>CznNineCharacter.Entry.Init</c>，完整通过
+	/// <c>CharacterSkinModBootstrap</c> 注册本角色 Profile 与 CznCore 补丁组。</para>
 ///
 /// <list type="number">
-///   <item><b>注册 CznCore 的补丁组</b> —— 这些补丁把游戏原生回调
-///   （手牌聚焦、出牌提交、房间切换……）转发到 <see cref="SkinEventHub"/>，
-///   出牌特写与设置面板都靠它们拿事件。
-///   注意参考 mod 没有走 <c>CharacterSkinModBootstrap.Init</c>（那条路要求提供完整的
-///   <c>CharacterSkinProfile</c>，是为「一套框架驱动多个角色的皮肤系统」准备的），
-///   而是像这里一样按组手动注册。</item>
+	///   <item><b>注册完整 CznCore Profile 与补丁组</b> —— 包括选人身份、预热、
+	///   生命周期、手牌事件和兼容补丁。</item>
 ///   <item><b>启动本 mod 的运行时</b> —— 目前只有出牌特写。</item>
 /// </list>
 /// </summary>
@@ -87,7 +83,14 @@ internal static class HeidemarieIntegration
 		// 强制求值一次，让设置存储在启动时就完成加载
 		_ = SettingsUiRuntime;
 
-		ApplyCorePatchGroups(harmony);
+		CharacterSkinModBootstrap.Init(
+			typeof(MainFile),
+			HeidemarieSkinProfile.Profile,
+			"local.cznheidemarie",
+			"Heidemarie CznCore profile initialized.",
+			isDebugEnabled: () => HeidemarieSettings.Store.DebugLogEnabled,
+			isPresentationTargetCard: card => card?.Owner?.Character is CznHeidemarie.Characters.Heidemarie.Heidemarie,
+			configureBeforePatching: () => RunStartPreloadRuntime.Configure(HeidemarieSkinProfile.Preload));
 		HeidemarieBattleReadyRuntime.Initialize();
 		// 战斗入场演出：进入战斗时播一次 Entry 动作链（见 HeidemarieCombatEntryRuntime）
 		HeidemarieCombatEntryRuntime.Initialize();
@@ -108,51 +111,6 @@ internal static class HeidemarieIntegration
 		HeidemarieDefeatCgRuntime.Initialize();
 
 		Log.Info("海德玛丽框架接入完成。");
-	}
-
-	/// <summary>
-	/// 注册 CznCore 的事件转发补丁组。
-	/// </summary>
-	/// <remarks>
-	/// 只挑本 mod 真正依赖的四组：
-	/// <list type="bullet">
-	///   <item><c>SkinCardTransportPatches</c> —— 手牌聚焦/悬停/按下/出牌提交，出牌特写的全部事件源；</item>
-	///   <item><c>SkinTransportPatches</c> —— 房间进入/战斗开始等生命周期事件；</item>
-	///   <item><c>SkinCharacterSelectPatches</c> —— 选人界面事件，设置面板挂载用；</item>
-	///   <item><c>CharacterLifecycleTransport</c> —— 玩家阵亡/胜利，用于清理特写。</item>
-	/// </list>
-	/// 其余组（战斗特效音效替换、形态 VFX、连携卡、过场切换 HUD）对应本项目没有的功能，不注册。
-	/// </remarks>
-	private static void ApplyCorePatchGroups(Harmony harmony)
-	{
-		int patched = 0;
-		List<string>? skipped = null;
-
-		PatchGroup(harmony, SkinCardTransportPatches.PatchTypes, ref patched, ref skipped);
-		PatchGroup(harmony, SkinTransportPatches.PatchTypes, ref patched, ref skipped);
-		PatchGroup(harmony, SkinCharacterSelectPatches.PatchTypes, ref patched, ref skipped);
-		PatchGroup(harmony, CharacterLifecycleTransport.PatchTypes, ref patched, ref skipped);
-
-		string summary = $"框架补丁：成功 {patched} 个" + (skipped is null ? string.Empty : $"，跳过 {skipped.Count} 个 [{string.Join(", ", skipped)}]");
-		Log.Info(summary);
-	}
-
-	private static void PatchGroup(Harmony harmony, IReadOnlyList<Type> patchTypes, ref int patched, ref List<string>? skipped)
-	{
-		foreach (Type patchType in patchTypes)
-		{
-			try
-			{
-				harmony.CreateClassProcessor(patchType).Patch();
-				patched++;
-			}
-			catch (Exception ex)
-			{
-				// 单个补丁的目标方法签名在游戏版本间可能变化，失败了不该拖垮整个 mod
-				(skipped ??= new List<string>()).Add(patchType.Name);
-				Log.Warn($"跳过补丁 {patchType.Name}：{ex.GetType().Name}: {ex.Message}");
-			}
-		}
 	}
 
 	private static void TryInjectSettingsUi(NSettingsScreen screen)

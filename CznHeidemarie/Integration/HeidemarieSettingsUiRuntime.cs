@@ -60,6 +60,15 @@ internal sealed class HeidemarieSettingsUiRuntime : SkinSettingsUiRuntimeBase
 	public override IReadOnlyList<CharacterSelectBackgroundVariant> SupportedCharacterSelectBackgroundVariants =>
 		BackgroundVariants;
 
+	/// <inheritdoc/>
+	/// <remarks>
+	/// 「连接动画」的后门开关从这条扩展点注入（暂不开放，见
+	/// <see cref="HeidemarieLinkOverlaySettings"/>）；走框架的
+	/// <c>SettingsUiExtensionGroup</c>，不必改动 CznCore 本身的设置项。
+	/// </remarks>
+	public override IReadOnlyList<SettingsUiExtensionGroup> CharacterSettingsExtensions =>
+		HeidemarieLinkOverlaySettings.Extensions;
+
 	public HeidemarieSettingsUiRuntime(SkinCharacterSettings settings)
 		: base(settings, new SkinSettingsUiRuntimeHooks(
 			// 「特效亮度 / 特效不透明度」：对当前在画面上的特效重算一次 modulate
@@ -72,8 +81,14 @@ internal sealed class HeidemarieSettingsUiRuntime : SkinSettingsUiRuntimeBase
 				HeidemarieMoveEffectsRuntime.CancelAll();
 				HeidemarieCinematicRuntime.CancelAll();
 			},
-			// 「额外粒子」关掉：卡牌拖尾的两个粒子节点停止发射
-			CleanupSkinVisualEffectsRuntime: HeidemarieTrailParticles.Refresh,
+			// 「额外粒子」关掉：卡牌拖尾的两个粒子节点停止发射。
+			// 顺带刷新手牌「连接」光带：它的开关 / 粒子口径都挂在这条回调上，
+			// 面板里一改就立刻生效（不必等下一场战斗）。
+			CleanupSkinVisualEffectsRuntime: () =>
+			{
+				HeidemarieTrailParticles.Refresh();
+				HeidemarieLinkOverlay.Refresh();
+			},
 			// 「特效音效」关掉：清掉音效播放器缓存并停掉正在播的
 			CleanupSkinSfxRuntime: HeidemarieCombatAudio.TrimSfx,
 			// 「角色语音」关掉：停掉正在播的语音

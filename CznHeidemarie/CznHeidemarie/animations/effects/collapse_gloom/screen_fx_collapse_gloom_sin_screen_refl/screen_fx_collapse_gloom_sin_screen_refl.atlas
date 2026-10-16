@@ -1,0 +1,41 @@
+
+screen_fx_collapse_gloom_sin_screen_refl.png
+size: 1112,508
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+class_refl_01
+  rotate: false
+  xy: 506, 316
+  size: 602, 188
+  orig: 602, 188
+  offset: 0, 0
+  index: -1
+flash
+  rotate: false
+  xy: 506, 58
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+glass_refl_01
+  rotate: false
+  xy: 764, 150
+  size: 332, 164
+  orig: 332, 164
+  offset: 0, 0
+  index: -1
+glass_refl_02
+  rotate: false
+  xy: 764, 75
+  size: 332, 73
+  orig: 332, 73
+  offset: 0, 0
+  index: -1
+lense_flare_01
+  rotate: false
+  xy: 2, 2
+  size: 502, 502
+  orig: 502, 502
+  offset: 0, 0
+  index: -1

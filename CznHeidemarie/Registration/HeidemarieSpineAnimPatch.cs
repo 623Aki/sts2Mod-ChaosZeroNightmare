@@ -1,9 +1,13 @@
+using System.Collections.Generic;
+using CznHeidemarie.Characters.Heidemarie;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
+using MegaCrit.Sts2.Core.Entities.Players;
 
 namespace CznHeidemarie.Registration;
 
@@ -97,11 +101,39 @@ internal static class HeidemarieSpineAnimAlias
 [HarmonyPatch(typeof(NMerchantCharacter), nameof(NMerchantCharacter.PlayAnimation))]
 internal static class HeidemarieMerchantAnimPatch
 {
+	private static readonly System.Reflection.FieldInfo? PlayersField =
+		AccessTools.Field(typeof(NMerchantRoom), "_players");
+
+	private static bool IsHeidemarie(NMerchantCharacter character)
+	{
+		NMerchantRoom? room = NMerchantRoom.Instance;
+		if (room is null || PlayersField?.GetValue(room) is not IReadOnlyList<Player> players)
+		{
+			return false;
+		}
+
+		int index = -1;
+		for (int i = 0; i < room.PlayerVisuals.Count; i++)
+		{
+			if (ReferenceEquals(room.PlayerVisuals[i], character))
+			{
+				index = i;
+				break;
+			}
+		}
+		return index >= 0 && index < players.Count && players[index].Character is Heidemarie;
+	}
+
 	/// <summary>
 	/// 只改写实际播放的动画名，不改动原方法的其它行为。
 	/// </summary>
 	private static void Prefix(NMerchantCharacter __instance, ref string anim)
 	{
+		if (!IsHeidemarie(__instance))
+		{
+			return;
+		}
+
 		// stop 是 30093.skel 里的停驻姿势；逐级回退保证任何骨架都有能播的动画
 		anim = HeidemarieSpineAnimAlias.Resolve(
 			HeidemarieSpineAnimAlias.FindSpineSprite(__instance),
@@ -127,6 +159,11 @@ internal static class HeidemarieRestSiteAnimPatch
 {
 	private static void Postfix(NRestSiteCharacter __instance)
 	{
+		if (__instance.Player?.Character is not Heidemarie)
+		{
+			return;
+		}
+
 		MegaSprite? sprite = HeidemarieSpineAnimAlias.FindSpineSprite(__instance);
 		if (sprite is null)
 		{

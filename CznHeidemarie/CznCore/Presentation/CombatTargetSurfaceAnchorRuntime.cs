@@ -42,6 +42,43 @@ internal static class CombatTargetSurfaceAnchorRuntime
 		}
 	}
 
+	/// <summary>
+	/// 只算出「目标表面锚点」的全局坐标，<b>不创建任何节点</b>。
+	///
+	/// <para>与 <see cref="Resolve"/> 分开的原因：<see cref="Resolve"/> 会把锚点挂在
+	/// <c>NCreature</c>（Control）底下，并且强制 <c>Scale = One</c> —— 那会丢掉敌人
+	/// 自身的缩放（<c>SetScaleAndHue</c>、Osty 的体型变化）与翻转。
+	/// 而单体特效舞台挂在目标的<b>骨架节点</b>下，需要的是「锚点在骨架局部坐标系中的
+	/// 位置」，只能由调用方用 <c>骨架.GetGlobalTransform().Inverse()</c> 自行换算 ——
+	/// 走这条路缩放与翻转都会被正确还原，不需要任何兜底。</para>
+	/// </summary>
+	/// <param name="targetNode">敌人的战斗节点。</param>
+	/// <param name="mode">取哪个表面点；缺失时逐级回退到底部命中框。</param>
+	/// <param name="surfaceGlobal">锚点的全局坐标。</param>
+	/// <returns>取到有效坐标返回 <c>true</c>；节点无效或取不到返回 <c>false</c>。</returns>
+	public static bool TryResolveSurfaceGlobal(
+		NCreature? targetNode,
+		CombatTargetSurfaceAnchorMode mode,
+		out Vector2 surfaceGlobal)
+	{
+		surfaceGlobal = Vector2.Zero;
+		if (targetNode == null || !GodotObject.IsInstanceValid(targetNode))
+		{
+			return false;
+		}
+
+		try
+		{
+			surfaceGlobal = ResolveTargetSurfaceGlobal(targetNode, mode, out _);
+			return true;
+		}
+		catch
+		{
+			// 取锚点失败只影响落点观感，交给调用方按「本帧不校正」处理
+			return false;
+		}
+	}
+
 	private static bool TryGetTargetVfxSpawnGlobal(NCreature targetNode, out Vector2 vfxSpawnGlobal)
 	{
 		vfxSpawnGlobal = Vector2.Zero;

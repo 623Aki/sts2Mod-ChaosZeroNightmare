@@ -1,7 +1,7 @@
 {
  "schema": "czn-heidemarie.cinematic.v3",
  "route": "ux",
- "note": "由 tools/extract_cinematic_plan.py 从 CNZ_Source/czn30093 的 .srmd + .cfx 直接提取。z = group_zorder + primitive_z（层级真值）；start_ms 走 from_guid 事件链；end_ms = start_ms + 骨架实测 clip 时长。scale/rotation/opacity/offset 为 srmd 原值。STS2 特有适配集中在 renderer 段，official 段是原事件原文，便于复核。",
+ "note": "由 tools/extract_cinematic_plan.py 从 CNZ_Source/czn30093 的 .srmd + .cfx 直接提取。z = group_zorder + primitive_z（层级真值）；start_ms 走 from_guid 事件链；end_ms = start_ms + 骨架实测 clip 时长。scale/rotation/opacity/offset 为 srmd 原值。STS2 特有适配集中在 renderer 段，official 段是原事件原文，便于复核。 ｜ 图层已瘦身为「组键 + 窗口」，图层构成由 heidemarie_effect_groups.json 提供。",
  "source": {
   "srmd": "30093.srmd",
   "command": "ux_attack",
@@ -186,22 +186,11 @@
  },
  "layers": [
   {
-   "name": "heidemarie_30093_ux_attack_02_b3",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -1005,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_02_b3",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -217,22 +206,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_02_b2",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -1004,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_02_b2",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -248,22 +226,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_02_b2_1",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -1003,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_02_b2_1",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -279,22 +246,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_02_b1_3",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -1002,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_02_b1_3",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -310,22 +266,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_02_b1_2",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -1001,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_02_b1_2",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -341,22 +286,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_02_b1_1",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -1000,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_02_b1_1",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -372,22 +306,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_01_b4",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -999,
-   "start_ms": 833.3,
-   "end_ms": 4733.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 3900.0,
+   "name": "heidemarie_30093_ux_attack_01_b4",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -403,22 +326,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_02_1",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -998,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_02_1",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -434,22 +346,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_01_b3",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -997,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_01_b3",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -465,22 +366,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_01_b2_1",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -996,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_01_b2_1",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -496,22 +386,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_01_b2",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -995,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_01_b2",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -527,22 +406,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_01_b1_4",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -994,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_01_b1_4",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -558,22 +426,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_01_b1_3",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -993,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_01_b1_3",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -589,22 +446,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_01_b1_2",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -992,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_01_b1_2",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -620,22 +466,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_01_b1",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": -991,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_01_b1",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -651,22 +486,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_cutin_01",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": 900,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_cutin_01",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -682,22 +506,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_cutin_02_1",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": 901,
-   "start_ms": 833.3,
-   "end_ms": 3833.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 3000.0,
+   "name": "heidemarie_30093_ux_cutin_02_1",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -713,22 +526,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_cutin_02",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": 902,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_cutin_02",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -744,22 +546,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_cutin_03",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": 904,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_cutin_03",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -775,22 +566,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_cutin_04",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": 905,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_cutin_04",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -806,22 +586,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_02_f1",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": 906,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_02_f1",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -837,22 +606,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_01_f",
-   "clip": "animation",
-   "target": "OWNER",
-   "z": 907,
-   "start_ms": 833.3,
-   "end_ms": 4863.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_01",
-   "clip_duration_ms": 4030.0,
+   "name": "heidemarie_30093_ux_attack_01_f",
+   "start_ms": 833.3,
+   "target": "OWNER",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -868,22 +626,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_1_1_1",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": -10000,
-   "start_ms": 4863.3,
-   "end_ms": 6933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2070.0,
+   "name": "heidemarie_30093_ux_attack_03_1_1_1",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -899,22 +646,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_1_1_2",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": -9999,
-   "start_ms": 4863.3,
-   "end_ms": 6933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2070.0,
+   "name": "heidemarie_30093_ux_attack_03_1_1_2",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -930,22 +666,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_1_1_3",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": -9998,
-   "start_ms": 4863.3,
-   "end_ms": 6933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2070.0,
+   "name": "heidemarie_30093_ux_attack_03_1_1_3",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -961,22 +686,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_1_1_4",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": -9997,
-   "start_ms": 4863.3,
-   "end_ms": 6933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2070.0,
+   "name": "heidemarie_30093_ux_attack_03_1_1_4",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -992,22 +706,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_1_2",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": -9996,
-   "start_ms": 4863.3,
-   "end_ms": 5933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 1070.0,
+   "name": "heidemarie_30093_ux_attack_03_1_2",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1023,22 +726,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_1_3",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": -9995,
-   "start_ms": 4863.3,
-   "end_ms": 6933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2070.0,
+   "name": "heidemarie_30093_ux_attack_03_1_3",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1054,22 +746,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_2_1",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": -9994,
-   "start_ms": 4863.3,
-   "end_ms": 6893.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2030.0,
+   "name": "heidemarie_30093_ux_attack_03_2_1",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1085,22 +766,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_2_2",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": -9993,
-   "start_ms": 4863.3,
-   "end_ms": 6933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2070.0,
+   "name": "heidemarie_30093_ux_attack_03_2_2",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1116,22 +786,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_3",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": -9992,
-   "start_ms": 4863.3,
-   "end_ms": 6893.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2030.0,
+   "name": "heidemarie_30093_ux_attack_03_3",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1147,22 +806,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_4",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": 899,
-   "start_ms": 4863.3,
-   "end_ms": 6933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2070.0,
+   "name": "heidemarie_30093_ux_attack_03_4",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1178,22 +826,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_cutin_03_01",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": 900,
-   "start_ms": 4863.3,
-   "end_ms": 5933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 1070.0,
+   "name": "heidemarie_30093_ux_attack_cutin_03_01",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1209,22 +846,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_cutin_03_02",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": 901,
-   "start_ms": 4863.3,
-   "end_ms": 5933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 1070.0,
+   "name": "heidemarie_30093_ux_attack_cutin_03_02",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1240,22 +866,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_cutin_03_03",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": 902,
-   "start_ms": 4863.3,
-   "end_ms": 6933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2070.0,
+   "name": "heidemarie_30093_ux_attack_cutin_03_03",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1271,22 +886,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_cutin_03_glow",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": 903,
-   "start_ms": 4863.3,
-   "end_ms": 6893.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2030.0,
+   "name": "heidemarie_30093_ux_attack_cutin_03_glow",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1302,22 +906,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_5",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": 904,
-   "start_ms": 4863.3,
-   "end_ms": 6933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2070.0,
+   "name": "heidemarie_30093_ux_attack_03_5",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1333,22 +926,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_03_6",
-   "clip": "animation",
-   "target": "STAGE",
-   "z": 905,
-   "start_ms": 4863.3,
-   "end_ms": 6933.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 1.0,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_02_1",
-   "clip_duration_ms": 2070.0,
+   "name": "heidemarie_30093_ux_attack_03_6",
+   "start_ms": 4863.3,
+   "target": "STAGE",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1364,22 +946,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_05",
-   "clip": "animation",
-   "target": "SCREEN",
-   "z": 999,
-   "start_ms": 6933.3,
-   "end_ms": 7533.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.8,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "POSITION",
    "group": "heidemarie_30093_ux_attack_03",
-   "clip_duration_ms": 600.0,
+   "name": "heidemarie_30093_ux_attack_05",
+   "start_ms": 6933.3,
+   "target": "SCREEN",
+   "bone_type": "POSITION",
    "official": {
     "group_zorder": 0,
     "group_global_z": 0,
@@ -1395,22 +966,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_04",
-   "clip": "animation",
-   "target": "SCREEN",
-   "z": 1000,
-   "start_ms": 6933.3,
-   "end_ms": 7633.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.5,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "ATTACH",
    "group": "heidemarie_30093_ux_attack_02_2",
-   "clip_duration_ms": 700.0,
+   "name": "heidemarie_30093_ux_attack_04",
+   "start_ms": 6933.3,
+   "target": "SCREEN",
+   "bone_type": "ATTACH",
    "official": {
     "group_zorder": 1,
     "group_global_z": 0,
@@ -1426,22 +986,11 @@
    }
   },
   {
-   "name": "heidemarie_30093_ux_attack_04_1",
-   "clip": "animation",
-   "target": "SCREEN",
-   "z": 1001,
-   "start_ms": 6933.3,
-   "end_ms": 8163.3,
-   "offset": [
-    0.0,
-    0.0
-   ],
-   "scale": 0.5,
-   "rotation": 0.0,
-   "opacity": 1.0,
-   "bone_type": "ATTACH",
    "group": "heidemarie_30093_ux_attack_02_2",
-   "clip_duration_ms": 1230.0,
+   "name": "heidemarie_30093_ux_attack_04_1",
+   "start_ms": 6933.3,
+   "target": "SCREEN",
+   "bone_type": "ATTACH",
    "official": {
     "group_zorder": 1,
     "group_global_z": 0,
@@ -2253,5 +1802,6 @@
     }
    ]
   }
- }
+ },
+ "slimmed": true
 }

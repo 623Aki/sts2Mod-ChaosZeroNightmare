@@ -19,6 +19,11 @@ namespace CznHeidemarie.Integration;
 /// （<c>ShowCardPlayPresentation</c>）—— 和设置面板里那一项是同一个值，
 /// 在战斗里点按钮等价于改设置；点按钮时同时把「战斗演出模式」置为自定义，
 /// 免得被预设整体覆盖（与参考 mod 行为一致）。</para>
+///
+/// <para><b>时序铁律（参考 Nine / Tiphera 的 <c>Entry.ConfigureCombatCutInToggleHud</c>）：</b>
+/// 必须<b>先注册、后打补丁</b>。CznCore 的 4 个 <c>NCombatUi</c> 补丁类都带
+/// <c>Prepare() => CombatCutInToggleHudService.IsRegistered</c> 守卫，
+/// 若补丁应用时尚未注册，Harmony 会静默跳过整个补丁类，按钮将不再出现。</para>
 /// </summary>
 internal static class HeidemarieCutInToggleRuntime
 {
@@ -34,7 +39,7 @@ internal static class HeidemarieCutInToggleRuntime
 	private static bool _registered;
 
 	/// <summary>
-	/// 注册开关并应用它的四个 <c>NCombatUi</c> 补丁。
+	/// 注册开关值提供器，并应用它的四个 <c>NCombatUi</c> 补丁。
 	/// 由 <see cref="HeidemarieIntegration.Init"/> 调用。
 	/// </summary>
 	/// <param name="harmony">mod 入口创建的 Harmony 实例。</param>
@@ -71,6 +76,8 @@ internal static class HeidemarieCutInToggleRuntime
 			warn: static (string message, int _) => HeidemarieIntegration.Log.Warn("全屏演出开关: " + message),
 			debug: static (string message, int _) => HeidemarieIntegration.Log.Info("全屏演出开关: " + message));
 
+		// 注册之后才应用补丁：此时 IsRegistered 已为 true，四个补丁类的 Prepare() 才会放行
+		// （与参考 mod Nine / Tiphera 的 ConfigureCombatCutInToggleHud 完全一致）
 		int patched = 0;
 		foreach (Type patchType in CombatCutInToggleHudPatches.PatchTypes)
 		{
@@ -82,11 +89,11 @@ internal static class HeidemarieCutInToggleRuntime
 			catch (Exception ex)
 			{
 				// 游戏版本间 NCombatUi 的方法签名可能变化，单个补丁失败不该拖垮整个 mod
-				HeidemarieIntegration.Log.Warn($"跳过全屏演出开关补丁 {patchType.Name}：{ex.GetType().Name}: {ex.Message}");
+				HeidemarieIntegration.Log.Warn("跳过全屏演出开关补丁 " + patchType.Name + "：" + ex.GetType().Name + ": " + ex.Message);
 			}
 		}
 
-		HeidemarieIntegration.Log.Info($"全屏演出开关已注册（补丁 {patched}/{CombatCutInToggleHudPatches.PatchTypes.Count}）。");
+		HeidemarieIntegration.Log.Info("全屏演出开关已注册（补丁 " + patched + "/" + CombatCutInToggleHudPatches.PatchTypes.Count + "）。");
 	}
 
 	/// <summary>

@@ -54,14 +54,6 @@ scale = Vector2(1.5, 1.5)
 skeleton_data_res = ExtResource("5_front_02")
 preview_animation = "lobby"
 
-[node name="HeidemarieBgFront01" type="SpineSprite" parent="."]
-visible = false
-position = Vector2(960, 540)
-scale = Vector2(1.5, 1.5)
-skeleton_data_res = ExtResource("6_front_01")
-preview_animation = "lobby"
-metadata/heidemarie_visibility_source = "official bg_f_01 only ships 12_step11_play, no lobby animation; kept hidden so it cannot sit in setup pose"
-
 [node name="HeidemarieFade" type="SpineSprite" parent="."]
 visible = false
 position = Vector2(960, 540)
@@ -69,3 +61,11 @@ scale = Vector2(1.5, 1.5)
 skeleton_data_res = ExtResource("7_fade")
 preview_animation = "1_intro_play"
 metadata/heidemarie_visibility_source = "official fade has no lobby animation; kept hidden"
+
+[node name="HeidemarieBgFront01" type="SpineSprite" parent="."]
+visible = false
+position = Vector2(960, 540)
+scale = Vector2(1.5, 1.5)
+skeleton_data_res = ExtResource("6_front_01")
+preview_animation = "lobby"
+metadata/heidemarie_visibility_source = "official bg_f_01 only ships 12_step11_play, no lobby animation; kept hidden so it cannot sit in setup pose"

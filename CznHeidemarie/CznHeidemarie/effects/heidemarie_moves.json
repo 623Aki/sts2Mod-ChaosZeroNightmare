@@ -1,1800 +1,919 @@
 {
- "schema": "czn-heidemarie.move-effects.v1",
- "note": "z 已由 tools/extract_cinematic_plan.py --command moves-z 从 .cfx 真值回填（z = srmd group_zorder + .cfx primitive_z）；start_ms/end_ms/clip 保留原值，它们按身体动画相位对齐且被 C# 侧依赖。",
+ "schema": "czn-heidemarie.move-effects.v4",
+ "note": "由 tools/audit_animation_mapping.py --emit-moves 从 CZN 源数据生成，不要手改。owner / target 里写的是「特效组键 + 起播时刻」，每个组的图层构成见 heidemarie_effect_groups.json。｜2026-10-15 起按「稀有度 + 费用取更重者」分档，组键的 command 必须落在身体动作链的对应 clip 上（见 动画对照表.md）：攻击牌 轻(attack_play1) / 中(attack_play2) / 重(u1_attack_*) / 顶(u3_attack_*)，技能牌 施法(buff_ready) / 结阵(u2_buff_*) / 蓄势(u4_buff_*)。重跑生成脚本前先确认脚本已带这套分档逻辑。",
+ "preset": "source",
  "effects": {
-  "HeidemarieStrike": {
-   "note": "打击：attack_ready(0.2) → attack_play1(0.667)",
+  "HeidemarieAllHeroes": {
+   "command": [
+    "buff_ready",
+    "buff_play"
+   ],
+   "note": "万众英雄（Common / 1 费）：施法档。身体 buff_ready(0.467) → buff_play(1.167)；特效起播 0。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_attack_play1_b",
-     "clip": "animation",
-     "z": -5,
-     "start_ms": 200.0,
-     "end_ms": 633.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play1_f",
-     "clip": "animation",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 733.0,
-     "opacity": 1.0
+     "group": "heidemarie_30093_eff_casting_ready",
+     "command": "buff_ready",
+     "start_ms": 0.0
     }
    ],
-   "target": [
-    {
-     "name": "heidemarie_30093_eff_attack_play1_target",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 200.0,
-     "end_ms": 1033.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_b",
-     "clip": "attack_play1",
-     "z": -10,
-     "start_ms": 200.0,
-     "end_ms": 1200.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f1",
-     "clip": "attack_play1",
-     "z": 7,
-     "start_ms": 200.0,
-     "end_ms": 1133.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f3",
-     "clip": "attack_play1",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 1200.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_target",
-     "clip": "attack_play1_target",
-     "z": 3,
-     "start_ms": 200.0,
-     "end_ms": 1133.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_cat_target",
-     "clip": "attack_play1_target",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 1133.0
-    }
-   ]
-   },
-   "HeidemarieAuroraSword": {
-   "note": "极光剑（1 费衍生牌）：全卡池最轻的一击 —— 单束剑光 + 命中斩痕，共 3 层。身体动作 Attack（attack_ready 0.2 → attack_play1 0.667）。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_attack_play1_f",
-     "clip": "animation",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 733.0,
-     "opacity": 1.0
-    }
-   ],
-   "target": [
-    {
-     "name": "heidemarie_30093_eff_attack_play1_target",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 200.0,
-     "end_ms": 1033.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_target",
-     "clip": "attack_play1_target",
-     "z": 3,
-     "start_ms": 200.0,
-     "end_ms": 1133.0,
-     "opacity": 1.0
-    }
-   ]
-   },
-   "HeidemarieSwordlight": {
-   "note": "剑光（1 费，8 伤害）：在极光剑基础上加剑刃辉光，强调「剑」而非「极光」，共 6 层。身体动作 Attack。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_attack_play1_b",
-     "clip": "animation",
-     "z": -5,
-     "start_ms": 200.0,
-     "end_ms": 633.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play1_f",
-     "clip": "animation",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 733.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_g",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.8
-    }
-   ],
-   "target": [
-    {
-     "name": "heidemarie_30093_eff_attack_play1_target",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 200.0,
-     "end_ms": 1033.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f1",
-     "clip": "attack_play1",
-     "z": 7,
-     "start_ms": 200.0,
-     "end_ms": 1133.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_target",
-     "clip": "attack_play1_target",
-     "z": 3,
-     "start_ms": 200.0,
-     "end_ms": 1133.0,
-     "opacity": 1.0
-    }
-   ]
-   },
-   "HeidemarieRayOfLight": {
-   "note": "一缕光芒（1 费，8 伤害 + 连接增伤）：起手施法光效（0 ~ 1000ms）与斩击同时铺开，共 5 层。身体动作 Attack。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.75
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play1_f",
-     "clip": "animation",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 733.0,
-     "opacity": 1.0
-    }
-   ],
-   "target": [
-    {
-     "name": "heidemarie_30093_eff_attack_play1_target",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 200.0,
-     "end_ms": 1033.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f1",
-     "clip": "attack_play1",
-     "z": 7,
-     "start_ms": 200.0,
-     "end_ms": 1133.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_cat_target",
-     "clip": "attack_play1_target",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 1133.0
-    }
-   ]
-   },
-   "HeidemarieSwordrain": {
-   "note": "剑雨（1 费，4 伤害 ×2）：双段命中，目标侧铺满六层斩击（含前后景），用层数堆出「雨」的密度，共 8 层。身体动作 Attack。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_attack_play1_b",
-     "clip": "animation",
-     "z": -5,
-     "start_ms": 200.0,
-     "end_ms": 633.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play1_f",
-     "clip": "animation",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 733.0,
-     "opacity": 1.0
-    }
-   ],
-   "target": [
-    {
-     "name": "heidemarie_30093_eff_attack_play1_target",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 200.0,
-     "end_ms": 1033.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_b",
-     "clip": "attack_play1",
-     "z": -10,
-     "start_ms": 200.0,
-     "end_ms": 1200.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f1",
-     "clip": "attack_play1",
-     "z": 7,
-     "start_ms": 200.0,
-     "end_ms": 1133.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f3",
-     "clip": "attack_play1",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 1200.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_target",
-     "clip": "attack_play1_target",
-     "z": 3,
-     "start_ms": 200.0,
-     "end_ms": 1133.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_cat_target",
-     "clip": "attack_play1_target",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 1133.0
-    }
-   ]
-   },
-   "HeidemarieRequiemBlade": {
-   "note": "安魂剑（2 费，6 伤害 ×2）：改走 Attack2 纵劈分支 —— attack_ready(0.2) → attack_play2(0.667)，配合双段命中，比打击更沉，共 8 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_attack_play2_b",
-     "clip": "animation",
-     "z": -5,
-     "start_ms": 200.0,
-     "end_ms": 867.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play2_f",
-     "clip": "animation",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 533.0,
-     "opacity": 1.0
-    }
-   ],
-   "target": [
-    {
-     "name": "heidemarie_30093_eff_attack_play2_target",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 200.0,
-     "end_ms": 1033.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_b",
-     "clip": "attack_play2",
-     "z": -10,
-     "start_ms": 200.0,
-     "end_ms": 1200.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f1",
-     "clip": "attack_play2",
-     "z": 7,
-     "start_ms": 200.0,
-     "end_ms": 1133.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f3",
-     "clip": "attack_play2",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 1200.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_target",
-     "clip": "attack_play2_target",
-     "z": 3,
-     "start_ms": 200.0,
-     "end_ms": 1300.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_cat_target",
-     "clip": "attack_play2_target",
-     "z": 5,
-     "start_ms": 200.0,
-     "end_ms": 1000.0
-    }
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_casting_pati1"
    ]
   },
-  "HeidemarieDefend": {
-   "note": "防御：defense_ready(0.467) → defense_play(1.167)",
-   "owner": [
-    {
-     "name": "heidemarie_30093_sword_eff_b",
-     "clip": "animation",
-     "z": -3,
-     "start_ms": 0.0,
-     "end_ms": 1633.0
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_g",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 1633.0,
-     "opacity": 0.85
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_f",
-     "clip": "animation",
-     "z": 3,
-     "start_ms": 0.0,
-     "end_ms": 1633.0
-    },
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.7
-    }
+  "HeidemarieAuroraSword": {
+   "command": [
+    "attack_ready",
+    "attack_play1"
    ],
-   "target": []
-  },
-  "HeidemarieTripleGlow": {
-   "note": "叠光奏浪（2 费，14 伤害，连接 ≥3 时 ×3）：改走 U1Attack 斩击链 —— u1_attack_ready(0.467) → u1_attack_play(0.667) → u1_attack_end(0.533)，起手/收招各有两层，比普攻重一档，共 10 层。",
+   "note": "极光剑（Token / 1 费）：轻·横挥档。身体 attack_ready(0.2) → attack_play1(0.667)；特效起播 200ms。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_u1_attack_ready_b",
-     "clip": "animation",
-     "z": -50,
-     "start_ms": 0.0,
-     "end_ms": 467.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u1_attack_ready_f",
-     "clip": "animation",
-     "z": 50,
-     "start_ms": 0.0,
-     "end_ms": 467.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u1_attack_play_b",
-     "clip": "animation",
-     "z": -50,
-     "start_ms": 467.0,
-     "end_ms": 1234.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u1_attack_play_f",
-     "clip": "animation",
-     "z": 50,
-     "start_ms": 467.0,
-     "end_ms": 1167.0,
-     "opacity": 1.0
+     "group": "heidemarie_30093_eff_attack_play1",
+     "command": "attack_play1",
+     "start_ms": 200.0
     }
    ],
    "target": [
     {
-     "name": "heidemarie_30093_eff_u1_attack_play_target_b",
-     "clip": "animation",
-     "z": -50,
-     "start_ms": 467.0,
-     "end_ms": 2467.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u1_attack_play_target_f1",
-     "clip": "animation",
-     "z": 150,
-     "start_ms": 467.0,
-     "end_ms": 2137.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u1_attack_play_target_f2",
-     "clip": "animation",
-     "z": 100,
-     "start_ms": 467.0,
-     "end_ms": 2297.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u1_attack_play_target_f3",
-     "clip": "animation",
-     "z": 70,
-     "start_ms": 467.0,
-     "end_ms": 2137.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u1_attack_sword",
-     "clip": "u1_attack_play_target",
-     "z": 50,
-     "start_ms": 467.0,
-     "end_ms": 1600.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_cat_target",
-     "clip": "u1_attack_play_target",
-     "z": 7,
-     "start_ms": 467.0,
-     "end_ms": 1434.0
+     "group": "heidemarie_30093_eff_attack_play1_target",
+     "command": "attack_play1",
+     "start_ms": 200.0
     }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_eff_attack_play1_target_pati1",
+    "heidemarie_30093_eff_attack_play1_target_pati2",
+    "heidemarie_30093_eff_attack_play1_target_pati3"
    ]
   },
-  "HeidemarieU2Guard": {
-   "note": "结阵：u2_buff_ready(0.467) → u2_buff_play(1.4)；同一骨架在两个窗口用不同 clip 各建一个节点",
+  "HeidemarieAuroraWard": {
+   "command": [
+    "buff_ready",
+    "buff_play"
+   ],
+   "note": "极光护壁（Common / 1 费）：施法档。身体 buff_ready(0.467) → buff_play(1.167)；特效起播 0。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "ready",
-     "z": -1,
-     "start_ms": 0.0,
-     "end_ms": 467.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "play",
-     "z": -1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_ready",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 467.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_play",
-     "z": 0,
-     "start_ms": 467.0,
-     "end_ms": 1867.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "ready",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 467.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "play",
-     "z": 1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0,
-     "opacity": 1.0
+     "group": "heidemarie_30093_eff_casting_ready",
+     "command": "buff_ready",
+     "start_ms": 0.0
     }
    ],
-   "target": []
-  },
-  "HeidemarieSkyfall": {
-   "note": "陨锋·坠月（2 费稀有，15 伤害 ×2；安息改为全体 20）：全卡池单体特效的顶配 —— 走 U3Attack 裂空斩链（u3_attack_ready 0.467 → u3_attack_play 0.933 → u3_attack_end 0.467），自身 6 层 + 目标侧 14 层（含碎岩、风压、闪光），共 20 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_u3_attack_self_b",
-     "clip": "ready",
-     "z": -2,
-     "start_ms": 0.0,
-     "end_ms": 533.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_self_f",
-     "clip": "ready",
-     "z": 2,
-     "start_ms": 0.0,
-     "end_ms": 533.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_self_b",
-     "clip": "play",
-     "z": -1,
-     "start_ms": 467.0,
-     "end_ms": 1100.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_self_f",
-     "clip": "play",
-     "z": 1,
-     "start_ms": 467.0,
-     "end_ms": 1067.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_sword_1",
-     "clip": "play",
-     "z": 3,
-     "start_ms": 467.0,
-     "end_ms": 1434.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_sword_2",
-     "clip": "play",
-     "z": 4,
-     "start_ms": 467.0,
-     "end_ms": 1400.0
-    }
-   ],
-   "target": [
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_b",
-     "clip": "animation",
-     "z": -2,
-     "start_ms": 467.0,
-     "end_ms": 2667.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_rock_b",
-     "clip": "animation",
-     "z": -1,
-     "start_ms": 467.0,
-     "end_ms": 2467.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_wind_b",
-     "clip": "attack_play2",
-     "z": -4,
-     "start_ms": 467.0,
-     "end_ms": 1334.0,
-     "opacity": 0.8
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_rock_2",
-     "clip": "animation",
-     "z": 5,
-     "start_ms": 467.0,
-     "end_ms": 2537.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_ff_rock",
-     "clip": "animation",
-     "z": 7,
-     "start_ms": 467.0,
-     "end_ms": 1897.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_rcok",
-     "clip": "animation",
-     "z": 4,
-     "start_ms": 467.0,
-     "end_ms": 1837.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_f",
-     "clip": "animation",
-     "z": 3,
-     "start_ms": 467.0,
-     "end_ms": 1797.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_f2",
-     "clip": "animation",
-     "z": 6,
-     "start_ms": 467.0,
-     "end_ms": 2497.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_ff",
-     "clip": "animation",
-     "z": 8,
-     "start_ms": 467.0,
-     "end_ms": 2537.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_ff_flash",
-     "clip": "animation",
-     "z": 100001,
-     "start_ms": 467.0,
-     "end_ms": 2537.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_ff2",
-     "clip": "animation",
-     "z": 10,
-     "start_ms": 467.0,
-     "end_ms": 2537.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_ff3",
-     "clip": "animation",
-     "z": 11,
-     "start_ms": 467.0,
-     "end_ms": 2537.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_rock_f",
-     "clip": "animation",
-     "z": 9,
-     "start_ms": 467.0,
-     "end_ms": 2767.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_target_wind_f",
-     "clip": "animation",
-     "z": 300,
-     "start_ms": 467.0,
-     "end_ms": 1967.0,
-     "opacity": 1.0
-    }
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_casting_pati1"
    ]
   },
-  "HeidemarieU4Empower": {
-   "note": "蓄势：u4_buff_ready(0.467) → u4_buff_play(1.467)",
+  "HeidemarieBindStar": {
+   "command": [
+    "u2_buff_ready",
+    "u2_buff_play"
+   ],
+   "note": "缀星（Uncommon / 0 费）：结阵档。身体 u2_buff_ready(0.467) → u2_buff_play(1.4)；特效起播 0 / 467ms。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_u4_buff_self_b",
-     "clip": "ready",
-     "z": -100,
-     "start_ms": 0.0,
-     "end_ms": 467.0,
-     "opacity": 1.0
+     "group": "heidemarie_30093_eff_u2_buff_ready",
+     "command": "u2_buff_ready",
+     "start_ms": 0.0
     },
     {
-     "name": "heidemarie_30093_eff_u4_buff_self_b",
-     "clip": "play",
-     "z": -100,
-     "start_ms": 467.0,
-     "end_ms": 2467.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_b",
-     "clip": "ready",
-     "z": -50,
-     "start_ms": 0.0,
-     "end_ms": 500.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_b",
-     "clip": "play",
-     "z": -50,
-     "start_ms": 467.0,
-     "end_ms": 1537.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_self_f",
-     "clip": "ready",
-     "z": 100,
-     "start_ms": 0.0,
-     "end_ms": 467.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_self_f",
-     "clip": "play",
-     "z": 100,
-     "start_ms": 467.0,
-     "end_ms": 2467.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_f",
-     "clip": "ready",
-     "z": 50,
-     "start_ms": 0.0,
-     "end_ms": 500.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_f",
-     "clip": "play",
-     "z": 50,
-     "start_ms": 467.0,
-     "end_ms": 1537.0,
-     "opacity": 1.0
+     "group": "heidemarie_30093_eff_u2_buff_play",
+     "command": "u2_buff_play",
+     "start_ms": 466.7
     }
    ],
-   "target": []
-  },
-  "HeidemarieCure": {
-   "note": "守愈：cure_ready(0.467) → cure_play(1.167)",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_casting_ready_b",
-     "clip": "animation",
-     "z": -10,
-     "start_ms": 0.0,
-     "end_ms": 1330.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 1.0
-    }
-   ],
-   "target": []
-  },
-  "HeidemarieBrace": {
-   "note": "架势：格挡 + 抽牌，用特写起手组",
-   "owner": [
-    {
-     "name": "heidemarie_30093_battle_ready_eff_b",
-     "clip": "animation",
-     "z": -2,
-     "start_ms": 0.0,
-     "end_ms": 800.0
-    },
-    {
-     "name": "heidemarie_30093_battle_ready_eff_b_mask",
-     "clip": "animation",
-     "z": -1,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.5
-    },
-    {
-     "name": "heidemarie_30093_battle_ready_eff_mask",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.6
-    },
-    {
-     "name": "heidemarie_30093_battle_ready_eff_f",
-     "clip": "animation",
-     "z": 2,
-     "start_ms": 0.0,
-     "end_ms": 800.0
-    },
-    {
-     "name": "heidemarie_30093_battle_ready_eff_f_mask",
-     "clip": "animation",
-     "z": 3,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.5
-    }
-   ],
-   "target": []
-  },
-  "HeidemarieFootwork": {
-   "note": "疾步：敏捷 buff，走施法起手 + 剑光",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_casting_ready_b",
-     "clip": "animation",
-     "z": -10,
-     "start_ms": 0.0,
-     "end_ms": 1330.0,
-     "opacity": 1.0
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_g",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 1300.0,
-     "opacity": 0.8
-    }
-   ],
-   "target": []
-  },
-  "HeidemarieCaltrops": {
-   "note": "铁蒺藜：荆棘 buff，用武器 setup 组",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_sword_target",
-     "clip": "setup",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 2000.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_cat_target",
-     "clip": "setup",
-     "z": 2,
-     "start_ms": 0.0,
-     "end_ms": 2000.0
-    }
-   ],
-   "target": []
-  },
-  "HeidemarieRegeneration": {
-   "note": "回春：再生 buff，用立绘光效组",
-   "owner": [
-    {
-     "name": "heidemarie_30093_portrait_eff",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 2000.0,
-     "opacity": 0.9
-    },
-    {
-     "name": "heidemarie_30093_portrait_eff_mask",
-     "clip": "animation",
-     "z": 2,
-     "start_ms": 0.0,
-     "end_ms": 2000.0,
-     "opacity": 0.5
-    }
-   ],
-   "target": []
-  },
-  "HeidemarieLiberatedAurora": {
-   "note": "解放极光（终结技 ug）的常规回退特效：只在全屏演出不接管时播放。身体动作 ug_attack(0.3333，单段)，命中点 333ms；施法者 6 层 + 目标 7 层，共 13 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.8
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_b",
-     "clip": "animation",
-     "z": -3,
-     "start_ms": 0.0,
-     "end_ms": 900.0
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_g",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 900.0,
-     "opacity": 0.85
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_f",
-     "clip": "animation",
-     "z": 3,
-     "start_ms": 0.0,
-     "end_ms": 900.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play1_b",
-     "clip": "animation",
-     "z": -5,
-     "start_ms": 100.0,
-     "end_ms": 533.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play1_f",
-     "clip": "animation",
-     "z": 5,
-     "start_ms": 100.0,
-     "end_ms": 633.0
-    }
-   ],
-   "target": [
-    {
-     "name": "heidemarie_30093_eff_attack_play1_target",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 333.0,
-     "end_ms": 1366.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_b",
-     "clip": "attack_play1",
-     "z": -10,
-     "start_ms": 333.0,
-     "end_ms": 1533.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f1",
-     "clip": "attack_play1",
-     "z": 7,
-     "start_ms": 333.0,
-     "end_ms": 1466.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f3",
-     "clip": "attack_play1",
-     "z": 5,
-     "start_ms": 333.0,
-     "end_ms": 1533.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_target",
-     "clip": "attack_play1_target",
-     "z": 3,
-     "start_ms": 333.0,
-     "end_ms": 1466.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_cat_target",
-     "clip": "attack_play1_target",
-     "z": 5,
-     "start_ms": 333.0,
-     "end_ms": 1466.0
-    },
-    {
-     "name": "heidemarie_30093_ug_impact",
-     "clip": "animation",
-     "z": 20,
-     "start_ms": 333.0,
-     "end_ms": 1433.0
-    }
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u2_buff_par_1"
    ]
   },
-  "HeidemarieFinalEcho": {
-   "note": "绝响（终结技 ux，全体敌人）的常规回退特效：只在全屏演出不接管时播放。身体动作 ux_attack(0.8333)，命中点 333ms；施法者 6 层 + 每个敌人各 6 层。",
+  "HeidemarieBuryLight": {
+   "command": [
+    "u2_buff_ready",
+    "u2_buff_play"
+   ],
+   "note": "葬光（Uncommon / 1 费）：结阵档。身体 u2_buff_ready(0.467) → u2_buff_play(1.4)；特效起播 0 / 467ms。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 1200.0,
-     "opacity": 0.8
+     "group": "heidemarie_30093_eff_u2_buff_ready",
+     "command": "u2_buff_ready",
+     "start_ms": 0.0
     },
     {
-     "name": "heidemarie_30093_eff_u3_attack_self_b",
-     "clip": "ready",
-     "z": -2,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_self_f",
-     "clip": "ready",
-     "z": 2,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_self_b",
-     "clip": "play",
-     "z": -1,
-     "start_ms": 467.0,
-     "end_ms": 1100.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_self_f",
-     "clip": "play",
-     "z": 1,
-     "start_ms": 467.0,
-     "end_ms": 1067.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u3_attack_sword_1",
-     "clip": "play",
-     "z": 3,
-     "start_ms": 467.0,
-     "end_ms": 1434.0
+     "group": "heidemarie_30093_eff_u2_buff_play",
+     "command": "u2_buff_play",
+     "start_ms": 466.7
     }
    ],
-   "target": [
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u2_buff_par_1"
+   ]
+  },
+  "HeidemarieCallBlade": {
+   "command": [
+    "u4_buff_ready",
+    "u4_buff_play"
+   ],
+   "note": "引锋召刃（Rare / 1 费）：蓄势档。身体 u4_buff_ready(0.467) → u4_buff_play(1.467)；特效起播 0 / 467ms。",
+   "owner": [
     {
-     "name": "heidemarie_30093_eff_attack_play1_target",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 333.0,
-     "end_ms": 1366.0
+     "group": "heidemarie_30093_eff_u4_buff_ready",
+     "command": "u4_buff_ready",
+     "start_ms": 0.0
     },
     {
-     "name": "heidemarie_30093_eff_attack_play_target_b",
-     "clip": "attack_play1",
-     "z": -10,
-     "start_ms": 333.0,
-     "end_ms": 1533.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f1",
-     "clip": "attack_play1",
-     "z": 7,
-     "start_ms": 333.0,
-     "end_ms": 1466.0
-    },
-    {
-     "name": "heidemarie_30093_eff_attack_play_target_f3",
-     "clip": "attack_play1",
-     "z": 5,
-     "start_ms": 333.0,
-     "end_ms": 1533.0
-    },
-    {
-     "name": "heidemarie_30093_eff_sword_target",
-     "clip": "attack_play1_target",
-     "z": 3,
-     "start_ms": 333.0,
-     "end_ms": 1466.0
-    },
-    {
-     "name": "heidemarie_30093_ug_impact",
-     "clip": "animation",
-     "z": 20,
-     "start_ms": 333.0,
-     "end_ms": 1433.0
+     "group": "heidemarie_30093_eff_u4_buff_play",
+     "command": "u4_buff_play",
+     "start_ms": 466.7
     }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u4_buff_play_pati01",
+    "heidemarie_30093_u4_buff_play_pati02"
+   ]
+  },
+  "HeidemarieCondenseEdge": {
+   "command": [
+    "buff_ready",
+    "buff_play"
+   ],
+   "note": "凝锋（Common / 0 费）：施法档。身体 buff_ready(0.467) → buff_play(1.167)；特效起播 0。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_casting_ready",
+     "command": "buff_ready",
+     "start_ms": 0.0
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_casting_pati1"
    ]
   },
   "HeidemarieCondensedAurora": {
-   "note": "凝聚极光（-1 费稀有，无法主动打出）：极微光，2 层。",
+   "command": [
+    "u4_buff_ready",
+    "u4_buff_play"
+   ],
+   "note": "凝聚极光（Rare / -1 费，无法主动打出）：蓄势档。身体 u4_buff_ready(0.467) → u4_buff_play(1.467)；特效起播 0 / 467ms。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.6
+     "group": "heidemarie_30093_eff_u4_buff_ready",
+     "command": "u4_buff_ready",
+     "start_ms": 0.0
     },
     {
-     "name": "heidemarie_30093_sword_eff_g",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.5
+     "group": "heidemarie_30093_eff_u4_buff_play",
+     "command": "u4_buff_play",
+     "start_ms": 466.7
     }
    ],
-   "target": []
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u4_buff_play_pati01",
+    "heidemarie_30093_u4_buff_play_pati02"
+   ]
   },
-  "HeidemarieBindStar": {
-   "note": "缀星（0 费公共技能）：微光档，2 层。身体动作 buff_ready(0.467) → buff_play(1.167)。",
+  "HeidemarieDaybreak": {
+   "command": [
+    "u4_buff_ready",
+    "u4_buff_play"
+   ],
+   "note": "破晓（Rare / 1 费）：蓄势档。身体 u4_buff_ready(0.467) → u4_buff_play(1.467)；特效起播 0 / 467ms。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.6
+     "group": "heidemarie_30093_eff_u4_buff_ready",
+     "command": "u4_buff_ready",
+     "start_ms": 0.0
     },
     {
-     "name": "heidemarie_30093_sword_eff_g",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.5
+     "group": "heidemarie_30093_eff_u4_buff_play",
+     "command": "u4_buff_play",
+     "start_ms": 466.7
     }
    ],
-   "target": []
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u4_buff_play_pati01",
+    "heidemarie_30093_u4_buff_play_pati02"
+   ]
   },
-  "HeidemarieRequiem": {
-   "note": "冥渡（0 费公共技能）：微光档，2 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.6
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_g",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.5
-    }
+  "HeidemarieDefend": {
+   "command": [
+    "defense_ready",
+    "defense_play"
    ],
-   "target": []
-  },
-  "HeidemarieCondenseEdge": {
-   "note": "凝锋（0 费公共技能）：微光 + 一层剑刃，3 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.6
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_g",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 800.0,
-     "opacity": 0.5
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_f",
-     "clip": "animation",
-     "z": 3,
-     "start_ms": 0.0,
-     "end_ms": 900.0
-    }
-   ],
-   "target": []
-  },
-  "HeidemarieRecover": {
-   "note": "撷光（0 费稀有技能，消耗）：施法档，4 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.75
-    },
-    {
-     "name": "heidemarie_30093_eff_casting_ready_b",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 1200.0,
-     "opacity": 0.6
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_b",
-     "clip": "animation",
-     "z": -3,
-     "start_ms": 0.0,
-     "end_ms": 1200.0
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_f",
-     "clip": "animation",
-     "z": 3,
-     "start_ms": 0.0,
-     "end_ms": 1200.0
-    }
-   ],
-   "target": []
-  },
-  "HeidemarieAllHeroes": {
-   "note": "万众英雄（1 费公共技能）：施法档，4 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.75
-    },
-    {
-     "name": "heidemarie_30093_eff_casting_ready_b",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 1200.0,
-     "opacity": 0.6
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_b",
-     "clip": "animation",
-     "z": -3,
-     "start_ms": 0.0,
-     "end_ms": 1200.0
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_f",
-     "clip": "animation",
-     "z": 3,
-     "start_ms": 0.0,
-     "end_ms": 1200.0
-    }
-   ],
-   "target": []
-  },
-  "HeidemarieForesee": {
-   "note": "窥星择光（1 费公共技能）：施法档，4 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.75
-    },
-    {
-     "name": "heidemarie_30093_eff_casting_ready_b",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 1200.0,
-     "opacity": 0.6
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_b",
-     "clip": "animation",
-     "z": -3,
-     "start_ms": 0.0,
-     "end_ms": 1200.0
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_f",
-     "clip": "animation",
-     "z": 3,
-     "start_ms": 0.0,
-     "end_ms": 1200.0
-    }
-   ],
+   "note": "防御（Basic / 1 费）：防御档，源里无任何 SELF / TARGET 特效组。身体 defense_ready(0.467) → defense_play(1.167)。",
+   "owner": [],
    "target": []
   },
   "HeidemarieFaintLight": {
-   "note": "微光（1 费稀有技能）：施法档，4 层。",
+   "command": [
+    "u4_buff_ready",
+    "u4_buff_play"
+   ],
+   "note": "微光（Rare / 1 费）：蓄势档。身体 u4_buff_ready(0.467) → u4_buff_play(1.467)；特效起播 0 / 467ms。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.75
+     "group": "heidemarie_30093_eff_u4_buff_ready",
+     "command": "u4_buff_ready",
+     "start_ms": 0.0
     },
     {
-     "name": "heidemarie_30093_eff_casting_ready_b",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 1200.0,
-     "opacity": 0.6
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_b",
-     "clip": "animation",
-     "z": -3,
-     "start_ms": 0.0,
-     "end_ms": 1200.0
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_f",
-     "clip": "animation",
-     "z": 3,
-     "start_ms": 0.0,
-     "end_ms": 1200.0
+     "group": "heidemarie_30093_eff_u4_buff_play",
+     "command": "u4_buff_play",
+     "start_ms": 466.7
     }
    ],
-   "target": []
-  },
-  "HeidemarieCallBlade": {
-   "note": "引锋召刃（1 费稀有技能）：施法档 + 剑刃辉光，5 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.75
-    },
-    {
-     "name": "heidemarie_30093_eff_casting_ready_b",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 1200.0,
-     "opacity": 0.6
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_b",
-     "clip": "animation",
-     "z": -3,
-     "start_ms": 0.0,
-     "end_ms": 1200.0
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_g",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.7
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_f",
-     "clip": "animation",
-     "z": 3,
-     "start_ms": 0.0,
-     "end_ms": 1200.0
-    }
-   ],
-   "target": []
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u4_buff_play_pati01",
+    "heidemarie_30093_u4_buff_play_pati02"
+   ]
   },
   "HeidemarieFallenStar": {
-   "note": "坠星（1 费稀有技能，消耗）：结阵档 u2_buff，6 层（同一骨架 ready/play 各一个节点）。",
+   "command": [
+    "u4_buff_ready",
+    "u4_buff_play"
+   ],
+   "note": "坠星（Rare / 1 费，消耗）：蓄势档。身体 u4_buff_ready(0.467) → u4_buff_play(1.467)；特效起播 0 / 467ms。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "ready",
-     "z": -1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
+     "group": "heidemarie_30093_eff_u4_buff_ready",
+     "command": "u4_buff_ready",
+     "start_ms": 0.0
     },
     {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "play",
-     "z": -1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_ready",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_play",
-     "z": 0,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "ready",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "play",
-     "z": 1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
+     "group": "heidemarie_30093_eff_u4_buff_play",
+     "command": "u4_buff_play",
+     "start_ms": 466.7
     }
    ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u4_buff_play_pati01",
+    "heidemarie_30093_u4_buff_play_pati02"
+   ]
+  },
+  "HeidemarieFallingEdge": {
+   "command": [
+    "attack_ready",
+    "attack_play2"
+   ],
+   "note": "落刃（Uncommon / 1 费）：中·纵劈档。身体 attack_ready(0.2) → attack_play2(0.667)；特效起播 200ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_attack_play2",
+     "command": "attack_play2",
+     "start_ms": 200.0
+    }
+   ],
+   "target": [
+    {
+     "group": "heidemarie_30093_eff_attack_play2_target",
+     "command": "attack_play2",
+     "start_ms": 200.0
+    }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_eff_attack_play1_target_pati1",
+    "heidemarie_30093_eff_attack_play1_target_pati2",
+    "heidemarie_30093_eff_attack_play1_target_pati3"
+   ]
+  },
+  "HeidemarieFinalEcho": {
+   "command": [
+    "u1_attack_ready",
+    "u1_attack_play",
+    "u1_attack_end"
+   ],
+   "note": "绝响（Rare / 3 费，全体敌人）：重·斩击档。身体 u1_attack_ready(0.467) → u1_attack_play(0.667) → u1_attack_end(0.533)；特效起播 0 / 467ms；全屏演出已取消。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u1_attack_ready",
+     "command": "u1_attack_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u1_attack_play",
+     "command": "u1_attack_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [
+    {
+     "group": "heidemarie_30093_eff_u1_attack_play_target",
+     "command": "u1_attack_play",
+     "start_ms": 632.7
+    }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_eff_u1_attack_play_pati1",
+    "heidemarie_30093_u1_attack_play_target_pati01"
+   ]
+  },
+  "HeidemarieForesee": {
+   "command": [
+    "buff_ready",
+    "buff_play"
+   ],
+   "note": "窥星择光（Common / 1 费）：施法档。身体 buff_ready(0.467) → buff_play(1.167)；特效起播 0。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_casting_ready",
+     "command": "buff_ready",
+     "start_ms": 0.0
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_casting_pati1"
+   ]
+  },
+  "HeidemarieGatherStar": {
+   "command": [
+    "buff_ready",
+    "buff_play"
+   ],
+   "note": "拾星（Common / 1 费）：施法档。身体 buff_ready(0.467) → buff_play(1.167)；特效起播 0。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_casting_ready",
+     "command": "buff_ready",
+     "start_ms": 0.0
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_casting_pati1"
+   ]
+  },
+  "HeidemarieLiberatedAurora": {
+   "command": [
+    "ug_attack"
+   ],
+   "note": "解放极光（Ancient / 0 费）：终极技 ug，独占全屏演出，源里无任何 SELF / TARGET 特效组。身体 ug_attack(0.333，单段)。",
+   "owner": [],
    "target": []
   },
-  "HeidemarieUnfoldAurora": {
-   "note": "展开极光（2 费公共技能）：结阵档 u2_buff，6 层。",
+  "HeidemarieLightPrism": {
+   "command": [
+    "attack_ready",
+    "attack_play2"
+   ],
+   "note": "光棱（Uncommon / 1 费）：中·纵劈档。身体 attack_ready(0.2) → attack_play2(0.667)；特效起播 200ms。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "ready",
-     "z": -1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "play",
-     "z": -1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_ready",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_play",
-     "z": 0,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "ready",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "play",
-     "z": 1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
+     "group": "heidemarie_30093_eff_attack_play2",
+     "command": "attack_play2",
+     "start_ms": 200.0
     }
    ],
-   "target": []
+   "target": [
+    {
+     "group": "heidemarie_30093_eff_attack_play2_target",
+     "command": "attack_play2",
+     "start_ms": 200.0
+    }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_eff_attack_play1_target_pati1",
+    "heidemarie_30093_eff_attack_play1_target_pati2",
+    "heidemarie_30093_eff_attack_play1_target_pati3"
+   ]
   },
   "HeidemarieMirrorBlades": {
-   "note": "万剑诀（2 费公共技能）：结阵档 u2_buff，6 层。",
+   "command": [
+    "u2_buff_ready",
+    "u2_buff_play"
+   ],
+   "note": "万剑诀（Uncommon / 2 费）：结阵档。身体 u2_buff_ready(0.467) → u2_buff_play(1.4)；特效起播 0 / 467ms。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "ready",
-     "z": -1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
+     "group": "heidemarie_30093_eff_u2_buff_ready",
+     "command": "u2_buff_ready",
+     "start_ms": 0.0
     },
     {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "play",
-     "z": -1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_ready",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_play",
-     "z": 0,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "ready",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "play",
-     "z": 1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
+     "group": "heidemarie_30093_eff_u2_buff_play",
+     "command": "u2_buff_play",
+     "start_ms": 466.7
     }
    ],
-   "target": []
-  },
-  "HeidemarieSwordTomb": {
-   "note": "剑冢（2 费公共技能，非指向）：结阵档 u2_buff，6 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "ready",
-     "z": -1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "play",
-     "z": -1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_ready",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_play",
-     "z": 0,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "ready",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "play",
-     "z": 1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    }
-   ],
-   "target": []
-  },
-  "HeidemarieSwordCrypt": {
-   "note": "归墟剑骸（2 费公共技能）：结阵档 u2_buff，6 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "ready",
-     "z": -1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "play",
-     "z": -1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_ready",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_play",
-     "z": 0,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "ready",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "play",
-     "z": 1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    }
-   ],
-   "target": []
-  },
-  "HeidemarieStoreLight": {
-   "note": "积羽（2 费稀有技能）：结阵档 u2_buff，6 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "ready",
-     "z": -1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_b",
-     "clip": "play",
-     "z": -1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_ready",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_sword",
-     "clip": "u2_buff_play",
-     "z": 0,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "ready",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u2_buff_f",
-     "clip": "play",
-     "z": 1,
-     "start_ms": 467.0,
-     "end_ms": 1867.0
-    }
-   ],
-   "target": []
-  },
-  "HeidemarieResonance": {
-   "note": "万剑齐鸣（3 费稀有技能，消耗）：蓄势档 u4_buff 全套 + 施法光，10 层。",
-   "owner": [
-    {
-     "name": "heidemarie_30093_eff_u4_buff_self_b",
-     "clip": "ready",
-     "z": -100,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_self_b",
-     "clip": "play",
-     "z": -100,
-     "start_ms": 467.0,
-     "end_ms": 1633.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_self_f",
-     "clip": "ready",
-     "z": 100,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_self_f",
-     "clip": "play",
-     "z": 100,
-     "start_ms": 467.0,
-     "end_ms": 1633.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_b",
-     "clip": "ready",
-     "z": -50,
-     "start_ms": 0.0,
-     "end_ms": 500.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_b",
-     "clip": "play",
-     "z": -50,
-     "start_ms": 467.0,
-     "end_ms": 1537.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_f",
-     "clip": "ready",
-     "z": 50,
-     "start_ms": 0.0,
-     "end_ms": 500.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_f",
-     "clip": "play",
-     "z": 50,
-     "start_ms": 467.0,
-     "end_ms": 1537.0
-    },
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.75
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_g",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.7
-    }
-   ],
-   "target": []
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u2_buff_par_1"
+   ]
   },
   "HeidemarieNorthPolar": {
-   "note": "北极圈（2 费稀有能力）：蓄势档 u4_buff 全套 + 施法光，10 层。",
+   "command": [
+    "u4_buff_ready",
+    "u4_buff_play"
+   ],
+   "note": "北极圈（Rare / 2 费能力）：蓄势档。身体 u4_buff_ready(0.467) → u4_buff_play(1.467)；特效起播 0 / 467ms。",
    "owner": [
     {
-     "name": "heidemarie_30093_eff_u4_buff_self_b",
-     "clip": "ready",
-     "z": -100,
-     "start_ms": 0.0,
-     "end_ms": 467.0
+     "group": "heidemarie_30093_eff_u4_buff_ready",
+     "command": "u4_buff_ready",
+     "start_ms": 0.0
     },
     {
-     "name": "heidemarie_30093_eff_u4_buff_self_b",
-     "clip": "play",
-     "z": -100,
-     "start_ms": 467.0,
-     "end_ms": 1633.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_self_f",
-     "clip": "ready",
-     "z": 100,
-     "start_ms": 0.0,
-     "end_ms": 467.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_self_f",
-     "clip": "play",
-     "z": 100,
-     "start_ms": 467.0,
-     "end_ms": 1633.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_b",
-     "clip": "ready",
-     "z": -50,
-     "start_ms": 0.0,
-     "end_ms": 500.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_b",
-     "clip": "play",
-     "z": -50,
-     "start_ms": 467.0,
-     "end_ms": 1537.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_f",
-     "clip": "ready",
-     "z": 50,
-     "start_ms": 0.0,
-     "end_ms": 500.0
-    },
-    {
-     "name": "heidemarie_30093_eff_u4_buff_sword_f",
-     "clip": "play",
-     "z": 50,
-     "start_ms": 467.0,
-     "end_ms": 1537.0
-    },
-    {
-     "name": "heidemarie_30093_eff_casting_ready",
-     "clip": "animation",
-     "z": 1,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.75
-    },
-    {
-     "name": "heidemarie_30093_sword_eff_g",
-     "clip": "animation",
-     "z": 0,
-     "start_ms": 0.0,
-     "end_ms": 1000.0,
-     "opacity": 0.7
+     "group": "heidemarie_30093_eff_u4_buff_play",
+     "command": "u4_buff_play",
+     "start_ms": 466.7
     }
    ],
-   "target": []
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u4_buff_play_pati01",
+    "heidemarie_30093_u4_buff_play_pati02"
+   ]
+  },
+  "HeidemarieOldOath": {
+   "command": [
+    "u4_buff_ready",
+    "u4_buff_play"
+   ],
+   "note": "旧誓（Rare / 2 费能力）：蓄势档。身体 u4_buff_ready(0.467) → u4_buff_play(1.467)；特效起播 0 / 467ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u4_buff_ready",
+     "command": "u4_buff_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u4_buff_play",
+     "command": "u4_buff_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u4_buff_play_pati01",
+    "heidemarie_30093_u4_buff_play_pati02"
+   ]
+  },
+  "HeidemarieRayOfLight": {
+   "command": [
+    "attack_ready",
+    "attack_play2"
+   ],
+   "note": "一缕光芒（Uncommon / 1 费）：中·纵劈档。身体 attack_ready(0.2) → attack_play2(0.667)；特效起播 200ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_attack_play2",
+     "command": "attack_play2",
+     "start_ms": 200.0
+    }
+   ],
+   "target": [
+    {
+     "group": "heidemarie_30093_eff_attack_play2_target",
+     "command": "attack_play2",
+     "start_ms": 200.0
+    }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_eff_attack_play1_target_pati1",
+    "heidemarie_30093_eff_attack_play1_target_pati2",
+    "heidemarie_30093_eff_attack_play1_target_pati3"
+   ]
+  },
+  "HeidemarieRecover": {
+   "command": [
+    "u4_buff_ready",
+    "u4_buff_play"
+   ],
+   "note": "撷光（Rare / 0 费，消耗）：蓄势档。身体 u4_buff_ready(0.467) → u4_buff_play(1.467)；特效起播 0 / 467ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u4_buff_ready",
+     "command": "u4_buff_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u4_buff_play",
+     "command": "u4_buff_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u4_buff_play_pati01",
+    "heidemarie_30093_u4_buff_play_pati02"
+   ]
+  },
+  "HeidemarieRequiem": {
+   "command": [
+    "u2_buff_ready",
+    "u2_buff_play"
+   ],
+   "note": "冥渡（Uncommon / 0 费）：结阵档。身体 u2_buff_ready(0.467) → u2_buff_play(1.4)；特效起播 0 / 467ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u2_buff_ready",
+     "command": "u2_buff_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u2_buff_play",
+     "command": "u2_buff_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u2_buff_par_1"
+   ]
+  },
+  "HeidemarieRequiemBlade": {
+   "command": [
+    "attack_ready",
+    "attack_play2"
+   ],
+   "note": "安魂剑（Uncommon / 2 费）：中·纵劈档。身体 attack_ready(0.2) → attack_play2(0.667)；特效起播 200ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_attack_play2",
+     "command": "attack_play2",
+     "start_ms": 200.0
+    }
+   ],
+   "target": [
+    {
+     "group": "heidemarie_30093_eff_attack_play2_target",
+     "command": "attack_play2",
+     "start_ms": 200.0
+    }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_eff_attack_play1_target_pati1",
+    "heidemarie_30093_eff_attack_play1_target_pati2",
+    "heidemarie_30093_eff_attack_play1_target_pati3"
+   ]
+  },
+  "HeidemarieResonance": {
+   "command": [
+    "u4_buff_ready",
+    "u4_buff_play"
+   ],
+   "note": "万剑齐鸣（Rare / 3 费，消耗）：蓄势档。身体 u4_buff_ready(0.467) → u4_buff_play(1.467)；特效起播 0 / 467ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u4_buff_ready",
+     "command": "u4_buff_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u4_buff_play",
+     "command": "u4_buff_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u4_buff_play_pati01",
+    "heidemarie_30093_u4_buff_play_pati02"
+   ]
+  },
+  "HeidemarieSkyfall": {
+   "command": [
+    "u1_attack_ready",
+    "u1_attack_play",
+    "u1_attack_end"
+   ],
+   "note": "陨锋·坠月（Rare / 2 费）：重·斩击档（原 U3 顶配下调）。身体 u1_attack_ready(0.467) → u1_attack_play(0.667) → u1_attack_end(0.533)；特效起播 0 / 467ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u1_attack_ready",
+     "command": "u1_attack_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u1_attack_play",
+     "command": "u1_attack_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [
+    {
+     "group": "heidemarie_30093_eff_u1_attack_play_target",
+     "command": "u1_attack_play",
+     "start_ms": 632.7
+    }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_eff_u1_attack_play_pati1",
+    "heidemarie_30093_u1_attack_play_target_pati01"
+   ]
+  },
+  "HeidemarieStarTrail": {
+   "command": [
+    "u2_buff_ready",
+    "u2_buff_play"
+   ],
+   "note": "星轨（Uncommon / 1 费）：结阵档。身体 u2_buff_ready(0.467) → u2_buff_play(1.4)；特效起播 0 / 467ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u2_buff_ready",
+     "command": "u2_buff_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u2_buff_play",
+     "command": "u2_buff_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u2_buff_par_1"
+   ]
+  },
+  "HeidemarieStoreLight": {
+   "command": [
+    "u4_buff_ready",
+    "u4_buff_play"
+   ],
+   "note": "积羽（Rare / 2 费）：蓄势档。身体 u4_buff_ready(0.467) → u4_buff_play(1.467)；特效起播 0 / 467ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u4_buff_ready",
+     "command": "u4_buff_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u4_buff_play",
+     "command": "u4_buff_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u4_buff_play_pati01",
+    "heidemarie_30093_u4_buff_play_pati02"
+   ]
+  },
+  "HeidemarieStrike": {
+   "command": [
+    "attack_ready",
+    "attack_play1"
+   ],
+   "note": "打击（Basic / 1 费）：轻·横挥档。身体 attack_ready(0.2) → attack_play1(0.667)；特效起播 200ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_attack_play1",
+     "command": "attack_play1",
+     "start_ms": 200.0
+    }
+   ],
+   "target": [
+    {
+     "group": "heidemarie_30093_eff_attack_play1_target",
+     "command": "attack_play1",
+     "start_ms": 200.0
+    }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_eff_attack_play1_target_pati1",
+    "heidemarie_30093_eff_attack_play1_target_pati2",
+    "heidemarie_30093_eff_attack_play1_target_pati3"
+   ]
+  },
+  "HeidemarieSwordCrypt": {
+   "command": [
+    "u2_buff_ready",
+    "u2_buff_play"
+   ],
+   "note": "归墟剑骸（Common / 2 费）：结阵档（2 费上调）。身体 u2_buff_ready(0.467) → u2_buff_play(1.4)；特效起播 0 / 467ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u2_buff_ready",
+     "command": "u2_buff_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u2_buff_play",
+     "command": "u2_buff_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u2_buff_par_1"
+   ]
+  },
+  "HeidemarieSwordParadise": {
+   "command": [
+    "u3_attack_ready",
+    "u3_attack_play",
+    "u3_attack_end"
+   ],
+   "note": "剑之乐园（Ancient / 0 费，全体敌人）：顶·裂空斩档（全卡池单体特效最重的一档）+ 破军 ux 全屏演出。身体 u3_attack_ready(0.467) → u3_attack_play(0.933) → u3_attack_end(0.467)；特效起播 467 / 967ms，目标侧 0 / 467ms。全屏接管时单体特效让位，不接管时由 PlayFallback 补播。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u3_attack_ready",
+     "command": "u3_attack_play",
+     "start_ms": 466.7
+    },
+    {
+     "group": "heidemarie_30093_eff_u3_attack_play",
+     "command": "u3_attack_play",
+     "start_ms": 966.7
+    }
+   ],
+   "target": [
+    {
+     "group": "heidemarie_30093_eff_u3_attack_ready_target",
+     "command": "u3_attack_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u3_attack_target",
+     "command": "u3_attack_play",
+     "start_ms": 466.7
+    },
+    {
+     "group": "heidemarie_30093_eff_u3_attack_target_flash",
+     "command": "u3_attack_play",
+     "start_ms": 466.7
+    }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_u3_attack_self_par_1",
+    "heidemarie_30093_u3_attack_target_par_1",
+    "heidemarie_30093_u3_attack_target_par_2",
+    "heidemarie_30093_eff_attack_play1_target_pati3",
+    "heidemarie_30093_u3_attack_target_par_3"
+   ]
+  },
+  "HeidemarieSwordTomb": {
+   "command": [
+    "u2_buff_ready",
+    "u2_buff_play"
+   ],
+   "note": "剑冢（Uncommon / 2 费，非指向）：结阵档。身体 u2_buff_ready(0.467) → u2_buff_play(1.4)；特效起播 0 / 467ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u2_buff_ready",
+     "command": "u2_buff_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u2_buff_play",
+     "command": "u2_buff_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u2_buff_par_1"
+   ]
+  },
+  "HeidemarieSwordlight": {
+   "command": [
+    "attack_ready",
+    "attack_play1"
+   ],
+   "note": "剑光（Common / 1 费）：轻·横挥档。身体 attack_ready(0.2) → attack_play1(0.667)；特效起播 200ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_attack_play1",
+     "command": "attack_play1",
+     "start_ms": 200.0
+    }
+   ],
+   "target": [
+    {
+     "group": "heidemarie_30093_eff_attack_play1_target",
+     "command": "attack_play1",
+     "start_ms": 200.0
+    }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_eff_attack_play1_target_pati1",
+    "heidemarie_30093_eff_attack_play1_target_pati2",
+    "heidemarie_30093_eff_attack_play1_target_pati3"
+   ]
+  },
+  "HeidemarieSwordrain": {
+   "command": [
+    "attack_ready",
+    "attack_play1"
+   ],
+   "note": "剑雨（Common / 1 费）：轻·横挥档。身体 attack_ready(0.2) → attack_play1(0.667)；特效起播 200ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_attack_play1",
+     "command": "attack_play1",
+     "start_ms": 200.0
+    }
+   ],
+   "target": [
+    {
+     "group": "heidemarie_30093_eff_attack_play1_target",
+     "command": "attack_play1",
+     "start_ms": 200.0
+    }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_eff_attack_play1_target_pati1",
+    "heidemarie_30093_eff_attack_play1_target_pati2",
+    "heidemarie_30093_eff_attack_play1_target_pati3"
+   ]
+  },
+  "HeidemarieTripleGlow": {
+   "command": [
+    "attack_ready",
+    "attack_play2"
+   ],
+   "note": "叠光奏浪（Common / 2 费）：中·纵劈档（2 费上调，原 U1）。身体 attack_ready(0.2) → attack_play2(0.667)；特效起播 200ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_attack_play2",
+     "command": "attack_play2",
+     "start_ms": 200.0
+    }
+   ],
+   "target": [
+    {
+     "group": "heidemarie_30093_eff_attack_play2_target",
+     "command": "attack_play2",
+     "start_ms": 200.0
+    }
+   ],
+   "unsupported_particles": [
+    "heidemarie_30093_eff_attack_play1_target_pati1",
+    "heidemarie_30093_eff_attack_play1_target_pati2",
+    "heidemarie_30093_eff_attack_play1_target_pati3"
+   ]
+  },
+  "HeidemarieUnfoldAurora": {
+   "command": [
+    "u2_buff_ready",
+    "u2_buff_play"
+   ],
+   "note": "展开极光（Uncommon / 2 费）：结阵档。身体 u2_buff_ready(0.467) → u2_buff_play(1.4)；特效起播 0 / 467ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u2_buff_ready",
+     "command": "u2_buff_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u2_buff_play",
+     "command": "u2_buff_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u2_buff_par_1"
+   ]
+  },
+  "HeidemarieVigil": {
+   "command": [
+    "buff_ready",
+    "buff_play"
+   ],
+   "note": "守望（Common / 0 费）：施法档。身体 buff_ready(0.467) → buff_play(1.167)；特效起播 0。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_casting_ready",
+     "command": "buff_ready",
+     "start_ms": 0.0
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_casting_pati1"
+   ]
+  },
+  "HeidemarieWallOfSwords": {
+   "command": [
+    "u2_buff_ready",
+    "u2_buff_play"
+   ],
+   "note": "壁仞千里（Uncommon / 1 费能力）：结阵档。身体 u2_buff_ready(0.467) → u2_buff_play(1.4)；特效起播 0 / 467ms。",
+   "owner": [
+    {
+     "group": "heidemarie_30093_eff_u2_buff_ready",
+     "command": "u2_buff_ready",
+     "start_ms": 0.0
+    },
+    {
+     "group": "heidemarie_30093_eff_u2_buff_play",
+     "command": "u2_buff_play",
+     "start_ms": 466.7
+    }
+   ],
+   "target": [],
+   "unsupported_particles": [
+    "heidemarie_30093_u2_buff_par_1"
+   ]
   }
  }
 }

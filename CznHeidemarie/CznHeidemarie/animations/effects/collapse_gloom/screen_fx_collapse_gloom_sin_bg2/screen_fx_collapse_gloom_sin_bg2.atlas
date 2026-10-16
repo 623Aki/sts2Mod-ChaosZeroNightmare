@@ -1,0 +1,13 @@
+
+screen_fx_collapse_gloom_sin_bg2.png
+size: 2048,904
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+bg_crash_01
+  rotate: false
+  xy: 2, 2
+  size: 2044, 900
+  orig: 2044, 900
+  offset: 0, 0
+  index: -1

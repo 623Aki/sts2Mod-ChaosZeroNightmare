@@ -51,6 +51,20 @@ internal static class HeidemarieText
 			"heidemarie_card_play_tooltip",
 			"打出手牌时，在屏幕左侧弹出角色特写。");
 
+	/// <summary>「连接动画」设置分组的标题。</summary>
+	public static readonly SettingsLocalizedText LinkOverlaySection =
+		SettingsLocalization.Text("heidemarie_link_overlay_section", "连接动画");
+
+	/// <summary>「显示连接动画」开关的标题。</summary>
+	public static readonly SettingsLocalizedText LinkOverlayEnabled =
+		SettingsLocalization.Text("heidemarie_link_overlay_enabled", "显示连接动画");
+
+	/// <summary>「显示连接动画」开关的说明。</summary>
+	public static readonly SettingsLocalizedText LinkOverlayDescription =
+		SettingsLocalization.Text(
+			"heidemarie_link_overlay_enabled_description",
+			"在相邻的「连接」手牌之间显示流动光带与贴合浮动的粒子；拖动卡牌时光带会随之延展。");
+
 	/// <summary>「战斗音效」开关的标题（面板「战斗特效」分区用）。</summary>
 	public static readonly SettingsLocalizedText CombatSfxEnabled =
 		SettingsLocalization.Text("combat_sfx_enabled", "Effect Sounds");

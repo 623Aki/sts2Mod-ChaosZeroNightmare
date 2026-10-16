@@ -1,0 +1,55 @@
+
+screen_fx_collapse_gloom_sin_lighting.png
+size: 956,560
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+etw_dbff_c1
+  rotate: false
+  xy: 2, 260
+  size: 296, 296
+  orig: 296, 296
+  offset: 0, 0
+  index: -1
+etw_dbff_c2
+  rotate: false
+  xy: 300, 260
+  size: 296, 296
+  orig: 296, 296
+  offset: 0, 0
+  index: -1
+etw_dbff_c3
+  rotate: false
+  xy: 598, 260
+  size: 296, 296
+  orig: 296, 296
+  offset: 0, 0
+  index: -1
+flare04_01
+  rotate: false
+  xy: 2, 2
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+flash
+  rotate: false
+  xy: 260, 2
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+glass_light_111
+  rotate: false
+  xy: 518, 2
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+gr_side_dsv
+  rotate: false
+  xy: 776, 22
+  size: 177, 236
+  orig: 177, 236
+  offset: 0, 0
+  index: -1

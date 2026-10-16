@@ -23,7 +23,10 @@
   "HEIDEMARIE_REQUIEM_BLADE.description": "{KwBlock}随机对敌人造成{Damage:diff()}点伤害2次。\n{SenseName}：在手牌生成{Cards:diff()}张极光剑。",
 
   "HEIDEMARIE_FINAL_ECHO.title": "绝响",
-  "HEIDEMARIE_FINAL_ECHO.description": "{KwBlock}对全体敌人造成{Damage:diff()}点伤害。若手牌中存在解放极光，则将其消耗，此时墓地中每有1张极光剑，即可使伤害量+100%。",
+  "HEIDEMARIE_FINAL_ECHO.description": "{KwBlock}对全体敌人造成{Damage:diff()}点伤害。",
+
+  "HEIDEMARIE_TERMINUS.title": "终焉",
+  "HEIDEMARIE_TERMINUS.description": "{KwBlock}对全体敌人造成{Damage:diff()}点伤害。若手牌中存在解放极光，则将其消耗，此时墓地中每有1张极光剑，即可使伤害量+100%。\n本场战斗，任何人每[gold]消耗[/gold]过一张牌，这张牌的{energyPrefix:energyIcons(1)}费用减少1。",
 
   "HEIDEMARIE_CONDENSED_AURORA.title": "凝聚极光",
   "HEIDEMARIE_CONDENSED_AURORA.description": "{KwBlock}移动至墓地时，[gold]极光之光[/gold]1。",
@@ -83,5 +86,41 @@
 
   "HEIDEMARIE_FORESEE.title": "窥星择光",
   "HEIDEMARIE_FORESEE.description": "{KwBlock}查看抽牌堆顶{View:diff()}张卡牌，选择其中1张加入手牌，其他的丢弃。",
-  "HEIDEMARIE_FORESEE.selectionScreenPrompt": "选择1张加入手牌。"
+  "HEIDEMARIE_FORESEE.selectionScreenPrompt": "选择1张加入手牌。",
+
+  "HEIDEMARIE_AURORA_WARD.title": "极光护壁",
+  "HEIDEMARIE_AURORA_WARD.description": "{KwBlock}获得{Block:diff()}点[gold]格挡[/gold]。打出前手牌中每有1张[gold]连接[/gold]卡牌，即可使格挡+{Bonus:diff()}。",
+
+  "HEIDEMARIE_VIGIL.title": "守望",
+  "HEIDEMARIE_VIGIL.description": "{KwBlock}选择手牌中的1张牌丢弃。获得{Block:diff()}点[gold]格挡[/gold]。若丢弃的是极光剑，改为获得{SwordBlock:diff()}点[gold]格挡[/gold]。",
+  "HEIDEMARIE_VIGIL.selectionScreenPrompt": "选择要丢弃的牌。",
+
+  "HEIDEMARIE_FALLING_EDGE.title": "落刃",
+  "HEIDEMARIE_FALLING_EDGE.description": "{KwBlock}造成{Damage:diff()}点伤害。丢弃手牌中最多{Cards:diff()}张牌，每弃1张，抽1张牌。",
+  "HEIDEMARIE_FALLING_EDGE.selectionScreenPrompt": "选择要丢弃的牌（可少于{Cards}张）。",
+
+  "HEIDEMARIE_GATHER_STAR.title": "拾星",
+  "HEIDEMARIE_GATHER_STAR.description": "{KwBlock}抽{Cards:diff()}张牌。",
+
+  "HEIDEMARIE_BURY_LIGHT.title": "葬光",
+  "HEIDEMARIE_BURY_LIGHT.description": "{KwBlock}丢弃手牌中任意数量的牌（最多{Cards:diff()}张），每弃1张，在手牌生成1张极光剑。",
+  "HEIDEMARIE_BURY_LIGHT.selectionScreenPrompt": "选择要埋葬的牌。",
+
+  "HEIDEMARIE_STAR_TRAIL.title": "星轨",
+  "HEIDEMARIE_STAR_TRAIL.description": "{KwBlock}查看抽牌堆顶{View:diff()}张卡牌，将其中带[gold]连接[/gold]的卡牌加入手牌，其余丢弃。",
+
+  "HEIDEMARIE_LIGHT_PRISM.title": "光棱",
+  "HEIDEMARIE_LIGHT_PRISM.description": "{KwBlock}造成等同于你当前[gold]格挡[/gold]值的伤害。",
+
+  "HEIDEMARIE_WALL_OF_SWORDS.title": "壁仞千里",
+  "HEIDEMARIE_WALL_OF_SWORDS.description": "{KwBlock}每当你丢弃1张牌时，获得{Block:diff()}点[gold]格挡[/gold]。若丢弃的是极光剑，改为获得{SwordBlock:diff()}点[gold]格挡[/gold]。",
+
+  "HEIDEMARIE_DAYBREAK.title": "破晓",
+  "HEIDEMARIE_DAYBREAK.description": "{KwBlock}获得{Energy:diff()}点能量。\n{BurnName}：在手牌生成{Cards:diff()}张极光剑。",
+
+  "HEIDEMARIE_OLD_OATH.title": "旧誓",
+  "HEIDEMARIE_OLD_OATH.description": "{KwBlock}回合开始时，墓地中每有1张极光剑，即可获得{Block:diff()}点[gold]格挡[/gold]。",
+
+  "HEIDEMARIE_SWORD_PARADISE.title": "剑之乐园",
+  "HEIDEMARIE_SWORD_PARADISE.description": "{KwBlock}对所有敌人造成其最大生命值50%的伤害，并根据造成的伤害回复自身。若回复量溢出，则回复队友。打出后移除此牌。"
 }

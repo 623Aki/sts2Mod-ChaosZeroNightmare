@@ -73,14 +73,16 @@ internal static class HeidemarieBattleReadyRuntime
 		/// </remarks>
 		public CombatPresentationCardRoute ResolveRoute(CardModel card)
 		{
-			if (card is HeidemarieLiberatedAurora)
-			{
-				return CombatPresentationCardRoute.Ultimate;
-			}
+			CombatPresentationCardRoute route = card is HeidemarieLiberatedAurora
+				? CombatPresentationCardRoute.Ultimate
+				: (card.Type == CardType.Attack
+					? CombatPresentationCardRoute.Attack
+					: CombatPresentationCardRoute.Skill);
 
-			return card.Type == CardType.Attack
-				? CombatPresentationCardRoute.Attack
-				: CombatPresentationCardRoute.Skill;
+			// 环绕层里有一层是「解放极光」专属（源 `.brmd` 的 ug_attack 光斑），
+			// 它只在这条路线下显示，所以要把最近一次路线记下来给 StartIdleEffects 用。
+			_lastRoute = route;
+			return route;
 		}
 
 		/// <inheritdoc/>
@@ -148,36 +150,121 @@ internal static class HeidemarieBattleReadyRuntime
 				return;
 			}
 
-			StartSpineLoops(root);
+			Walk(root);
 
-			static void StartSpineLoops(Node node)
+			void Walk(Node node)
 			{
 				foreach (Node child in node.GetChildren())
 				{
 					if (child.GetClass() == "SpineSprite")
 					{
-						StartLoop(child);
+						Arm(child);
 					}
 
-					StartSpineLoops(child);
+					Walk(child);
 				}
 			}
+		}
 
-			static void StartLoop(Node spine)
+		/// <summary>
+		/// 按场景节点的 metadata 决定这一层「显不显示、什么时候起播、播哪个 clip」。
+		///
+		/// <para>四个字段全部来自 CZN 源数据（`model_data/30093_battle_ready.brmd`
+		/// 的 `b_idle` command）：`czn_group` 是特效组键、`czn_clip` 是源 `.cfx`
+		/// 指定的 clip、`czn_start_ms` 是源 `.srmd` 的 delay、`czn_route`
+		/// 只在某条特写路线下显示（缺省=所有路线）。</para>
+		/// </summary>
+		private void Arm(Node spine)
+		{
+			string gate = ReadMeta(spine, RouteMeta);
+			if (!string.IsNullOrEmpty(gate)
+				&& !string.Equals(gate, _lastRoute?.ToString(), StringComparison.Ordinal))
 			{
-				try
+				SetIdleLayerVisible(spine, false);
+				return;
+			}
+
+			double delayMs = ReadMetaDouble(spine, StartMsMeta);
+			if (delayMs <= 0.0)
+			{
+				SetIdleLayerVisible(spine, true);
+				StartIdleLoop(spine);
+				return;
+			}
+
+			SceneTree? tree = spine.GetTree();
+			if (tree is null)
+			{
+				return;
+			}
+
+			// 源里这几层是错开的（b_1@0 / b_2@1700 / f_1@3000 / f_2@4500），
+			// 未到起播时刻先不显示 —— 与源「delay 之前不渲染」一致。
+			SetIdleLayerVisible(spine, false);
+			SceneTreeTimer timer = tree.CreateTimer(delayMs / 1000.0);
+			timer.Timeout += () =>
+			{
+				if (!GodotObject.IsInstanceValid(spine))
 				{
-					MegaSprite sprite = new(spine);
-					if (sprite.IsAnimationStateReady() && sprite.HasAnimation(IdleEffectAnimation))
-					{
-						sprite.TryGetAnimationState()?.SetAnimation(IdleEffectAnimation, loop: true, trackId: 0);
-					}
+					return;
 				}
-				catch (Exception ex)
+
+				SetIdleLayerVisible(spine, true);
+				StartIdleLoop(spine);
+			};
+		}
+
+		/// <summary>按 metadata 里的 clip 名循环起播；缺省用 <see cref="IdleEffectAnimation"/>。</summary>
+		private static void StartIdleLoop(Node spine)
+		{
+			try
+			{
+				string clip = ReadMeta(spine, ClipMeta);
+				if (string.IsNullOrEmpty(clip))
 				{
-					// 骨架尚未就绪时查询会抛；等下一轮显示再试即可，不必打断立绘
-					HeidemarieIntegration.Log.Warn("特写剑影启动失败: " + ex.Message);
+					clip = IdleEffectAnimation;
 				}
+
+				MegaSprite sprite = new(spine);
+				if (sprite.IsAnimationStateReady() && sprite.HasAnimation(clip))
+				{
+					sprite.TryGetAnimationState()?.SetAnimation(clip, loop: true, trackId: 0);
+				}
+				else
+				{
+					HeidemarieIntegration.Log.Warn($"特写环绕层找不到 clip：{clip}");
+				}
+			}
+			catch (Exception ex)
+			{
+				// 骨架尚未就绪时查询会抛；等下一轮显示再试即可，不必打断立绘
+				HeidemarieIntegration.Log.Warn("特写剑影启动失败: " + ex.Message);
+			}
+		}
+
+		private static string ReadMeta(Node node, string key)
+		{
+			return node.HasMeta(key) ? node.GetMeta(key).AsString() : string.Empty;
+		}
+
+		private static double ReadMetaDouble(Node node, string key)
+		{
+			if (!node.HasMeta(key))
+			{
+				return 0.0;
+			}
+
+			Variant value = node.GetMeta(key);
+			return value.VariantType is Variant.Type.Float or Variant.Type.Int
+				? value.AsDouble()
+				: 0.0;
+		}
+
+		private static void SetIdleLayerVisible(Node node, bool visible)
+		{
+			if (node is CanvasItem item)
+			{
+				item.Visible = visible;
 			}
 		}
 
@@ -198,6 +285,18 @@ internal static class HeidemarieBattleReadyRuntime
 
 	/// <summary>剑影层的循环动画名（animations/effects 里的骨架统一只有 animation / 数字编号）。</summary>
 	private const string IdleEffectAnimation = "animation";
+
+	/// <summary>图层 metadata 键：该层源 `.cfx` 指定的 clip 名。</summary>
+	private const string ClipMeta = "czn_clip";
+
+	/// <summary>图层 metadata 键：该层起播时刻（毫秒，源 `.srmd` 的 delay）。</summary>
+	private const string StartMsMeta = "czn_start_ms";
+
+	/// <summary>图层 metadata 键：只在某条特写路线下显示；缺省=所有路线。</summary>
+	private const string RouteMeta = "czn_route";
+
+	/// <summary>最近一次解析出的特写路线，供 <see cref="Arm"/> 判断路线专属层。</summary>
+	private static CombatPresentationCardRoute? _lastRoute;
 
 	/// <summary>特写立绘的完整配置。</summary>
 	private static readonly BattleReadyOverlayProfile Profile = new BattleReadyOverlayProfile(

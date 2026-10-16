@@ -54,11 +54,11 @@ public sealed class HeidemarieTripleGlow : HeidemarieCard, ILinkCard
 
 		ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
 
-		// 2 费、伤害随连接数放大 → 用 u1 斩击链，比打击多一段起手与收招
-		// 特效时间轴见 effects/heidemarie_moves.json 的 HeidemarieTripleGlow 键（10 层）
+		// Common 2 费 → 中·纵劈档（Attack2，原 U1 斩击档下调）
+		// 特效时间轴见 effects/heidemarie_moves.json 的 HeidemarieTripleGlow 键
 		await DamageCmd.Attack(damage)
 			.FromCard(this, cardPlay)
-			.WithAttackerAnim(HeidemarieAttackPlan.U1.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.U1))
+			.WithAttackerAnim(HeidemarieAttackPlan.Heavy.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Heavy))
 			.Targeting(cardPlay.Target)
 			// 重击手感：钝击命中特效比斩击更沉
 			.WithHitFx("vfx/vfx_heavy_blunt")

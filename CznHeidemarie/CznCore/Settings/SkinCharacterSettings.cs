@@ -81,6 +81,9 @@ internal sealed class SkinCharacterSettings : ICharacterSkinAudioSettings, IChar
 
 	public CharacterSelectBackgroundVariant CharacterSelectBackgroundVariant => _store.GetCharacterSelectBackgroundVariant(CharacterId);
 
+	/// <summary>手牌「连接」光带开关。</summary>
+	public bool LinkOverlayEnabled => _store.GetCharacterLinkOverlayEnabled(CharacterId);
+
 	public SkinCharacterSettings(CharacterSkinSettingsStore store, string characterId)
 	{
 		_store = store ?? throw new ArgumentNullException("store");
@@ -210,6 +213,11 @@ internal sealed class SkinCharacterSettings : ICharacterSkinAudioSettings, IChar
 	public void SetCharacterSelectBackgroundVariant(CharacterSelectBackgroundVariant value, bool persist)
 	{
 		_store.SetCharacterSelectBackgroundVariant(CharacterId, value, persist);
+	}
+
+	public void SetLinkOverlayEnabled(bool value, bool persist)
+	{
+		_store.SetCharacterLinkOverlayEnabled(CharacterId, value, persist);
 	}
 
 	public void ResetToDefaults(bool persist)

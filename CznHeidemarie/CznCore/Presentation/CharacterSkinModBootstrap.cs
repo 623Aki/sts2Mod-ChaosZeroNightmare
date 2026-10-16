@@ -107,6 +107,10 @@ internal static class CharacterSkinModBootstrap
 			{
 				ApplyCorePatchSafely(harmony, patchType2, ref patched, ref skipped, logPriority);
 			}
+			foreach (Type patchTypeLifecycle in CharacterLifecycleTransport.PatchTypes)
+			{
+				ApplyCorePatchSafely(harmony, patchTypeLifecycle, ref patched, ref skipped, logPriority);
+			}
 			foreach (Type patchType3 in CombatBlockGainSfxReplacementPatches.PatchTypes)
 			{
 				ApplyCorePatchSafely(harmony, patchType3, ref patched, ref skipped, logPriority);
@@ -123,10 +127,11 @@ internal static class CharacterSkinModBootstrap
 			{
 				ApplyCorePatchSafely(harmony, patchType6, ref patched, ref skipped, logPriority);
 			}
-			foreach (Type patchType7 in CombatCutInToggleHudPatches.PatchTypes)
-			{
-				ApplyCorePatchSafely(harmony, patchType7, ref patched, ref skipped, logPriority);
-			}
+			// 注意：CombatCutInToggleHudPatches 不在此处统一应用。
+			// 它的 4 个补丁类带 Prepare() => CombatCutInToggleHudService.IsRegistered 守卫，
+			// 若早于注册被应用，会被 Harmony 静默跳过，导致战斗界面「全屏演出」开关不出现。
+			// 参考 mod Nine / Tiphera 的做法：由角色侧在 CombatCutInToggleHudService.Register
+			// 之后自行按 PatchTypes 循环应用（见 HeidemarieCutInToggleRuntime.Initialize）。
 			foreach (Type patchType8 in CombatTriggeredCardComboRuntime.PatchTypes)
 			{
 				ApplyCorePatchSafely(harmony, patchType8, ref patched, ref skipped, logPriority);
