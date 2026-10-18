@@ -1,2105 +1,2108 @@
 {
- "schema": "czn-heidemarie.cinematic.v3",
- "route": "ug",
- "note": "由 tools/extract_cinematic_plan.py 从 CNZ_Source/czn30093 的 .srmd + .cfx 直接提取。z = group_zorder + primitive_z（层级真值）；start_ms 走 from_guid 事件链；end_ms = start_ms + 骨架实测 clip 时长。scale/rotation/opacity/offset 为 srmd 原值。STS2 特有适配集中在 renderer 段，official 段是原事件原文，便于复核。 ｜ 图层已瘦身为「组键 + 窗口」，图层构成由 heidemarie_effect_groups.json 提供。",
- "source": {
-  "srmd": "30093.srmd",
-  "command": "ug_attack",
-  "character_id": "30093",
-  "body_animation": "ug_attack",
-  "body_duration_ms": 333.3,
-  "body_start_ms": 0.0
- },
- "design": {
-  "width": 1280.0,
-  "height": 720.0
- },
- "canvas_layer": 4090,
- "duration_ms": 5500.0,
- "hit_ms": 2800.0,
- "actor_restore_ms": 2800.0,
- "presentation_end_ms": 5500.0,
- "bg": {
-  "alpha": 0.9,
-  "fade_in_ms": 120.0,
-  "fade_in_at_ms": 0.0,
-  "fade_out_at_ms": 5050.0,
-  "fade_out_ms": 450.0
- },
- "shakes": [
-  {
-   "start_ms": 4700.0,
-   "duration_ms": 300.0,
-   "amplitude": 10.0,
-   "frequency": 30.0,
-   "angle": 0.0,
-   "official": {
-    "camera_skeleton": "cm_shake_vb_dn",
-    "cam_ignore_hitstop": true,
-    "delay_ms": 4700.0,
-    "duration_from_camera_skel_ms": 300.0,
-    "start_is_official": true,
-    "duration_is_manual": true,
-    "amplitude_is_manual": true
-   }
-  }
- ],
- "camera": {
-  "moves": [],
-  "zooms": [
-   {
-    "start_ms": 4666.0,
-    "duration_ms": 0.0,
-    "curve": "0,0,0,0",
-    "pivot": "CENTER",
-    "guid": "1c6882c2-7f9b-495d-b08c-8fd24a7be9c0",
-    "zoom": 1.5
-   },
-   {
-    "start_ms": 4666.0,
-    "duration_ms": 333.3,
-    "curve": "0.06111111,0.8833333,0.13333334,0.9222222",
-    "pivot": "CENTER",
-    "guid": "1dc7a4b8-8ed1-4559-b1c6-08f9cac01894",
-    "zoom": 1.0
-   }
-  ],
-  "coordinate_note": "与参考 mod 一致：相机坐标为画布坐标，STAGE 使用 center - move * zoom；SCREEN 不跟随。"
- },
- "renderer": {
-  "matte_peak": 0.9,
-  "shake_source": "起止时刻来自 srmd command.shake 事件链；振幅/频率资产里没有，人工标定",
-  "corrections": {
-   "camera": "cam_move / cam_zoom 已提取并由舞台应用；cam_spine 仍无对应通道",
-   "color_blend": "CZN 颜色分级无对应通道，已丢弃",
-   "bg_blend": "「变黑」事件已映射进 bg.fade_in_at_ms / fade_in_ms；「恢复透明」事件仍未映射，淡出仍用人工参数",
-   "opening": "0 ~ 833.3ms 官方只有本体 ani、没有任何 effect 层（首个 effect 组挂在 wait_until_end 的 ani 之后）。已用 bg.fade_in_at_ms 延后黑幕接管、并让本体延后隐藏来对齐（见 HeidemarieCinematicRuntime 的 takeover_reached）",
-   "attach_without_anchor": "bone_type=ATTACH 且 slot/bone 为空，按绝对坐标渲染"
-  },
-  "known_gaps": [
-   "ug_attack_screen_pati1 是 CZNFX 粒子，STS2 无 CZNFX 运行时",
-   "30093_ug_portrait1_1..9 与 30093_ug_portrait2_1..3 在 srmd 里同属一个 effect 事件（delay 0），.cfx 只给深度不给逐帧时序，因此全部从 0 起播。原游戏大概率是逐帧接力（约 300ms 一张），资产里没有依据，需进游戏标定。",
-   "shake 的 file_name 指向相机骨架，那不是 Spine 骨架（转换器报 Bad optional access），所以只有起止时刻是真值，时长/振幅/频率全是人工值",
-   "cam_move / cam_zoom 已输出到 camera 段；cam_spine / color_blend / bg_blend / node_ani 仍无对应通道"
-  ]
- },
- "layers": [
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "heidemarie_30093_ug_sword_intro_b2",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 0,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "heidemarie_30093_ug_sword_intro_b",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 1,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "heidemarie_30093_ug_sword_intro2_b",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 1,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "30093_ug_portrait1_9",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 2,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "30093_ug_portrait1_8",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 3,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "30093_ug_portrait1_7",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 4,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "30093_ug_portrait1_6",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 5,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "30093_ug_portrait1_5",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 6,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "30093_ug_portrait1_4",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 7,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "30093_ug_portrait1_3",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 8,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "30093_ug_portrait1_2",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 9,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "30093_ug_portrait1_1",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 10,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "heidemarie_30093_ug_sword_intro_f",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 11,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "heidemarie_30093_ug_sword_intro_f2",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 12,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "heidemarie_30093_ug_sword_intro_hq1",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 13,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "heidemarie_30093_ug_sword_intro_hq2",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 14,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "heidemarie_30093_ug_sword_intro_hq3",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 15,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "heidemarie_30093_ug_sword_intro_g1",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 16,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "heidemarie_30093_ug_sword_intro_g2",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 17,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_01",
-   "name": "heidemarie_30093_ug_sword_intro2_f",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 18,
-    "type": "FRONT",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 2830.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_impact",
-   "name": "heidemarie_30093_ug_impact",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 200,
-    "group_global_z": 0,
-    "primitive_z": 0,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "1a03d4ca-b4a3-4fd8-8233-948af19dd527",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4100.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_sword_eff_b",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 1,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_sword_eff_f",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 2,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_sword_eff_g",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 3,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug1_6",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 4,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug1_5",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 5,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug1_4",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 6,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug1_3",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 7,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug1_2",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 8,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug1_1",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 9,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug_aura",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 10,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug_glass_pat",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 11,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug2_b",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 12,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug_bg_f",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 13,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug2_f",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 14,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "30093_ug_portrait2_3",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 15,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "30093_ug_portrait2_2",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 16,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "30093_ug_portrait2_1",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 17,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug3_1",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 18,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_02",
-   "name": "heidemarie_30093_ug_bg_f2",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 0,
-    "group_global_z": 0,
-    "primitive_z": 19,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4930.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_bg",
-   "name": "heidemarie_30093_ug_bg_b2",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": -5000,
-    "group_global_z": 0,
-    "primitive_z": -1,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "a705ac59-afa7-459d-955d-f7361d704b51",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4670.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_bg",
-   "name": "heidemarie_30093_ug_bg_b",
-   "start_ms": 0.0,
-   "target": "STAGE",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": -5000,
-    "group_global_z": 0,
-    "primitive_z": 0,
-    "type": "CENTER",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": false,
-    "guid": "a705ac59-afa7-459d-955d-f7361d704b51",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 4670.0
-   }
-  },
-  {
-   "group": "heidemarie_30093_ug_attack_screen",
-   "name": "heidemarie_30093_ug_screen_eff",
-   "start_ms": 0.0,
-   "target": "SCREEN",
-   "bone_type": "ATTACH",
-   "official": {
-    "group_zorder": 300,
-    "group_global_z": 0,
-    "primitive_z": 0,
-    "type": "SCREEN",
-    "bone_type": "ATTACH",
-    "slot": "",
-    "inherit_scale": true,
-    "guid": "d229ee86-5c2b-400c-bcab-5078401480a4",
-    "delay_ms": 0.0,
-    "wait_until_end": true,
-    "event_duration_ms": 5500.0
-   }
-  }
- ],
- "unsupported": [
-  {
-   "kind": "color_blend",
-   "guid": "0c4ed84b-aebf-4318-b362-5df383860551",
-   "file_name": null,
-   "reason": "CZN 颜色分级，STS2 无对应通道"
-  },
-  {
-   "kind": "color_blend",
-   "guid": "196b56d2-1899-4c2b-9f48-8ad2cf59d7cf",
-   "file_name": null,
-   "reason": "CZN 颜色分级，STS2 无对应通道"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "heidemarie_30093_ug_sword_intro_b2",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "heidemarie_30093_ug_sword_intro_b",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "heidemarie_30093_ug_sword_intro2_b",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "30093_ug_portrait1_9",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "30093_ug_portrait1_8",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "30093_ug_portrait1_7",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "30093_ug_portrait1_6",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "30093_ug_portrait1_5",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "30093_ug_portrait1_4",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "30093_ug_portrait1_3",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "30093_ug_portrait1_2",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "30093_ug_portrait1_1",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "heidemarie_30093_ug_sword_intro_f",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "heidemarie_30093_ug_sword_intro_f2",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "heidemarie_30093_ug_sword_intro_hq1",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "heidemarie_30093_ug_sword_intro_hq2",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "heidemarie_30093_ug_sword_intro_hq3",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "heidemarie_30093_ug_sword_intro_g1",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "heidemarie_30093_ug_sword_intro_g2",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_01",
-   "source": "heidemarie_30093_ug_sword_intro2_f",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_impact",
-   "source": "heidemarie_30093_ug_impact",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "shake",
-   "guid": "2cfd83db-50b3-433b-b03a-1cf1f89cf0ad",
-   "file_name": "cm_shake_vb_dn",
-   "reason": "相机抖动骨架在素材区标记为不可渲染；STS2 战斗无相机，由 renderer.shakes 近似"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_sword_eff_b",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_sword_eff_f",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_sword_eff_g",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug1_6",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug1_5",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug1_4",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug1_3",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug1_2",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug1_1",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug_aura",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug_glass_pat",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug2_b",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug_bg_f",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug2_f",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "30093_ug_portrait2_3",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "30093_ug_portrait2_2",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "30093_ug_portrait2_1",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug3_1",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_02",
-   "source": "heidemarie_30093_ug_bg_f2",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "color_blend",
-   "guid": "8300cc1c-b696-445e-ac9b-e789ebe95f2d",
-   "file_name": null,
-   "reason": "CZN 颜色分级，STS2 无对应通道"
-  },
-  {
-   "kind": "color_blend",
-   "guid": "ff8bb551-dc9a-437f-b412-d54140bcae13",
-   "file_name": null,
-   "reason": "CZN 颜色分级，STS2 无对应通道"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_bg",
-   "source": "heidemarie_30093_ug_bg_b2",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_bg",
-   "source": "heidemarie_30093_ug_bg_b",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "node_ani",
-   "guid": "aeb17649-1078-4448-a45a-fd19aa633174",
-   "file_name": "heidemarie_30093_ug_monster_node",
-   "reason": "CZN node_ani 是 UI 节点树，STS2 无对应节点"
-  },
-  {
-   "kind": "attach_without_anchor",
-   "group": "heidemarie_30093_ug_attack_screen",
-   "source": "heidemarie_30093_ug_screen_eff",
-   "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
-  },
-  {
-   "kind": "primitive_format:particle",
-   "group": "heidemarie_30093_ug_attack_screen",
-   "source": "heidemarie_30093_ug_attack_screen_pati1",
-   "reason": "非 Spine 图元（CZNFX 粒子 / 遮罩），STS2 无对应运行时"
-  }
- ],
- "missing": [],
- "z_collisions": [
-  {
-   "z": 1,
-   "layers": [
-    "heidemarie_30093_sword_eff_b",
-    "heidemarie_30093_ug_sword_intro2_b",
-    "heidemarie_30093_ug_sword_intro_b"
-   ]
-  },
-  {
-   "z": 2,
-   "layers": [
-    "30093_ug_portrait1_9",
-    "heidemarie_30093_sword_eff_f"
-   ]
-  },
-  {
-   "z": 3,
-   "layers": [
-    "30093_ug_portrait1_8",
-    "heidemarie_30093_sword_eff_g"
-   ]
-  },
-  {
-   "z": 4,
-   "layers": [
-    "30093_ug_portrait1_7",
-    "heidemarie_30093_ug1_6"
-   ]
-  },
-  {
-   "z": 5,
-   "layers": [
-    "30093_ug_portrait1_6",
-    "heidemarie_30093_ug1_5"
-   ]
-  },
-  {
-   "z": 6,
-   "layers": [
-    "30093_ug_portrait1_5",
-    "heidemarie_30093_ug1_4"
-   ]
-  },
-  {
-   "z": 7,
-   "layers": [
-    "30093_ug_portrait1_4",
-    "heidemarie_30093_ug1_3"
-   ]
-  },
-  {
-   "z": 8,
-   "layers": [
-    "30093_ug_portrait1_3",
-    "heidemarie_30093_ug1_2"
-   ]
-  },
-  {
-   "z": 9,
-   "layers": [
-    "30093_ug_portrait1_2",
-    "heidemarie_30093_ug1_1"
-   ]
-  },
-  {
-   "z": 10,
-   "layers": [
-    "30093_ug_portrait1_1",
-    "heidemarie_30093_ug_aura"
-   ]
-  },
-  {
-   "z": 11,
-   "layers": [
-    "heidemarie_30093_ug_glass_pat",
-    "heidemarie_30093_ug_sword_intro_f"
-   ]
-  },
-  {
-   "z": 12,
-   "layers": [
-    "heidemarie_30093_ug2_b",
-    "heidemarie_30093_ug_sword_intro_f2"
-   ]
-  },
-  {
-   "z": 13,
-   "layers": [
-    "heidemarie_30093_ug_bg_f",
-    "heidemarie_30093_ug_sword_intro_hq1"
-   ]
-  },
-  {
-   "z": 14,
-   "layers": [
-    "heidemarie_30093_ug2_f",
-    "heidemarie_30093_ug_sword_intro_hq2"
-   ]
-  },
-  {
-   "z": 15,
-   "layers": [
-    "30093_ug_portrait2_3",
-    "heidemarie_30093_ug_sword_intro_hq3"
-   ]
-  },
-  {
-   "z": 16,
-   "layers": [
-    "30093_ug_portrait2_2",
-    "heidemarie_30093_ug_sword_intro_g1"
-   ]
-  },
-  {
-   "z": 17,
-   "layers": [
-    "30093_ug_portrait2_1",
-    "heidemarie_30093_ug_sword_intro_g2"
-   ]
-  },
-  {
-   "z": 18,
-   "layers": [
-    "heidemarie_30093_ug3_1",
-    "heidemarie_30093_ug_sword_intro2_f"
-   ]
-  }
- ],
- "official": {
-  "command_keys": [
-   "ani",
-   "bg_blend",
-   "cam_move",
-   "cam_zoom",
-   "color_blend",
-   "cutin",
-   "entry",
-   "hit",
-   "node_ani",
-   "setting",
-   "shake"
-  ],
-  "note": "raw srmd 事件原文已逐层落在 layers[].official；此处只留非 Spine 段的原文索引",
-  "timing_rule": "from_guid 是播放树：同父兄弟并行、各用自己的 delay；wait_until_end 决定子节点挂在父节点结束处还是开始处。hit 的 delay 是绝对时刻（ug=2800 / ux=5266），直接采信。",
-  "flat_total_ms": 5500.0,
-  "flat_note": "忽略父子关系、一律从 0 起播的对照解，仅供比对。",
-  "command": {
-   "name": "ug_attack",
-   "duration": 0.0,
-   "template": "player_default",
-   "bg_off": false,
-   "skip_idle": false,
-   "flag_skip_left_effect": false,
-   "flag_return_idle": false,
-   "spark_delay": 67.0,
-   "spark_offset": "0,0",
-   "manual_setting": false,
-   "entry": [
+  "schema": "czn-heidemarie.cinematic.v3",
+  "route": "ug",
+  "note": "由 tools/extract_cinematic_plan.py 从 CNZ_Source/czn30093 的 .srmd + .cfx 直接提取。z = group_zorder + primitive_z（层级真值）；start_ms 走 from_guid 事件链；end_ms = start_ms + 骨架实测 clip 时长。scale/rotation/opacity/offset 为 srmd 原值。STS2 特有适配集中在 renderer 段，official 段是原事件原文，便于复核。 ｜ 图层已瘦身为「组键 + 窗口」，图层构成由 heidemarie_effect_groups.json 提供。",
+  "source": {
+    "srmd": "30093.srmd",
+    "command": "ug_attack",
+    "character_id": "30093",
+    "body_animation": "ug_attack",
+    "body_duration_ms": 333.3,
+    "body_start_ms": 0.0
+  },
+  "design": {
+    "width": 1280.0,
+    "height": 720.0
+  },
+  "canvas_layer": 4090.0,
+  "duration_ms": 5500.0,
+  "hit_ms": 2800.0,
+  "actor_restore_ms": 2800.0,
+  "presentation_end_ms": 5500.0,
+  "bg": {
+    "alpha": 0.9,
+    "fade_in_ms": 120.0,
+    "fade_in_at_ms": 0.0,
+    "fade_out_at_ms": 5050.0,
+    "fade_out_ms": 450.0
+  },
+  "shakes": [
     {
-     "wait_until_end": false,
-     "state": "Start",
-     "id": null,
-     "guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": null,
-     "bounds": "600, 600, 100, 70",
-     "duration": 0.0,
-     "etty": "ENTRY"
-    }
-   ],
-   "ani": [
-    {
-     "animation_name": "ug_attack",
-     "duration": 333.3,
-     "loop": false,
-     "loop_count": 0,
-     "motion_skip_slow": 0.0,
-     "motion_skip_fast": 0.0,
-     "id": null,
-     "guid": "ce6e8fad-c855-4ec4-8e63-a64859c02c75",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "217, 347, 100, 70",
-     "wait_until_end": true,
-     "etty": "ANI"
-    }
-   ],
-   "shake": [
-    {
-     "file_name": "cm_shake_vb_dn",
-     "cam_ignore_hitstop": true,
-     "cam_ignore_slow": false,
-     "wait_until_end": false,
-     "id": null,
-     "guid": "2cfd83db-50b3-433b-b03a-1cf1f89cf0ad",
-     "sequence": 0,
-     "delay": 4700.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "107, 887, 100, 70",
-     "duration": 0.0,
-     "etty": "SHAKE"
-    }
-   ],
-   "setting": [
-    {
-     "duration": 0.0,
-     "type": 2,
-     "on": false,
-     "our_target_type": "NONE",
-     "for_target_type": "ALL",
-     "wait_until_end": false,
-     "id": null,
-     "guid": "99b7a027-f1bf-4c3c-b72f-6f16dcc1b1a9",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "858, 480, 100, 70",
-     "etty": "SETTING"
-    },
-    {
-     "duration": 0.0,
-     "type": 2,
-     "on": true,
-     "our_target_type": "NONE",
-     "for_target_type": "ALL",
-     "wait_until_end": false,
-     "id": null,
-     "guid": "1a7ae066-3a7b-48f4-8b79-485e600d25f9",
-     "sequence": 0,
-     "delay": 4666.0,
-     "from_guid": "99b7a027-f1bf-4c3c-b72f-6f16dcc1b1a9",
-     "bounds": "999, 481, 100, 70",
-     "etty": "SETTING"
-    }
-   ],
-   "cam_spine": [
-    {
-     "file_name": "heidemarie_30093_ug_battle_ready_camera_path",
-     "animation_name": "animation",
-     "fade_duration": 0,
-     "fade_frame": 0.0,
-     "fade_curve": "0,0,1,1",
-     "restoration": false,
-     "id": null,
-     "guid": "fed3f920-1b2c-4fa3-aca9-99a09fbe0e79",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "332, 883, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "CAM_SPINE"
-    },
-    {
-     "file_name": "heidemarie_30093_ug_camera_shake",
-     "animation_name": "animation",
-     "fade_duration": 0,
-     "fade_frame": 0.0,
-     "fade_curve": "0,0,1,1",
-     "restoration": false,
-     "id": null,
-     "guid": "d3187c89-9785-4546-8993-665ac5df3d0f",
-     "sequence": 0,
-     "delay": 2766.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "216, 886, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "CAM_SPINE"
-    }
-   ],
-   "cam_zoom": [
-    {
-     "zoom": 1.5,
-     "duration": 0.0,
-     "curve": "0,0,0,0",
-     "id": null,
-     "guid": "1c6882c2-7f9b-495d-b08c-8fd24a7be9c0",
-     "sequence": 0,
-     "delay": 4666.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "452, 882, 100, 70",
-     "wait_until_end": true,
-     "etty": "CAM_ZOOM"
-    },
-    {
-     "zoom": 1.0,
-     "duration": 333.3,
-     "curve": "0.06111111,0.8833333,0.13333334,0.9222222",
-     "id": null,
-     "guid": "1dc7a4b8-8ed1-4559-b1c6-08f9cac01894",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "1c6882c2-7f9b-495d-b08c-8fd24a7be9c0",
-     "bounds": "449, 980, 100, 70",
-     "wait_until_end": true,
-     "etty": "CAM_ZOOM"
-    }
-   ],
-   "color_blend": [
-    {
-     "interval": 300.0,
-     "opacity": 0.0,
-     "color": [],
-     "our_target_type": "ALL",
-     "for_target_type": "ALL",
-     "slot": null,
-     "id": null,
-     "guid": "8300cc1c-b696-445e-ac9b-e789ebe95f2d",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "857, 636, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "COLOR_BLEND"
-    },
-    {
-     "interval": 0.0,
-     "opacity": 1.0,
-     "color": [],
-     "our_target_type": "ALL",
-     "for_target_type": "ALL",
-     "slot": null,
-     "id": null,
-     "guid": "ff8bb551-dc9a-437f-b412-d54140bcae13",
-     "sequence": 0,
-     "delay": 4333.0,
-     "from_guid": "8300cc1c-b696-445e-ac9b-e789ebe95f2d",
-     "bounds": "1001, 637, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "COLOR_BLEND"
-    },
-    {
-     "interval": 0.0,
-     "opacity": 1.0,
-     "color": [],
-     "our_target_type": "NONE",
-     "for_target_type": "TARGET",
-     "slot": null,
-     "id": null,
-     "guid": "0c4ed84b-aebf-4318-b362-5df383860551",
-     "sequence": 0,
-     "delay": 2700.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "856, 559, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "COLOR_BLEND"
-    },
-    {
-     "interval": 0.0,
-     "opacity": 0.0,
-     "color": [],
-     "our_target_type": "NONE",
-     "for_target_type": "TARGET",
-     "slot": null,
-     "id": null,
-     "guid": "196b56d2-1899-4c2b-9f48-8ad2cf59d7cf",
-     "sequence": 0,
-     "delay": 1333.0,
-     "from_guid": "0c4ed84b-aebf-4318-b362-5df383860551",
-     "bounds": "1001, 559, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "COLOR_BLEND"
-    }
-   ],
-   "bg_blend": [
-    {
-     "interval": 300.0,
-     "opacity": 0.0,
-     "color": [],
-     "category": "FRONT",
-     "id": null,
-     "guid": "e0132477-058d-4b3b-a67d-7d197bd9f8a2",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "857, 714, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "BG_BLEND"
-    },
-    {
-     "interval": 0.0,
-     "opacity": 1.0,
-     "color": [
-      {
-       "Colors": [
-        "102, 102, 102",
-        "0, 128, 128, 128"
-       ],
-       "Positions": [
-        0.0,
-        1.0
-       ]
+      "start_ms": 4700.0,
+      "duration_ms": 300.0,
+      "amplitude": 10.0,
+      "frequency": 30.0,
+      "angle": 0.0,
+      "official": {
+        "camera_skeleton": "cm_shake_vb_dn",
+        "cam_ignore_hitstop": true,
+        "delay_ms": 4700.0,
+        "duration_from_camera_skel_ms": 300.0,
+        "start_is_official": true,
+        "duration_is_manual": true,
+        "amplitude_is_manual": true
       }
-     ],
-     "category": "ALL",
-     "id": null,
-     "guid": "a8805112-1b29-4fa1-803f-f026ba5a178f",
-     "sequence": 0,
-     "delay": 4333.0,
-     "from_guid": "e0132477-058d-4b3b-a67d-7d197bd9f8a2",
-     "bounds": "1003, 717, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "BG_BLEND"
-    },
-    {
-     "interval": 300.0,
-     "opacity": 0.0,
-     "color": [],
-     "category": "BACK",
-     "id": null,
-     "guid": "8db02de2-6d69-4455-bcf4-6ee5e6abc1cd",
-     "sequence": 0,
-     "delay": 500.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "858, 791, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "BG_BLEND"
     }
-   ],
-   "node_ani": [
+  ],
+  "camera": {
+    "moves": [],
+    "zooms": [
+      {
+        "start_ms": 4666.0,
+        "duration_ms": 0.0,
+        "curve": "0,0,0,0",
+        "pivot": "CENTER",
+        "guid": "1c6882c2-7f9b-495d-b08c-8fd24a7be9c0",
+        "zoom": 1.5
+      },
+      {
+        "start_ms": 4666.0,
+        "duration_ms": 333.3,
+        "curve": "0.06111111,0.8833333,0.13333334,0.9222222",
+        "pivot": "CENTER",
+        "guid": "1dc7a4b8-8ed1-4559-b1c6-08f9cac01894",
+        "zoom": 1.0
+      }
+    ],
+    "coordinate_note": "与参考 mod 一致：相机坐标为画布坐标，STAGE 使用 center - move * zoom；SCREEN 不跟随。"
+  },
+  "renderer": {
+    "matte_peak": 0.9,
+    "shake_source": "起止时刻来自 srmd command.shake 事件链；振幅/频率资产里没有，人工标定",
+    "corrections": {
+      "camera": "cam_move / cam_zoom 已提取并由舞台应用；cam_spine 仍无对应通道",
+      "color_blend": "CZN 颜色分级无对应通道，已丢弃",
+      "bg_blend": "「变黑」事件已映射进 bg.fade_in_at_ms / fade_in_ms；「恢复透明」事件仍未映射，淡出仍用人工参数",
+      "opening": "0 ~ 833.3ms 官方只有本体 ani、没有任何 effect 层（首个 effect 组挂在 wait_until_end 的 ani 之后）。已用 bg.fade_in_at_ms 延后黑幕接管、并让本体延后隐藏来对齐（见 HeidemarieCinematicRuntime 的 takeover_reached）",
+      "attach_without_anchor": "bone_type=ATTACH 且 slot/bone 为空，按绝对坐标渲染"
+    },
+    "known_gaps": [
+      "ug_attack_screen_pati1 是 CZNFX 粒子，STS2 无 CZNFX 运行时",
+      "30093_ug_portrait1_1..9 与 30093_ug_portrait2_1..3 在 srmd 里同属一个 effect 事件（delay 0），.cfx 只给深度不给逐帧时序，因此全部从 0 起播。原游戏大概率是逐帧接力（约 300ms 一张），资产里没有依据，需进游戏标定。",
+      "shake 的 file_name 指向相机骨架，那不是 Spine 骨架（转换器报 Bad optional access），所以只有起止时刻是真值，时长/振幅/频率全是人工值",
+      "cam_move / cam_zoom 已输出到 camera 段；cam_spine / color_blend / bg_blend / node_ani 仍无对应通道"
+    ]
+  },
+  "layers": [
     {
-     "file_name": "heidemarie_30093_ug_monster_node",
-     "target": "TARGET",
-     "slot": null,
-     "target_bone": "",
-     "formation": false,
-     "pivot": "CENTER",
-     "pivot_slot": null,
-     "bone": "",
-     "offset_xy": "0,0",
-     "scale": 1.0,
-     "rotation": 0.0,
-     "restoration": true,
-     "igenor_slot_scale": true,
-     "formation_scale": true,
-     "id": null,
-     "guid": "aeb17649-1078-4448-a45a-fd19aa633174",
-     "sequence": 0,
-     "delay": 2700.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "402, 288, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "NODE_ANI"
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "heidemarie_30093_ug_sword_intro_b2",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 0.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "heidemarie_30093_ug_sword_intro_b",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 1.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "heidemarie_30093_ug_sword_intro2_b",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 1.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "30093_ug_portrait1_9",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 2.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "30093_ug_portrait1_8",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 3.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "30093_ug_portrait1_7",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 4.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "30093_ug_portrait1_6",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 5.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "30093_ug_portrait1_5",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 6.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "30093_ug_portrait1_4",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 7.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "30093_ug_portrait1_3",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 8.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "30093_ug_portrait1_2",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 9.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "30093_ug_portrait1_1",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 10.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "heidemarie_30093_ug_sword_intro_f",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 11.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "heidemarie_30093_ug_sword_intro_f2",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 12.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "heidemarie_30093_ug_sword_intro_hq1",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 13.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "heidemarie_30093_ug_sword_intro_hq2",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 14.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "heidemarie_30093_ug_sword_intro_hq3",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 15.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "heidemarie_30093_ug_sword_intro_g1",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 16.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "heidemarie_30093_ug_sword_intro_g2",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 17.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_01",
+      "name": "heidemarie_30093_ug_sword_intro2_f",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 18.0,
+        "type": "FRONT",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 2830.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_impact",
+      "name": "heidemarie_30093_ug_impact",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 200.0,
+        "group_global_z": 0.0,
+        "primitive_z": 0.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "1a03d4ca-b4a3-4fd8-8233-948af19dd527",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4100.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_sword_eff_b",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 1.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_sword_eff_f",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 2.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_sword_eff_g",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 3.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug1_6",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 4.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug1_5",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 5.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug1_4",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 6.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug1_3",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 7.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug1_2",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 8.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug1_1",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 9.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug_aura",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 10.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug_glass_pat",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 11.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug2_b",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 12.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug_bg_f",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 13.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug2_f",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 14.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "30093_ug_portrait2_3",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 15.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "30093_ug_portrait2_2",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 16.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "30093_ug_portrait2_1",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 17.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug3_1",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 18.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_02",
+      "name": "heidemarie_30093_ug_bg_f2",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 0.0,
+        "group_global_z": 0.0,
+        "primitive_z": 19.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4930.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_bg",
+      "name": "heidemarie_30093_ug_bg_b2",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": -5000.0,
+        "group_global_z": 0.0,
+        "primitive_z": -1.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "a705ac59-afa7-459d-955d-f7361d704b51",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4670.0
+      },
+      "overrides": {
+        "z": 6
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_bg",
+      "name": "heidemarie_30093_ug_bg_b",
+      "start_ms": 0.0,
+      "target": "STAGE",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": -5000.0,
+        "group_global_z": 0.0,
+        "primitive_z": 0.0,
+        "type": "CENTER",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": false,
+        "guid": "a705ac59-afa7-459d-955d-f7361d704b51",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 4670.0
+      }
+    },
+    {
+      "group": "heidemarie_30093_ug_attack_screen",
+      "name": "heidemarie_30093_ug_screen_eff",
+      "start_ms": 0.0,
+      "target": "SCREEN",
+      "bone_type": "ATTACH",
+      "official": {
+        "group_zorder": 300.0,
+        "group_global_z": 0.0,
+        "primitive_z": 0.0,
+        "type": "SCREEN",
+        "bone_type": "ATTACH",
+        "slot": "",
+        "inherit_scale": true,
+        "guid": "d229ee86-5c2b-400c-bcab-5078401480a4",
+        "delay_ms": 0.0,
+        "wait_until_end": true,
+        "event_duration_ms": 5500.0
+      }
     }
-   ],
-   "control_ani": [
+  ],
+  "unsupported": [
     {
-     "anim_name": "hit",
-     "type": "TARGET",
-     "duration": 0.0,
-     "loop": false,
-     "stop_motion": false,
-     "slot": null,
-     "id": null,
-     "guid": "c9106445-fbdf-4e6b-83ad-39079bbe19c9",
-     "sequence": 0,
-     "delay": 2866.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "812, 875, 100, 70",
-     "wait_until_end": true,
-     "etty": "CONTROL_ANI"
+      "kind": "color_blend",
+      "guid": "0c4ed84b-aebf-4318-b362-5df383860551",
+      "file_name": null,
+      "reason": "CZN 颜色分级，STS2 无对应通道"
     },
     {
-     "anim_name": "hit",
-     "type": "TARGET",
-     "duration": 0.0,
-     "loop": false,
-     "stop_motion": false,
-     "slot": null,
-     "id": null,
-     "guid": "2b830844-8a2e-4f40-a795-625552af036e",
-     "sequence": 1,
-     "delay": 166.0,
-     "from_guid": "c9106445-fbdf-4e6b-83ad-39079bbe19c9",
-     "bounds": "808, 983, 100, 70",
-     "wait_until_end": true,
-     "etty": "CONTROL_ANI"
+      "kind": "color_blend",
+      "guid": "196b56d2-1899-4c2b-9f48-8ad2cf59d7cf",
+      "file_name": null,
+      "reason": "CZN 颜色分级，STS2 无对应通道"
     },
     {
-     "anim_name": "hit",
-     "type": "TARGET",
-     "duration": 0.0,
-     "loop": false,
-     "stop_motion": false,
-     "slot": null,
-     "id": null,
-     "guid": "5cea49ba-7978-4910-a38d-7d44268c8062",
-     "sequence": 1,
-     "delay": 166.0,
-     "from_guid": "2b830844-8a2e-4f40-a795-625552af036e",
-     "bounds": "806, 1066, 100, 70",
-     "wait_until_end": true,
-     "etty": "CONTROL_ANI"
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "heidemarie_30093_ug_sword_intro_b2",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
     },
     {
-     "anim_name": "hit",
-     "type": "TARGET",
-     "duration": 0.0,
-     "loop": false,
-     "stop_motion": false,
-     "slot": null,
-     "id": null,
-     "guid": "1168e34a-511b-4692-bc62-2d818723c2ab",
-     "sequence": 1,
-     "delay": 133.0,
-     "from_guid": "5cea49ba-7978-4910-a38d-7d44268c8062",
-     "bounds": "811, 1152, 100, 70",
-     "wait_until_end": true,
-     "etty": "CONTROL_ANI"
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "heidemarie_30093_ug_sword_intro_b",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
     },
     {
-     "anim_name": "hit",
-     "type": "TARGET",
-     "duration": 100.0,
-     "loop": false,
-     "stop_motion": true,
-     "slot": null,
-     "id": null,
-     "guid": "d94cc1eb-3c5a-44ac-9b4d-c4c4b0744d29",
-     "sequence": 1,
-     "delay": 133.0,
-     "from_guid": "1168e34a-511b-4692-bc62-2d818723c2ab",
-     "bounds": "963, 1155, 100, 70",
-     "wait_until_end": true,
-     "etty": "CONTROL_ANI"
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "heidemarie_30093_ug_sword_intro2_b",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
     },
     {
-     "anim_name": "hit",
-     "type": "TARGET",
-     "duration": 0.0,
-     "loop": false,
-     "stop_motion": false,
-     "slot": null,
-     "id": null,
-     "guid": "ea862b66-dc36-4024-8938-81ced15871ae",
-     "sequence": 0,
-     "delay": 500.0,
-     "from_guid": "d94cc1eb-3c5a-44ac-9b4d-c4c4b0744d29",
-     "bounds": "954, 1029, 100, 70",
-     "wait_until_end": true,
-     "etty": "CONTROL_ANI"
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "30093_ug_portrait1_9",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "30093_ug_portrait1_8",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "30093_ug_portrait1_7",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "30093_ug_portrait1_6",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "30093_ug_portrait1_5",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "30093_ug_portrait1_4",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "30093_ug_portrait1_3",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "30093_ug_portrait1_2",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "30093_ug_portrait1_1",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "heidemarie_30093_ug_sword_intro_f",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "heidemarie_30093_ug_sword_intro_f2",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "heidemarie_30093_ug_sword_intro_hq1",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "heidemarie_30093_ug_sword_intro_hq2",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "heidemarie_30093_ug_sword_intro_hq3",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "heidemarie_30093_ug_sword_intro_g1",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "heidemarie_30093_ug_sword_intro_g2",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_01",
+      "source": "heidemarie_30093_ug_sword_intro2_f",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_impact",
+      "source": "heidemarie_30093_ug_impact",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "shake",
+      "guid": "2cfd83db-50b3-433b-b03a-1cf1f89cf0ad",
+      "file_name": "cm_shake_vb_dn",
+      "reason": "相机抖动骨架在素材区标记为不可渲染；STS2 战斗无相机，由 renderer.shakes 近似"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_sword_eff_b",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_sword_eff_f",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_sword_eff_g",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug1_6",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug1_5",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug1_4",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug1_3",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug1_2",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug1_1",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug_aura",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug_glass_pat",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug2_b",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug_bg_f",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug2_f",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "30093_ug_portrait2_3",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "30093_ug_portrait2_2",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "30093_ug_portrait2_1",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug3_1",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_02",
+      "source": "heidemarie_30093_ug_bg_f2",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "color_blend",
+      "guid": "8300cc1c-b696-445e-ac9b-e789ebe95f2d",
+      "file_name": null,
+      "reason": "CZN 颜色分级，STS2 无对应通道"
+    },
+    {
+      "kind": "color_blend",
+      "guid": "ff8bb551-dc9a-437f-b412-d54140bcae13",
+      "file_name": null,
+      "reason": "CZN 颜色分级，STS2 无对应通道"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_bg",
+      "source": "heidemarie_30093_ug_bg_b2",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_bg",
+      "source": "heidemarie_30093_ug_bg_b",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "node_ani",
+      "guid": "aeb17649-1078-4448-a45a-fd19aa633174",
+      "file_name": "heidemarie_30093_ug_monster_node",
+      "reason": "CZN node_ani 是 UI 节点树，STS2 无对应节点"
+    },
+    {
+      "kind": "attach_without_anchor",
+      "group": "heidemarie_30093_ug_attack_screen",
+      "source": "heidemarie_30093_ug_screen_eff",
+      "reason": "bone_type=ATTACH 但 slot/bone 均为空，原游戏挂点不可从资产还原；按绝对坐标处理"
+    },
+    {
+      "kind": "primitive_format:particle",
+      "group": "heidemarie_30093_ug_attack_screen",
+      "source": "heidemarie_30093_ug_attack_screen_pati1",
+      "reason": "非 Spine 图元（CZNFX 粒子 / 遮罩），STS2 无对应运行时"
     }
-   ],
-   "hit": [
+  ],
+  "missing": [],
+  "z_collisions": [
     {
-     "name": "action",
-     "motion_delay": 0.0,
-     "play_action": true,
-     "effect": null,
-     "wait_until_end": false,
-     "id": null,
-     "guid": "76da87fd-997c-4ba3-aabf-66dbbcbca766",
-     "sequence": 0,
-     "delay": 2800.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "570, 876, 100, 70",
-     "duration": 0.0,
-     "etty": "HIT"
+      "z": 1.0,
+      "layers": [
+        "heidemarie_30093_sword_eff_b",
+        "heidemarie_30093_ug_sword_intro2_b",
+        "heidemarie_30093_ug_sword_intro_b"
+      ]
+    },
+    {
+      "z": 2.0,
+      "layers": [
+        "30093_ug_portrait1_9",
+        "heidemarie_30093_sword_eff_f"
+      ]
+    },
+    {
+      "z": 3.0,
+      "layers": [
+        "30093_ug_portrait1_8",
+        "heidemarie_30093_sword_eff_g"
+      ]
+    },
+    {
+      "z": 4.0,
+      "layers": [
+        "30093_ug_portrait1_7",
+        "heidemarie_30093_ug1_6"
+      ]
+    },
+    {
+      "z": 5.0,
+      "layers": [
+        "30093_ug_portrait1_6",
+        "heidemarie_30093_ug1_5"
+      ]
+    },
+    {
+      "z": 6.0,
+      "layers": [
+        "30093_ug_portrait1_5",
+        "heidemarie_30093_ug1_4"
+      ]
+    },
+    {
+      "z": 7.0,
+      "layers": [
+        "30093_ug_portrait1_4",
+        "heidemarie_30093_ug1_3"
+      ]
+    },
+    {
+      "z": 8.0,
+      "layers": [
+        "30093_ug_portrait1_3",
+        "heidemarie_30093_ug1_2"
+      ]
+    },
+    {
+      "z": 9.0,
+      "layers": [
+        "30093_ug_portrait1_2",
+        "heidemarie_30093_ug1_1"
+      ]
+    },
+    {
+      "z": 10.0,
+      "layers": [
+        "30093_ug_portrait1_1",
+        "heidemarie_30093_ug_aura"
+      ]
+    },
+    {
+      "z": 11.0,
+      "layers": [
+        "heidemarie_30093_ug_glass_pat",
+        "heidemarie_30093_ug_sword_intro_f"
+      ]
+    },
+    {
+      "z": 12.0,
+      "layers": [
+        "heidemarie_30093_ug2_b",
+        "heidemarie_30093_ug_sword_intro_f2"
+      ]
+    },
+    {
+      "z": 13.0,
+      "layers": [
+        "heidemarie_30093_ug_bg_f",
+        "heidemarie_30093_ug_sword_intro_hq1"
+      ]
+    },
+    {
+      "z": 14.0,
+      "layers": [
+        "heidemarie_30093_ug2_f",
+        "heidemarie_30093_ug_sword_intro_hq2"
+      ]
+    },
+    {
+      "z": 15.0,
+      "layers": [
+        "30093_ug_portrait2_3",
+        "heidemarie_30093_ug_sword_intro_hq3"
+      ]
+    },
+    {
+      "z": 16.0,
+      "layers": [
+        "30093_ug_portrait2_2",
+        "heidemarie_30093_ug_sword_intro_g1"
+      ]
+    },
+    {
+      "z": 17.0,
+      "layers": [
+        "30093_ug_portrait2_1",
+        "heidemarie_30093_ug_sword_intro_g2"
+      ]
+    },
+    {
+      "z": 18.0,
+      "layers": [
+        "heidemarie_30093_ug3_1",
+        "heidemarie_30093_ug_sword_intro2_f"
+      ]
     }
-   ],
-   "damage": [
-    {
-     "name": "damage",
-     "play_action": true,
-     "value": 1,
-     "wait_until_end": false,
-     "id": null,
-     "guid": "8805f6a3-e7ca-49e3-af55-b95cb8704a2a",
-     "sequence": 0,
-     "delay": 2866.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "689, 873, 100, 70",
-     "duration": 0.0,
-     "etty": "DAMAGE"
-    },
-    {
-     "name": "damage",
-     "play_action": true,
-     "value": 1,
-     "wait_until_end": false,
-     "id": null,
-     "guid": "61dffe68-d12e-4c98-bfe8-d8e80a88db69",
-     "sequence": 0,
-     "delay": 166.0,
-     "from_guid": "8805f6a3-e7ca-49e3-af55-b95cb8704a2a",
-     "bounds": "695, 981, 100, 70",
-     "duration": 0.0,
-     "etty": "DAMAGE"
-    },
-    {
-     "name": "damage",
-     "play_action": true,
-     "value": 1,
-     "wait_until_end": false,
-     "id": null,
-     "guid": "805a2c76-e08b-40a0-a96a-c9a9ea6d72dd",
-     "sequence": 0,
-     "delay": 166.0,
-     "from_guid": "61dffe68-d12e-4c98-bfe8-d8e80a88db69",
-     "bounds": "693, 1069, 100, 70",
-     "duration": 0.0,
-     "etty": "DAMAGE"
-    },
-    {
-     "name": "damage",
-     "play_action": true,
-     "value": 2,
-     "wait_until_end": false,
-     "id": null,
-     "guid": "00fbc561-4751-4793-a582-c4d55d7e84ca",
-     "sequence": 0,
-     "delay": 100.0,
-     "from_guid": "805a2c76-e08b-40a0-a96a-c9a9ea6d72dd",
-     "bounds": "693, 1160, 100, 70",
-     "duration": 0.0,
-     "etty": "DAMAGE"
-    },
-    {
-     "name": "damage",
-     "play_action": true,
-     "value": 4,
-     "wait_until_end": false,
-     "id": null,
-     "guid": "5520c13e-d1f3-4c26-8d03-3c05f4f73789",
-     "sequence": 0,
-     "delay": 633.0,
-     "from_guid": "00fbc561-4751-4793-a582-c4d55d7e84ca",
-     "bounds": "697, 1263, 100, 70",
-     "duration": 0.0,
-     "etty": "DAMAGE"
+  ],
+  "official": {
+    "command_keys": [
+      "ani",
+      "bg_blend",
+      "cam_move",
+      "cam_zoom",
+      "color_blend",
+      "cutin",
+      "entry",
+      "hit",
+      "node_ani",
+      "setting",
+      "shake"
+    ],
+    "note": "raw srmd 事件原文已逐层落在 layers[].official；此处只留非 Spine 段的原文索引",
+    "timing_rule": "from_guid 是播放树：同父兄弟并行、各用自己的 delay；wait_until_end 决定子节点挂在父节点结束处还是开始处。hit 的 delay 是绝对时刻（ug=2800 / ux=5266），直接采信。",
+    "flat_total_ms": 5500.0,
+    "flat_note": "忽略父子关系、一律从 0 起播的对照解，仅供比对。",
+    "command": {
+      "name": "ug_attack",
+      "duration": 0.0,
+      "template": "player_default",
+      "bg_off": false,
+      "skip_idle": false,
+      "flag_skip_left_effect": false,
+      "flag_return_idle": false,
+      "spark_delay": 67.0,
+      "spark_offset": "0,0",
+      "manual_setting": false,
+      "entry": [
+        {
+          "wait_until_end": false,
+          "state": "Start",
+          "id": null,
+          "guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": null,
+          "bounds": "600, 600, 100, 70",
+          "duration": 0.0,
+          "etty": "ENTRY"
+        }
+      ],
+      "ani": [
+        {
+          "animation_name": "ug_attack",
+          "duration": 333.3,
+          "loop": false,
+          "loop_count": 0.0,
+          "motion_skip_slow": 0.0,
+          "motion_skip_fast": 0.0,
+          "id": null,
+          "guid": "ce6e8fad-c855-4ec4-8e63-a64859c02c75",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "217, 347, 100, 70",
+          "wait_until_end": true,
+          "etty": "ANI"
+        }
+      ],
+      "shake": [
+        {
+          "file_name": "cm_shake_vb_dn",
+          "cam_ignore_hitstop": true,
+          "cam_ignore_slow": false,
+          "wait_until_end": false,
+          "id": null,
+          "guid": "2cfd83db-50b3-433b-b03a-1cf1f89cf0ad",
+          "sequence": 0.0,
+          "delay": 4700.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "107, 887, 100, 70",
+          "duration": 0.0,
+          "etty": "SHAKE"
+        }
+      ],
+      "setting": [
+        {
+          "duration": 0.0,
+          "type": 2.0,
+          "on": false,
+          "our_target_type": "NONE",
+          "for_target_type": "ALL",
+          "wait_until_end": false,
+          "id": null,
+          "guid": "99b7a027-f1bf-4c3c-b72f-6f16dcc1b1a9",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "858, 480, 100, 70",
+          "etty": "SETTING"
+        },
+        {
+          "duration": 0.0,
+          "type": 2.0,
+          "on": true,
+          "our_target_type": "NONE",
+          "for_target_type": "ALL",
+          "wait_until_end": false,
+          "id": null,
+          "guid": "1a7ae066-3a7b-48f4-8b79-485e600d25f9",
+          "sequence": 0.0,
+          "delay": 4666.0,
+          "from_guid": "99b7a027-f1bf-4c3c-b72f-6f16dcc1b1a9",
+          "bounds": "999, 481, 100, 70",
+          "etty": "SETTING"
+        }
+      ],
+      "cam_spine": [
+        {
+          "file_name": "heidemarie_30093_ug_battle_ready_camera_path",
+          "animation_name": "animation",
+          "fade_duration": 0.0,
+          "fade_frame": 0.0,
+          "fade_curve": "0,0,1,1",
+          "restoration": false,
+          "id": null,
+          "guid": "fed3f920-1b2c-4fa3-aca9-99a09fbe0e79",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "332, 883, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "CAM_SPINE"
+        },
+        {
+          "file_name": "heidemarie_30093_ug_camera_shake",
+          "animation_name": "animation",
+          "fade_duration": 0.0,
+          "fade_frame": 0.0,
+          "fade_curve": "0,0,1,1",
+          "restoration": false,
+          "id": null,
+          "guid": "d3187c89-9785-4546-8993-665ac5df3d0f",
+          "sequence": 0.0,
+          "delay": 2766.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "216, 886, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "CAM_SPINE"
+        }
+      ],
+      "cam_zoom": [
+        {
+          "zoom": 1.5,
+          "duration": 0.0,
+          "curve": "0,0,0,0",
+          "id": null,
+          "guid": "1c6882c2-7f9b-495d-b08c-8fd24a7be9c0",
+          "sequence": 0.0,
+          "delay": 4666.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "452, 882, 100, 70",
+          "wait_until_end": true,
+          "etty": "CAM_ZOOM"
+        },
+        {
+          "zoom": 1.0,
+          "duration": 333.3,
+          "curve": "0.06111111,0.8833333,0.13333334,0.9222222",
+          "id": null,
+          "guid": "1dc7a4b8-8ed1-4559-b1c6-08f9cac01894",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "1c6882c2-7f9b-495d-b08c-8fd24a7be9c0",
+          "bounds": "449, 980, 100, 70",
+          "wait_until_end": true,
+          "etty": "CAM_ZOOM"
+        }
+      ],
+      "color_blend": [
+        {
+          "interval": 300.0,
+          "opacity": 0.0,
+          "color": [],
+          "our_target_type": "ALL",
+          "for_target_type": "ALL",
+          "slot": null,
+          "id": null,
+          "guid": "8300cc1c-b696-445e-ac9b-e789ebe95f2d",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "857, 636, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "COLOR_BLEND"
+        },
+        {
+          "interval": 0.0,
+          "opacity": 1.0,
+          "color": [],
+          "our_target_type": "ALL",
+          "for_target_type": "ALL",
+          "slot": null,
+          "id": null,
+          "guid": "ff8bb551-dc9a-437f-b412-d54140bcae13",
+          "sequence": 0.0,
+          "delay": 4333.0,
+          "from_guid": "8300cc1c-b696-445e-ac9b-e789ebe95f2d",
+          "bounds": "1001, 637, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "COLOR_BLEND"
+        },
+        {
+          "interval": 0.0,
+          "opacity": 1.0,
+          "color": [],
+          "our_target_type": "NONE",
+          "for_target_type": "TARGET",
+          "slot": null,
+          "id": null,
+          "guid": "0c4ed84b-aebf-4318-b362-5df383860551",
+          "sequence": 0.0,
+          "delay": 2700.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "856, 559, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "COLOR_BLEND"
+        },
+        {
+          "interval": 0.0,
+          "opacity": 0.0,
+          "color": [],
+          "our_target_type": "NONE",
+          "for_target_type": "TARGET",
+          "slot": null,
+          "id": null,
+          "guid": "196b56d2-1899-4c2b-9f48-8ad2cf59d7cf",
+          "sequence": 0.0,
+          "delay": 1333.0,
+          "from_guid": "0c4ed84b-aebf-4318-b362-5df383860551",
+          "bounds": "1001, 559, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "COLOR_BLEND"
+        }
+      ],
+      "bg_blend": [
+        {
+          "interval": 300.0,
+          "opacity": 0.0,
+          "color": [],
+          "category": "FRONT",
+          "id": null,
+          "guid": "e0132477-058d-4b3b-a67d-7d197bd9f8a2",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "857, 714, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "BG_BLEND"
+        },
+        {
+          "interval": 0.0,
+          "opacity": 1.0,
+          "color": [
+            {
+              "Colors": [
+                "102, 102, 102",
+                "0, 128, 128, 128"
+              ],
+              "Positions": [
+                0.0,
+                1.0
+              ]
+            }
+          ],
+          "category": "ALL",
+          "id": null,
+          "guid": "a8805112-1b29-4fa1-803f-f026ba5a178f",
+          "sequence": 0.0,
+          "delay": 4333.0,
+          "from_guid": "e0132477-058d-4b3b-a67d-7d197bd9f8a2",
+          "bounds": "1003, 717, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "BG_BLEND"
+        },
+        {
+          "interval": 300.0,
+          "opacity": 0.0,
+          "color": [],
+          "category": "BACK",
+          "id": null,
+          "guid": "8db02de2-6d69-4455-bcf4-6ee5e6abc1cd",
+          "sequence": 0.0,
+          "delay": 500.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "858, 791, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "BG_BLEND"
+        }
+      ],
+      "node_ani": [
+        {
+          "file_name": "heidemarie_30093_ug_monster_node",
+          "target": "TARGET",
+          "slot": null,
+          "target_bone": "",
+          "formation": false,
+          "pivot": "CENTER",
+          "pivot_slot": null,
+          "bone": "",
+          "offset_xy": "0,0",
+          "scale": 1.0,
+          "rotation": 0.0,
+          "restoration": true,
+          "igenor_slot_scale": true,
+          "formation_scale": true,
+          "id": null,
+          "guid": "aeb17649-1078-4448-a45a-fd19aa633174",
+          "sequence": 0.0,
+          "delay": 2700.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "402, 288, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "NODE_ANI"
+        }
+      ],
+      "control_ani": [
+        {
+          "anim_name": "hit",
+          "type": "TARGET",
+          "duration": 0.0,
+          "loop": false,
+          "stop_motion": false,
+          "slot": null,
+          "id": null,
+          "guid": "c9106445-fbdf-4e6b-83ad-39079bbe19c9",
+          "sequence": 0.0,
+          "delay": 2866.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "812, 875, 100, 70",
+          "wait_until_end": true,
+          "etty": "CONTROL_ANI"
+        },
+        {
+          "anim_name": "hit",
+          "type": "TARGET",
+          "duration": 0.0,
+          "loop": false,
+          "stop_motion": false,
+          "slot": null,
+          "id": null,
+          "guid": "2b830844-8a2e-4f40-a795-625552af036e",
+          "sequence": 1.0,
+          "delay": 166.0,
+          "from_guid": "c9106445-fbdf-4e6b-83ad-39079bbe19c9",
+          "bounds": "808, 983, 100, 70",
+          "wait_until_end": true,
+          "etty": "CONTROL_ANI"
+        },
+        {
+          "anim_name": "hit",
+          "type": "TARGET",
+          "duration": 0.0,
+          "loop": false,
+          "stop_motion": false,
+          "slot": null,
+          "id": null,
+          "guid": "5cea49ba-7978-4910-a38d-7d44268c8062",
+          "sequence": 1.0,
+          "delay": 166.0,
+          "from_guid": "2b830844-8a2e-4f40-a795-625552af036e",
+          "bounds": "806, 1066, 100, 70",
+          "wait_until_end": true,
+          "etty": "CONTROL_ANI"
+        },
+        {
+          "anim_name": "hit",
+          "type": "TARGET",
+          "duration": 0.0,
+          "loop": false,
+          "stop_motion": false,
+          "slot": null,
+          "id": null,
+          "guid": "1168e34a-511b-4692-bc62-2d818723c2ab",
+          "sequence": 1.0,
+          "delay": 133.0,
+          "from_guid": "5cea49ba-7978-4910-a38d-7d44268c8062",
+          "bounds": "811, 1152, 100, 70",
+          "wait_until_end": true,
+          "etty": "CONTROL_ANI"
+        },
+        {
+          "anim_name": "hit",
+          "type": "TARGET",
+          "duration": 100.0,
+          "loop": false,
+          "stop_motion": true,
+          "slot": null,
+          "id": null,
+          "guid": "d94cc1eb-3c5a-44ac-9b4d-c4c4b0744d29",
+          "sequence": 1.0,
+          "delay": 133.0,
+          "from_guid": "1168e34a-511b-4692-bc62-2d818723c2ab",
+          "bounds": "963, 1155, 100, 70",
+          "wait_until_end": true,
+          "etty": "CONTROL_ANI"
+        },
+        {
+          "anim_name": "hit",
+          "type": "TARGET",
+          "duration": 0.0,
+          "loop": false,
+          "stop_motion": false,
+          "slot": null,
+          "id": null,
+          "guid": "ea862b66-dc36-4024-8938-81ced15871ae",
+          "sequence": 0.0,
+          "delay": 500.0,
+          "from_guid": "d94cc1eb-3c5a-44ac-9b4d-c4c4b0744d29",
+          "bounds": "954, 1029, 100, 70",
+          "wait_until_end": true,
+          "etty": "CONTROL_ANI"
+        }
+      ],
+      "hit": [
+        {
+          "name": "action",
+          "motion_delay": 0.0,
+          "play_action": true,
+          "effect": null,
+          "wait_until_end": false,
+          "id": null,
+          "guid": "76da87fd-997c-4ba3-aabf-66dbbcbca766",
+          "sequence": 0.0,
+          "delay": 2800.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "570, 876, 100, 70",
+          "duration": 0.0,
+          "etty": "HIT"
+        }
+      ],
+      "damage": [
+        {
+          "name": "damage",
+          "play_action": true,
+          "value": 1.0,
+          "wait_until_end": false,
+          "id": null,
+          "guid": "8805f6a3-e7ca-49e3-af55-b95cb8704a2a",
+          "sequence": 0.0,
+          "delay": 2866.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "689, 873, 100, 70",
+          "duration": 0.0,
+          "etty": "DAMAGE"
+        },
+        {
+          "name": "damage",
+          "play_action": true,
+          "value": 1.0,
+          "wait_until_end": false,
+          "id": null,
+          "guid": "61dffe68-d12e-4c98-bfe8-d8e80a88db69",
+          "sequence": 0.0,
+          "delay": 166.0,
+          "from_guid": "8805f6a3-e7ca-49e3-af55-b95cb8704a2a",
+          "bounds": "695, 981, 100, 70",
+          "duration": 0.0,
+          "etty": "DAMAGE"
+        },
+        {
+          "name": "damage",
+          "play_action": true,
+          "value": 1.0,
+          "wait_until_end": false,
+          "id": null,
+          "guid": "805a2c76-e08b-40a0-a96a-c9a9ea6d72dd",
+          "sequence": 0.0,
+          "delay": 166.0,
+          "from_guid": "61dffe68-d12e-4c98-bfe8-d8e80a88db69",
+          "bounds": "693, 1069, 100, 70",
+          "duration": 0.0,
+          "etty": "DAMAGE"
+        },
+        {
+          "name": "damage",
+          "play_action": true,
+          "value": 2.0,
+          "wait_until_end": false,
+          "id": null,
+          "guid": "00fbc561-4751-4793-a582-c4d55d7e84ca",
+          "sequence": 0.0,
+          "delay": 100.0,
+          "from_guid": "805a2c76-e08b-40a0-a96a-c9a9ea6d72dd",
+          "bounds": "693, 1160, 100, 70",
+          "duration": 0.0,
+          "etty": "DAMAGE"
+        },
+        {
+          "name": "damage",
+          "play_action": true,
+          "value": 4.0,
+          "wait_until_end": false,
+          "id": null,
+          "guid": "5520c13e-d1f3-4c26-8d03-3c05f4f73789",
+          "sequence": 0.0,
+          "delay": 633.0,
+          "from_guid": "00fbc561-4751-4793-a582-c4d55d7e84ca",
+          "bounds": "697, 1263, 100, 70",
+          "duration": 0.0,
+          "etty": "DAMAGE"
+        }
+      ],
+      "effect": [
+        {
+          "id": "",
+          "file_name": "heidemarie_30093_ug_attack_bg",
+          "group_name": null,
+          "duration": -1.0,
+          "type": "CENTER",
+          "slot": "",
+          "bone_type": "ATTACH",
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "opacity": 255.0,
+          "offset_xy": "0,0",
+          "scale": 1.0,
+          "rotation": 0.0,
+          "loop": false,
+          "loop_count": 0.0,
+          "zorder": -5000.0,
+          "global_z": 0.0,
+          "screen_effect_shaking_flag": true,
+          "ambient_flag": false,
+          "guid": "a705ac59-afa7-459d-955d-f7361d704b51",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "218, 746, 100, 70",
+          "wait_until_end": true,
+          "etty": "EFFECT"
+        },
+        {
+          "id": "",
+          "file_name": "heidemarie_30093_ug_attack_01",
+          "group_name": null,
+          "duration": -1.0,
+          "type": "FRONT",
+          "slot": "",
+          "bone_type": "ATTACH",
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "opacity": 255.0,
+          "offset_xy": "0,0",
+          "scale": 1.0,
+          "rotation": 0.0,
+          "loop": false,
+          "loop_count": 0.0,
+          "zorder": 0.0,
+          "global_z": 0.0,
+          "screen_effect_shaking_flag": true,
+          "ambient_flag": false,
+          "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "217, 666, 100, 70",
+          "wait_until_end": true,
+          "etty": "EFFECT"
+        },
+        {
+          "id": "",
+          "file_name": "heidemarie_30093_ug_attack_screen",
+          "group_name": null,
+          "duration": -1.0,
+          "type": "SCREEN",
+          "slot": "",
+          "bone_type": "ATTACH",
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "opacity": 255.0,
+          "offset_xy": "0,0",
+          "scale": 1.0,
+          "rotation": 0.0,
+          "loop": false,
+          "loop_count": 0.0,
+          "zorder": 300.0,
+          "global_z": 0.0,
+          "inherit_scale": true,
+          "screen_effect_shaking_flag": true,
+          "ambient_flag": false,
+          "guid": "d229ee86-5c2b-400c-bcab-5078401480a4",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "217, 431, 100, 70",
+          "wait_until_end": true,
+          "etty": "EFFECT"
+        },
+        {
+          "id": "",
+          "file_name": "heidemarie_30093_ug_attack_impact",
+          "group_name": null,
+          "duration": -1.0,
+          "type": "CENTER",
+          "slot": "",
+          "bone_type": "ATTACH",
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "opacity": 255.0,
+          "offset_xy": "0,0",
+          "scale": 1.0,
+          "rotation": 0.0,
+          "loop": false,
+          "loop_count": 0.0,
+          "zorder": 200.0,
+          "global_z": 0.0,
+          "screen_effect_shaking_flag": true,
+          "ambient_flag": false,
+          "guid": "1a03d4ca-b4a3-4fd8-8233-948af19dd527",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "218, 510, 100, 70",
+          "wait_until_end": true,
+          "etty": "EFFECT"
+        },
+        {
+          "id": "",
+          "file_name": "heidemarie_30093_ug_attack_02",
+          "group_name": null,
+          "duration": -1.0,
+          "type": "CENTER",
+          "slot": "",
+          "bone_type": "ATTACH",
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "opacity": 255.0,
+          "offset_xy": "0,0",
+          "scale": 1.0,
+          "rotation": 0.0,
+          "loop": false,
+          "loop_count": 0.0,
+          "zorder": 0.0,
+          "global_z": 0.0,
+          "screen_effect_shaking_flag": true,
+          "ambient_flag": false,
+          "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "218, 588, 100, 70",
+          "wait_until_end": true,
+          "etty": "EFFECT"
+        }
+      ],
+      "idle": [
+        {
+          "type": "SELF",
+          "id": null,
+          "guid": "7ba40ac8-7713-42e2-825b-d6acad088c67",
+          "sequence": 0.0,
+          "delay": 4000.0,
+          "from_guid": "ce6e8fad-c855-4ec4-8e63-a64859c02c75",
+          "bounds": "73, 343, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "IDLE"
+        }
+      ],
+      "standby_action": [
+        {
+          "type": "ug_attack",
+          "id": null,
+          "guid": "359c4e85-4a1d-4f11-bde3-080ca91f05c4",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "df0fbf5b-a9f4-4ff8-9011-c119105886ad",
+          "bounds": "628, 285, 100, 70",
+          "duration": 0.0,
+          "wait_until_end": true,
+          "etty": "STANDBY_ACTION"
+        }
+      ],
+      "standby_on": [
+        {
+          "duration": 0.0,
+          "id": null,
+          "guid": "df0fbf5b-a9f4-4ff8-9011-c119105886ad",
+          "sequence": 0.0,
+          "delay": 0.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "627, 367, 100, 70",
+          "wait_until_end": true,
+          "etty": "STANDBY_ON"
+        }
+      ],
+      "standby_off": [
+        {
+          "duration": 0.0,
+          "id": null,
+          "guid": "5bb56d75-e671-4afe-bca8-bd8691128218",
+          "sequence": 0.0,
+          "delay": 866.0,
+          "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
+          "bounds": "517, 286, 100, 70",
+          "wait_until_end": true,
+          "etty": "STANDBY_OFF"
+        }
+      ]
     }
-   ],
-   "effect": [
-    {
-     "id": "",
-     "file_name": "heidemarie_30093_ug_attack_bg",
-     "group_name": null,
-     "duration": -1.0,
-     "type": "CENTER",
-     "slot": "",
-     "bone_type": "ATTACH",
-     "offset": [
-      0,
-      0
-     ],
-     "opacity": 255,
-     "offset_xy": "0,0",
-     "scale": 1.0,
-     "rotation": 0.0,
-     "loop": false,
-     "loop_count": 0,
-     "zorder": -5000,
-     "global_z": 0,
-     "screen_effect_shaking_flag": true,
-     "ambient_flag": false,
-     "guid": "a705ac59-afa7-459d-955d-f7361d704b51",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "218, 746, 100, 70",
-     "wait_until_end": true,
-     "etty": "EFFECT"
-    },
-    {
-     "id": "",
-     "file_name": "heidemarie_30093_ug_attack_01",
-     "group_name": null,
-     "duration": -1.0,
-     "type": "FRONT",
-     "slot": "",
-     "bone_type": "ATTACH",
-     "offset": [
-      0,
-      0
-     ],
-     "opacity": 255,
-     "offset_xy": "0,0",
-     "scale": 1.0,
-     "rotation": 0.0,
-     "loop": false,
-     "loop_count": 0,
-     "zorder": 0,
-     "global_z": 0,
-     "screen_effect_shaking_flag": true,
-     "ambient_flag": false,
-     "guid": "0faa0cc1-073e-447c-9ae4-317a62a37c0c",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "217, 666, 100, 70",
-     "wait_until_end": true,
-     "etty": "EFFECT"
-    },
-    {
-     "id": "",
-     "file_name": "heidemarie_30093_ug_attack_screen",
-     "group_name": null,
-     "duration": -1.0,
-     "type": "SCREEN",
-     "slot": "",
-     "bone_type": "ATTACH",
-     "offset": [
-      0,
-      0
-     ],
-     "opacity": 255,
-     "offset_xy": "0,0",
-     "scale": 1.0,
-     "rotation": 0.0,
-     "loop": false,
-     "loop_count": 0,
-     "zorder": 300,
-     "global_z": 0,
-     "inherit_scale": true,
-     "screen_effect_shaking_flag": true,
-     "ambient_flag": false,
-     "guid": "d229ee86-5c2b-400c-bcab-5078401480a4",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "217, 431, 100, 70",
-     "wait_until_end": true,
-     "etty": "EFFECT"
-    },
-    {
-     "id": "",
-     "file_name": "heidemarie_30093_ug_attack_impact",
-     "group_name": null,
-     "duration": -1.0,
-     "type": "CENTER",
-     "slot": "",
-     "bone_type": "ATTACH",
-     "offset": [
-      0,
-      0
-     ],
-     "opacity": 255,
-     "offset_xy": "0,0",
-     "scale": 1.0,
-     "rotation": 0.0,
-     "loop": false,
-     "loop_count": 0,
-     "zorder": 200,
-     "global_z": 0,
-     "screen_effect_shaking_flag": true,
-     "ambient_flag": false,
-     "guid": "1a03d4ca-b4a3-4fd8-8233-948af19dd527",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "218, 510, 100, 70",
-     "wait_until_end": true,
-     "etty": "EFFECT"
-    },
-    {
-     "id": "",
-     "file_name": "heidemarie_30093_ug_attack_02",
-     "group_name": null,
-     "duration": -1.0,
-     "type": "CENTER",
-     "slot": "",
-     "bone_type": "ATTACH",
-     "offset": [
-      0,
-      0
-     ],
-     "opacity": 255,
-     "offset_xy": "0,0",
-     "scale": 1.0,
-     "rotation": 0.0,
-     "loop": false,
-     "loop_count": 0,
-     "zorder": 0,
-     "global_z": 0,
-     "screen_effect_shaking_flag": true,
-     "ambient_flag": false,
-     "guid": "542a1a20-b7c2-4f50-b8c2-c1e69ac769ab",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "218, 588, 100, 70",
-     "wait_until_end": true,
-     "etty": "EFFECT"
-    }
-   ],
-   "idle": [
-    {
-     "type": "SELF",
-     "id": null,
-     "guid": "7ba40ac8-7713-42e2-825b-d6acad088c67",
-     "sequence": 0,
-     "delay": 4000.0,
-     "from_guid": "ce6e8fad-c855-4ec4-8e63-a64859c02c75",
-     "bounds": "73, 343, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "IDLE"
-    }
-   ],
-   "standby_action": [
-    {
-     "type": "ug_attack",
-     "id": null,
-     "guid": "359c4e85-4a1d-4f11-bde3-080ca91f05c4",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "df0fbf5b-a9f4-4ff8-9011-c119105886ad",
-     "bounds": "628, 285, 100, 70",
-     "duration": 0.0,
-     "wait_until_end": true,
-     "etty": "STANDBY_ACTION"
-    }
-   ],
-   "standby_on": [
-    {
-     "duration": 0,
-     "id": null,
-     "guid": "df0fbf5b-a9f4-4ff8-9011-c119105886ad",
-     "sequence": 0,
-     "delay": 0.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "627, 367, 100, 70",
-     "wait_until_end": true,
-     "etty": "STANDBY_ON"
-    }
-   ],
-   "standby_off": [
-    {
-     "duration": 0,
-     "id": null,
-     "guid": "5bb56d75-e671-4afe-bca8-bd8691128218",
-     "sequence": 0,
-     "delay": 866.0,
-     "from_guid": "00790e96-9eb5-4e4f-bed3-240c003f91dd",
-     "bounds": "517, 286, 100, 70",
-     "wait_until_end": true,
-     "etty": "STANDBY_OFF"
-    }
-   ]
-  }
- },
- "slimmed": true
+  },
+  "slimmed": true
 }

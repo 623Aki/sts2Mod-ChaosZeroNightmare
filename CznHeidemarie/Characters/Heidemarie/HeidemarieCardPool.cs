@@ -84,14 +84,19 @@ public sealed class HeidemarieCardPool : CardPoolModel
 	/// <remarks>
 	/// 只列举「可常规获取」的卡：基础攻防 + 全部角色卡。
 	/// 衍生的极光剑、凝聚极光、解放极光不进池，见类注释。
-	/// 「绝响」已调整为基础牌（初始卡组自带），不再列池。
+	/// 「绝响」虽是基础牌（初始卡组自带），仍必须列在这里：百科图鉴的解锁集合
+	/// 按「所有卡池 GetUnlockedCards 的并集」计算（NCardLibraryGrid.GetCardVisibility），
+	/// 不进池就会在图鉴里显示为「锁定」。奖励 / 商店 / 战斗生成都会过滤 Basic 稀有度
+	/// （CardFactory 四处显式排除），因此列池没有副作用。
 	/// 「终焉」虽为先古牌（太古之牙淬炼专属），仍列在此供图鉴与 ModelDb 注册。
 	/// </remarks>
-	protected override CardModel[] GenerateAllCards() => new CardModel[35]
+	protected override CardModel[] GenerateAllCards() => new CardModel[36]
 	{
 		// 基础攻防
 		ModelDb.Card<HeidemarieStrike>(),
 		ModelDb.Card<HeidemarieDefend>(),
+		// 基础牌「绝响」：列池仅为图鉴解锁，见类注释 remarks
+		ModelDb.Card<HeidemarieFinalEcho>(),
 		// 原有角色卡
 		ModelDb.Card<HeidemarieSwordlight>(),
 		ModelDb.Card<HeidemarieSwordrain>(),

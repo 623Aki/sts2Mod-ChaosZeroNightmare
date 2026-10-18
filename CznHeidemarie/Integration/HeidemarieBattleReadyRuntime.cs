@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CznCore.Godot;
 using CznCore.Presentation;
 using CznHeidemarie.Characters.Heidemarie;
 using CznHeidemarie.Characters.Heidemarie.Cards;
@@ -101,7 +102,7 @@ internal static class HeidemarieBattleReadyRuntime
 		/// </remarks>
 		public Node2D? DetachIdleEffectLayer(Node root, string childName)
 		{
-			if (!GodotObject.IsInstanceValid(root))
+				if (!GodotNodeUtil.IsAlive(root))
 			{
 				return null;
 			}
@@ -145,7 +146,7 @@ internal static class HeidemarieBattleReadyRuntime
 		/// </remarks>
 		public void StartIdleEffects(Node root)
 		{
-			if (!GodotObject.IsInstanceValid(root))
+				if (!GodotNodeUtil.IsAlive(root))
 			{
 				return;
 			}
@@ -192,26 +193,19 @@ internal static class HeidemarieBattleReadyRuntime
 				return;
 			}
 
-			SceneTree? tree = spine.GetTree();
-			if (tree is null)
-			{
-				return;
-			}
-
 			// 源里这几层是错开的（b_1@0 / b_2@1700 / f_1@3000 / f_2@4500），
 			// 未到起播时刻先不显示 —— 与源「delay 之前不渲染」一致。
 			SetIdleLayerVisible(spine, false);
-			SceneTreeTimer timer = tree.CreateTimer(delayMs / 1000.0);
-			timer.Timeout += () =>
+				GodotScheduler.OneShot(spine, (float)(delayMs / 1000.0), () =>
 			{
-				if (!GodotObject.IsInstanceValid(spine))
+					if (!GodotNodeUtil.IsAlive(spine))
 				{
 					return;
 				}
 
 				SetIdleLayerVisible(spine, true);
 				StartIdleLoop(spine);
-			};
+				});
 		}
 
 		/// <summary>按 metadata 里的 clip 名循环起播；缺省用 <see cref="IdleEffectAnimation"/>。</summary>
@@ -299,7 +293,11 @@ internal static class HeidemarieBattleReadyRuntime
 	private static CombatPresentationCardRoute? _lastRoute;
 
 	/// <summary>特写立绘的完整配置。</summary>
-	private static readonly BattleReadyOverlayProfile Profile = new BattleReadyOverlayProfile(
+	/// <summary>
+	/// 出牌特写的唯一配置来源。HeidemarieSkinProfile 复用同一个实例，
+	/// 避免骨架和动作名在两个 Profile 之间分叉。
+	/// </summary>
+	internal static readonly BattleReadyOverlayProfile Profile = new BattleReadyOverlayProfile(
 		RuntimeNodeNamePrefix: "HeidemarieBattleReady",
 		ScenePath: "res://scenes/heidemarie_battle_ready.tscn",
 		SkeletonDataPath: "res://CznHeidemarie/animations/battle_ready/30093_battle_ready_skel_data.tres",
@@ -446,6 +444,13 @@ internal static class HeidemarieBattleReadyRuntime
 		// 真正打出去：播对应动作
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 特写出牌", (CardPlayCommittedEvent e) =>
 		{
+			// 全屏演出接管期间（含余韵 tail）不再弹特写：
+			// 与 Nine 的 SuppressesBattleReady 同口径，避免两层全屏表现打架。
+			if (HeidemarieCinematicRuntime.SuppressesBattleReady)
+			{
+				return;
+			}
+
 			if (Overlay.Value.CanShow(e.Card))
 			{
 				Overlay.Value.PlayForCard(e.Card);
@@ -473,6 +478,19 @@ internal static class HeidemarieBattleReadyRuntime
 		}
 	}
 
+	/// <summary>
+	/// 压制这张牌的下一次特写播放。全屏演出起手时调用（对应 Nine 的
+	/// <c>HidePlayedCard</c> + 播放抑制）：演出自己会接管画面，
+	/// 「特写立绘 + 全屏舞台」同时出现只会互相打架。
+	/// </summary>
+	internal static void SuppressNextPlayForCard(CardModel? card)
+	{
+		if (card is not null)
+		{
+			Overlay.Value.SuppressNextPlayForCard(card);
+		}
+	}
+
 	/// <summary>设置里关掉「出牌特写」时调用。</summary>
 	internal static void ApplyCardPlayPresentation(bool enabled)
 	{
@@ -484,6 +502,12 @@ internal static class HeidemarieBattleReadyRuntime
 
 	private static void Show(CardModel? card)
 	{
+		// 演出接管期间悬停 / 选中也不弹立绘：屏幕已经被黑幕和舞台盖住了。
+		if (HeidemarieCinematicRuntime.SuppressesBattleReady)
+		{
+			return;
+		}
+
 		if (Overlay.Value.CanShow(card))
 		{
 			Overlay.Value.ShowIdleForCard(card);

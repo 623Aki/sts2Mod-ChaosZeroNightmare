@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CznCore.Presentation;
 using CznHeidemarie.Characters.Heidemarie;
 using CznHeidemarie.Characters.Heidemarie.Cards;
+using CznHeidemarie.Characters.Heidemarie.Presentation;
 using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands.Builders;
@@ -40,11 +41,11 @@ namespace CznHeidemarie.Integration;
 /// <para><b>但伤害时机必须跟着演出走</b>：原生出牌演出里，
 /// <c>AttackCommand.Execute</c> 是「触发施法者动作 → 等 <c>waitTime</c> → 结算伤害」，
 /// 而本工程的骨架动作被黑幕接管、原生 <c>waitTime</c> 与演出时间轴毫无关系，
-/// 于是伤害总是先落地、动画还在后面慢慢放。为此本类对外提供两个闸门
-/// （<see cref="TryWaitForHit"/> / <see cref="WaitForPresentationEnd"/>，
-/// 由 <c>Registration/HeidemarieCinematicPresentationPatch.cs</c> 接到游戏上）：
-/// 攻击改成等演出的命中帧，攻击尾巴等整段演出收尾。演出不存在或已降级时不拦，
-/// 一律走原生等待。</para>
+/// 于是伤害总是先落地、动画还在后面慢慢放。为此本类对外提供两个闸门：
+/// <see cref="TryWaitForHit"/> 由 <c>Registration/HeidemarieCinematicPresentationPatch.cs</c>
+/// 接到 <c>CreatureCmd.TriggerAnim</c> 上（攻击改成等演出的命中帧）；
+/// <see cref="WaitForPresentationEnd"/> 由终结牌自己的 <c>OnPlay</c> 末尾调用
+/// （出牌尾巴等整段演出收尾）。演出不存在或已降级时不拦，一律走原生等待。</para>
 ///
 /// <para>保留的参考 mod 主干：token 互斥、watchdog 超时、<c>TreeExiting</c> 兜底、
 /// 本体租借与归还、契约单调性校验、以及**任一环节失败就交回原生出牌演出**的降级策略。</para>
@@ -162,11 +163,30 @@ internal static class HeidemarieCinematicRuntime
 		/// <summary>本体已归还标记。</summary>
 		internal bool ActorsReleased;
 
-		/// <summary>已收尾标记。</summary>
-		internal bool Ended;
+		/// <summary>
+		/// 画面演出已收尾（舞台发 <c>stage_finished</c>）：本体归还、两道闸门放行，
+		/// 但舞台节点继续保留，等 <c>resources_finished</c> 再释放。
+		/// 这就是 Nine 的 <c>_tail</c> 语义：放行闸门与释放节点拆成两个时刻。
+		/// </summary>
+		internal bool PresentationFinished;
 
-		/// <summary>每帧看门狗回调，收尾时必须摘掉。</summary>
+		/// <summary>
+		/// 胜利判定早于演出收尾：不取消演出，等 <c>stage_finished</c> 正常收尾。
+		/// 对应 Nine 的 <c>DeferVictory</c>。
+		/// </summary>
+		internal bool VictoryPending;
+
+		/// <summary>已完全释放（舞台节点已 QueueFree）。</summary>
+		internal bool Released;
+
+		/// <summary>每帧看门狗回调，彻底释放时必须摘掉。</summary>
 		internal Action? FrameCallback;
+
+		/// <summary>
+		/// 窗口尺寸变化回调：演出期间窗口被拖动缩放时，重新打印布局诊断。
+		/// 彻底释放时必须从 Viewport.SizeChanged 上摘掉。
+		/// </summary>
+		internal Action? LayoutCallback;
 	}
 
 	/// <summary>骨架查找与缓存，可跨演出复用。</summary>
@@ -175,11 +195,36 @@ internal static class HeidemarieCinematicRuntime
 	/// <summary>事件订阅句柄，保持引用以防被 GC 回收。</summary>
 	private static readonly List<IDisposable> Subscriptions = new();
 
-	/// <summary>当前演出；同一时刻至多一段。</summary>
+	/// <summary>当前演出（画面尚未播完）；同一时刻至多一段。</summary>
 	private static Phase? _phase;
+
+	/// <summary>
+	/// 画面已播完、仍在放余韵的演出（Nine 的 <c>_tail</c>）。
+	///
+	/// <para><b>为什么单独留一段</b>：<c>stage_finished</c> 之后舞台可能还有
+	/// 视觉余韵（<c>duration &gt; presentation_end</c> 时）与音频尾巴，
+	/// 而伤害 / 出牌必须在这一刻就放行。把「放行闸门」和「释放节点」拆开，
+	/// 既不让出牌等余韵，也不把余韵提前掐断。</para>
+	/// </summary>
+	private static Phase? _tail;
 
 	/// <summary>令牌计数器。</summary>
 	private static int _token;
+
+	/// <summary>
+	/// 最近一次由本类起演的卡牌 Id —— 演出<b>收尾之后依然保留</b>，换房 / 进新战斗时清空。
+	///
+	/// <para><b>为什么需要它</b>：「剑之乐园」是逐敌循环发多个 <c>AttackCommand</c>，
+	/// 而每个指令都被「等演出收尾」阻塞到整段演出播完才返回（见两张终结技
+	/// <c>OnPlay</c> 末尾的 <see cref="WaitForPresentationEnd"/>）—— 后续指令到来时，
+	/// 上一段演出必然已经结束，只看「当前 phase 存活」的去重永远拦不住，
+	/// 结果就是每个敌人各演一遍。按卡 Id 记忆才能把同一次出牌的所有攻击指令
+	/// 收敛到一段演出上。</para>
+	///
+	/// <para>安全性：<c>CardModel.Id</c>（<c>ModelId</c>）每实例唯一；终结技打出后即移出战斗，
+	/// 同一实例不会二次播放；「希望」之后发的新牌是新实例新 Id，不受影响。</para>
+	/// </summary>
+	private static ModelId? _lastStartedCardId;
 
 	/// <summary>
 	/// 订阅出牌事件与生命周期事件。由 <see cref="HeidemarieIntegration.Init"/> 调用。
@@ -191,12 +236,22 @@ internal static class HeidemarieCinematicRuntime
 		// TryBeginFromAttack —— 只有拿到 AttackCommand 才能做「可击杀敌人才播」的致死预判。
 
 		// 进战斗时把时间轴引用到的骨架先预热，避免第一次放大招才现加载
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 全屏演出预加载", (CombatStartingEvent _) => Preload()));
+		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 全屏演出预加载", (CombatStartingEvent _) =>
+		{
+			ForgetPresentedCard();
+			Preload();
+		}));
 
 		// 生命周期兜底：离房 / 阵亡 / 胜利都要收尾
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 全屏演出入房", (RoomEnteringEvent _) => CancelFor(null, "room_entering")));
+		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 全屏演出入房", (RoomEnteringEvent _) =>
+		{
+			ForgetPresentedCard();
+			CancelFor(null, "room_entering");
+		}));
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 全屏演出阵亡", (PlayerDeathResolvedEvent e) => CancelFor(e.Player, "player_death")));
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 全屏演出胜利", (PlayerCombatVictoryEvent e) => CancelFor(e.Player, "player_victory")));
+		// 胜利不再直接取消：致死预判模式下伤害落在命中帧，胜利判定可能早于 stage_finished，
+		// 直接 Cancel 会把演出后半段（含命中后的余韵）整段截掉。改为延迟到画面收尾再处理。
+		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 全屏演出胜利", (PlayerCombatVictoryEvent e) => OnVictory(e.Player)));
 	}
 
 	/// <summary>设置里关掉「出牌演出」时立即收尾（挂到设置面板的钩子上）。</summary>
@@ -208,8 +263,14 @@ internal static class HeidemarieCinematicRuntime
 		}
 	}
 
-	/// <summary>当前是否有全屏演出在跑。</summary>
-	internal static bool IsActive => _phase is not null;
+	/// <summary>当前是否有全屏演出在跑（含已播完画面、仍在放余韵的 tail）。</summary>
+	internal static bool IsActive => _phase is not null || _tail is not null;
+
+	/// <summary>
+	/// 是否应压制出牌特写。对应 Nine 的 <c>SuppressesBattleReady</c>：
+	/// 演出接管期间（含余韵阶段）不再弹左侧立绘，避免两层全屏表现打架。
+	/// </summary>
+	internal static bool SuppressesBattleReady => _phase is not null || _tail is not null;
 
 	/// <summary>
 	/// 攻击触发器的命中闸门配对表：角色自己的攻击触发器 → 对应演出路线。
@@ -250,7 +311,7 @@ internal static class HeidemarieCinematicRuntime
 	{
 		Phase? phase = _phase;
 		string? route = RouteForTrigger(triggerName);
-		return phase is not null && !phase.Ended && route is not null && phase.Route == route && phase.Player == player;
+		return phase is not null && !phase.Released && route is not null && phase.Route == route && phase.Player == player;
 	}
 
 	/// <summary>
@@ -271,7 +332,7 @@ internal static class HeidemarieCinematicRuntime
 
 		Phase? phase = _phase;
 		string? route = RouteForTrigger(triggerName);
-		if (phase is null || phase.Ended || route is null || phase.Route != route || phase.Player != player)
+		if (phase is null || phase.Released || route is null || phase.Route != route || phase.Player != player)
 		{
 			return false;
 		}
@@ -281,16 +342,25 @@ internal static class HeidemarieCinematicRuntime
 	}
 
 	/// <summary>
-	/// 取「本次攻击所属演出播完」的任务，让攻击尾巴（<c>Hook.AfterAttack</c>）
-	/// 等整段演出收尾再结束这次出牌 —— 与两个参考 mod 的
-	/// <c>WaitForFinish</c> / <c>Completion.Finished</c> 等价。
+	/// 取「本次攻击所属演出画面播完」的任务，让这次出牌等画面收尾再结束。
 	///
-	/// <para>没有匹配的演出时返回已完成的任务，调用方不必特判。</para>
+	/// <para>调用方是终结牌自己的 <c>OnPlay</c> 末尾（「剑之乐园」/「解放极光」）：
+	/// 逐敌攻击的伤害已在各自命中帧落地，这里只把演出的画面部分补完，
+	/// 避免回合继续时画面叠加。<b>不再挂在 <c>Hook.AfterAttack</c> 上</b> ——
+	/// 那条尾巴会把每个敌人的 <c>AttackCommand.Execute</c> 都阻塞到演出结束，
+	/// 后续攻击指令因此晚到，去重与命中闸门全部失效。</para>
+	///
+	/// <para>2026-10-18 起对齐 Nine 的两阶段模型：本任务在 <c>stage_finished</c>
+	/// 就完成；<c>duration &gt; presentation_end</c> 的视觉余韵由 <c>_tail</c> 独立放完，
+	/// 不再把出牌吊到最后一个像素。</para>
+	///
+	/// <para>没有匹配的演出时返回已完成的任务，调用方不必特判；
+	/// 演出降级 / 被取消时同样立即返回，不会把出牌吊死。</para>
 	/// </summary>
 	internal static Task WaitForPresentationEnd(CardModel? card)
 	{
 		Phase? phase = _phase;
-		if (phase is null || phase.Ended || phase.Card is null || card is null)
+		if (phase is null || phase.Released || phase.Card is null || card is null)
 		{
 			return Task.CompletedTask;
 		}
@@ -330,9 +400,11 @@ internal static class HeidemarieCinematicRuntime
 			}
 
 			// 同一张牌的后续攻击指令不再重复起手 ——「剑之乐园」是逐敌循环发多个
-			// AttackCommand，每个敌人都会走到这里；而 TryPlay 开头会
-			// CancelFor(player, "replacement") 收掉上一段，不去重的话第一段刚起手
-			// 就被第二段取消，最终一段都放不出来。
+			// AttackCommand，每个敌人都会走到这里；而每条指令都会被「等演出收尾」
+			// 阻塞到整段演出播完（见 HeidemarieSwordParadise.OnPlay 末尾），
+			// 到来时上一段 phase 必然已结束 —— 所以去重不能只看「当前 phase 存活」，
+			// 还必须记住「这张牌本场已经起演过」（_lastStartedCardId），
+			// 否则每个敌人都会各演一遍。
 			if (IsSameCardAsActivePerformance(card))
 			{
 				return;
@@ -377,17 +449,29 @@ internal static class HeidemarieCinematicRuntime
 	///
 	/// <para>比实例也比 Id：模型在牌堆间移动时可能是同一 Id 的不同实例
 	/// （与 <see cref="WaitForPresentationEnd"/> 同一口径）。</para>
+	///
+	/// <para><b>演出已收尾也要认</b>：起演过的卡牌 Id 会一直记到换房 / 进新战斗
+	/// （<see cref="_lastStartedCardId"/>）。逐敌攻击的后续指令被收尾闸门串行化，
+	/// 到来时上一段必然已播完，只靠「phase 存活」拦不住它们，那段牌就会按
+	/// 敌人数重演。</para>
 	/// </summary>
 	private static bool IsSameCardAsActivePerformance(CardModel? card)
 	{
-		Phase? phase = _phase;
-		if (phase is null || phase.Ended || phase.Card is null || card is null)
+		// tail 阶段也算「这张牌已起演」：逐敌循环的后续指令可能晚到余韵期间。
+		Phase? phase = _phase ?? _tail;
+		if (phase is not null && !phase.Released && phase.Card is not null && card is not null)
 		{
-			return false;
+			if (ReferenceEquals(phase.Card, card) || phase.Card.Id == card.Id)
+			{
+				return true;
+			}
 		}
 
-		return ReferenceEquals(phase.Card, card) || phase.Card.Id == card.Id;
+		return card is not null && _lastStartedCardId is not null && _lastStartedCardId == card.Id;
 	}
+
+	/// <summary>忘掉「已起演卡牌」记忆（换房 / 进新战斗时调用）。</summary>
+	private static void ForgetPresentedCard() => _lastStartedCardId = null;
 
 	/// <summary>
 	/// 这张牌有没有绑定全屏演出路线。
@@ -480,9 +564,11 @@ internal static class HeidemarieCinematicRuntime
 					throw new InvalidOperationException("舞台拒绝配置（资源或时序不齐）");
 				}
 
-				// 排他：先收掉上一段，再让出牌特写立绘让位
+				// 排他：先收掉上一段（含余韵 tail），再让出牌特写立绘让位。
+				// 与 Nine 一致：清掉当前立绘，并压制这张牌的下一次特写播放。
 				CancelFor(player, "replacement");
 				HeidemarieBattleReadyRuntime.Cleanup();
+				HeidemarieBattleReadyRuntime.SuppressNextPlayForCard(card);
 
 				// 特效亮度 / 不透明度：整段演出按设置统一调一次
 				HeidemarieEffectMaterials.Apply(stage);
@@ -501,6 +587,10 @@ internal static class HeidemarieCinematicRuntime
 				};
 				_phase = phase;
 
+				// 记住这张牌已经起演：后续攻击指令（逐敌循环）即使晚到
+				// （演出已收尾），也不会再为同一张牌重演一遍。
+				_lastStartedCardId = card.Id;
+
 				Godot.Collections.Dictionary contract = stage.Call("get_runtime_contract").AsGodotDictionary();
 				phase.DurationSeconds = contract["duration_seconds"].AsDouble();
 				double hitSeconds = contract["hit_release_seconds"].AsDouble();
@@ -517,12 +607,21 @@ internal static class HeidemarieCinematicRuntime
 				stage.Connect("presentation_started", Callable.From(() => Guard(accepted, () => OnStarted(accepted))));
 				stage.Connect("hit_reached", Callable.From(() => Guard(accepted, () => OnHitReached(accepted))));
 				stage.Connect("actors_restored", Callable.From(() => Guard(accepted, () => RestoreActors(accepted))));
-				stage.Connect("stage_finished", Callable.From(() => End(accepted, "finished", cancelled: false)));
+				// 画面播完（Nine 的 stage_finished）：归还本体 + 放行命中/出牌闸门，
+				// 但舞台节点继续保留，等余韵播完再释放。
+				stage.Connect("stage_finished", Callable.From(() => Guard(accepted, () => FinishPresentation(accepted, "finished"))));
+				// 余韵播完（Nine 的 resources_finished）：这时才真正释放舞台。
 				stage.Connect("resources_finished", Callable.From(() => End(accepted, "resources_finished", cancelled: false)));
 				stage.TreeExiting += () => End(accepted, "tree_exit", cancelled: true);
 
 				phase.FrameCallback = () => Guard(accepted, () => Watch(accepted));
 				room.GetTree().ProcessFrame += phase.FrameCallback;
+
+				// 演出期间窗口被拖动缩放时，重新打印一次布局诊断。
+				// 舞台自己的 _layout 先执行，这里读到的是重算后的值。
+				Action layoutCallback = () => Guard(accepted, () => LogLayout(accepted, "窗口尺寸变化"));
+				phase.LayoutCallback = layoutCallback;
+				room.GetViewport().SizeChanged += layoutCallback;
 
 				// 借用本体。
 				// 默认立刻隐藏（演出从第一帧就接管画面）；
@@ -545,6 +644,7 @@ internal static class HeidemarieCinematicRuntime
 				}
 
 				Log($"全屏演出开始 route={route} token={phase.Token} duration={phase.DurationSeconds:0.###}s");
+				LogLayout(phase, "演出开始");
 				return;
 			}
 			catch (Exception ex)
@@ -579,12 +679,14 @@ internal static class HeidemarieCinematicRuntime
 	/// </summary>
 	private static string? ResolveRoute(CardModel? card)
 	{
-		return card switch
+		// 路线改由档位表统一收口（见 HeidemariePresentationCatalog）：
+		// 卡级例外 → 档位默认。原先这里按卡类型 switch，新增演出卡要同时改两处。
+		if (card is not HeidemarieCard heidemarieCard)
 		{
-			HeidemarieLiberatedAurora => RouteUg,
-			HeidemarieSwordParadise => RouteUx,
-			_ => null,
-		};
+			return null;
+		}
+
+		return HeidemariePresentationCatalog.CinematicRouteOf(heidemarieCard);
 	}
 
 	// ──────────────────────────────────────────────────────────────────────────
@@ -683,7 +785,7 @@ internal static class HeidemarieCinematicRuntime
 
 	private static void Guard(Phase phase, Action action)
 	{
-		if (phase.Ended)
+		if (phase.Released)
 		{
 			return;
 		}
@@ -700,11 +802,13 @@ internal static class HeidemarieCinematicRuntime
 	}
 
 	/// <summary>
-	/// 每帧看门狗：房间还在 / 玩家没死 / 设置没关 / 没超时，任一不满足即强制收尾。
+	/// 每帧看门狗：房间还在 / 玩家没死 / 设置没关 / 没超时，任一不满足即强制释放。
+	/// 画面阶段与 tail 阶段都要看 —— tail 如果一直等不到 resources_finished，
+	/// 也必须有人把它释放掉，否则舞台会挂在房间上。
 	/// </summary>
 	private static void Watch(Phase phase)
 	{
-		if (_phase != phase)
+		if (_phase != phase && _tail != phase)
 		{
 			return;
 		}
@@ -727,7 +831,7 @@ internal static class HeidemarieCinematicRuntime
 		}
 	}
 
-	/// <summary>取消当前演出（可按玩家过滤）。</summary>
+	/// <summary>取消当前演出（可按玩家过滤）。画面阶段与余韵 tail 都要收。</summary>
 	private static void CancelFor(Player? player, string reason)
 	{
 		Phase? phase = _phase;
@@ -736,34 +840,83 @@ internal static class HeidemarieCinematicRuntime
 			End(phase, reason, cancelled: true);
 		}
 
+		Phase? tail = _tail;
+		if (tail is not null && (player is null || tail.Player == player))
+		{
+			End(tail, reason, cancelled: true);
+		}
+
 		Spines.Clear();
 	}
 
 	/// <summary>
-	/// 收尾：先取消舞台 → 再归还本体 → 最后释放节点。
-	/// 用 <c>try/finally</c> 保证本体一定归还，不会把角色永久藏住。
+	/// 画面演出收尾（对应 Nine 的 <c>FinishPresentation</c>）：
+	/// 归还本体、放行命中 / 出牌两道闸门，把相位挪到 <see cref="_tail"/>。
+	///
+	/// <para><b>这里不释放舞台</b>：视觉余韵与音频尾巴继续播，
+	/// 等舞台发 <c>resources_finished</c> 再走 <see cref="End"/>。
+	/// 这样「出牌只等画面收尾」与「余韵不被提前掐断」两件事就解耦了。</para>
 	/// </summary>
-	private static void End(Phase? phase, string reason, bool cancelled)
+	private static void FinishPresentation(Phase phase, string reason)
 	{
-		if (phase is null || phase.Ended)
+		if (phase.PresentationFinished || phase.Released)
 		{
 			return;
 		}
 
-		phase.Ended = true;
+		phase.PresentationFinished = true;
 		if (_phase == phase)
 		{
 			_phase = null;
 		}
 
+		_tail = phase;
+
+		// 先归还本体，再放闸门：续体里可能立刻开始下一张牌 / 下一次攻击。
+		RestoreActors(phase);
+		phase.Hit.TrySetResult();
+		phase.Finished.TrySetResult();
+
+		if (phase.VictoryPending)
+		{
+			// 胜利流程由游戏自己负责，这里只确认它不会再被取消演出打断。
+			phase.VictoryPending = false;
+			Log($"胜利判定已越过演出收尾 route={phase.Route} token={phase.Token}");
+		}
+
+		Log($"全屏演出画面收尾，保留余韵 reason={reason} route={phase.Route} token={phase.Token}");
+	}
+
+	/// <summary>
+	/// 彻底释放（对应 Nine 的 <c>Release</c>）：取消舞台 → 归还本体 → 释放节点。
+	/// 用 <c>try/finally</c> 保证本体一定归还，不会把角色永久藏住。
+	/// </summary>
+	private static void End(Phase? phase, string reason, bool cancelled)
+	{
+		if (phase is null || phase.Released)
+		{
+			return;
+		}
+
+		phase.Released = true;
+		if (_phase == phase)
+		{
+			_phase = null;
+		}
+
+		if (_tail == phase)
+		{
+			_tail = null;
+		}
+
 		// 取消 / 打断：演出音效立即停，避免画面收了声音还在响。
-		// 自然播完（finished / resources_finished）不停 —— 尾部放完是设计行为。
+		// 自然播完（resources_finished）不停 —— 尾部放完是设计行为。
 		if (cancelled)
 		{
 			HeidemarieCombatAudio.StopSfx();
 		}
 
-		// 两道闸门无条件放行：演出正常播完时它们早已由 hit_reached / stage_finished 完成，
+		// 两道闸门无条件放行：正常路径上它们早已由 hit_reached / stage_finished 完成，
 		// 这里兜的是取消、降级、看门狗超时等异常路径 ——
 		// 宁可提前放行，也绝不能把等命中的攻击或等收尾的钩子吊死。
 		phase.Hit.TrySetResult();
@@ -789,6 +942,25 @@ internal static class HeidemarieCinematicRuntime
 
 		try
 		{
+			Action? layoutCallback = phase.LayoutCallback;
+			if (layoutCallback is not null && GodotObject.IsInstanceValid(phase.Room))
+			{
+				Viewport? viewport = phase.Room!.GetViewport();
+				if (viewport is not null && GodotObject.IsInstanceValid(viewport))
+				{
+					viewport.SizeChanged -= layoutCallback;
+				}
+			}
+		}
+		catch
+		{
+			// 摘布局回调失败不该阻塞收尾
+		}
+
+		phase.LayoutCallback = null;
+
+		try
+		{
 			if (GodotObject.IsInstanceValid(phase.Stage))
 			{
 				phase.Stage!.Call("cancel_stage");
@@ -807,8 +979,35 @@ internal static class HeidemarieCinematicRuntime
 			}
 
 			phase.Stage = null;
-			Log($"全屏演出结束 reason={reason} cancelled={cancelled}");
+			Log($"全屏演出释放 reason={reason} cancelled={cancelled}");
 		}
+	}
+
+	/// <summary>
+	/// 胜利事件：致死预判模式下伤害落在命中帧，胜利判定可能早于
+	/// <c>stage_finished</c>。此时不能直接取消（会把演出后半段截掉），
+	/// 只做标记，等画面收尾时再处理 —— 对应 Nine 的 <c>DeferVictory</c>。
+	/// </summary>
+	private static void OnVictory(Player? player)
+	{
+		Phase? phase = _phase;
+		if (phase is not null && phase.Player == player && !phase.PresentationFinished)
+		{
+			phase.VictoryPending = true;
+			Log($"胜利早于演出收尾，延后处理 route={phase.Route} token={phase.Token}");
+			return;
+		}
+
+		// 余韵阶段：不取消，让 resources_finished 自然收尾。
+		// 这时伤害与出牌闸门已经放行，胜利流程不会被演出阻塞。
+		Phase? tail = _tail;
+		if (tail is not null && tail.Player == player)
+		{
+			Log($"胜利发生在余韵阶段，保留余韵自然收尾 route={tail.Route} token={tail.Token}");
+			return;
+		}
+
+		CancelFor(player, "player_victory");
 	}
 
 	// ──────────────────────────────────────────────────────────────────────────
@@ -930,6 +1129,80 @@ internal static class HeidemarieCinematicRuntime
 		}
 
 		return _token;
+	}
+
+	/// <summary>
+	/// 打印演出布局诊断：当前窗口尺寸、逻辑视口、设计画布、cover 与实际绘制尺寸。
+	///
+	/// <para>三个尺寸的区别：
+	/// <list type="bullet">
+	///   <item><b>窗口</b>：物理像素（<c>Window.Size</c>）；</item>
+	///   <item><b>逻辑视口</b>：<c>stretch=canvas_items + expand</c> 之后的尺寸，cover 以它为准；</item>
+	///   <item><b>实际绘制</b>：1280×720 设计画布 × cover；非 16:9 时会大于视口并裁边。</item>
+	/// </list></para>
+	/// </summary>
+	private static void LogLayout(Phase phase, string label)
+	{
+		if (!GodotObject.IsInstanceValid(phase.Stage))
+		{
+			return;
+		}
+
+		try
+		{
+			Vector2 windowSize;
+			Vector2 viewportSize;
+			Vector2 designSize;
+			float cover;
+			Vector2 drawSize;
+			Vector2 canvasPosition;
+
+			if (phase.Stage!.HasMethod("get_layout_snapshot"))
+			{
+				// 正常路径：以舞台自己的 _layout 结果为准（窗口变化后也是最新值）。
+				Godot.Collections.Dictionary snapshot = phase.Stage.Call("get_layout_snapshot").AsGodotDictionary();
+				windowSize = snapshot["window_size"].AsVector2();
+				viewportSize = snapshot["viewport_size"].AsVector2();
+				designSize = snapshot["design_size"].AsVector2();
+				cover = (float)snapshot["cover"].AsDouble();
+				drawSize = snapshot["draw_size"].AsVector2();
+				canvasPosition = snapshot["canvas_position"].AsVector2();
+			}
+			else
+			{
+				// 旧 pck 兜底：舞台还没导出快照时，按固定口径重算一遍，
+				// 保证不重新导出资源也能在日志里看到尺寸。
+				viewportSize = phase.Stage.GetViewport().GetVisibleRect().Size;
+				Vector2I windowPixels = phase.Stage.GetWindow().Size;
+				windowSize = new Vector2(windowPixels.X, windowPixels.Y);
+				designSize = new Vector2(1280f, 720f);
+				cover = Math.Max(viewportSize.X / designSize.X, viewportSize.Y / designSize.Y);
+				drawSize = designSize * cover;
+				canvasPosition = (viewportSize - drawSize) * 0.5f;
+			}
+
+			// 逻辑坐标 -> 窗口物理像素的映射：Godot 的 canvas_items stretch
+			// 会把整套 1920x1080 逻辑画布放大到窗口分辨率。
+			Vector2 windowScale = new(
+				viewportSize.X > 0f ? windowSize.X / viewportSize.X : 1f,
+				viewportSize.Y > 0f ? windowSize.Y / viewportSize.Y : 1f);
+			Vector2 physicalDrawSize = drawSize * windowScale;
+
+			Log(
+				$"{label} "
+				+ $"窗口={windowSize} "
+				+ $"逻辑视口={viewportSize} "
+				+ $"设计画布={designSize} "
+				+ $"cover={cover:0.###} "
+				+ $"逻辑绘制={drawSize} "
+				+ $"物理绘制={physicalDrawSize} "
+				+ $"窗口/视口={windowScale} "
+				+ $"画布原点={canvasPosition}");
+		}
+		catch (Exception ex)
+		{
+			Warn("布局诊断打印失败：" + ex.Message);
+		}
 	}
 
 	private static void Log(string message)

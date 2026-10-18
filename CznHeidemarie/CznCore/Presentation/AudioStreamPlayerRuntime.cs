@@ -404,6 +404,7 @@ internal sealed class AudioStreamPlayerRuntime
 		}
 		catch
 		{
+				SkinLog.Warn("Unable to read audio stream length; using zero duration.");
 			return 0f;
 		}
 	}

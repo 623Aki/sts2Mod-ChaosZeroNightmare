@@ -1,45 +1,46 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using CznCore.Godot;
 using CznCore.Presentation;
 using CznHeidemarie.Characters.Heidemarie;
 using CznHeidemarie.Characters.Heidemarie.Cards;
+using CznHeidemarie.Characters.Heidemarie.Presentation;
 using Godot;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Nodes.Combat;
 
 namespace CznHeidemarie.Integration;
 
 /// <summary>
 /// 单体技能特效的接入层：把 <c>CznHeidemarie/animations/effects/</c> 里
-/// 已经整合好的特效骨架正式接到卡牌演出上。
+/// 已经整合好的特效骨架接到卡牌演出上。
 ///
-/// <para>对应参考 mod 的 <c>TipheraCombatEffects</c> / <c>NineBasicEffects</c>，
-/// 但做法更轻：<b>不</b>走 <c>CharacterSkinProfile</c> + <c>CombatPresentationController</c>
-/// 那条「一套框架驱动整套战斗演出」的大路（本工程从未接入它），
-/// 而是复用与全屏演出同一套毫秒时间轴思路，见
-/// <c>CznHeidemarie/effects/heidemarie_effect_stage.gd</c>。</para>
+/// <para><b>挂载规则（与官方 <c>VfxCmd</c> 一致）：</b>
+/// 所有舞台都挂 <c>creature.GetVfxContainer()</c>（战斗中是 <c>CombatVfxContainer</c>，
+/// 图鉴里是图鉴容器），用世界坐标定位；不再挂到敌人 / 施法者的骨架节点下。</para>
+///
+/// <para><b>为什么首帧仍能与旧版对齐：</b>舞台根节点的全局基从目标单位的
+/// <c>NCreature.Body</c> 复刻（含 <c>Visuals.Scale</c>、镜像、相机缩放），
+/// 原点用官方锚点（默认 <c>GetBottomOfHitbox() + (0,-40)</c>，即旧的 healthbar 锚点），
+/// z 用 <c>Body</c> 的有效深度。于是每个图层的世界位置仍等于
+/// <c>anchor + BodyBasis * layerOffset</c>，与挂在骨架下时完全一致。</para>
+///
+/// <para><b>生命周期：</b>舞台自己的 <c>finished</c> 信号 → <see cref="HeidemarieVfx.Free"/>
+/// （内部走 <c>QueueFreeSafely()</c>）；换房 / 胜利 / 玩家死亡 / 关闭特效设置时统一
+/// <see cref="CancelAll"/>。不做节点池。</para>
 ///
 /// <para>触发点是 <see cref="CardPlayEnqueuingEvent"/>（游戏 <c>CardModel.EnqueueManualPlay</c>
-/// 的 Prefix）—— 它同时给出卡牌与**目标**，正是官方为「出牌演出」预留的时机，
-/// 早于 <c>OnPlay</c> 的数值结算。</para>
-///
-/// <para>结构：每张牌建一个施法者舞台，目标侧按目标数各建一个 ——
-/// 全部挂到对应单位自己的骨架节点下，因此自动继承该单位的位置、朝向与缩放。
-/// 舞台自己计时，播完发 <c>finished</c>，由本类释放。</para>
-///
-/// <para>与全屏演出的分工：两张终结技（「解放极光」/「绝响」）在时间轴里
-/// 同样登记了常规特效，但只在全屏演出<b>不接管</b>时才播 —— 演出开着时由
-/// <see cref="HeidemarieCinematicRuntime.WillTakeOver"/> 让位，演出开着却判定不通过时
-/// 由 <see cref="PlayFallback"/> 补播。于是「关掉全屏演出」不再等于「大招没有特效」。</para>
+/// 的 Prefix）—— 它同时给出卡牌与目标，且早于 <c>OnPlay</c> 的伤害结算，
+/// 正好保住重击 / 顶击档的前摇。命中帧再按 <see cref="DamageReceivedEvent"/> 重设一次原点，
+/// 用来跟住敌人的抖动 / 位移。</para>
 /// </summary>
 internal static class HeidemarieMoveEffectsRuntime
 {
-	/// <summary>特效时间轴（卡牌 → 图层表）。</summary>
+	/// <summary>特效时间轴（档位 → 图层表）。</summary>
 	private const string DataPath = "res://CznHeidemarie/effects/heidemarie_moves.json";
 
 	/// <summary>特效舞台场景（Node2D + 合成器脚本）。</summary>
@@ -48,12 +49,11 @@ internal static class HeidemarieMoveEffectsRuntime
 	/// <summary>特效骨架 <c>_skel_data.tres</c> 目录，用于预加载。</summary>
 	private const string SkelDataRoot = "res://CznHeidemarie/animations/effects/";
 
-	/// <summary>
-	/// 特效组库：组键 → 组的图层构成 + 挂载参数。
-	/// 由 <c>tools/list_effect_groups.py</c> 从 CZN 源数据生成。
-	/// 卡牌映射只写组键，骨架名从这里取。
-	/// </summary>
+	/// <summary>特效组库：组键 → 组的图层构成 + 挂载参数。</summary>
 	private const string GroupLibraryPath = "res://CznHeidemarie/effects/heidemarie_effect_groups.json";
+
+	/// <summary>自组装特效组库：组名 → owner / target 两侧的图层构成。</summary>
+	private const string ComposeLibraryPath = "res://CznHeidemarie/effects/heidemarie_effect_compose.json";
 
 	/// <summary>预加载句柄键。</summary>
 	private const string PreloadKey = "heidemarie_move_effects";
@@ -64,65 +64,79 @@ internal static class HeidemarieMoveEffectsRuntime
 	/// <summary>目标图层桶。</summary>
 	private const string TargetBucket = "target";
 
-	/// <summary>骨架查找与缓存。</summary>
-	private static readonly CombatCreatureSpineResolver Spines = new();
+	/// <summary>
+	/// 目标特效默认锚点的屏幕像素偏移（正 = 更低，负 = 更高）。
+	/// 旧策略表里的 <c>healthbar</c> 锚点就是 <c>GetBottomOfHitbox() + (0,-40)</c>；
+	/// 迁移期保持这个数值，避免「重构 + 重新标定」两件事混在一起。
+	/// </summary>
+	private const float TargetAnchorOffsetY = -40f;
+
+	/// <summary>
+	/// 目标侧图层整体抬升量（旧策略表 <c>target_z_lift=4</c>）。
+	/// 现在 z 已按「层数」压过（min_z ≥ 0），gd 侧的 <c>delta</c> 自然退化成 0，
+	/// 保留它是为了不改动这条历史约定。
+	/// </summary>
+	private const int TargetZLift = 4;
+
+	/// <summary>前台分层：z ≥ 0 的层，落 <c>CombatVfxContainer</c>，画在角色之上。</summary>
+	private const string FrontPart = "front";
+
+	/// <summary>后台分层：z &lt; 0 的层，落 <c>BackCombatVfxContainer</c>，画在背景之上、角色之下。</summary>
+	private const string BackPart = "back";
+
+
+
+	/// <summary>一个在播舞台的登记项（一个 bucket 会拆成前台 / 后台两个根节点）。</summary>
+	private sealed class StageEntry
+	{
+		/// <summary>本登记项持有的舞台根节点：前台（角色之前）与后台（角色之后）各最多一个。</summary>
+		internal readonly List<Node2D> Roots = new();
+
+		internal Creature Creature = null!;
+
+		internal string Key = string.Empty;
+	}
+
+	/// <summary>目标侧舞台的额外信息：命中帧要按 Creature 反查并重设锚点。</summary>
+	private sealed class TargetStage
+	{
+		internal StageEntry Entry = null!;
+
+		internal HeidemarieVfxAnchor Anchor;
+
+		internal Vector2 Offset;
+	}
 
 	/// <summary>正在播放的舞台，用于换卡 / 离房时统一收尾。</summary>
-	private static readonly List<Node> Active = new();
+	private static readonly List<StageEntry> Active = new();
+
+	/// <summary>只收目标侧舞台：只有目标侧需要在命中帧重设锚点。</summary>
+	private static readonly List<TargetStage> TargetStages = new();
 
 	/// <summary>
 	/// 本场战斗已经接管过的卡牌实例。
-	/// CardPlayEnqueuingEvent 可能在同一张牌的多个 transport 阶段到达；
-	/// 参考 mod 的 presentation token 只允许一份动作序列，本集合保证不会
-	/// 因重复事件把 owner/target 舞台再组装一遍。按实例而非 CardModel.Id 去重，
-	/// 避免同 ID 的不同牌实例互相吞掉演出。
+	/// <c>CardPlayEnqueuingEvent</c> 可能在同一张牌的多个 transport 阶段到达；
+	/// 按实例去重，避免 owner/target 舞台重复组装。
 	/// </summary>
 	private static readonly HashSet<CardModel> PlayedCards = new();
-
-	/// <summary>
-	/// 一个挂在敌人身上的「目标侧」舞台，记着它与哪个敌人配对 ——
-	/// 命中帧要按敌人反查它，才知道该校正哪一个舞台。
-	/// </summary>
-	private sealed class TargetStage
-	{
-		/// <summary>挂在敌人骨架下的特效舞台。</summary>
-		internal Node2D Stage = null!;
-
-		/// <summary>舞台所贴的敌人战斗节点。</summary>
-		internal NCreature Target = null!;
-	}
-
-	/// <summary>
-	/// 当前在播的目标侧舞台。
-	///
-	/// <para>与 <see cref="Active"/> 的分工：<see cref="Active"/> 收全部在播舞台
-	/// （含施法者侧，用于换房 / 阵亡时统一收尾），这里只收目标侧 ——
-	/// 因为只有目标侧需要按敌人做命中帧的锚点校正。</para>
-	/// </summary>
-	private static readonly List<TargetStage> TargetStages = new();
 
 	/// <summary>事件订阅句柄。</summary>
 	private static readonly List<IDisposable> Subscriptions = new();
 
-	/// <summary>时间轴里登记过的卡牌类型名（延迟解析一次后缓存）。</summary>
+	/// <summary>时间轴里登记过的档位键（延迟解析一次后缓存）。</summary>
 	private static HashSet<string>? _knownKeys;
+
+	/// <summary>舞台创建失败只提示一次，避免每张牌刷屏。</summary>
+	private static bool _spawnFailureWarned;
 
 	/// <summary>
 	/// 订阅出牌与生命周期事件。由 <see cref="HeidemarieIntegration.Init"/> 调用。
 	/// </summary>
 	internal static void Initialize()
 	{
-		// 出牌入队：拿得到卡牌与目标，是开始播放特效的正确时机
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 技能特效", (CardPlayEnqueuingEvent e) => TryPlay(e.Card, e.Target)));
-
-		// 进战斗时线程预加载本卡组会用到的特效骨架
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 技能特效预加载", (CombatStartingEvent _) => Preload()));
-
-		// 命中帧校正：挂载时对齐一次还不够 —— 到真正结算伤害之间，敌人可能已经
-		// 抖过（AnimShake）/ 缩放过（ScaleTo）/ 位移过，挂载那次算出的落点会过期
-		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 技能特效命中校正", (DamageReceivedEvent e) => AlignOnHit(e)));
-
-		// 生命周期兜底
+		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 技能特效命中", (DamageReceivedEvent e) => OnDamageReceived(e)));
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 技能特效入房", (RoomEnteringEvent _) => Cleanup()));
 		Subscriptions.Add(SkinEventHub.Subscribe("海德玛丽 技能特效阵亡", (PlayerDeathResolvedEvent e) =>
 		{
@@ -153,8 +167,7 @@ internal static class HeidemarieMoveEffectsRuntime
 				return;
 			}
 
-			// 终结技：全屏演出会整屏接管时让位（黑幕会把常规特效整块盖掉），
-			// 否则播放时间轴里给它们准备的常规特效。
+			// 终结技：全屏演出会整屏接管时让位；关掉全屏演出时由 PlayFallback 补播。
 			if (HeidemarieCinematicRuntime.WillTakeOver(card))
 			{
 				return;
@@ -169,14 +182,8 @@ internal static class HeidemarieMoveEffectsRuntime
 	}
 
 	/// <summary>
-	/// 全屏演出「判定不通过」时的补播入口。
-	///
-	/// <para>出牌瞬间（<c>CardPlayEnqueuingEvent</c>）单体特效已经因为演出开着而让位；
-	/// 演出这边到 <c>Hook.ModifyAttackHitCount</c> 才做致死预判，若预判结论是「不播」，
-	/// 大招就会只剩一段身体动作 —— 由 <see cref="HeidemarieCinematicRuntime"/> 调本方法补上。</para>
+	/// 全屏演出「判定不通过」时的补播入口，由 <see cref="HeidemarieCinematicRuntime"/> 调用。
 	/// </summary>
-	/// <param name="card">刚打出的牌。</param>
-	/// <param name="target">本次攻击的目标；全体敌人牌传 <c>null</c>，由本类自行展开。</param>
 	internal static void PlayFallback(CardModel card, Creature? target)
 	{
 		try
@@ -195,18 +202,13 @@ internal static class HeidemarieMoveEffectsRuntime
 	}
 
 	/// <summary>
-	/// 给一张牌建舞台：施法者一个、目标侧按 <see cref="ResolveTargets"/> 展开。
+	/// 给一张牌建舞台：施法者一个（骨架原点），目标侧按 <see cref="ResolveTargets"/> 展开。
+	/// 两个 bucket 都挂 <c>GetVfxContainer()</c>；目标侧额外登记到 <see cref="TargetStages"/>。
 	/// </summary>
 	private static void SpawnFor(CardModel card, Creature? target)
 	{
-		string key = card.GetType().Name;
-		if (!HasEntry(key))
-		{
-			// 时间轴里没登记这张牌 —— 静默跳过，不刷日志
-			return;
-		}
-
-		if (PlayedCards.Contains(card))
+		string key = HeidemariePresentationCatalog.ResolveKey((HeidemarieCard)card);
+		if (!HasEntry(key) || PlayedCards.Contains(card))
 		{
 			return;
 		}
@@ -217,34 +219,216 @@ internal static class HeidemarieMoveEffectsRuntime
 			return;
 		}
 
-		if (player.Creature.GetCreatureNode() is not { } ownerNode)
+		if (player.Creature.GetCreatureNode() is null)
 		{
 			return;
 		}
 
-		Node2D? ownerAnchor = Spines.Find(ownerNode);
-		if (ownerAnchor is not null && SpawnStage(ownerAnchor, key, OwnerBucket) is not null)
+		bool spawned = false;
+
+		// 施法者侧：旧实现挂在骨架原点；现在同样走容器，锚点用 BodyOrigin。
+		if (SpawnStage(
+				player.Creature,
+				key,
+				OwnerBucket,
+				HeidemarieVfxAnchor.BodyOrigin,
+				Vector2.Zero,
+				0) is not null)
 		{
-			PlayedCards.Add(card);
+			spawned = true;
 		}
 
+		Vector2 targetOffset = new(0f, TargetAnchorOffsetY);
 		foreach (Creature victim in ResolveTargets(card, target))
 		{
-			if (victim.GetCreatureNode() is not { } victimNode
-				|| Spines.Find(victimNode) is not { } victimAnchor
-				|| SpawnStage(victimAnchor, key, TargetBucket) is not { } targetStage)
+			if (victim.GetCreatureNode() is null)
 			{
 				continue;
 			}
 
-			// 舞台挂上去时原点落在敌人的**骨架原点**上，而图层位移在 CZN 源数据里
-			// 是相对**受击点**标定的（见 heidemarie_effect_groups.gd 的
-			// TARGET_OFFSET_OVERRIDES 注释）—— 先按当前受击点对齐一次，
-			// 命中帧（AlignOnHit）再补一次。
-			TargetStage tracked = new() { Stage = targetStage, Target = victimNode };
-			TargetStages.Add(tracked);
-			AlignToTargetSurface(tracked);
+			StageEntry? entry = SpawnStage(
+				victim,
+				key,
+				TargetBucket,
+				HeidemarieVfxAnchor.FloorScreenOffset,
+				targetOffset,
+				TargetZLift);
+			if (entry is null)
+			{
+				continue;
+			}
+
+			TargetStages.Add(new TargetStage
+			{
+				Entry = entry,
+				Anchor = HeidemarieVfxAnchor.FloorScreenOffset,
+				Offset = targetOffset,
+			});
+			spawned = true;
 		}
+
+		if (spawned)
+		{
+			PlayedCards.Add(card);
+		}
+	}
+
+	/// <summary>
+	/// 给一个 bucket 起舞台：按 z 正负拆成前台 / 后台两个根节点，各自配置、各自计时。
+	/// </summary>
+	private static StageEntry? SpawnStage(
+		Creature creature,
+		string key,
+		string bucket,
+		HeidemarieVfxAnchor anchor,
+		Vector2 screenOffset,
+		int zLift)
+	{
+		int baseZ = ResolveBodyZ(creature);
+
+		StageEntry? entry = null;
+		foreach (bool behind in new[] { false, true })
+		{
+			Node2D? root = SpawnPart(creature, key, bucket, anchor, screenOffset, baseZ, zLift, behind);
+			if (root is null)
+			{
+				continue;
+			}
+
+			entry ??= new StageEntry
+			{
+				Creature = creature,
+				Key = key,
+			};
+			entry.Roots.Add(root);
+		}
+
+		if (entry is null)
+		{
+			return null;
+		}
+
+		Active.Add(entry);
+
+		foreach (Node2D root in entry.Roots.ToArray())
+		{
+			StageEntry owner = entry;
+			Node2D node = root;
+			node.Connect(
+				"finished",
+				Callable.From(() => OnRootFinished(owner, node)),
+				(uint)GodotObject.ConnectFlags.OneShot);
+		}
+
+		foreach (Node2D root in entry.Roots.ToArray())
+		{
+			try
+			{
+				root.Call("start");
+			}
+			catch (Exception ex)
+			{
+				Warn("技能特效舞台启动失败：" + ex.Message);
+				Cancel(entry);
+				return null;
+			}
+		}
+
+		return entry;
+	}
+
+	/// <summary>建单个分层的舞台（behind = 后台容器，只收 z &lt; 0 的层）。</summary>
+	private static Node2D? SpawnPart(
+		Creature creature,
+		string key,
+		string bucket,
+		HeidemarieVfxAnchor anchor,
+		Vector2 screenOffset,
+		int baseZ,
+		int zLift,
+		bool behind)
+	{
+		string part = behind ? BackPart : FrontPart;
+		Node2D? stage = HeidemarieVfx.SpawnOnCreature(creature, StageScenePath, anchor, screenOffset, behind);
+		if (stage is null)
+		{
+			if (!_spawnFailureWarned)
+			{
+				_spawnFailureWarned = true;
+				Warn("技能特效舞台创建失败（场景缺失 / 容器不可用 / 测试模式），后续同类失败不再提示");
+			}
+
+			return null;
+		}
+
+		if (!stage.HasSignal("finished"))
+		{
+			Warn("技能特效舞台缺少 finished 信号：" + StageScenePath);
+			HeidemarieVfx.Free(stage);
+			return null;
+		}
+
+		double duration;
+		try
+		{
+			duration = stage.Call("configure", DataPath, key, bucket, baseZ, zLift, part).AsDouble();
+		}
+		catch (Exception)
+		{
+			// 兼容旧 pck（脚本还是 5 参数）：只建前台一路，避免重复画同一批层。
+			if (behind)
+			{
+				HeidemarieVfx.Free(stage);
+				return null;
+			}
+
+			try
+			{
+				duration = stage.Call("configure", DataPath, key, bucket, baseZ, zLift).AsDouble();
+			}
+			catch (Exception ex)
+			{
+				Warn("技能特效舞台配置失败：" + ex.Message);
+				HeidemarieVfx.Free(stage);
+				return null;
+			}
+		}
+
+		if (duration <= 0.0)
+		{
+			HeidemarieVfx.Free(stage);
+			return null;
+		}
+
+		try
+		{
+			HeidemarieEffectMaterials.Apply(stage);
+		}
+		catch (Exception ex)
+		{
+			Warn("技能特效材质应用失败：" + ex.Message);
+			HeidemarieVfx.Free(stage);
+			return null;
+		}
+
+		return stage;
+	}
+
+	/// <summary>取单位 Body 的有效 z（舞台根节点的 z 基准）；取不到时返回 0。</summary>
+	private static int ResolveBodyZ(Creature creature)
+	{
+		if (creature.GetCreatureNode() is not { } stageOwner)
+		{
+			return 0;
+		}
+
+		Node2D? body = stageOwner.Body;
+		if (!GodotNodeUtil.IsAlive(body))
+		{
+			body = stageOwner.Visuals;
+		}
+
+		return GodotNodeUtil.IsAlive(body) ? HeidemarieVfx.EffectiveZ(body) : 0;
 	}
 
 	/// <summary>
@@ -283,167 +467,136 @@ internal static class HeidemarieMoveEffectsRuntime
 		}
 	}
 
+	// ──────────────────────────────────────────────────────────────────────────
+	// 命中帧：重设原点
+	// ──────────────────────────────────────────────────────────────────────────
+
 	/// <summary>
-	/// 在 <paramref name="anchor"/>（某个战斗单位的骨架节点）下建一个特效舞台。
-	/// 舞台自己解析时间轴；没有任何可用图层时直接把节点回收并返回 <c>null</c>。
+	/// 伤害结算时刻：把挨了这一次伤害的敌人身上挂着的目标舞台再对一次锚点。
+	/// 舞台是在出牌前挂上的，到真正命中之间敌人可能已经被抖过 / 位移过；
+	/// 这里只重设根节点变换，图层 offset 不动。目标已死亡时跳过重设，
+	/// 让最后一帧照常播完，由舞台自己的 finished 释放。
 	/// </summary>
-	/// <returns>建好的舞台节点；没建起来时为 <c>null</c>（调用方据此决定是否登记）。</returns>
-	private static Node2D? SpawnStage(Node2D anchor, string key, string bucket)
+	private static void OnDamageReceived(DamageReceivedEvent e)
 	{
-		PackedScene? scene = ResourceLoader.Load<PackedScene>(StageScenePath, null, ResourceLoader.CacheMode.Reuse);
-		if (scene?.Instantiate(PackedScene.GenEditState.Disabled) is not Node2D stage)
+		if (e.Target is null || TargetStages.Count == 0)
 		{
-			Warn("缺少技能特效舞台场景：" + StageScenePath);
-			return null;
+			return;
 		}
 
-		anchor.AddChild(stage, forceReadableName: false, Node.InternalMode.Disabled);
-
-		if (stage.Call("configure", DataPath, key, bucket).AsDouble() <= 0.0)
+		List<TargetStage> snapshot = new(TargetStages);
+		foreach (TargetStage tracked in snapshot)
 		{
-			stage.QueueFree();
-			return null;
+			StageEntry entry = tracked.Entry;
+			if (entry.Roots.Count == 0)
+			{
+				TargetStages.Remove(tracked);
+				continue;
+			}
+
+			if (!ReferenceEquals(entry.Creature, e.Target))
+			{
+				continue;
+			}
+
+			// 目标已死亡时不再重设锚点，但也不立刻取消舞台：
+			// 命中/击杀的最后一帧仍要播完，由舞台自己的 finished 释放。
+			if (e.Target.IsDead)
+			{
+				continue;
+			}
+
+			if (entry.Creature.GetCreatureNode() is not { } creatureNode)
+			{
+				continue;
+			}
+
+			foreach (Node2D root in entry.Roots.ToArray())
+			{
+				if (!GodotNodeUtil.IsAlive(root))
+				{
+					continue;
+				}
+
+				try
+				{
+					HeidemarieVfx.ApplyCreatureAnchor(root, creatureNode, tracked.Anchor, tracked.Offset);
+				}
+				catch (Exception ex)
+				{
+					Warn("目标特效命中重定位失败：" + ex.Message);
+				}
+			}
 		}
-
-		// 特效亮度 / 不透明度：每建一个舞台就按当前设置调一次
-		HeidemarieEffectMaterials.Apply(stage);
-
-		Active.Add(stage);
-		stage.Connect("finished", Callable.From(() => Release(stage)));
-		stage.Call("start");
-		return stage;
 	}
-
-	/// <summary>
-	/// 立刻收掉所有在播的特效（设置里关掉「战斗特效」时调用，
-	/// 挂到 <c>SkinSettingsUiRuntimeHooks.CleanupSkinEffectsRuntime</c>）。
-	/// </summary>
-	internal static void CancelAll() => Cleanup();
 
 	// ──────────────────────────────────────────────────────────────────────────
 	// 生命周期
 	// ──────────────────────────────────────────────────────────────────────────
 
-	/// <summary>舞台播完，回收节点。</summary>
-	private static void Release(Node stage)
+	/// <summary>某一路舞台播完：释放该根节点；两路都放完才移出活动表。</summary>
+	private static void OnRootFinished(StageEntry entry, Node2D root)
 	{
-		Active.Remove(stage);
-		// 同步摘掉命中校正的配对，别让它一直攒着已经释放的舞台
-		TargetStages.RemoveAll(tracked => tracked.Stage == stage || !GodotObject.IsInstanceValid(tracked.Stage));
-		if (GodotObject.IsInstanceValid(stage))
+		entry.Roots.Remove(root);
+		HeidemarieVfx.Free(root);
+		if (entry.Roots.Count == 0)
 		{
-			stage.QueueFree();
+			Active.Remove(entry);
+			TargetStages.RemoveAll(tracked => ReferenceEquals(tracked.Entry, entry));
 		}
 	}
 
-	/// <summary>取消并释放全部进行中的特效（换房 / 玩家阵亡 / 胜利）。</summary>
-	private static void Cleanup()
+	/// <summary>释放登记项持有的全部根节点并移出活动表。</summary>
+	private static void Release(StageEntry entry)
 	{
-		foreach (Node stage in Active)
+		Active.Remove(entry);
+		TargetStages.RemoveAll(tracked => ReferenceEquals(tracked.Entry, entry) || tracked.Entry.Roots.Count == 0);
+		foreach (Node2D root in entry.Roots)
 		{
-			if (!GodotObject.IsInstanceValid(stage))
+			HeidemarieVfx.Free(root);
+		}
+
+		entry.Roots.Clear();
+	}
+
+	/// <summary>取消一个舞台：先停时钟/隐藏图层，再走统一释放。</summary>
+	private static void Cancel(StageEntry entry)
+	{
+		foreach (Node2D root in entry.Roots.ToArray())
+		{
+			if (!GodotNodeUtil.IsAlive(root))
 			{
 				continue;
 			}
 
 			try
 			{
-				stage.Call("cancel");
+				root.Call("cancel");
 			}
 			catch
 			{
 				// 取消失败也要释放，不能因为一个节点卡住整批
 			}
+		}
 
-			stage.QueueFree();
+		Release(entry);
+	}
+
+	/// <summary>取消并释放全部进行中的特效（换房 / 玩家阵亡 / 胜利 / 设置关闭）。</summary>
+	internal static void CancelAll() => Cleanup();
+
+	private static void Cleanup()
+	{
+		List<StageEntry> snapshot = new(Active);
+		foreach (StageEntry entry in snapshot)
+		{
+			Cancel(entry);
 		}
 
 		Active.Clear();
 		TargetStages.Clear();
 		PlayedCards.Clear();
-		Spines.Clear();
-	}
-
-	// ──────────────────────────────────────────────────────────────────────────
-	// 目标锚点校正（挂载时 + 命中帧）
-	// ──────────────────────────────────────────────────────────────────────────
-
-	/// <summary>
-	/// 命中帧（<c>Hook.AfterDamageReceived</c>）到点：把挨了这一次伤害的敌人身上
-	/// 挂着的目标侧舞台再校正一次。
-	///
-	/// <para>舞台是在 <c>CardPlayEnqueuingEvent</c>（伤害结算<b>之前</b>）挂上的，
-	/// 到真正命中之间敌人可能已经被抖过（<c>AnimShake</c> 改 <c>Visuals.Position</c>）、
-	/// 缩放过（<c>ScaleTo</c> / Osty 体型变化）或位移过 ——
-	/// 挂载时那次校正就此过期。这里用真实的伤害结算时刻补一次，
-	/// 让落点跟着实际受击位置走。</para>
-	/// </summary>
-	private static void AlignOnHit(DamageReceivedEvent e)
-	{
-		if (TargetStages.Count == 0 || e.Target is null)
-		{
-			return;
-		}
-
-		foreach (TargetStage tracked in TargetStages)
-		{
-			if (!GodotObject.IsInstanceValid(tracked.Target))
-			{
-				continue;
-			}
-
-			// 按 Creature 实例配对：同一次伤害可能同时打中多个敌人（全体牌），
-			// 每个敌人都要被各自校正一次，所以这里不 break。
-			if (!ReferenceEquals(tracked.Target.Entity, e.Target))
-			{
-				continue;
-			}
-
-			AlignToTargetSurface(tracked);
-		}
-	}
-
-	/// <summary>
-	/// 把目标侧舞台的原点对到敌人的官方受击点
-	/// （<c>NCreature.VfxSpawnPosition</c>，即场景里的 <c>%CenterPos</c>）。
-	///
-	/// <para>求法：先取受击点的全局坐标，再用舞台父节点的全局变换<b>求逆</b>换算成
-	/// 局部坐标，直接设给舞台。走变换求逆而不是自己算差值，是为了让敌人自身的缩放
-	/// 与翻转一并被还原 —— 舞台本来就挂在骨架下，不该在这里把 <c>Scale</c> 掰回 1。</para>
-	///
-	/// <para>任何一环取不到都静默跳过：落点校正失败只影响观感，绝不能中断演出，
-	/// 也不该刷日志。</para>
-	/// </summary>
-	private static void AlignToTargetSurface(TargetStage tracked)
-	{
-		try
-		{
-			Node2D stage = tracked.Stage;
-			NCreature target = tracked.Target;
-			if (!GodotObject.IsInstanceValid(stage) || !GodotObject.IsInstanceValid(target))
-			{
-				return;
-			}
-
-			if (stage.GetParent() is not Node2D parentNode)
-			{
-				return;
-			}
-
-			if (!CombatTargetSurfaceAnchorRuntime.TryResolveSurfaceGlobal(
-					target,
-					CombatTargetSurfaceAnchorMode.VfxSpawnPosition,
-					out Vector2 surfaceGlobal))
-			{
-				return;
-			}
-
-			stage.Call("set_anchor_local", parentNode.GetGlobalTransform().Inverse() * surfaceGlobal);
-		}
-		catch (Exception ex)
-		{
-			Warn("目标锚点校正失败：" + ex.Message);
-		}
+		_spawnFailureWarned = false;
 	}
 
 	// ──────────────────────────────────────────────────────────────────────────
@@ -463,13 +616,36 @@ internal static class HeidemarieMoveEffectsRuntime
 
 		try
 		{
-			List<string> paths = new() { StageScenePath, GroupLibraryPath };
+			// 舞台场景走 mod 自己的同步缓存（不依赖 PreloadManager）。
+			HeidemarieVfx.PreloadScene(StageScenePath);
+
+			List<string> paths = new();
 			Dictionary<string, List<string>> groupSkeletons = LoadGroupSkeletons();
+			Dictionary<string, List<string>> composeSkeletons = LoadComposeSkeletons();
 			using JsonDocument document = JsonDocument.Parse(global::Godot.FileAccess.GetFileAsString(DataPath));
 			if (document.RootElement.TryGetProperty("effects", out JsonElement effects))
 			{
 				foreach (JsonProperty effect in effects.EnumerateObject())
 				{
+					if (effect.Value.TryGetProperty("compose", out JsonElement composeRows)
+						&& composeRows.ValueKind == JsonValueKind.Array)
+					{
+						foreach (JsonElement row in composeRows.EnumerateArray())
+						{
+							if (!row.TryGetProperty("group", out JsonElement composeGroupElement)
+								|| composeGroupElement.GetString() is not { Length: > 0 } composeGroup
+								|| !composeSkeletons.TryGetValue(composeGroup, out List<string>? composeFound))
+							{
+								continue;
+							}
+
+							foreach (string skeleton in composeFound)
+							{
+								AddPreloadPath(paths, skeleton);
+							}
+						}
+					}
+
 					foreach (string bucket in new[] { OwnerBucket, TargetBucket })
 					{
 						if (!effect.Value.TryGetProperty(bucket, out JsonElement rows) || rows.ValueKind != JsonValueKind.Array)
@@ -500,18 +676,14 @@ internal static class HeidemarieMoveEffectsRuntime
 
 							foreach (string skeleton in names)
 							{
-								string path = SkelDataRoot + skeleton + "_skel_data.tres";
-								if (!paths.Contains(path))
-								{
-									paths.Add(path);
-								}
+								AddPreloadPath(paths, skeleton);
 							}
 						}
 					}
 				}
 			}
 
-			// 顺手把「哪些卡牌登记过」缓存下来；必须在 JsonDocument 释放前取走
+			// 顺手把「哪些档位登记过」缓存下来；必须在 JsonDocument 释放前取走。
 			ResolveKeyCache(document);
 
 			CombatOverlayPreload.HoldThreaded(
@@ -529,10 +701,7 @@ internal static class HeidemarieMoveEffectsRuntime
 
 	/// <summary>
 	/// 读特效组库，建「组键 → 该组用到的骨架名」索引。
-	///
-	/// <para>卡牌映射（v4）只写组键，骨架名只存在组库里一份；预加载与运行时展开都靠它。
-	/// 组库缺失时返回空表 —— 此时预加载会退化成「只加载舞台场景」，
-	/// 特效仍能运行（首次出牌才现加载），只是慢一点。</para>
+	/// 组库缺失时返回空表 —— 预加载会退化成「只加载舞台场景」，特效仍能运行。
 	/// </summary>
 	private static Dictionary<string, List<string>> LoadGroupSkeletons()
 	{
@@ -583,8 +752,72 @@ internal static class HeidemarieMoveEffectsRuntime
 		return result;
 	}
 
+	/// <summary>
+	/// 读自组装组库，建「组名 → 该组用到的骨架名」索引。
+	/// 组库缺失时返回空表 —— 预加载退化成只收 v4 组键与 v3 行的骨架，特效仍能运行。
+	/// </summary>
+	private static Dictionary<string, List<string>> LoadComposeSkeletons()
+	{
+		Dictionary<string, List<string>> result = new(StringComparer.Ordinal);
+		try
+		{
+			if (!global::Godot.FileAccess.FileExists(ComposeLibraryPath))
+			{
+				return result;
+			}
 
-	/// <summary>这张牌在时间轴里有没有登记（登记过才值得建舞台）。</summary>
+			using JsonDocument library = JsonDocument.Parse(
+				global::Godot.FileAccess.GetFileAsString(ComposeLibraryPath));
+			if (!library.RootElement.TryGetProperty("groups", out JsonElement groups))
+			{
+				return result;
+			}
+
+			foreach (JsonProperty group in groups.EnumerateObject())
+			{
+				List<string> skeletons = new();
+				foreach (string bucket in new[] { OwnerBucket, TargetBucket })
+				{
+					if (!group.Value.TryGetProperty(bucket, out JsonElement layers)
+						|| layers.ValueKind != JsonValueKind.Array)
+					{
+						continue;
+					}
+
+					foreach (JsonElement layer in layers.EnumerateArray())
+					{
+						// compose 的层字段叫 name（原子组库叫 source）
+						if (layer.TryGetProperty("name", out JsonElement nameElement)
+							&& nameElement.GetString() is { Length: > 0 } name
+							&& !skeletons.Contains(name))
+						{
+							skeletons.Add(name);
+						}
+					}
+				}
+
+				result[group.Name] = skeletons;
+			}
+		}
+		catch (Exception ex)
+		{
+			Warn("自组装组库读取失败（骨架预加载会不完整）：" + ex.Message);
+		}
+
+		return result;
+	}
+
+	/// <summary>把一个骨架的 <c>_skel_data.tres</c> 加进预加载列表（去重）。</summary>
+	private static void AddPreloadPath(List<string> paths, string skeleton)
+	{
+		string path = SkelDataRoot + skeleton + "_skel_data.tres";
+		if (!paths.Contains(path))
+		{
+			paths.Add(path);
+		}
+	}
+
+	/// <summary>这张牌登记的档位在时间轴里有没有特效（登记过才值得建舞台）。</summary>
 	private static bool HasEntry(string key)
 	{
 		HashSet<string>? keys = _knownKeys;

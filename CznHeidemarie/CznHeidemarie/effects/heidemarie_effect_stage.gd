@@ -2,13 +2,16 @@ extends Node2D
 
 # Heidemarie 单体技能特效舞台。
 #
-# 与「全屏演出」(`heidemarie_cinematic_stage.gd`) 同一套毫秒时间轴思路，区别在于：
-#   - 本节点是 Node2D，**挂到某个战斗单位自己的骨架节点下**，因此自动继承该单位的
-#     位置、朝向与缩放 —— 不需要任何坐标换算，也不需要跟着镜头走；
-#   - 没有黑幕、没有镜头抖动、不接管画面，纯粹是叠在角色/目标身上的一批特效骨架。
+# 由 `HeidemarieMoveEffectsRuntime` 实例化后挂到战斗房间的**前台特效容器**
+# （`NCombatRoom.CombatVfxContainer`）下，而不是某个单位的骨架节点下。
+# 根节点的世界变换（位置 / 缩放 / 镜像）由 C# 侧复刻目标单位的 `Body` 后设置；
+# 本脚本只负责三件事：
+#   1. 按 `heidemarie_moves.json` 解析本次 bucket 的图层行；
+#   2. 逐层建 `SpineSprite`，用 .cfx 真值设 offset / scale / z；
+#   3. 用自己的毫秒时钟驱动 start_ms / end_ms，播完发 `finished`。
 #
-# 一个舞台只演一个锚点（施法者或目标）的一组图层；卡牌两侧都有特效时，
-# 由 `HeidemarieMoveEffectsRuntime` 各建一个舞台，各自挂到对应的单位上。
+# 因此本脚本**不再**读取父节点缩放 / 父节点 z，也不做锚点策略或归一。
+# 释放责任在 C# 侧：`finished` → `QueueFreeSafely()` 释放整个根节点。
 #
 # 时间轴数据在 `res://CznHeidemarie/effects/heidemarie_moves.json`。
 
@@ -17,17 +20,14 @@ signal finished
 ## 特效骨架 `_skel_data.tres` 所在目录。
 const SKEL_DATA_ROOT := "res://CznHeidemarie/animations/effects/"
 
-## z 的落点区间。Godot 的 CanvasItem.z_index 只接受 [-4096, 4096]，
-## 越界会被 set_z_index 直接拒绝（不是截断），而 .cfx 真值里
-## u3_attack_target_flash 组的 zorder 就是 100001。
-## 这里按名次线性压进该区间：严格保序，同 z 仍并列。
-## 相对模式是对的——本舞台所有图层都是同一个 Node2D 的直接子节点，
-## 舞台自身挂在战斗单位的骨架下，相对 z 会叠加到单位的深度上。
+## Godot 的 CanvasItem.z_index 只接受 [-4096, 4096]，越界会被直接拒绝；
+## .cfx 真值里存在 100001 这种值，所以只做越界钳位，不做名次压缩。
 const LAYER_Z_MIN := -4000
 const LAYER_Z_MAX := 4000
 
-## 特效组库的载入与展开统一走 `HeidemarieEffectGroups`（`effects/heidemarie_effect_groups.gd`），
-## 全屏演出与出牌特写两个舞台共用同一份实现，避免三处各写一份走偏。
+## Spine 的混合模式枚举（4.x）：0 normal / 1 additive / 2 multiply / 3 screen。
+const SPINE_BLEND_NORMAL := 0
+const SPINE_BLEND_MULTIPLY := 2
 
 var _layers: Array = []
 var _duration_ms: float = 0.0
@@ -35,29 +35,56 @@ var _clock_ms: float = 0.0
 var _epoch_usec: int = 0
 var _playing: bool = false
 var _done: bool = false
-var _z_ranks: Dictionary = {}
 
 
 ## 读时间轴并建节点，返回演出时长（秒）。返回 0 表示没有任何可用图层，调用方应直接释放本节点。
 ##
-## 时间轴由本脚本自己解析 —— C# 侧只给路径与键，不必在托管代码里拼 Godot 的 Array/Dictionary。
-##   data_path  : `res://CznHeidemarie/effects/heidemarie_moves.json`
-##   effect_key : 卡牌的 C# 类型名，如 `HeidemarieStrike`
-##   bucket     : `owner`（施法者）或 `target`（目标）
-func configure(data_path: String, effect_key: String, bucket: String) -> float:
+## data_path  : `res://CznHeidemarie/effects/heidemarie_moves.json`
+## effect_key : 档位键，如 `AttackLight`
+## bucket     : `owner`（施法者）或 `target`（目标）
+## base_z     : 舞台根节点的有效 z（C# 侧复刻的 Body 有效 z；通常 -10）
+## z_lift     : 目标侧整体抬升量；压缩后 min_z 已 ≥ 0，这里自然退化成 0
+## part       : `front`（z ≥ 0，角色之前）/ `back`（z < 0，角色之后）/ `all`
+##
+## 分层原因：战斗画布里背景与角色同在 z = -10，任何负的相对 z 都会掉到背景后面。
+## 因此负值层必须改挂 `BackCombatVfxContainer`（背景之后、角色之前，靠子树顺序排），
+## 且在该容器里统一用 z = 0、由子节点插入顺序决定前后；正值层留在前台容器，按名次取 1..N。
+func configure(data_path: String, effect_key: String, bucket: String, base_z: int = 0, z_lift: int = 0, part: String = "all") -> float:
+	_layers.clear()
+	_duration_ms = 0.0
+	_clock_ms = 0.0
+	_playing = false
+	_done = false
+
 	var rows: Array = _load_rows(data_path, effect_key, bucket)
+	rows = _band_rows(rows, part)
 	if rows.is_empty():
 		return 0.0
 
-	var index := 0
-	# 按 z 从小到大建，保证后建的盖在前面（同层内保持配置顺序）
-	var sorted: Array = rows.duplicate()
-	sorted.sort_custom(func(a, b): return int(a.get("z", 0)) < int(b.get("z", 0)))
-	_z_ranks = _build_z_ranks(sorted)
+	# 按 z 从小到大建，保证后建的盖在前面（同层内保持配置顺序）。
+	# 必须自己带下标做稳定排序：后台分层的 z 全是 0，而 Godot 的 sort_custom
+	# 不稳定，直接排会把层序打乱。
+	var indexed: Array = []
+	for index in rows.size():
+		indexed.append({"z": int((rows[index] as Dictionary).get("z", 0)), "i": index, "row": rows[index]})
+	indexed.sort_custom(func(a, b):
+		if int(a["z"]) == int(b["z"]):
+			return int(a["i"]) < int(b["i"])
+		return int(a["z"]) < int(b["z"]))
+
+	var sorted: Array = []
+	for item in indexed:
+		sorted.append(item["row"])
+
+	# 旧版 target_z_lift 的算法：把最小 z 抬到「身体有效 z + lift」。
+	# 舞台根节点已经是 body 的有效 z，所以图层再加上同一个 delta 即可；
+	# 不能简单给每层 +4，否则重击 u1 的 -50 层会被压到背景后。
+	var z_delta := 0
+	if z_lift > 0 and not sorted.is_empty():
+		z_delta = maxi(0, base_z + z_lift - int(sorted[0].get("z", 0)))
 
 	for row in sorted:
-		var entry: Dictionary = _build_layer(row, index)
-		index += 1
+		var entry: Dictionary = _build_layer(row, z_delta)
 		if entry.is_empty():
 			continue
 		_layers.append(entry)
@@ -71,20 +98,6 @@ func configure(data_path: String, effect_key: String, bucket: String) -> float:
 	return _duration_ms / 1000.0
 
 
-## 把舞台原点平移到「目标受击点」在当前父节点坐标系里的位置。
-##
-## 舞台默认挂在目标骨架（SpineSprite）下，原点贴着骨架原点；而图层位移（offset）
-## 在 CZN 源数据里是**相对敌人受击点**标定的
-## （见 `heidemarie_effect_groups.gd` 的 `TARGET_OFFSET_OVERRIDES` 注释），
-## 两者不重合就会表现为「落点偏到敌人脚下 / 身后」。
-## C# 侧在挂载时与命中帧（`Hook.AfterDamageReceived`）各调一次，把原点对到 `%CenterPos`。
-##
-## 只改本节点自身的位置，不动任何图层：图层位移本来就是相对舞台原点标定的，
-## 整体搬运舞台不会产生二次偏移。
-func set_anchor_local(offset: Vector2) -> void:
-	position = offset
-
-
 ## 开始计时播放。时长走完后自动隐藏并发出 `finished`。
 func start() -> void:
 	if _playing or _done or _layers.is_empty():
@@ -95,7 +108,8 @@ func start() -> void:
 	set_process(true)
 
 
-## 立即收尾（换卡 / 单位死亡 / 房间切换）。
+## 立即收尾（换房 / 玩家死亡 / 设置关闭）。只停时钟并隐藏图层；
+## 节点本身由 C# 侧释放，避免脚本里再攒一层释放逻辑。
 func cancel() -> void:
 	_playing = false
 	set_process(false)
@@ -143,7 +157,7 @@ func _apply(ms: float) -> void:
 			node.update_skeleton(0.0)
 
 
-func _build_layer(row: Dictionary, index: int) -> Dictionary:
+func _build_layer(row: Dictionary, z_delta: int) -> Dictionary:
 	var layer_name := str(row.get("name", ""))
 	if layer_name.is_empty():
 		return {}
@@ -155,13 +169,21 @@ func _build_layer(row: Dictionary, index: int) -> Dictionary:
 
 	var spine := SpineSprite.new()
 	spine.name = layer_name
-	spine.skeleton_data_res = load(path)
+	# 必须在赋给 SpineSprite 之前改槽位数据：实例是按当时的数据建出来的。
+	var skeleton_data: Resource = load(path)
+	if skeleton_data == null:
+		push_warning("[Heidemarie] 技能特效图层骨架加载失败，已跳过：%s" % path)
+		return {}
+	_fix_multiply_slots(skeleton_data)
+	spine.skeleton_data_res = skeleton_data
 	if spine.skeleton_data_res == null:
 		push_warning("[Heidemarie] 技能特效图层骨架加载失败，已跳过：%s" % path)
 		return {}
 
 	add_child(spine)
 
+	# 图层 offset / scale 都是 CZN 源数据的 Spine 局部单位；
+	# 舞台根节点已经复刻了目标单位 Body 的全局基，所以这里不需要再乘父缩放。
 	var offset := _to_vector2(row.get("offset", [0.0, 0.0]))
 	var scale_xy := _to_vector2(row.get("scale", [1.0, 1.0]))
 	# 骨架是 Spine 的 y 向上，Godot 是 y 向下，所以 y 取反。
@@ -169,12 +191,15 @@ func _build_layer(row: Dictionary, index: int) -> Dictionary:
 	spine.scale = scale_xy
 	spine.rotation_degrees = float(row.get("rotation", 0.0))
 	spine.modulate = Color(1.0, 1.0, 1.0, float(row.get("opacity", 1.0)))
+	# 相对模式是对的：图层都挂在同一个舞台根节点下，舞台根节点的绝对 z
+	# 已在 C# 侧设为目标 Body 的有效 z，于是正负层仍按 .cfx 真值分前后。
 	spine.z_as_relative = true
-	spine.z_index = int(_z_ranks.get(int(row.get("z", 0)), 0))
+	spine.z_index = clampi(int(row.get("z", 0)) + z_delta, LAYER_Z_MIN, LAYER_Z_MAX)
 
 	var track = _start_clip(spine, str(row.get("clip", "")))
 	if track == null:
-		push_warning("[Heidemarie] 技能特效图层找不到可用 clip，已跳过：%s/%s" % [layer_name, str(row.get("clip", ""))])
+		push_warning("[Heidemarie] 技能特效图层找不到可用 clip，已跳过：%s/%s"
+			% [layer_name, str(row.get("clip", ""))])
 		spine.queue_free()
 		return {}
 
@@ -187,27 +212,21 @@ func _build_layer(row: Dictionary, index: int) -> Dictionary:
 	}
 
 
-## 把 .cfx 的真值深度按名次压进 [LAYER_Z_MIN, LAYER_Z_MAX]。严格保序，同 z 并列。
-func _build_z_ranks(rows: Array) -> Dictionary:
-	var unique_z: Array = []
-	for row in rows:
-		var z := int(row.get("z", 0))
-		if not unique_z.has(z):
-			unique_z.append(z)
-	unique_z.sort()
-
-	var ranks: Dictionary = {}
-	var count := unique_z.size()
-	if count == 0:
-		return ranks
-	if count == 1:
-		ranks[unique_z[0]] = LAYER_Z_MIN
-		return ranks
-
-	var span := float(LAYER_Z_MAX - LAYER_Z_MIN)
-	for i in count:
-		ranks[unique_z[i]] = int(round(LAYER_Z_MIN + span * float(i) / float(count - 1)))
-	return ranks
+## 把 `multiply` 槽位降级成 `normal`。
+##
+## spine-godot 4.2 × Godot 4.5.1 会把 multiply 混合画成**纯黑方框**
+## （premultiplied 贴图叠 Godot 的混合因子），而 CZN 自己渲染器里它是「压暗」层。
+## 全库只有两个骨架用到 multiply，且都在顶击 u3 的目标侧：
+##   heidemarie_30093_eff_u3_attack_target_b   → 槽位 cra（capri_unique1 333×333）
+##   heidemarie_30093_eff_u3_attack_target_ff2 → 槽位 crack_s_1 / crack_s_2 / crack_s_3
+func _fix_multiply_slots(skeleton_data: Resource) -> void:
+	if skeleton_data == null or not skeleton_data.has_method("get_slots"):
+		return
+	for slot in skeleton_data.call("get_slots"):
+		if slot == null or not slot.has_method("get_blend_mode"):
+			continue
+		if int(slot.call("get_blend_mode")) == SPINE_BLEND_MULTIPLY:
+			slot.call("set_blend_mode", SPINE_BLEND_NORMAL)
 
 
 ## 把图层摁在 0 时刻并冻结时间轴，之后由 `_apply` 逐帧给时间。
@@ -256,6 +275,11 @@ func _load_rows(data_path: String, effect_key: String, bucket: String) -> Array:
 	if typeof(entry) != TYPE_DICTIONARY:
 		return []
 
+	# compose 形态（自组装组）：组自带 owner / target 两侧，这里按 bucket 取对应侧。
+	var compose: Variant = entry.get("compose")
+	if typeof(compose) == TYPE_ARRAY and not (compose as Array).is_empty():
+		return _expand_compose(compose, bucket)
+
 	var rows: Variant = entry.get(bucket)
 	if typeof(rows) != TYPE_ARRAY:
 		return []
@@ -289,6 +313,86 @@ func _load_rows(data_path: String, effect_key: String, bucket: String) -> Array:
 			"end_ms": row["end_ms"],
 		})
 	return expanded
+
+
+## 把 entry 的 `compose` 数组展开成本舞台的图层行。
+##
+## compose 项 = { group: 组名, start_ms: 起播时刻 }；组构成在自组装组库里，
+## 一个组自带 owner / target 两侧，这里按本次 bucket 取对应侧。
+func _expand_compose(compose: Array, bucket: String) -> Array:
+	var out: Array = []
+	for entry_key in compose:
+		if not (entry_key is Dictionary):
+			continue
+		var item: Dictionary = entry_key
+		var group_name := str(item.get("group", ""))
+		if group_name.is_empty():
+			continue
+		var group: Dictionary = HeidemarieEffectCompose.get_group(group_name)
+		if group.is_empty():
+			push_warning("[Heidemarie] 自组装组库没有这个特效组，已跳过：%s" % group_name)
+			continue
+		var base_ms := float(item.get("start_ms", 0.0))
+		for neutral in HeidemarieEffectCompose.expand(group, bucket, base_ms):
+			out.append({
+				"name": neutral["name"],
+				"clip": neutral["clip"],
+				"z": neutral["z"],
+				"offset": [neutral["offset_x"], neutral["offset_y"]],
+				"scale": [neutral["scale"], neutral["scale"]],
+				"rotation": neutral["rotation"],
+				"opacity": neutral["opacity"],
+				"start_ms": neutral["start_ms"],
+				"end_ms": neutral["end_ms"],
+			})
+	return out
+
+
+## 按 z 正负把图层分成前台 / 后台两路，并把 z 换成该容器里安全的取值。
+##
+## compose 的 `expand()` 已经压过一次（负值 -N..-1、非负 1..M），这里只做分流与落地：
+##   front：保留 1..N（相对舞台根节点的正值 → 落在角色之上）
+##   back ：统一 0，靠 `add_child` 顺序决定层序（该容器里 z=0 正好是「背景之上、角色之下」）
+##   all  ：两路合在一起，旧行为兜底（负值也归 0，至少不会再消失）
+func _band_rows(rows: Array, part: String) -> Array:
+	var front: Array = []
+	var back: Array = []
+	for index in rows.size():
+		var row: Variant = rows[index]
+		if not (row is Dictionary):
+			continue
+		var item := {
+			"z": float((row as Dictionary).get("z", 0.0)),
+			"i": index,
+			"row": row,
+		}
+		if float(item["z"]) < 0.0:
+			back.append(item)
+		else:
+			front.append(item)
+
+	# 稳定排序：z 相同时按来源顺序（Godot 的 sort_custom 不稳定）
+	var byz := func(a, b):
+		if float(a["z"]) == float(b["z"]):
+			return int(a["i"]) < int(b["i"])
+		return float(a["z"]) < float(b["z"])
+	back.sort_custom(byz)
+	front.sort_custom(byz)
+
+	var out: Array = []
+	if part != "front":
+		for item in back:
+			var back_row: Dictionary = (item["row"] as Dictionary).duplicate()
+			back_row["z"] = 0
+			out.append(back_row)
+	if part != "back":
+		var rank := 1
+		for item in front:
+			var front_row: Dictionary = (item["row"] as Dictionary).duplicate()
+			front_row["z"] = rank
+			rank += 1
+			out.append(front_row)
+	return out
 
 
 ## 同时接受 [x, y] 数字数组与单个数字。

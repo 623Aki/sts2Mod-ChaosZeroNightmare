@@ -128,6 +128,12 @@ internal static class HeidemarieAttackPresentationPatch
 				return;
 			}
 
+			// 记账本次攻击指令的来源牌：它紧邻该指令的 CreatureCmd.TriggerAnim，
+			// 战斗音频据此做「一次出牌只响一句台词」的去重 ——
+			// AoE 逐敌攻击（剑之乐园）会为每个敌人各走一次 TriggerAnim，
+			// 不去重就会按敌人数重复播语音。
+			HeidemarieCombatAudio.NoteAttackCard(card);
+
 			HeidemarieCinematicRuntime.TryBeginFromAttack(card, attackCommand, combatState, (int)__result);
 		}
 		catch (Exception ex)

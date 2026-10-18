@@ -1,13 +1,15 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://src/Core/Nodes/Combat/NEnergyCounter.cs" id="1_gfilq"]
 [ext_resource type="Texture2D" path="res://images/ui/combat/energy_counters/heidemarie/heidemarie_orb_layer_1.png" id="2_f7ovj"]
 [ext_resource type="Material" path="res://materials/ui/energy_orb_dark.tres" id="2_sm2k3"]
-[ext_resource type="PackedScene" path="res://scenes/vfx/energy/ironclad/ironclad_energy_vfx_back.tscn" id="2_w0ewp"]
+[ext_resource type="PackedScene" path="res://scenes/vfx/energy/defect/defect_energy_vfx_back.tscn" id="2_w0ewp"]
 [ext_resource type="Texture2D" path="res://images/ui/combat/energy_counters/heidemarie/heidemarie_orb_layer_2.png" id="3_4uw4e"]
+[ext_resource type="Texture2D" path="res://images/ui/combat/energy_counters/heidemarie/heidemarie_orb_layer_3.png" id="4_m70xo"]
+[ext_resource type="Texture2D" path="res://images/ui/combat/energy_counters/heidemarie/heidemarie_orb_shine.png" id="5_hdmsh"]
 [ext_resource type="FontVariation" path="res://themes/kreon_bold_shared.tres" id="3_jei5p"]
 [ext_resource type="Script" path="res://addons/mega_text/MegaLabel.cs" id="3_qdbwl"]
-[ext_resource type="PackedScene" path="res://scenes/vfx/energy/ironclad/ironclad_energy_vfx_front.tscn" id="9_l0r52"]
+[ext_resource type="PackedScene" path="res://scenes/vfx/energy/heidemarie/heidemarie_energy_vfx_front.tscn" id="9_hdmfr"]
 
 [sub_resource type="FontVariation" id="FontVariation_x0k5t"]
 base_font = ExtResource("3_jei5p")
@@ -37,19 +39,6 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Layer1" type="TextureRect" parent="Layers"]
-material = ExtResource("2_sm2k3")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("2_f7ovj")
-expand_mode = 1
-stretch_mode = 5
-
 [node name="RotationLayers" type="Control" parent="Layers"]
 unique_name_in_owner = true
 layout_mode = 1
@@ -74,7 +63,48 @@ texture = ExtResource("3_4uw4e")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="EnergyVfxFront" parent="." instance=ExtResource("9_l0r52")]
+[node name="Layer3" type="TextureRect" parent="Layers/RotationLayers"]
+material = ExtResource("2_sm2k3")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(64, 64)
+mouse_filter = 2
+texture = ExtResource("4_m70xo")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Layer1" type="TextureRect" parent="Layers"]
+material = ExtResource("2_sm2k3")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_f7ovj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="energy_orb_shine" type="TextureRect" parent="Layers"]
+material = ExtResource("2_sm2k3")
+modulate = Color(1, 1, 1, 0.9)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_hdmsh")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="EnergyVfxFront" parent="." instance=ExtResource("9_hdmfr")]
 unique_name_in_owner = true
 position = Vector2(64, 64)
 

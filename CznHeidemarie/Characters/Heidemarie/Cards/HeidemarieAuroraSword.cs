@@ -10,6 +10,8 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using CznHeidemarie.Characters.Heidemarie.Presentation;
+
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
 /// <summary>
@@ -58,6 +60,9 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 	}
 
 	/// <inheritdoc/>
+	/// <summary>演出档位：轻击（attack_ready → attack_play1）。动作与特效档位必须一致。</summary>
+	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackLight;
+
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
@@ -69,7 +74,7 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 			.FromCard(this, cardPlay)
 			.WithAttackerAnim(HeidemarieAttackPlan.Basic.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Basic))
 			.Targeting(cardPlay.Target)
-			.WithHitFx("vfx/vfx_attack_slash")
+			.WithHitFx(VfxCmd.slashPath)
 			.Execute(choiceContext);
 	}
 

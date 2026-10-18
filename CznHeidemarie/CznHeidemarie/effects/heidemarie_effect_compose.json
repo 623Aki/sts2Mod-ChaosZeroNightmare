@@ -1,0 +1,1232 @@
+{
+  "schema": "czn-heidemarie.effect-compose.v1",
+  "note": "设计示例组（按档位自组装，不是按 clip 名索引）。层参数取自 heidemarie_effect_groups.json 真值：z 用真值、轻/中档 target 偏移 -620,-50（受击点）、重/顶档 target 偏移 0,0（美术在原点）。clip 均已核对存在于对应骨架。用法：工具顶栏「组库…」选本文件 → 右栏组下拉逐个预览，Tab2 起始 ms 设成卡的实际 start_ms。",
+  "groups": {
+    "轻击_横挥": {
+      "note": "轻击档（attack_ready 0.2 → attack_play1 0.667），特效起播 200ms。owner 两件套（背景 433ms / 主体 533ms）+ target 四件套（受击点 -620,-50）；峰值对齐 HitDelay 200ms。",
+      "command": "attack_play1",
+      "owner": [
+        {
+          "name": "heidemarie_30093_eff_attack_play1_b",
+          "clip": "animation",
+          "z": -5.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 433.3
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play1_f",
+          "clip": "animation",
+          "z": 5.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 533.3
+        }
+      ],
+      "target": [
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_b",
+          "clip": "attack_play1",
+          "z": -10.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_sword_target",
+          "clip": "attack_play1_target",
+          "z": 3.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 933.3
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_f3",
+          "clip": "attack_play1",
+          "z": 5.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_f1",
+          "clip": "attack_play1",
+          "z": 7.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 933.3
+        }
+      ]
+    },
+    "中击_横挥": {
+      "note": "中击档（attack_play2）。与轻击同结构，但节奏反转：主体 333ms 先炸开，背景 667ms 拖余波。target 四件套同轻击，clip 换 attack_play2 / attack_play2_target；f2 只有 u5 档才有，这里不加。",
+      "command": "attack_play2",
+      "owner": [
+        {
+          "name": "heidemarie_30093_eff_attack_play2_b",
+          "clip": "animation",
+          "z": -5.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 666.7
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play2_f",
+          "clip": "animation",
+          "z": 5.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 333.3
+        }
+      ],
+      "target": [
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_b",
+          "clip": "attack_play2",
+          "z": -10.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_sword_target",
+          "clip": "attack_play2_target",
+          "z": 3.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1100.0
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_f3",
+          "clip": "attack_play2",
+          "z": 5.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_f1",
+          "clip": "attack_play2",
+          "z": 7.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 933.3
+        }
+      ]
+    },
+    "施法_聚气": {
+      "note": "施法档（buff_ready 0.467 → buff_play 1.167），起播 0。只两件套：背景 1333ms 打底、主体 1000ms 显形。刻意不加前景闪 —— 施法不该有打击感。",
+      "command": "buff_ready",
+      "owner": [
+        {
+          "name": "heidemarie_30093_eff_casting_ready_b",
+          "clip": "animation",
+          "z": -10.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1333.3
+        },
+        {
+          "name": "heidemarie_30093_eff_casting_ready",
+          "clip": "animation",
+          "z": 0.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1000.0
+        }
+      ],
+      "target": []
+    },
+    "结阵_u2": {
+      "note": "结阵档（u2_buff_ready 0.467 → u2_buff_play 1.4）。两段共用同三件骨架，只换 clip：段1 剑出鞘（ready @0）→ 段2 成阵（play @466.7）。",
+      "command": "u2_buff_play",
+      "owner": [
+        {
+          "name": "heidemarie_30093_eff_u2_buff_b",
+          "clip": "ready",
+          "z": -1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 533.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u2_buff_f",
+          "clip": "ready",
+          "z": 1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 533.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u2_buff_sword",
+          "clip": "u2_buff_ready",
+          "z": 0.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 533.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u2_buff_b",
+          "clip": "play",
+          "z": -1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 466.7,
+          "clip_ms": 866.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u2_buff_f",
+          "clip": "play",
+          "z": 1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 466.7,
+          "clip_ms": 966.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u2_buff_sword",
+          "clip": "u2_buff_play",
+          "z": 0.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 466.7,
+          "clip_ms": 900.0
+        }
+      ],
+      "target": []
+    },
+    "重击_u1": {
+      "note": "重击档（u1_attack_ready 2s → u1_attack_play 0.767s）。段1 前摇铺满 2s（含一段 clip=ready 的剑体收势 466ms）；段2 @2000 爆发。target 偏移 0,0（这两档美术就在原点，抄 -620 会整组左移）。u1_attack_sword 源真值 3233ms，这里裁到 2400ms 以免拖到下一张牌。",
+      "command": "u1_attack_play",
+      "owner": [
+        {
+          "name": "heidemarie_30093_eff_u1_attack_ready_b",
+          "clip": "animation",
+          "z": -50.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u1_attack_ready_f",
+          "clip": "animation",
+          "z": 50.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u1_attack_play_b",
+          "clip": "ready",
+          "z": -100.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 466.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u1_attack_play_b",
+          "clip": "animation",
+          "z": -50.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 1800.0,
+          "clip_ms": 766.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u1_attack_play_f",
+          "clip": "animation",
+          "z": 50.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 1800.0,
+          "clip_ms": 700.0
+        }
+      ],
+      "target": [
+        {
+          "name": "heidemarie_30093_eff_u1_attack_play_target_b",
+          "clip": "animation",
+          "z": -50.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 1800.0,
+          "clip_ms": 2000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u1_attack_sword",
+          "clip": "u1_attack_play_target",
+          "z": 50.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 1800.0,
+          "clip_ms": 2400.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u1_attack_play_target_f3",
+          "clip": "animation",
+          "z": 70.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 1800.0,
+          "clip_ms": 1666.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u1_attack_play_target_f2",
+          "clip": "animation",
+          "z": 100.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 1800.0,
+          "clip_ms": 1833.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u1_attack_play_target_f1",
+          "clip": "animation",
+          "z": 150.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 1800.0,
+          "clip_ms": 1666.7
+        }
+      ]
+    },
+    "顶击_u3_核心": {
+      "note": "顶击档（u3_attack_ready 0.467 → u3_attack_play 0.6），先只上核心 6 层 target + 4 层 owner。第二批按 z 插到对应位置：u3_attack_sword_1(play,z1,967)/sword_2(play,z2,933)/rcok(z4)/rock_2(z5)/ff_rock(z7)/ff(z8)/ff2(z10)/ff3(z11)/wind_f(z300)。⚠ 一次加 14 层必乱，务必先看核心层的遮挡关系。｜完整 15 层版见「设计_顶击_u3_完整」。",
+      "command": "u3_attack_play",
+      "owner": [
+        {
+          "name": "heidemarie_30093_eff_u3_attack_self_b",
+          "clip": "ready",
+          "z": -1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 533.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_self_f",
+          "clip": "ready",
+          "z": 1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 533.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_self_b",
+          "clip": "play",
+          "z": -1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 533.3,
+          "clip_ms": 633.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_self_f",
+          "clip": "play",
+          "z": 1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 533.3,
+          "clip_ms": 600.0
+        }
+      ],
+      "target": [
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_wind_b",
+          "clip": "u5_attack_play2",
+          "z": -4.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1766.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_b",
+          "clip": "animation",
+          "z": -2.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2200.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_rock_b",
+          "clip": "animation",
+          "z": -1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_f",
+          "clip": "animation",
+          "z": 3.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1333.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_f2",
+          "clip": "animation",
+          "z": 6.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2033.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_rock_f",
+          "clip": "animation",
+          "z": 9.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2300.0
+        }
+      ]
+    },
+    "顶击_u3_完整": {
+      "note": "顶击完整版（u3_attack_ready 0.467 → u3_attack_play 0.6）：owner 4 层 + target 16 层。核心 6 层定层次，其余补事件与前景闪；ff_flash（z=0）补的是「剑与背景之间那道闪」。时序：剑(900~1000) → 主体/岩石(1333~1366) → 风(1500~1766) → 岩石前景(2300)。",
+      "command": "u3_attack_play",
+      "owner": [
+        {
+          "name": "heidemarie_30093_eff_u3_attack_self_b",
+          "clip": "ready",
+          "z": -1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 533.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_self_f",
+          "clip": "ready",
+          "z": 1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 533.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_self_b",
+          "clip": "play",
+          "z": -1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 533.3,
+          "clip_ms": 633.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_self_f",
+          "clip": "play",
+          "z": 1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 533.3,
+          "clip_ms": 600.0
+        }
+      ],
+      "target": [
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_wind_b",
+          "clip": "u5_attack_play2",
+          "z": -4.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1766.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_b",
+          "clip": "animation",
+          "z": -2.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2200.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_rock_b",
+          "clip": "animation",
+          "z": -1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_ff_flash",
+          "clip": "animation",
+          "z": 0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2066.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_sword_1",
+          "clip": "play",
+          "z": 1.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 966.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_sword_2",
+          "clip": "play",
+          "z": 2.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 933.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_f",
+          "clip": "animation",
+          "z": 3.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1333.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_rcok",
+          "clip": "animation",
+          "z": 4.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1366.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_rock_2",
+          "clip": "animation",
+          "z": 5.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2066.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_f2",
+          "clip": "animation",
+          "z": 6.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2033.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_ff_rock",
+          "clip": "animation",
+          "z": 7.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1433.3
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_ff",
+          "clip": "animation",
+          "z": 8.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2066.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_rock_f",
+          "clip": "animation",
+          "z": 9.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2300.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_ff2",
+          "clip": "animation",
+          "z": 10.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2066.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_ff3",
+          "clip": "animation",
+          "z": 11.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 2066.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u3_attack_target_wind_f",
+          "clip": "animation",
+          "z": 300.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1500.0
+        }
+      ]
+    },
+    "蓄势_u4": {
+      "note": "蓄势档（u4_buff_ready 0.467 → u4_buff_play 2.0），纯自身、无 target 侧。四件套：self_f(100)/sword_f(50)/sword_b(-50)/self_b(-100)，段1 只亮 467~500ms 做收势，段2 @466.7 铺满 2s 当长尾。⚠ ready 段源真值 self_b=-50 / sword_b=-100，与 play 段（-100/-50）不对称，照抄真值，实机看剑与身体前后关系是否要换过来。",
+      "command": "u4_buff_ready",
+      "owner": [
+        {
+          "name": "heidemarie_30093_eff_u4_buff_self_f",
+          "clip": "ready",
+          "z": 100.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 466.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u4_buff_sword_f",
+          "clip": "ready",
+          "z": 50.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 500.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u4_buff_self_b",
+          "clip": "ready",
+          "z": -50.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 466.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u4_buff_sword_b",
+          "clip": "ready",
+          "z": -100.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 500.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u4_buff_self_f",
+          "clip": "play",
+          "z": 100.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 466.7,
+          "clip_ms": 2000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_u4_buff_sword_f",
+          "clip": "play",
+          "z": 50.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 466.7,
+          "clip_ms": 1066.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u4_buff_sword_b",
+          "clip": "play",
+          "z": -50.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 466.7,
+          "clip_ms": 1066.7
+        },
+        {
+          "name": "heidemarie_30093_eff_u4_buff_self_b",
+          "clip": "play",
+          "z": -100.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 466.7,
+          "clip_ms": 2000.0
+        }
+      ],
+      "target": []
+    },
+    "终结_u5_play1": {
+      "note": "终结档（u5_attack_play1）。owner 是轻/中击那两件骨架换 clip=u5（533/433 或 333/667ms）；target 五件套（-10 / 3 / 5 / 6 / 7），比轻中击多一层 f2，偏移仍走受击点 -620,-50。⚠ 源数据里没有卡直接引用 u5 —— 它本来归全屏演出；这里组装成卡牌组，是给普通出牌一个轻量终结演出。真走大招时 C# 的 WillTakeOver 会让位，不会两边同时播。",
+      "command": "u5_attack_play1",
+      "owner": [
+        {
+          "name": "heidemarie_30093_eff_attack_play1_b",
+          "clip": "u5",
+          "z": -5.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 433.3
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play1_f",
+          "clip": "u5",
+          "z": 5.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 533.3
+        }
+      ],
+      "target": [
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_b",
+          "clip": "u5_attack_play1",
+          "z": -10.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_sword_target",
+          "clip": "u5_attack_play1_target",
+          "z": 3.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 933.3
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_f3",
+          "clip": "u5_attack_play1",
+          "z": 5.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_f2",
+          "clip": "u5_attack_play1",
+          "z": 6.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 866.7
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_f1",
+          "clip": "u5_attack_play1",
+          "z": 7.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 933.3
+        }
+      ]
+    },
+    "终结_u5_play2": {
+      "note": "终结档（u5_attack_play2）。owner 是轻/中击那两件骨架换 clip=u5（533/433 或 333/667ms）；target 五件套（-10 / 3 / 5 / 6 / 7），比轻中击多一层 f2，偏移仍走受击点 -620,-50。⚠ 源数据里没有卡直接引用 u5 —— 它本来归全屏演出；这里组装成卡牌组，是给普通出牌一个轻量终结演出。真走大招时 C# 的 WillTakeOver 会让位，不会两边同时播。",
+      "command": "u5_attack_play2",
+      "owner": [
+        {
+          "name": "heidemarie_30093_eff_attack_play2_b",
+          "clip": "u5",
+          "z": -5.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 666.7
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play2_f",
+          "clip": "u5",
+          "z": 5.0,
+          "offset": [
+            0.0,
+            0.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 333.3
+        }
+      ],
+      "target": [
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_b",
+          "clip": "u5_attack_play2",
+          "z": -10.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_sword_target",
+          "clip": "u5_attack_play2_target",
+          "z": 3.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1100.0
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_f3",
+          "clip": "u5_attack_play2",
+          "z": 5.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 1000.0
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_f2",
+          "clip": "u5_attack_play2",
+          "z": 6.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 866.7
+        },
+        {
+          "name": "heidemarie_30093_eff_attack_play_target_f1",
+          "clip": "u5_attack_play2",
+          "z": 7.0,
+          "offset": [
+            -620.0,
+            -50.0
+          ],
+          "scale": 1.0,
+          "rotation": 0.0,
+          "opacity": 1.0,
+          "delay_ms": 0.0,
+          "clip_ms": 933.3
+        }
+      ]
+    }
+  },
+  "cards": {}
+}

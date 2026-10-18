@@ -122,5 +122,5 @@
   "HEIDEMARIE_OLD_OATH.description": "{KwBlock}回合开始时，墓地中每有1张极光剑，即可获得{Block:diff()}点[gold]格挡[/gold]。",
 
   "HEIDEMARIE_SWORD_PARADISE.title": "剑之乐园",
-  "HEIDEMARIE_SWORD_PARADISE.description": "{KwBlock}对所有敌人造成其最大生命值50%的伤害，并根据造成的伤害回复自身。若回复量溢出，则回复队友。打出后移除此牌。"
+  "HEIDEMARIE_SWORD_PARADISE.description": "{KwBlock}对所有敌人造成其最大生命值30%的伤害，并根据造成的伤害回复自身。若回复量溢出，则回复队友。打出或回合结束后移除此牌。"
 }

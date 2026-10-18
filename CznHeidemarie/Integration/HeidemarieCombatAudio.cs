@@ -104,6 +104,22 @@ internal static class HeidemarieCombatAudio
 
 	private static readonly List<IDisposable> Subscriptions = new();
 
+	/// <summary>
+	/// 最近一次本角色攻击指令的来源牌（由 <c>Hook.ModifyAttackHitCount</c> 的补丁记账，
+	/// 紧邻该指令的 <c>CreatureCmd.TriggerAnim</c> 之前；每次出牌开始时清空）。
+	/// </summary>
+	private static CardModel? _pendingAttackCard;
+
+	/// <summary>
+	/// 本次出牌已播过语音的「牌 Id + 触发器」键。
+	/// AoE 逐敌攻击（如「剑之乐园」对 3 个敌人发 3 条 AttackCommand）会走到
+	/// 3 次 <c>CreatureCmd.TriggerAnim</c>，语音按此去重，保证一次出牌只响一句；
+	/// 挥击音效不去重 —— 原生演出下每一击都是真实可见的挥击，按段数响。
+	/// </summary>
+	private static readonly HashSet<string> VoicedAttackKeys = new(StringComparer.Ordinal);
+
+
+
 	/// <summary>战斗音效播放器（音量与开关由设置控制）。</summary>
 	internal static CharacterSkinSfxPlayerRuntime Sfx { get; } =
 		new(HeidemarieSettings.CurrentCharacter, "HeidemarieCombatSfx");
@@ -157,6 +173,17 @@ internal static class HeidemarieCombatAudio
 	/// 骨架动作触发时播对应的音效与语音（由 <c>CreatureCmd.TriggerAnim</c> 的补丁调用）。
 	///
 	/// <para>只对海德玛丽生效；音效还要过观众门（队友演出设置）。</para>
+	///
+	/// <para><b>AoE 攻击的去重口径</b>（2026-10-16）：逐敌攻击会为每个敌人各走一次
+	/// 本方法，因此 ——</para>
+	/// <list type="bullet">
+	///   <item>挥击音效：舞台接管时整段让位给演出（<see cref="PlayCinematicSfx"/>
+	///   在 epoch 零点播路线音效，一次）；降级回原生演出时按攻击段数播，
+	///   因为每一击都是真实可见的挥击；</item>
+	///   <item>语音：舞台接管时同样让位（由 <see cref="PlayCinematicSfx"/> 发，
+	///   整段演出只响一句）；原生路径按「牌 + 触发器」去重，一次出牌只响一句
+	///   （见 <see cref="NoteAttackCard"/> / <see cref="IsDuplicateAttackVoice"/>）。</item>
+	/// </list>
 	/// </summary>
 	/// <param name="creature">正在播动作的单位。</param>
 	/// <param name="triggerName">动作触发器名。</param>
@@ -170,31 +197,38 @@ internal static class HeidemarieCombatAudio
 				return;
 			}
 
-			// 全屏演出牌的专属声音归演出所有：关掉「全屏演出」时，
-			// 解放极光（GAttack / ug）与绝响（XAttack / ux）的专属音效 / 语音
-			// 整段不播；演出开着时，舞台接管的音效改由 presentation_started
-			// 起播（见 PlayCinematicSfx），与动画同起同止。
-			// 这里按同一道门控，保证「关演出 = 对应声音同步关闭」。
+			// 全屏演出接管时，演出的音效 / 语音全部让位给舞台：舞台在
+			// presentation_started（演出 epoch 零点）播路线音效并发一句语音，
+			// 与动画严格同起、取消即停；这里再播就双响，且 AoE 逐敌攻击会把
+			// 同一句台词按敌人数重复。降级回原生演出（舞台没起来）时没有舞台
+			// 接盘，仍走本路播放。
+			bool stagePresents = HeidemarieCinematicRuntime.IsStagePresenting(player, triggerName);
+
 			if (IsCinematicTrigger(triggerName) && !CinematicPresentationEnabled(player))
 			{
 				return;
 			}
 
-			// 全屏演出接管时，演出音效让位给舞台：舞台在 presentation_started
-			// （演出 epoch 零点）播同一段，与动画严格同起、取消即停；这里再播就双响。
-			// 降级回原生演出（舞台没起来）时没有舞台接盘，仍走本路播放。
-			// 语音不在此列 —— 语音绑定主模型，始终随攻击动作在 t≈0 播。
-			bool stagePresentsCinematicSfx =
-				IsCinematicTrigger(triggerName) && HeidemarieCinematicRuntime.IsStagePresenting(player, triggerName);
-
-			if (!stagePresentsCinematicSfx
+			if (!stagePresents
 				&& HeidemariePresentationHost.Audience.Allows(player, CombatPresentationChannel.CombatSfx)
 				&& TriggerSfx.TryGetValue(triggerName, out string? sfxPath))
 			{
 				Sfx.TryPlay(sfxPath);
 			}
 
-			// 语音比音效「贵」（有间隔限制），所以只在真正有台词的时机调
+			if (stagePresents)
+			{
+				// 语音归演出路径（PlayCinematicSfx 在 presentation_started 发），这里不重复。
+				return;
+			}
+
+			// 语音比音效「贵」，且一次出牌只该有一句：AoE 逐敌攻击会为每个敌人
+			// 各走一次 TriggerAnim，这里按「牌 + 触发器」去重，只有第一段出声。
+			if (IsDuplicateAttackVoice(triggerName))
+			{
+				return;
+			}
+
 			if (triggerName == "XAttack")
 			{
 				Voice.PlayRandomFor(player, UxVoices);
@@ -215,6 +249,42 @@ internal static class HeidemarieCombatAudio
 		}
 	}
 
+	/// <summary>
+	/// 记账一条攻击指令的来源牌（由 <c>Hook.ModifyAttackHitCount</c> 的补丁调用，
+	/// 时序上紧邻该指令的 <c>CreatureCmd.TriggerAnim</c>）。
+	///
+	/// <para>同一张牌的连续多条攻击指令（AoE 逐敌循环）不会清账，
+	/// 语音去重因此覆盖整次出牌；换牌 / 新出牌时账自动重开
+	///（另在 <see cref="PlayCardVoice"/> 的 CardPlayCommitted 入口清一次）。</para>
+	/// </summary>
+	/// <param name="card">攻击指令的来源牌。</param>
+	internal static void NoteAttackCard(CardModel card)
+	{
+		if (!ReferenceEquals(_pendingAttackCard, card))
+		{
+			_pendingAttackCard = card;
+			VoicedAttackKeys.Clear();
+		}
+	}
+
+	/// <summary>
+	/// 这次触发器语音是否已经在本次出牌里播过（按「牌 Id + 触发器」判定）。
+	/// 没有记账（敌人动作、非攻击链路、来源牌缺失）时不去重。
+	/// </summary>
+	/// <param name="triggerName">动作触发器名。</param>
+	/// <returns><c>true</c> 表示已播过，调用方应当静音。</returns>
+	private static bool IsDuplicateAttackVoice(string triggerName)
+	{
+		CardModel? card = _pendingAttackCard;
+		if (card is null)
+		{
+			return false;
+		}
+
+		// HashSet.Add 已存在时返回 false —— 取反即「是否重复」。
+		return !VoicedAttackKeys.Add(card.Id + "|" + triggerName);
+	}
+
 	/// <summary>这个动作触发器是不是全屏演出牌专用的（绝响 <c>XAttack</c> / 解放极光 <c>GAttack</c>）。</summary>
 	private static bool IsCinematicTrigger(string triggerName)
 	{
@@ -229,7 +299,12 @@ internal static class HeidemarieCombatAudio
 	/// <para>与 <see cref="OnTriggerAnim"/> 的音效路二选一，由
 	/// <see cref="HeidemarieCinematicRuntime.IsStagePresenting"/> 保证恰好一次：
 	/// 舞台接管走本路，降级回原生演出走 TriggerAnim 老路。</para>
-	/// </summary>
+	///
+	/// <para><b>语音也在这里发</b>（2026-10-16）：整段演出只响一句台词。
+	/// AoE 逐敌攻击会多次走到 TriggerAnim，那时舞台已接管、语音全部让位，
+	/// 若不在这里补一句，大招就只剩音效没有台词；而放在 TriggerAnim 那条路上
+	/// 又会按敌人数重复。ug 固定 <c>ug</c>、ux 固定 <c>u3</c>，与原生路径选段一致。</para>
+	///
 	/// <param name="player">发起演出的玩家。</param>
 	/// <param name="route">演出路线（ug / ux，见 <see cref="HeidemarieCinematicRuntime"/> 的路线常量）。</param>
 	internal static void PlayCinematicSfx(Player? player, string route)
@@ -241,7 +316,7 @@ internal static class HeidemarieCombatAudio
 				return;
 			}
 
-			// 与 TriggerAnim 路同一道门控：关「全屏演出」= 对应声音同步关闭。
+			// 演出没开就没人调这里（舞台本身不挂），保留判定做双保险。
 			if (!CinematicPresentationEnabled(player))
 			{
 				return;
@@ -267,6 +342,18 @@ internal static class HeidemarieCombatAudio
 			}
 
 			Sfx.TryPlay(sfxPath);
+
+			// 语音与音效同起，整段演出只此一句（见方法文档）。
+			string? voicePath = route switch
+			{
+				HeidemarieCinematicRuntime.RouteUg => VoicePath("ug"),
+				HeidemarieCinematicRuntime.RouteUx => VoicePath("u3"),
+				_ => null,
+			};
+			if (voicePath is not null)
+			{
+				Voice.PlayFor(player, voicePath);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -414,6 +501,11 @@ internal static class HeidemarieCombatAudio
 	/// <summary>按卡牌类型选出牌语音。</summary>
 	private static void PlayCardVoice(CardModel? card)
 	{
+		// 新出牌开始：清掉上一条攻击指令的记账，语音去重按「一次出牌」重新计。
+		// （放在本地判定之前 —— 记账与清账对所有出牌都要发生。）
+		_pendingAttackCard = null;
+		VoicedAttackKeys.Clear();
+
 		try
 		{
 			Player? player = card?.Owner;

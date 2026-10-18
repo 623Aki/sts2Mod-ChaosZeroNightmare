@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CznHeidemarie.Characters.Heidemarie.Powers;
+using CznHeidemarie.Integration;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -12,22 +13,24 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using CznHeidemarie.Characters.Heidemarie.Presentation;
+
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
 /// <summary>
 /// 「剑之乐园」：初始遗物 → 能力「希望」→ 本牌，这条链的终点。
 ///
 /// <para>0 费、<b>古代牌</b>（全幅动态立绘，见 <see cref="HeidemarieCard.PortraitPath"/> 的说明）、
-/// 目标为全体敌人。对所有敌人造成其<b>各自最大生命值 50%</b> 的伤害，
+/// 目标为全体敌人。对所有敌人造成其<b>各自最大生命值 30%</b> 的伤害，
 /// 再按造成的伤害回复自身；回复量溢出时把溢出的部分继续分给队友（联机）。
-/// 打出后本牌<b>移出战斗</b>，不会因洗牌回到手里。</para>
+/// 打出后、或回合结束时仍未打出，本牌<b>移出战斗</b>，不会因洗牌回到手里。</para>
 ///
 /// <para><b>唯一获取渠道</b> = 能力「希望」：禁止战斗内随机生成，也禁止进 modifier 池
 /// （见 <see cref="CanBeGeneratedInCombat"/> / <see cref="CanBeGeneratedByModifiers"/>），
 /// 能力的 <c>CreateCard</c> 不受这两个开关限制。
 /// 本牌不登记在角色卡池里，只登记在 <c>HeidemarieTokenPool</c>（控制台 / 图鉴可见，抽不到）。</para>
 ///
-/// <para><b>伤害为什么逐敌结算</b>：「最大生命值 50%」是<b>每个敌人各自的</b>数值，
+/// <para><b>伤害为什么逐敌结算</b>：「最大生命值 30%」是<b>每个敌人各自的</b>数值，
 /// 而 <c>DamageCmd.Attack(CalculatedDamageVar)</c> 在多目标下只会按
 /// <c>Calculate(null)</c> 求一个值（引擎实现：<c>AttackCommand</c> 里仅单目标时才把目标传进计算），
 /// 拿不到「当前这个敌人的 MaxHp」。因此这里对每个敌人各起一次攻击指令。</para>
@@ -38,7 +41,8 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 public sealed class HeidemarieSwordParadise : HeidemarieCard
 {
 	/// <summary>伤害 / 回复的基准：目标最大生命值的百分比。</summary>
-	private const decimal MaxHpPercent = 50m;
+	/// <remarks>设计文档口径为 30%（曾按 50% 实现，2026-10-16 依文档回改）。</remarks>
+	private const decimal MaxHpPercent = 30m;
 
 	/// <inheritdoc/>
 	/// <remarks>
@@ -72,7 +76,35 @@ public sealed class HeidemarieSwordParadise : HeidemarieCard
 	/// <remarks>只能由能力「希望」生成。</remarks>
 	public override bool CanBeGeneratedByModifiers => false;
 
+	/// <summary>
+	/// 开启「回合结束时仍在手中」的引擎钩子（与诅咒牌「腐朽 / 羞耻」同一套机制，
+	/// 见 <c>CardModel.HasTurnEndInHandEffect</c>）。
+	///
+	/// <para>设计文档口径「打出或回合结束后移除此牌」：打出路已由
+	/// <see cref="OnPlay"/> 末尾的 <c>RemoveFromCombat</c> 覆盖，这里兜住
+	/// 「抽到手里没打」的情况 —— 本牌由「希望」 mid-combat 生成，若放任不管
+	/// 会滞留到后续回合，0 费大招就成了可囤积的牌。</para>
+	/// </summary>
+	public override bool HasTurnEndInHandEffect => true;
+
 	/// <inheritdoc/>
+	/// <remarks>
+	/// 回合末手牌清零前，引擎会把本牌临时放进已使用牌堆再调本方法 ——
+	/// 此时 <c>RemoveFromCombat</c> 合法（与「解放极光」焚烧离场同一做法），
+	/// 移出后不会进弃牌堆，也就不会被洗回抽牌堆。
+	/// </remarks>
+	protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
+	{
+		await CardPileCmd.RemoveFromCombat(this);
+	}
+
+	/// <inheritdoc/>
+	/// <summary>
+	/// 演出档位：顶击（u3_attack_ready → u3_attack_play）。身体动作与全屏演出的
+	/// ux 路线共用这一档，关掉全屏时的回退特效也走它。
+	/// </summary>
+	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackTop;
+
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		if (CombatState is not { } combatState)
@@ -101,7 +133,7 @@ public sealed class HeidemarieSwordParadise : HeidemarieCard
 				.FromCard(this, cardPlay)
 				.WithAttackerAnim(HeidemarieAttackPlan.U3.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.U3))
 				.Targeting(enemy)
-				.WithHitFx("vfx/vfx_rock_shatter")
+				.WithHitFx(VfxCmd.rockShatterPath)
 				.Execute(choiceContext);
 
 			totalDamage += attack.Results
@@ -113,6 +145,15 @@ public sealed class HeidemarieSwordParadise : HeidemarieCard
 		{
 			await HealWithOverflow(totalDamage);
 		}
+
+		// 等全屏演出（ux 破军）的**画面**收尾再结束这次出牌。
+		// 逐敌攻击的伤害已在各自命中帧落地（见 HeidemarieCinematicHitGatePatch），
+		// 这里只等到 stage_finished；duration 之后的视觉余韵由演出自己的 _tail 放完。
+		// 注意：这个等待必须挂在牌上而不是 Hook.AfterAttack —— 挂在钩子上会把
+		// 每个敌人的 AttackCommand 都阻塞到演出结束，后续指令晚到，导致
+		// 同一段演出按敌人数重演（2026-10-16 修复，详见 HeidemarieCinematicRuntime）。
+		// 演出不存在 / 已降级 / 被取消时该方法立即返回，不会卡住出牌流程。
+		await HeidemarieCinematicRuntime.WaitForPresentationEnd(this);
 
 		// 打出后移除此牌：不进弃牌堆，因此不会被洗回抽牌堆。
 		// 打出时本牌正处于「已使用牌堆（Play）」，是合法的战斗牌堆（CardPileCmd 会校验）。

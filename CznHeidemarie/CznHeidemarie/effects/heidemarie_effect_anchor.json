@@ -1,0 +1,4 @@
+{
+  "schema": "czn-heidemarie.effect-anchor.deprecated",
+  "note": "已废弃（2026-10-18 特效重构）。锚点不再由本文件 / heidemarie_effect_stage.gd 解析，改由 C# 的 HeidemarieVfxAnchor 决定：目标侧默认 GetBottomOfHitbox() + (0,-40)，施法者侧 BodyOrigin。本文件不再被任何代码读取，保留仅为兼容旧打包引用与避免资源缺失。要调落点，改 Integration/HeidemarieMoveEffectsRuntime.cs 的 TargetAnchorOffsetY 或 HeidemarieVfxAnchor。"
+}

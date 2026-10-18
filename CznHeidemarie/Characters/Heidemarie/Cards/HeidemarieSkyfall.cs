@@ -8,6 +8,8 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using CznHeidemarie.Characters.Heidemarie.Presentation;
+
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
 /// <summary>
@@ -60,6 +62,9 @@ public sealed class HeidemarieSkyfall : HeidemarieCard, ILinkCard
 	}
 
 	/// <inheritdoc/>
+	/// <summary>演出档位：重击（u1_attack_ready → u1_attack_play）。动作与特效档位必须一致。</summary>
+	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackHeavy;
+
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
@@ -72,7 +77,7 @@ public sealed class HeidemarieSkyfall : HeidemarieCard, ILinkCard
 			.WithHitCount(2)
 			.Targeting(cardPlay.Target)
 			// 「坠月」用碎岩命中特效，与同源的「解放极光」保持一套视觉语言
-			.WithHitFx("vfx/vfx_rock_shatter")
+			.WithHitFx(VfxCmd.rockShatterPath)
 			.Execute(choiceContext);
 	}
 

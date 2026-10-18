@@ -8,6 +8,8 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using CznHeidemarie.Characters.Heidemarie.Presentation;
+
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
 /// <summary>
@@ -40,6 +42,9 @@ public sealed class HeidemarieTripleGlow : HeidemarieCard, ILinkCard
 	}
 
 	/// <inheritdoc/>
+	/// <summary>演出档位：中击（attack_ready → attack_play2）。动作与特效档位必须一致。</summary>
+	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackMid;
+
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		// 「连接」的连带丢弃由 HeidemarieCard.BeforeCardPlayed 统一在出牌前完成；
@@ -61,7 +66,7 @@ public sealed class HeidemarieTripleGlow : HeidemarieCard, ILinkCard
 			.WithAttackerAnim(HeidemarieAttackPlan.Heavy.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Heavy))
 			.Targeting(cardPlay.Target)
 			// 重击手感：钝击命中特效比斩击更沉
-			.WithHitFx("vfx/vfx_heavy_blunt")
+			.WithHitFx(VfxCmd.heavyBluntPath)
 			.Execute(choiceContext);
 	}
 

@@ -198,9 +198,9 @@ static func expand_key(key: Dictionary) -> Array:
 	# overrides：人工微调过的字段（CZN_AnimLab 保存时会写成这个形状，
 	# 见 tools/slim_cinematic_layers.py 的同名字段）。只覆盖推导出来的字段，
 	# start_ms 一律以组键为准 —— 绝对时刻里含挂载/层内 delay，不能回写。
-	var last: Dictionary = rows.back()
 	var overrides: Dictionary = key.get("overrides", {})
 	if not rows.is_empty() and overrides is Dictionary and not overrides.is_empty():
+		var last: Dictionary = rows.back()
 		if overrides.has("clip"):
 			last["clip"] = str(overrides["clip"])
 		if overrides.has("z"):

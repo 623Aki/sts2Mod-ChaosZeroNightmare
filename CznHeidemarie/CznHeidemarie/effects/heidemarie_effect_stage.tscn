@@ -3,9 +3,10 @@
 ; Heidemarie 单体技能特效的舞台场景。
 ;
 ; 根节点是 Node2D，运行时由 Integration/HeidemarieMoveEffectsRuntime.cs
-; 实例化后挂到「施法者」或「目标」自己的骨架节点下，因此自动继承该单位的位置、
-; 朝向与缩放；图层全部由 heidemarie_effect_stage.gd 按
-; res://CznHeidemarie/effects/heidemarie_moves.json 在运行时创建。
+; 实例化后挂到战斗房间的「前台特效容器」（CombatVfxContainer）下；
+; 根节点的世界变换由 C# 侧复刻目标单位的 Body 后设置，图层全部由
+; heidemarie_effect_stage.gd 按 res://CznHeidemarie/effects/heidemarie_moves.json 在运行时创建。
+; 播完由舞台发 finished，C# 侧 QueueFreeSafely() 释放整个根节点。
 [ext_resource type="Script" path="res://CznHeidemarie/effects/heidemarie_effect_stage.gd" id="1_stage"]
 
 [node name="HeidemarieEffectStage" type="Node2D"]

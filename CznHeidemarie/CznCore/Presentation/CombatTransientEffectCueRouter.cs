@@ -243,7 +243,8 @@ internal sealed class CombatTransientEffectCueRouter<TActor, TTarget> where TAct
 				}
 				if (node2D == null)
 				{
-					break;
+						_warn("Transient effect owner anchor is unavailable; skipping cue.", 2);
+						continue;
 				}
 				_queue(actor, node2D, cue, token);
 			}
@@ -395,7 +396,8 @@ internal sealed class CombatTransientEffectCueRouter<TActor, TTarget> where TAct
 				}
 				if (node2D == null)
 				{
-					break;
+						_warn("Transient effect owner anchor is unavailable; skipping cue.", 2);
+						continue;
 				}
 				_queue(actor, node2D, item, token);
 			}

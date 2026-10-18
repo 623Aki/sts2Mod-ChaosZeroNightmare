@@ -16,5 +16,5 @@
   "HEIDEMARIE_OLD_OATH_POWER.title": "旧誓",
   "HEIDEMARIE_OLD_OATH_POWER.description": "回合开始时，墓地中每有1张极光剑，即可获得2点格挡。",
   "HEIDEMARIE_HOPE_POWER.title": "希望",
-  "HEIDEMARIE_HOPE_POWER.description": "每造成或受到1次未被格挡的攻击伤害时，本能力+5层。层数每累计满100层，在手牌生成1张剑之乐园。"
+  "HEIDEMARIE_HOPE_POWER.description": "每造成或受到1次未被格挡的攻击伤害时，本能力+5层。层数每累计满100层，在手牌生成1张剑之乐园；若本回合已经生成过，则为全体友方附加20层格挡。"
 }

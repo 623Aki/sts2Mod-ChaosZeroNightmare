@@ -20,12 +20,12 @@ public sealed class HeidemarieSwordCrypt : HeidemarieCard, ILinkCard, IRestCard
 	/// <inheritdoc/>
 	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(1)
 	{
-		new CardsVar(4),
+		new CardsVar(3),
 	};
 
 	/// <summary>2 费、技能、公共牌、目标为自身。</summary>
 	public HeidemarieSwordCrypt()
-		: base(2, CardType.Skill, CardRarity.Common, TargetType.Self)
+		: base(2, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 	{
 	}
 
@@ -43,5 +43,5 @@ public sealed class HeidemarieSwordCrypt : HeidemarieCard, ILinkCard, IRestCard
 		=> HeidemarieCardActions.GenerateAuroraSwords(this, choiceContext, DynamicVars.Cards.IntValue, PileType.Discard);
 
 	/// <inheritdoc/>
-	protected override void OnUpgrade() => DynamicVars.Cards.UpgradeValueBy(3m);
+	protected override void OnUpgrade() => DynamicVars.Cards.UpgradeValueBy(2m);
 }

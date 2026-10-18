@@ -395,6 +395,7 @@ internal sealed class CombatTransientEffectPoolRuntime
 		_roomBoundary++;
 		int num = 0;
 		int num2 = 0;
+		List<string> emptyKeys = new List<string>();
 		foreach (var (key, stack2) in _pool)
 		{
 			if (!_poolKeyLastPlaybackBoundary.TryGetValue(key, out var value))
@@ -418,6 +419,15 @@ internal sealed class CombatTransientEffectPoolRuntime
 					}
 				}
 			}
+			if (stack2.Count == 0)
+			{
+				emptyKeys.Add(key);
+			}
+		}
+		foreach (string key in emptyKeys)
+		{
+			_pool.Remove(key);
+			_poolKeyLastPlaybackBoundary.Remove(key);
 		}
 		int boundary = _roomBoundary;
 		int keys = num;

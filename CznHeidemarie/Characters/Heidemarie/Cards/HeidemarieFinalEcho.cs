@@ -7,6 +7,8 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using CznHeidemarie.Characters.Heidemarie.Presentation;
+
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
 /// <summary>
@@ -49,6 +51,9 @@ public sealed class HeidemarieFinalEcho : HeidemarieCard
 	}
 
 	/// <inheritdoc/>
+	/// <summary>演出档位：重击（u1_attack_ready → u1_attack_play）。动作与特效档位必须一致。</summary>
+	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackHeavy;
+
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		// 对全体敌人造成 10 点伤害（无附加增伤逻辑）。
@@ -57,7 +62,7 @@ public sealed class HeidemarieFinalEcho : HeidemarieCard
 			// Basic 1 费：重·斩击档（U1Attack）
 			.WithAttackerAnim(HeidemarieAttackPlan.U1.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.U1))
 			.TargetingAllOpponents(CombatState!)
-			.WithHitFx("vfx/vfx_bloody_impact")
+			.WithHitFx(VfxCmd.bloodyImpactPath)
 			.Execute(choiceContext);
 	}
 

@@ -1,0 +1,45 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://src/Core/Nodes/Vfx/Utilities/NParticlesContainer.cs" id="1_hdm"]
+[ext_resource type="Texture2D" path="res://images/ui/combat/energy_counters/heidemarie/heidemarie_orb_burst.png" id="2_hdm"]
+[ext_resource type="PackedScene" path="res://scenes/vfx/common/vfx_common_specks.tscn" id="3_hdm"]
+
+[sub_resource type="Curve" id="Curve_hdm_scale"]
+_limits = [0.0, 2.0, 0.0, 1.0]
+_data = [Vector2(0, 0.4), 0.0, 2.4, 0, 0, Vector2(0.3, 1.0), 0.0, 0.0, 0, 0, Vector2(1, 1.08), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_hdm_scale"]
+curve = SubResource("Curve_hdm_scale")
+
+[sub_resource type="Curve" id="Curve_hdm_alpha"]
+_data = [Vector2(0, 1.0), 0.0, 0.0, 0, 0, Vector2(0.55, 0.85), 0.0, -1.2, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_hdm_alpha"]
+curve = SubResource("Curve_hdm_alpha")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hdm_burst"]
+particle_flag_disable_z = true
+gravity = Vector3(0, 0, 0)
+scale_min = 0.25
+scale_max = 0.25
+scale_curve = SubResource("CurveTexture_hdm_scale")
+alpha_curve = SubResource("CurveTexture_hdm_alpha")
+
+[node name="heidemarie_energy_vfx_front" type="Node2D" node_paths=PackedStringArray("_particles")]
+script = ExtResource("1_hdm")
+_particles = [NodePath("energy_orb_burst"), NodePath("vfx_common_specks")]
+
+[node name="energy_orb_burst" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 1
+lifetime = 0.5
+one_shot = true
+texture = ExtResource("2_hdm")
+process_material = SubResource("ParticleProcessMaterial_hdm_burst")
+
+[node name="vfx_common_specks" parent="." instance=ExtResource("3_hdm")]
+self_modulate = Color(0.62, 0.78, 1, 1)
+amount = 6
+lifetime = 0.8

@@ -8,6 +8,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using CznHeidemarie.Characters.Heidemarie.Presentation;
+
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
 /// <summary>
@@ -64,6 +66,9 @@ public sealed class HeidemarieRequiemBlade : HeidemarieCard, ILinkCard, IRestCar
 	}
 
 	/// <inheritdoc/>
+	/// <summary>演出档位：中击（attack_ready → attack_play2）。动作与特效档位必须一致。</summary>
+	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackMid;
+
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		// 「连接」的连带丢弃由 HeidemarieCard.BeforeCardPlayed 统一在出牌前完成
@@ -76,7 +81,7 @@ public sealed class HeidemarieRequiemBlade : HeidemarieCard, ILinkCard, IRestCar
 			.WithAttackerAnim(HeidemarieAttackPlan.Heavy.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Heavy))
 			.WithHitCount(2)
 			.TargetingRandomOpponents(CombatState!)
-			.WithHitFx("vfx/vfx_heavy_blunt")
+			.WithHitFx(VfxCmd.heavyBluntPath)
 			.Execute(choiceContext);
 	}
 

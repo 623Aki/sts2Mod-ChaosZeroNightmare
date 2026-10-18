@@ -12,10 +12,10 @@ namespace CznHeidemarie.Integration;
 /// 把「设置 → 演出策略对象」的构造集中在一处，供全屏演出、特写立绘、音效语音等
 /// 接入层共用，避免每个接入层各自 new 一份、各自解读设置。</para>
 ///
-/// <para>与参考 mod 的关键差别：本工程<b>没有</b>走
-/// <c>CharacterSkinModBootstrap.Init</c>（那条路要求提供一个完整的
-/// <c>CharacterSkinProfile</c>，本工程是手写的轻量接入，见 <see cref="HeidemarieIntegration"/>），
-/// 所以这里只构造真正被消费的几个策略对象，不伪造 profile。</para>
+/// <para>与参考 mod 的关键差别：本工程<b>走</b>
+/// <c>CharacterSkinModBootstrap.Init</c> 注册共享 Profile 与补丁组；
+/// 真正的全屏演出、特效舞台和败北 CG仍由本命名空间的专用运行时驱动，
+/// 因此 Profile 中未被共享运行时消费的字段不能作为这些演出的配置来源。</para>
 /// </summary>
 internal static class HeidemariePresentationHost
 {

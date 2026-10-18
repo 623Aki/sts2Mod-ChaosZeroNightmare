@@ -188,7 +188,32 @@ $RequiredExact = @(
     #    自检都在这里误报缺件（资源其实一直在）。
     'images/relics/heidemarie_mayor_badge.png.import',
     'images/relics/heidemarie_mayor_badge_small.png.import',
-    'images/relics/heidemarie_mayor_badge_outline.png.import'
+    'images/relics/heidemarie_mayor_badge_outline.png.import',
+
+    # 能力图标：每个能力两张 —— 256 大图（PowerModel.BigIconPath → images/powers/）
+    # 与 64 小图（PowerModel.PackedIconPath → power_atlas 的 .tres 指向 images/packed/powers/）。
+    # 同 relics：挂工程根 res://images/，前缀由引擎给，不能自己加 CznHeidemarie/。
+    'images/powers/heidemarie_aurora_light_power.png.import',
+    'images/powers/heidemarie_daylight_power.png.import',
+    'images/powers/heidemarie_night_power.png.import',
+    'images/powers/heidemarie_north_polar_power.png.import',
+    'images/powers/heidemarie_wall_of_swords_power.png.import',
+    'images/powers/heidemarie_old_oath_power.png.import',
+    'images/powers/heidemarie_hope_power.png.import',
+    'images/packed/powers/heidemarie_aurora_light_power.png.import',
+    'images/packed/powers/heidemarie_daylight_power.png.import',
+    'images/packed/powers/heidemarie_night_power.png.import',
+    'images/packed/powers/heidemarie_north_polar_power.png.import',
+    'images/packed/powers/heidemarie_wall_of_swords_power.png.import',
+    'images/packed/powers/heidemarie_old_oath_power.png.import',
+    'images/packed/powers/heidemarie_hope_power.png.import',
+    'images/atlases/power_atlas.sprites/heidemarie_aurora_light_power.tres',
+    'images/atlases/power_atlas.sprites/heidemarie_daylight_power.tres',
+    'images/atlases/power_atlas.sprites/heidemarie_night_power.tres',
+    'images/atlases/power_atlas.sprites/heidemarie_north_polar_power.tres',
+    'images/atlases/power_atlas.sprites/heidemarie_wall_of_swords_power.tres',
+    'images/atlases/power_atlas.sprites/heidemarie_old_oath_power.tres',
+    'images/atlases/power_atlas.sprites/heidemarie_hope_power.tres'
 )
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -669,6 +694,24 @@ try {
         throw "工程根存在 src/ 目录，会被打进 pck 并和游戏本体的 res://src/ 冲突，请删除后重试。"
     }
     Write-Ok '工程根没有 src/ 目录'
+
+    # 静态资源导入状态：任何 .import 带 valid=false 都意味着「源图在、贴图没导入」。
+    # Godot 会把这种 .import 照样打进 pck，但 ResourceLoader.Exists 判 false，
+    # 卡面 / 图标就会静默回落到占位图 —— 2026-10-18 的微光 / 北极圈卡面不显示就是它。
+    # 这里提前拦下，避免「构建全绿但游戏里少图」。
+    $invalidImports = @(
+        Get-ChildItem -Path $ProjectDir -Recurse -Filter '*.import' -File -ErrorAction SilentlyContinue |
+            Where-Object {
+                $_.FullName -notmatch '\\(bin|obj|\.godot|\.vs|\.nuget-feed|\.stage_out)\\' -and
+                (Get-Content -LiteralPath $_.FullName -Raw) -match 'valid\s*=\s*false'
+            }
+    )
+    if ($invalidImports.Count -gt 0) {
+        $list = ($invalidImports | ForEach-Object { $_.FullName.Substring($ProjectDir.Length).TrimStart('\') }) -join "`n  - "
+        throw "有 $($invalidImports.Count) 个资源导入状态无效（.import 里 valid=false）：`n  - $list`n" +
+        "这些资源会静默回落到占位图。修复：删掉对应 .import 后重跑 Godot --import，或核对 .godot/imported 里的 .ctex 是否存在。"
+    }
+    Write-Ok '所有 .import 导入状态有效'
 
     # ── 步骤 1. 编译 C# ───────────────────────────────────────────────────
     if ($SkipBuild) {

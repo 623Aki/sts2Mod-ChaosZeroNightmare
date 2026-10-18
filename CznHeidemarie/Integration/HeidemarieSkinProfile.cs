@@ -103,21 +103,7 @@ internal static class HeidemarieSkinProfile
 				Array.Empty<string>(),
 				Array.Empty<string>()),
 			CombatPresentation: new HeidemarieCombatPresentationProfile(presentation),
-			BattleReady: new BattleReadyOverlayProfile(
-				"HeidemarieBattleReady",
-				BattleReadyScenePath,
-				"res://CznHeidemarie/animations/model/30093_skel_data.tres",
-				new BattleReadyOverlayAnimations("", "b_idle", "", "attack_play1", "buff_play"),
-				0.15f,
-				0.1f,
-				-720f,
-				0.35f,
-				null,
-				new Dictionary<CombatPresentationCardRoute, string>
-				{
-					[CombatPresentationCardRoute.Attack] = "attack_play1",
-					[CombatPresentationCardRoute.Skill] = "buff_play"
-				}),
+			BattleReady: HeidemarieBattleReadyRuntime.Profile,
 			CharacterSelect: new CharacterSelectIdentityProfile(
 				"HEIDEMARIE.title",
 				"HEIDEMARIE.description",

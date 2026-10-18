@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using CznCore.Cards;
 using CznHeidemarie.Characters.Heidemarie.Powers;
+using CznHeidemarie.Characters.Heidemarie.Presentation;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -187,46 +189,81 @@ public abstract class HeidemarieCard : CardModel
 	}
 
 	/// <summary>
-	/// 技能 / 能力牌的默认身体动作序列（<c>buff_ready → buff_play</c>）。
+	/// 本牌的演出档位 = 身体动作链 + 特效组（档位表见
+	/// <see cref="HeidemariePresentationCatalog"/>）。
 	///
-	/// <para>默认给技能与能力牌；攻击牌返回 <c>null</c>（它们的动作走
-	/// <c>AttackCommand.WithAttackerAnim</c>），已有专属演出的牌自己覆盖
-	/// <see cref="OnEnqueuePlayVfx"/>（如「防御」用 <c>defense_ready → defense_play</c>）。</para>
+	/// <para>攻击牌显式写；技能 / 能力牌由基类按「稀有度与费用取更重者」算，不用写。
+	/// 默认规则：Rare（或 ≥3 费）→ 蓄势；Uncommon（或 2 费）→ 结阵；其余 → 施法；
+	/// 攻击类回退轻击档（攻击牌通常都会自己覆盖）。</para>
 	/// </summary>
-	protected virtual string[]? SkillBodySequence =>
-		Type is CardType.Skill or CardType.Power ? SkillBodyTier() : null;
+	protected virtual HeidemarieEffectTier PresentationTier => ResolveDefaultTier();
 
 	/// <summary>
-	/// 技能 / 能力牌的身体动作档位：**稀有度与费用取更重者**。
-	///
-	/// <list type="bullet">
-	///   <item>Rare（或 ≥ 3 费）→ 蓄势档 <c>u4_buff_ready → u4_buff_play</c>（全骨架最长的增益动作）；</item>
-	///   <item>Uncommon（或 2 费）→ 结阵档 <c>u2_buff_ready → u2_buff_play</c>；</item>
-	///   <item>Basic / Common → 施法档 <c>buff_ready → buff_play</c>。</item>
-	/// </list>
-	///
-	/// <para>与 <c>effects/heidemarie_moves.json</c> 里同档位的特效组键逐条对应
-	/// （<c>eff_u4_buff_*</c> / <c>eff_u2_buff_*</c> / <c>eff_casting_ready</c>），
-	/// 改这里必须同步改那张表，否则动作与特效会错位。段落在骨架上缺失时
-	/// <see cref="OnEnqueuePlayVfx"/> 会降级回 <c>Cast</c> / <c>PowerUp</c> 触发器。</para>
+	/// 档位内的特效变体名（对应 <c>heidemarie_moves.json</c> 的「档位/变体」键，
+	/// 如 <c>AttackLight/red</c>）。同一套动作换一套特效强度，不换动作。
 	/// </summary>
-	protected string[] SkillBodyTier()
+	protected virtual string? PresentationVariant => null;
+
+	/// <summary>档位表读取用的实际档位（<see cref="PresentationTier"/> 的同程序集转发）。</summary>
+	internal HeidemarieEffectTier EffectiveTier => PresentationTier;
+
+	/// <summary>档位表读取用的实际变体名（<see cref="PresentationVariant"/> 的同程序集转发）。</summary>
+	internal string? EffectiveVariant => PresentationVariant;
+
+	// 默认档位：沿用原 SkillBodyTier 的稀有度 / 费用规则
+	private HeidemarieEffectTier ResolveDefaultTier()
 	{
+		if (Type is not (CardType.Skill or CardType.Power))
+		{
+			return HeidemarieEffectTier.AttackLight;
+		}
+
 		if (Rarity == CardRarity.Rare || CanonicalCostValue >= 3)
 		{
-			return new[] { "u4_buff_ready", "u4_buff_play" };
+			return HeidemarieEffectTier.Charge;
 		}
 
 		if (Rarity == CardRarity.Uncommon || CanonicalCostValue >= 2)
 		{
-			return new[] { "u2_buff_ready", "u2_buff_play" };
+			return HeidemarieEffectTier.Guard;
 		}
 
-		return new[] { "buff_ready", "buff_play" };
+		return HeidemarieEffectTier.Cast;
 	}
+
+	/// <summary>
+	/// 技能 / 能力牌的身体动作序列（由档位表给出，见
+	/// <see cref="HeidemariePresentationCatalog"/>）。攻击牌返回 <c>null</c>
+	/// —— 它们的动作走 <c>AttackCommand.WithAttackerAnim</c>，已有专属演出的牌
+	/// 自己覆盖 <see cref="OnEnqueuePlayVfx"/>（如「防御」）。
+	/// </summary>
+	protected virtual string[]? SkillBodySequence =>
+		Type is CardType.Skill or CardType.Power
+			? HeidemariePresentationCatalog.Resolve(this).BodySequence
+			: null;
 
 	/// <summary>本牌带的自定义关键字（默认由接口推导，见 <see cref="HeidemarieCardMechanics"/>）。</summary>
 	protected virtual IEnumerable<CardMechanicDefinition> CardMechanics => HeidemarieCardMechanics.For(this);
+
+	/// <summary>
+	/// 按本牌档位起一次攻击指令：触发器与命中延迟由
+	/// <see cref="HeidemariePresentationCatalog"/> 按 <see cref="PresentationTier"/> 给出，
+	/// 卡牌不再各自写 <c>HeidemarieAttackPlan.X</c>，动作与特效档位天然一致。
+	///
+	/// <para>返回 <see cref="AttackCommand"/> 供调用方继续链
+	/// <c>Targeting</c> / <c>WithHitCount</c> / <c>WithHitFx</c> / <c>Execute</c>。</para>
+	/// </summary>
+	/// <param name="damage">本次攻击的伤害值。</param>
+	/// <param name="cardPlay">出牌上下文。</param>
+	protected AttackCommand AttackWithPresentation(decimal damage, CardPlay cardPlay)
+	{
+		HeidemarieAttackPlan plan = HeidemariePresentationCatalog.AttackPlanOf(this)
+			?? throw new InvalidOperationException(
+				$"{GetType().Name} 的档位不是攻击档，不能用 AttackWithPresentation");
+		return DamageCmd.Attack(damage)
+			.FromCard(this, cardPlay)
+			.WithAttackerAnim(plan.Trigger, HeidemarieAttackPlan.HitDelay(plan));
+	}
 
 	/// <inheritdoc/>
 	/// <remarks>
@@ -459,7 +496,7 @@ public abstract class HeidemarieCard : CardModel
 
 	/// <summary>
 	/// 构造时声明的<b>基准费用</b>（升级 / 附魔带来的费用变化不算）。
-	/// 供 <see cref="SkillBodyTier"/> 做「稀有度 + 费用取更重者」的档位判定。
+	/// 供 <see cref="PresentationTier"/> 做「稀有度 + 费用取更重者」的默认档位判定。
 	/// </summary>
 	protected int CanonicalCostValue { get; }
 }

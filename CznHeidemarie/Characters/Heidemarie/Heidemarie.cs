@@ -4,6 +4,7 @@ using CznHeidemarie.Characters.Heidemarie.Relics;
 using Godot;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
@@ -283,10 +284,10 @@ public sealed class Heidemarie : CharacterModel
 
 	public override List<string> GetArchitectAttackVfx() => new List<string>
 	{
-		"vfx/vfx_attack_blunt",
-		"vfx/vfx_heavy_blunt",
-		"vfx/vfx_attack_slash",
-		"vfx/vfx_bloody_impact",
-		"vfx/vfx_rock_shatter",
+		VfxCmd.bluntPath,
+		VfxCmd.heavyBluntPath,
+		VfxCmd.slashPath,
+		VfxCmd.bloodyImpactPath,
+		VfxCmd.rockShatterPath,
 	};
 }

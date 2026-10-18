@@ -11,6 +11,8 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using CznHeidemarie.Characters.Heidemarie.Presentation;
+
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
 /// <summary>
@@ -70,6 +72,9 @@ public sealed class HeidemarieTerminus : HeidemarieCard, ITerminateCard, IUnique
 	}
 
 	/// <inheritdoc/>
+	/// <summary>演出档位：重击（u1_attack_ready → u1_attack_play）。动作与特效档位必须一致。</summary>
+	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackHeavy;
+
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		// 若手牌中有解放极光 → 消耗，并按墓地里的极光剑数量叠增伤
@@ -91,7 +96,7 @@ public sealed class HeidemarieTerminus : HeidemarieCard, ITerminateCard, IUnique
 				.FromCard(this, cardPlay)
 				.WithAttackerAnim(HeidemarieAttackPlan.U1.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.U1))
 				.TargetingAllOpponents(CombatState!)
-				.WithHitFx("vfx/vfx_bloody_impact")
+				.WithHitFx(VfxCmd.bloodyImpactPath)
 				.Execute(choiceContext);
 		});
 

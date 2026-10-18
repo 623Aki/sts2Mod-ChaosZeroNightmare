@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CznHeidemarie.Characters.Heidemarie.Powers;
+using CznHeidemarie.Integration;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+
+using CznHeidemarie.Characters.Heidemarie.Presentation;
 
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
@@ -118,6 +121,12 @@ public sealed class HeidemarieLiberatedAurora : HeidemarieCard, IUniqueCard, IBu
 	}
 
 	/// <inheritdoc/>
+	/// <summary>
+	/// 演出档位：终极（ug_attack 单段）。全屏演出关掉时的回退特效走这档
+	/// （默认组见 HeidemariePresentationCatalog）。
+	/// </summary>
+	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackUg;
+
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		// 消耗墓地中所有极光剑，每张 +100%
@@ -140,8 +149,13 @@ public sealed class HeidemarieLiberatedAurora : HeidemarieCard, IUniqueCard, IBu
 				.FromCard(this, cardPlay)
 				.WithAttackerAnim(HeidemarieAttackPlan.Ug.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Ug))
 				.Targeting(cardPlay.Target)
-				.WithHitFx("vfx/vfx_rock_shatter")
+				.WithHitFx(VfxCmd.rockShatterPath)
 				.Execute(choiceContext);
 		});
+
+		// 等全屏演出（ug 终焉剑舞）的**画面**收尾再结束这次出牌：伤害已在命中帧落地，
+		// 这里只等到 stage_finished；duration 之后的视觉余韵由演出的 _tail 独立放完。
+		// 演出不存在 / 已降级 / 被取消时该方法立即返回，不会卡住出牌流程。
+		await HeidemarieCinematicRuntime.WaitForPresentationEnd(this);
 	}
 }

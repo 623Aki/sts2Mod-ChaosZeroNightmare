@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -19,7 +20,9 @@ namespace CznHeidemarie.Characters.Heidemarie.Powers;
 /// <list type="bullet">
 ///   <item>每<b>造成</b>一次不被格挡的伤害（每次命中各算一次），希望 +5；</item>
 ///   <item>每<b>受到</b>一次不被格挡的伤害（每次命中各算一次），希望 +5；</item>
-///   <item>希望每累计满 100 层，在手牌生成 1 张「剑之乐园」，并提高下一次的阈值。</item>
+///   <item>希望每累计满 100 层，在手牌生成 1 张「剑之乐园」，并提高下一次的阈值；</item>
+///   <item><b>防刷口径</b>：本回合已经生成过「剑之乐园」时，后续再跨阈值不再发牌，
+///   改为<b>全体友方各附加 20 层格挡</b>（设计文档口径，防止一回合无限刷牌）。</item>
 /// </list>
 ///
 /// <para><b>阈值口径（设计约定）</b>：希望<b>不重置</b>。
@@ -43,10 +46,16 @@ namespace CznHeidemarie.Characters.Heidemarie.Powers;
 public sealed class HeidemarieHopePower : PowerModel
 {
 	/// <summary>每次触发（造成或受到 1 次不被格挡的伤害）增加的希望层数。</summary>
-	private const int HopePerTrigger = 50;
+	private const int HopePerTrigger = 5;
 
 	/// <summary>生成 1 张「剑之乐园」所需的希望层数（阈值步长）。</summary>
 	private const int HopeStep = 100;
+
+	/// <summary>
+	/// 本回合已发放过「剑之乐园」后，每次再跨阈值的替代结算：
+	/// 全体友方各获得的格挡层数（设计文档的防刷口径）。
+	/// </summary>
+	private const int BlockPerExtraGeneration = 20;
 
 	/// <inheritdoc/>
 	public override PowerType Type => PowerType.Buff;
@@ -71,6 +80,12 @@ public sealed class HeidemarieHopePower : PowerModel
 	{
 		/// <summary>已发放过的阈值累计量（100 / 200 / 300 …）。</summary>
 		public int NextThreshold = HopeStep;
+
+		/// <summary>
+		/// 本回合是否已经发放过「剑之乐园」。true 时后续跨阈值改为发放格挡
+		/// （防刷），我方回合开始时重置。
+		/// </summary>
+		public bool GeneratedThisTurn;
 	}
 
 	/// <inheritdoc/>
@@ -122,7 +137,7 @@ public sealed class HeidemarieHopePower : PowerModel
 		await GainHope(choiceContext);
 	}
 
-	/// <summary>累加希望；跨过阈值时发牌。</summary>
+	/// <summary>累加希望；跨过阈值时发牌（本回合已发过则改发格挡）。</summary>
 	private async Task GainHope(PlayerChoiceContext choiceContext)
 	{
 		// 层数直接叠加（不是「施加」新能力，不会触发 BeforePowerAmountChanged 之外的逻辑）
@@ -137,6 +152,17 @@ public sealed class HeidemarieHopePower : PowerModel
 
 		// 一次伤害最多跨过一层阈值（+5 的步长远小于 100，无需 while 循环）
 		data.NextThreshold += HopeStep;
+
+		// 防刷口径（设计文档）：本回合已经发放过「剑之乐园」时，后续阈值跨越
+		// 不再发牌，改为全体友方各 20 层格挡 —— 否则一回合内连续跨阈值
+		// 会把希安的手牌塞满 0 费大招，引擎链变成无限刷牌。
+		if (data.GeneratedThisTurn)
+		{
+			await GrantAlliesBlock();
+			return;
+		}
+
+		data.GeneratedThisTurn = true;
 		await GrantSwordParadise(choiceContext);
 	}
 
@@ -150,5 +176,43 @@ public sealed class HeidemarieHopePower : PowerModel
 
 		HeidemarieSwordParadise card = combatState.CreateCard<HeidemarieSwordParadise>(player);
 		await CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, player);
+	}
+
+	/// <summary>
+	/// 本回合已发放过「剑之乐园」时的替代结算：全体友方（含自己，跳过阵亡单位）
+	/// 各获得 <see cref="BlockPerExtraGeneration"/> 层格挡。
+	///
+	/// <para>走 <see cref="ValueProp.Unpowered"/>：格挡来自能力而非卡牌动作，
+	/// 与「壁仞千里 / 旧誓」的口径一致（不吃格挡类增伤、不进卡牌历史）。</para>
+	/// </summary>
+	private async Task GrantAlliesBlock()
+	{
+		if (Owner.CombatState is not { } combatState)
+		{
+			return;
+		}
+
+		foreach (Player ally in combatState.Players)
+		{
+			Creature? creature = ally.Creature;
+			if (creature is null || creature.IsDead)
+			{
+				continue;
+			}
+
+			await CreatureCmd.GainBlock(creature, BlockPerExtraGeneration, ValueProp.Unpowered, null);
+		}
+	}
+
+	/// <inheritdoc/>
+	/// <remarks>我方回合开始时重置「本回合已发放」标记 —— 防刷按回合计，不跨回合累积。</remarks>
+	public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+	{
+		if (player == Owner.Player)
+		{
+			GetInternalData<Data>().GeneratedThisTurn = false;
+		}
+
+		return Task.CompletedTask;
 	}
 }

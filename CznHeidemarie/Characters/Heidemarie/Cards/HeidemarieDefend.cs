@@ -7,6 +7,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using CznHeidemarie.Characters.Heidemarie.Presentation;
+
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
 /// <summary>
@@ -56,6 +58,9 @@ public sealed class HeidemarieDefend : HeidemarieCard
 	}
 
 	/// <inheritdoc/>
+	/// <summary>演出档位：防御（defense_ready → defense_play）。当前档位表里没有配特效组。</summary>
+	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.Defend;
+
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);

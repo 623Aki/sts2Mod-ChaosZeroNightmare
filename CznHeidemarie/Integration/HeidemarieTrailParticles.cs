@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CznCore.Godot;
 using Godot;
 
 namespace CznHeidemarie.Integration;
@@ -50,7 +51,7 @@ internal static class HeidemarieTrailParticles
 	/// <param name="trailRoot">拖尾场景根节点（<c>NCardTrailVfx</c>）。</param>
 	internal static void ApplyToTrail(Node? trailRoot)
 	{
-		if (trailRoot is null || !GodotObject.IsInstanceValid(trailRoot))
+		if (!GodotNodeUtil.IsAlive(trailRoot))
 		{
 			return;
 		}
@@ -123,7 +124,7 @@ internal static class HeidemarieTrailParticles
 	{
 		for (int i = Trails.Count - 1; i >= 0; i--)
 		{
-			if (!GodotObject.IsInstanceValid(Trails[i]))
+		if (!GodotNodeUtil.IsAlive(Trails[i]))
 			{
 				Trails.RemoveAt(i);
 			}

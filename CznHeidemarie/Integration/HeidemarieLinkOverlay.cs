@@ -7,6 +7,9 @@ using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
+using MegaCrit.Sts2.Core.Nodes.Screens.Capstones;
+using MegaCrit.Sts2.Core.Nodes.Screens.Map;
+using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 
 namespace CznHeidemarie.Integration;
 
@@ -88,6 +91,21 @@ internal static class HeidemarieLinkOverlay
 	/// <summary>光带拱高 / 卡牌显示高度（从卡牌顶边中点继续向上拱）。</summary>
 	private const float ArchRatio = 0.30f;
 
+	/// <summary>
+	/// 拱高上限 / 卡牌显示高度：<b>方案 B</b> —— 静止时拱高随跨距增长，但不超过这个倍数。
+	/// 跨得越远拱越高，保证长跨距（两张连接牌中间隔着好几张普通牌）也高过手牌、
+	/// 不会变成贴着牌顶横切的一条平线。
+	/// </summary>
+	private const float MaxArchRatio = 1.20f;
+
+	/// <summary>
+	/// 拖拽时的拱高 / 卡牌显示高度：端点里有正在被拖动的牌时反过来「压平」，像一根绷紧的丝。
+	/// </summary>
+	private const float DragArchFactor = 0.10f;
+
+	/// <summary>拱顶距离视口顶部至少留出的空白（canvas 像素）。</summary>
+	private const float ArchTopMargin = 24f;
+
 	/// <summary>外层光晕的厚度倍数（相对主线半厚）。</summary>
 	private const float HaloScale = 2.6f;
 
@@ -130,10 +148,7 @@ internal static class HeidemarieLinkOverlay
 	/// <summary>两侧边缘色（电蓝）。</summary>
 	private static readonly Color EdgeColor = new(0.02f, 0.28f, 0.95f);
 
-	/// <summary>被拖拽 / 拉得越远时，拱高收敛到的最小倍率（橡皮筋感）。</summary>
-	private const float StretchArchMin = 0.15f;
-
-	/// <summary>被拉长时线宽收敛到的最小倍率。</summary>
+	/// <summary>被拖拽拉长时线宽收敛到的最小倍率（绷紧感）。</summary>
 	private const float StretchThicknessMin = 0.78f;
 
 	/// <summary>光带出现 / 消失的过渡时长（秒）。</summary>
@@ -183,6 +198,9 @@ internal static class HeidemarieLinkOverlay
 	/// <summary>当前正在被拖动的 holder（由 <see cref="StartCardPlayPatch"/> 记录）。</summary>
 	private static NHandCardHolder? _draggedHolder;
 
+	/// <summary>本帧确认「确实挂在手牌节点下、正在被拖」的那张（判断光带要不要压平用）。</summary>
+	private static NHandCardHolder? _activeDragged;
+
 	/// <summary>拖起时它在 <c>CardHolderContainer</c> 里的槽位索引（插回链条用）。</summary>
 	private static int _draggedIndex = -1;
 
@@ -195,6 +213,7 @@ internal static class HeidemarieLinkOverlay
 	private static bool _loggedAttach;
 	private static bool _loggedFallbackSize;
 	private static bool _loggedMissingDragIndex;
+	private static bool _loggedCoverCheck;
 	private static bool _particlesVisibleCached = true;
 
 	/// <summary>光带池：键 = （左 holder 实例 id, 右 holder 实例 id）。复用而非每帧重建，过渡才连得上。</summary>
@@ -402,7 +421,8 @@ internal static class HeidemarieLinkOverlay
 				return;
 			}
 
-			if (!EffectsEnabled)
+			// 有整屏 UI 盖在战斗界面上时整个收掉（否则光带会画在它们上面 —— 穿模）
+			if (!EffectsEnabled || ScreenCovered)
 			{
 				ClearAll();
 				return;
@@ -482,6 +502,7 @@ internal static class HeidemarieLinkOverlay
 		// 拖拽中的 holder 已被 reparent 到手牌节点自身（不在容器里），
 		// 按拖起时记下的槽位插回来，链条顺序才不会跳。
 		NHandCardHolder? dragged = ResolveDragged(hand);
+		_activeDragged = dragged;
 		if (dragged != null)
 		{
 			int index = Mathf.Clamp(_draggedIndex, 0, _ordered.Count);
@@ -494,6 +515,13 @@ internal static class HeidemarieLinkOverlay
 
 		foreach (NHandCardHolder holder in _ordered)
 		{
+			// 只认「看得见」的 holder（与游戏自己的 ActiveHolders 同口径）：
+			// 选牌模式 / 手牌被收起时，卡还在容器里但已经不可见，不该再给它们画光带。
+			if (!holder.IsVisibleInTree())
+			{
+				continue;
+			}
+
 			// ⚠️ 必须走类型判定后读 IsLinked：手牌里可能有诅咒 / 状态等非本角色卡。
 			// IsLinked 是虚属性（「拾星」升级后会覆盖它），因此这里读到的是最终判定。
 			if (holder.CardModel is HeidemarieCard card && card.IsLinked)
@@ -783,13 +811,29 @@ internal static class HeidemarieLinkOverlay
 			cardHeightCanvas = ReferenceCardHeight;
 		}
 
-		// 「参考跨距」= 一张卡的高度：正常相邻手牌大致就是这个量级，
-		// 超过它越多说明被拉得越长，拱高就越平（橡皮筋手感）。
+		// ── 拱高：方案 B ──
+		// 静止时拱高随跨距「增长」并封顶（跨得越远拱越高，保证高过手牌、不会横切卡面）；
+		// 只有端点里含「正在被拖拽的那张牌」时才压平 —— 那是跟手绷紧的丝，不该拱起来。
 		float span = from.DistanceTo(to);
-		float stretch = Mathf.Clamp((span - cardHeightCanvas) / (cardHeightCanvas * 2f), 0f, 1f);
+		float spanRatio = span / Mathf.Max(cardHeightCanvas, 1f);
+		bool dragged = IsDragged(ribbon);
+		// 张力 0..1：跨距从 1 个卡高涨到 4 个卡高时，从「基础拱」压到「拖拽拱」
+		float taut = dragged ? Mathf.Clamp((spanRatio - 1f) / 3f, 0f, 1f) : 0f;
 
-		float arch = cardHeightCanvas * ArchRatio * Mathf.Lerp(1f, StretchArchMin, stretch) / rootScale;
-		float thicknessScale = Mathf.Lerp(1f, StretchThicknessMin, stretch);
+		float archRatio = dragged
+			? Mathf.Lerp(ArchRatio, DragArchFactor, taut)
+			: Mathf.Clamp(ArchRatio * spanRatio, ArchRatio, MaxArchRatio);
+
+		float arch = cardHeightCanvas * archRatio / rootScale;
+
+		// 顶端留白保护：三次贝塞尔在 t = 0.5 处的实际峰值只有 0.75 × arch，
+		// 别让长跨距把拱顶顶出屏幕外。
+		float topLocalY = (inverseRoot * Vector2.Zero).Y;
+		float archMax = (Mathf.Min(from.Y, to.Y) - topLocalY - (ArchTopMargin / rootScale)) / 0.75f;
+		arch = Mathf.Min(arch, archMax);
+		arch = Mathf.Max(arch, cardHeightCanvas * 0.06f / rootScale);
+
+		float thicknessScale = dragged ? Mathf.Lerp(1f, StretchThicknessMin, taut) : 1f;
 		float half = cardHeightCanvas * RibbonHalfThicknessRatio * thicknessScale * ribbon.Weight;
 
 		// 控制点抬到两张牌上方（Godot 的 y 向下，所以「向上拱」= y 取更小的值）
@@ -805,6 +849,20 @@ internal static class HeidemarieLinkOverlay
 		ribbon.Halo.Node.Modulate = new Color(1f, 1f, 1f, alpha);
 
 		UpdateSparks(ribbon, from, c1, c2, to, cardHeightCanvas / rootScale, delta);
+	}
+
+	/// <summary>这条光带的端点里，有没有「正在被拖拽的那张牌」。</summary>
+	private static bool IsDragged(Ribbon ribbon)
+	{
+		NHandCardHolder? dragged = _activeDragged;
+		if (dragged == null || !GodotObject.IsInstanceValid(dragged))
+		{
+			return false;
+		}
+
+		ulong id = dragged.GetInstanceId();
+		return (ribbon.Left != null && ribbon.Left.GetInstanceId() == id)
+			|| (ribbon.Right != null && ribbon.Right.GetInstanceId() == id);
 	}
 
 	/// <summary>一张手牌 holder 的「顶边中点」在连线层本地坐标下的位置。</summary>
@@ -1079,6 +1137,7 @@ internal static class HeidemarieLinkOverlay
 		_chain.Clear();
 		_ordered.Clear();
 		_inContainer.Clear();
+		_activeDragged = null;
 	}
 
 	private static void SetVisible(bool visible)
@@ -1095,6 +1154,52 @@ internal static class HeidemarieLinkOverlay
 	// ──────────────────────────────────────────────────────────────────────
 	// 设置开关
 	// ──────────────────────────────────────────────────────────────────────
+
+	/// <summary>
+	/// 有没有「整屏 UI」盖在战斗界面之上（抽牌堆 / 弃牌堆 / 消耗堆 / 地图 / 各种浮层）。
+	///
+	/// <para>⚠️ 本视觉层是 <see cref="NPlayerHand"/> 的子节点、z = 10（压在手牌之上），
+	/// 和战斗 UI、手牌处在<b>同一块画布、同一个纵深区间</b>里。而整屏 UI 是普通 Control
+	/// （不设 z），只要我们不主动让位，光带就会画在它们上面 —— 就是「穿模」。</para>
+	///
+	/// <para>判据沿用游戏自己的那套（<c>NOverlayStack.StackIsCovered</c> /
+	/// <c>NPlayerHand.OnHolderPressed</c>）：兜底容器在用时把光带整个收掉；
+	/// 整屏 UI 关掉后下一帧自动重建，观感无缝。</para>
+	/// </summary>
+	private static bool ScreenCovered
+	{
+		get
+		{
+			try
+			{
+				if (NCapstoneContainer.Instance is { InUse: true })
+				{
+					return true;
+				}
+
+				if (NMapScreen.Instance is { IsOpen: true })
+				{
+					return true;
+				}
+
+				if (NOverlayStack.Instance is { ScreenCount: > 0 })
+				{
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				// 判定本身不该把战斗弄崩：读不到就当没盖住
+				if (!_loggedCoverCheck)
+				{
+					_loggedCoverCheck = true;
+					HeidemarieIntegration.Log.Warn("连接视觉层：整屏 UI 判定失败：" + ex.Message);
+				}
+			}
+
+			return false;
+		}
+	}
 
 	/// <summary>总开关：本功能的「显示连接动画」+ 角色「战斗特效」总开关，两个都要开。</summary>
 	private static bool EffectsEnabled
