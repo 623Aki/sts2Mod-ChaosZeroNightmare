@@ -72,13 +72,14 @@ $GodotLogDir = Join-Path $ProjectDir '.godot\build'
 # ──────────────────────────────────────────────────────────────────────────
 # 规模下限 / 体积区间
 #
-# 实测当前 pck：约 5.84 MB、222 条文件表条目、.spskel 9 / .spatlas 9 / .ctex 20。
+# 实测当前 pck：约 5.4 MB、190+ 条文件表条目、.spskel 6 / .spatlas 6 / .ctex 17
+# （6 套怪物骨架；处决特效三层已按设计裁决移出本 mod，见设计文档 §5.5）。
 # spine 扩展没生效时 pck 会缩到 1 MB 以下，导入产物整体缺失。
 # 下面留了余量：既能拦住故障态，又允许正常增删少量资源。
 # ──────────────────────────────────────────────────────────────────────────
-$MinEntryCount  = 180
-$MinSpskelCount = 8
-$MinSpatlasCount = 8
+$MinEntryCount  = 150
+$MinSpskelCount = 6
+$MinSpatlasCount = 6
 $MinCtexCount   = 15
 $MinPckBytes    = 2MB
 $MaxPckBytes    = 200MB
@@ -94,12 +95,6 @@ $RequiredPrefix = @(
     '.godot/imported/polemica.skel-',
     '.godot/imported/polemica.atlas-',
     '.godot/imported/polemica.png-',
-    '.godot/imported/polemica_fatal_b.skel-',
-    '.godot/imported/polemica_fatal_b.atlas-',
-    '.godot/imported/polemica_fatal_f.skel-',
-    '.godot/imported/polemica_fatal_f.atlas-',
-    '.godot/imported/polemica_fatal_sub.skel-',
-    '.godot/imported/polemica_fatal_sub.atlas-',
     '.godot/imported/polemica_legion_soldier.skel-',
     '.godot/imported/polemica_legion_shield.skel-',
     '.godot/imported/polemica_rock_shell_insect.skel-',
@@ -167,7 +162,7 @@ try {
     }
 
     foreach ($lang in @('zhs', 'eng')) {
-        foreach ($table in @('settings.json', 'monsters.json', 'encounters.json', 'powers.json')) {
+        foreach ($table in @('settings.json', 'monsters.json', 'encounters.json', 'powers.json', 'bestiary.json')) {
             # 游戏只认 res://<mod id>/localization/...，所以文件必须放在 CznMonster/localization 下
             $p = Join-Path $ProjectDir "CznMonster\localization\$lang\$table"
             if (-not (Test-Path $p)) { throw "缺少本地化文件：$p" }
@@ -333,21 +328,6 @@ try {
         'scenes/creature_visuals/polemica_wing_shell_insect.tscn',
         'scenes/creature_visuals/polemica_shell_insect.tscn',
         'scenes/encounters/polemica_boss.tscn',
-        # ── §1.2.1 ③ 处决/换防演出（三层特效 + 两个 VFX 场景）──
-        'CznMonster/animations/effects/polemica_fatal_b/polemica_fatal_b.skel.import',
-        'CznMonster/animations/effects/polemica_fatal_b/polemica_fatal_b.atlas.import',
-        'CznMonster/animations/effects/polemica_fatal_b/1001013_fatal_eff_b.png.import',
-        'CznMonster/animations/effects/polemica_fatal_b/polemica_fatal_b_skel_data.tres',
-        'CznMonster/animations/effects/polemica_fatal_f/polemica_fatal_f.skel.import',
-        'CznMonster/animations/effects/polemica_fatal_f/polemica_fatal_f.atlas.import',
-        'CznMonster/animations/effects/polemica_fatal_f/1001013_fatal_eff_f.png.import',
-        'CznMonster/animations/effects/polemica_fatal_f/polemica_fatal_f_skel_data.tres',
-        'CznMonster/animations/effects/polemica_fatal_sub/polemica_fatal_sub.skel.import',
-        'CznMonster/animations/effects/polemica_fatal_sub/polemica_fatal_sub.atlas.import',
-        'CznMonster/animations/effects/polemica_fatal_sub/1001013_fatal_sub.png.import',
-        'CznMonster/animations/effects/polemica_fatal_sub/polemica_fatal_sub_skel_data.tres',
-        'scenes/vfx/polemica_fatal_b.tscn',
-        'scenes/vfx/polemica_fatal_f.tscn',
         # ── §1.2.1 ① 28 条采样（ogg 由 Godot 导入）──
         'CznMonster/audio/sfx/polemica/1001013/se_corpsleader_formica_normal_enter.ogg.import',
         'CznMonster/audio/sfx/polemica/1001013/se_corpsleader_formica_normal_skill1_3.ogg.import',
@@ -389,7 +369,9 @@ try {
         'CznMonster/localization/zhs/monsters.json',
         'CznMonster/localization/eng/monsters.json',
         'CznMonster/localization/zhs/encounters.json',
-        'CznMonster/localization/zhs/powers.json'
+        'CznMonster/localization/zhs/powers.json',
+        'CznMonster/localization/zhs/bestiary.json',
+        'CznMonster/localization/eng/bestiary.json'
     )
 
     # 条目数 / 导入产物计数 / 关键资源命中一次遍历完成

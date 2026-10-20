@@ -9,7 +9,11 @@ namespace CznMonster.Content.Monsters;
 
 /// <summary>
 /// 波勒米卡召唤物的公共基类（设计文档 §7.5）：
-/// 统一挂原生 <see cref="MinionPower"/>（不阻止胜利、不掉奖励）、统一不进图鉴。
+/// 统一挂原生 <see cref="MinionPower"/>（不阻止胜利、不掉奖励）。
+///
+/// <para><see cref="ShouldShowInCompendium"/> 保持 false：召唤物不混进原生章节图鉴列表
+/// （参照原生 DecimillipedeSegment 的口径）；它们改列在图鉴的专属「CZN 怪物」区块里，
+/// 由 <see cref="CznMonster.Registration.CznMonsterBestiaryPatch"/> 直接添加条目。</para>
 ///
 /// <para>音效与处决表现也在这里收口（§1.2.1 ②③ / §5.4 / §5.5）：
 /// 每只召唤物只覆写自己「有哪些采样、用哪个 clip 处决」，避免 5 个子类各写一遍。</para>
@@ -17,6 +21,7 @@ namespace CznMonster.Content.Monsters;
 public abstract class PolemicaAddMonster : MonsterModel
 {
 	/// <inheritdoc />
+	/// <remarks>召唤物不进原生的章节/事件图鉴流程；专属区块的条目不经此过滤。</remarks>
 	public override bool ShouldShowInCompendium => false;
 
 	/// <inheritdoc />

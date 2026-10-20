@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CznMonster.Content.Audio;
 using CznMonster.Content.Powers;
-using CznMonster.Content.Vfx;
 using CznMonster.Settings;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Audio;
@@ -202,8 +201,7 @@ public sealed class Polemica : MonsterModel
 	/// <summary>甲壳壁垒：处决全部召唤物、45 格挡、仪式清零；下一回合进入 P5。</summary>
 	private async Task ShellMove(IReadOnlyList<Creature> targets)
 	{
-		// 同一回合还要播 Shell，不再叠加全屏处决特效（§5.5，避免 4 秒双演出）
-		await ExecuteAdds(playVfx: false);
+		await ExecuteAdds();
 		await ResetBrood();
 		await CreatureCmd.TriggerAnim(Creature, "Shell", 2.60f);
 		CznMonsterSfx.Play(this, "skill3");
@@ -312,9 +310,10 @@ public sealed class Polemica : MonsterModel
 
 	/// <summary>
 	/// 处决全部召唤物（原版 KILL ALL_ENEMY_EXCEPT_CASTER），返回本次处决数量。
+	/// 全屏三层处决特效本轮未使用（素材语义是「首领杀死玩家」，设计见设计文档 §5.5）；
+	/// 首领骨架 <c>normal_fatal</c> 动画保留。
 	/// </summary>
-	/// <param name="playVfx">是否叠加 §5.5 的全屏三层处决特效（SHELL 回合传 false）。</param>
-	private async Task<int> ExecuteAdds(bool playVfx = true)
+	private async Task<int> ExecuteAdds()
 	{
 		List<Creature> adds = CombatState.GetTeammatesOf(Creature)
 			.Where(c => c != Creature && c.IsAlive)
@@ -322,11 +321,6 @@ public sealed class Polemica : MonsterModel
 		if (adds.Count == 0)
 		{
 			return 0;
-		}
-
-		if (playVfx)
-		{
-			PolemicaFatalVfx.Play(Creature);
 		}
 
 		// 首领与全部召唤物同时起手：处决是「一拍」，不是逐个播。
