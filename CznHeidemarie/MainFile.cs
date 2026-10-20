@@ -45,6 +45,10 @@ public static class MainFile
 		// 是本组里最容易挂载失败的一个，因此隔离出来（失败只告警，不牵连其它补丁）。
 		Registration.HeidemarieUniqueDeckGuard.Install(harmony, Log);
 
+		// 「安息」锁墓的移堆兜底：同样需要按参数类型精确指定重载并改写异步返回值
+		// （见 Registration/HeidemarieRestLockPatch.cs）。
+		Registration.HeidemarieRestLockGuard.Install(harmony, Log);
+
 		// 接入 CznCore 框架：通过 CharacterSkinModBootstrap 注册完整 Profile 与补丁组、启动出牌特写立绘、
 		// 把本角色的设置分区挂进游戏设置界面（见 Integration/）
 		HeidemarieIntegration.Init(harmony);

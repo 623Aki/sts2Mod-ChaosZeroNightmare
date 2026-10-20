@@ -43,7 +43,10 @@ namespace CznHeidemarie.Characters.Heidemarie.Relics;
 /// STS2 第 1 回合结束不清空格挡，回合开始给格挡不会被打脸。</para>
 ///
 /// <para><b>「临时力量」为什么要单独一个能力类</b>：见
-/// <see cref="HeidemarieHopeStrengthPower"/> —— 引擎的 <c>TemporaryStrengthPower</c> 是抽象基类。</para>
+/// <see cref="HeidemarieTemporaryStrengthPowerBase"/> —— 引擎的
+/// <c>TemporaryStrengthPower</c> 是抽象基类，且 <c>OriginModel</c> 要求指向发放者，
+/// 因此本处与「严阵以待」各开一个子类（<see cref="HeidemarieHopeStrengthPower"/> /
+/// <c>HeidemarieTemporaryStrengthPower</c>）共用同一套实现与同一张图标。</para>
 ///
 /// <para><b>图标</b>：三张素材分别是 256 大图 / 85 小图 / 85 描边，
 /// 与引擎默认的三条路径约定（<c>relics/&lt;id&gt;.png</c>、
@@ -81,7 +84,9 @@ public sealed class HeidemarieMayorBadge : RelicModel
 	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(4)
 	{
 		new BlockVar(1m, ValueProp.Unpowered),
-		new PowerVar<HeidemarieHopeStrengthPower>("Strength", StrengthPerTurn),
+		// 与原生「预备打击」一致：卡面/遗物文本用原生 StrengthPower 的图标与数值，
+		// 实际施加的 HeidemarieHopeStrengthPower 只负责回合末回收。
+		new PowerVar<StrengthPower>("Strength", StrengthPerTurn),
 		new HealVar(BlessingHeal),
 		new EnergyVar(BlessingEnergy),
 	};

@@ -1,7 +1,10 @@
 # ============================================================================
 # sts2Mod 工作区 —— 根仓库忽略规则
 #
-# 追踪范围：本工作 mod（CznHeidemarie）+ 文档（AGENTS.md / *.md） + global.json
+# 追踪范围：
+#   - 本工作 mod：CznHeidemarie / CznMonster（含 bin/ 下的 spine GDExtension）
+#   - 项目根的打包脚本：一键构建.bat / build-common.ps1
+#   - 项目根的开发文档：AGENTS.md / 开发手册.md / 参考mod动画实现清单.md + global.json
 # 其余一律不追踪，按下面的分组逐条排除。
 #
 # 各 mod 子工程自己的忽略规则见 CznHeidemarie/.gitignore（Godot / .NET 产物）。
@@ -41,14 +44,14 @@ $RECYCLE.BIN/
 # 参考 mod A / B：GDRE 反编译产物，只读，约 460 MB
 /CznTipheraCharacter/
 /CznNineCharacter/
-# Spine 动画查看器（约 289 MB）与场景检查器（约 73 MB）
-/CZN_Viewer/
-/CZN_AnimLab/
+
 # RitsuLib 文档站（外部项目）
 /STS2-RitsuLib-docs/
 
 /skills/
 /tools/
+# 演出/参数调试的临时预览产物（outputs/ 整体不追踪）
+/outputs/
 # ── 5. 构建产物与依赖缓存 ─────────────────────────────────────────────────
 **/obj/
 **/.godot/
@@ -73,3 +76,4 @@ $RECYCLE.BIN/
 # 骨架动画彻底失效（实测 pck 会缩到 0.53 MB）。
 # bin/ 是 spine-godot GDExtension 本体（46.9 MB），属于必需资源。
 !/CznHeidemarie/bin/
+!/CznMonster/bin/

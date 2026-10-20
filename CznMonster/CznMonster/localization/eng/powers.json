@@ -1,0 +1,7 @@
+{
+  "CZN_ACTION_COUNT_POWER.title": "Action Count",
+  "CZN_ACTION_COUNT_POWER.description": "This creature acts immediately after the player plays {Amount} cards.",
+
+  "POLEMICA_BROOD_POWER.title": "Hive Ritual",
+  "POLEMICA_BROOD_POWER.description": "Polemica gains 1 stack after each action. At 3 stacks, its next action executes all summons and hatches a new wave."
+}

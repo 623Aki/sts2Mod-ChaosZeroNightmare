@@ -18,10 +18,15 @@ namespace CznHeidemarie.Characters.Heidemarie.Powers;
 /// （这里 = 遗物「市长铭牌」）。标题 / 描述都复用引擎自带的
 /// <c>TEMPORARY_STRENGTH_POWER.*</c> 本地化键，<b>不需要新增文本</b>。</para>
 ///
+/// <para><b>与「严阵以待」那条的关系</b>：发放逻辑、回合末回收、图标全部共用
+/// <see cref="HeidemarieTemporaryStrengthPowerBase"/>（图标是同一张
+/// <c>heidemarie_temporary_strength_power.png</c>）；本类只提供「来源 = 市长铭牌」，
+/// 因此战斗界面里这条 buff 的标题与悬停提示显示的是这个遗物。</para>
+///
 /// <para>叠加方式为 <see cref="MegaCrit.Sts2.Core.Entities.Powers.PowerStackType.Counter"/>：
 /// 连着几个回合都停在 100~199 档时，力量逐回合累加到本回合结束。</para>
 /// </summary>
-public sealed class HeidemarieHopeStrengthPower : TemporaryStrengthPower
+public sealed class HeidemarieHopeStrengthPower : HeidemarieTemporaryStrengthPowerBase
 {
 	/// <inheritdoc/>
 	/// <remarks>指回发放它的遗物；引擎用它决定这条 buff 的标题与悬停提示。</remarks>

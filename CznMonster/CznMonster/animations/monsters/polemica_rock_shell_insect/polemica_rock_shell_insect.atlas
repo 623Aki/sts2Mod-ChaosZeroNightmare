@@ -1,0 +1,314 @@
+
+polemica_rock_shell_insect.png
+size: 1440,492
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+back_1
+  rotate: false
+  xy: 2, 91
+  size: 90, 189
+  orig: 90, 189
+  offset: 0, 0
+  index: -1
+back_2
+  rotate: false
+  xy: 1391, 145
+  size: 44, 185
+  orig: 44, 185
+  offset: 0, 0
+  index: -1
+body_1
+  rotate: 180
+  xy: 445, 30
+  size: 151, 155
+  orig: 177, 155
+  offset: 26, 0
+  index: -1
+body_1_ex1
+  rotate: 270
+  xy: 290, 42
+  size: 151, 155
+  orig: 177, 155
+  offset: 26, 0
+  index: -1
+body_2
+  rotate: false
+  xy: 328, 356
+  size: 141, 132
+  orig: 141, 143
+  offset: 0, 0
+  index: -1
+body_3
+  rotate: 180
+  xy: 1212, 57
+  size: 83, 124
+  orig: 83, 124
+  offset: 0, 0
+  index: -1
+body_4
+  rotate: true
+  xy: 109, 24
+  size: 139, 179
+  orig: 139, 179
+  offset: 0, 0
+  index: -1
+elbow_1
+  rotate: false
+  xy: 844, 7
+  size: 33, 39
+  orig: 33, 39
+  offset: 0, 0
+  index: -1
+elbow_2
+  rotate: false
+  xy: 1407, 42
+  size: 30, 31
+  orig: 30, 31
+  offset: 0, 0
+  index: -1
+fx_1
+  rotate: false
+  xy: 2, 251
+  size: 429, 237
+  orig: 429, 237
+  offset: 0, 0
+  index: -1
+fx_2
+  rotate: true
+  xy: 840, 48
+  size: 440, 219
+  orig: 440, 219
+  offset: 0, 0
+  index: -1
+fx_3
+  rotate: true
+  xy: 1223, 186
+  size: 298, 213
+  orig: 308, 213
+  offset: 10, 0
+  index: -1
+fx_4_1
+  rotate: true
+  xy: 23, 162
+  size: 219, 345
+  orig: 231, 346
+  offset: 12, 0
+  index: -1
+fx_4_2
+  rotate: false
+  xy: 597, 131
+  size: 206, 356
+  orig: 217, 356
+  offset: 1, 0
+  index: -1
+fx_4_3
+  rotate: false
+  xy: 795, 128
+  size: 207, 359
+  orig: 207, 359
+  offset: 0, 0
+  index: -1
+fx_4_4
+  rotate: false
+  xy: 420, 152
+  size: 194, 335
+  orig: 194, 335
+  offset: 0, 0
+  index: -1
+hand_1
+  rotate: 180
+  xy: 1137, 181
+  size: 89, 159
+  orig: 89, 159
+  offset: 0, 0
+  index: -1
+hand_1_ex1
+  rotate: false
+  xy: 1061, 271
+  size: 89, 159
+  orig: 89, 159
+  offset: 0, 0
+  index: -1
+hand_1_ex2
+  rotate: true
+  xy: 882, 3
+  size: 108, 199
+  orig: 123, 221
+  offset: 6, 22
+  index: -1
+hand_1_ex3
+  rotate: false
+  xy: 677, 53
+  size: 120, 196
+  orig: 123, 221
+  offset: 0, 20
+  index: -1
+hand_2
+  rotate: false
+  xy: 1155, 328
+  size: 96, 159
+  orig: 96, 159
+  offset: 0, 0
+  index: -1
+hand_2_ex1
+  rotate: 180
+  xy: 1118, 10
+  size: 94, 159
+  orig: 96, 159
+  offset: 0, 0
+  index: -1
+hand_2_ex2
+  rotate: 180
+  xy: 1039, 99
+  size: 112, 186
+  orig: 122, 201
+  offset: 0, 14
+  index: -1
+hand_2_ex3
+  rotate: 270
+  xy: 589, 6
+  size: 111, 185
+  orig: 122, 201
+  offset: 5, 13
+  index: -1
+hand_acc_1
+  rotate: false
+  xy: 1382, 27
+  size: 23, 41
+  orig: 23, 41
+  offset: 0, 0
+  index: -1
+hand_acc_2
+  rotate: false
+  xy: 1200, 3
+  size: 44, 78
+  orig: 44, 78
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 1331, 15
+  size: 87, 136
+  orig: 91, 136
+  offset: 4, 0
+  index: -1
+leg_1
+  rotate: false
+  xy: 1082, 24
+  size: 33, 62
+  orig: 33, 62
+  offset: 0, 0
+  index: -1
+leg_2
+  rotate: false
+  xy: 369, 190
+  size: 43, 54
+  orig: 43, 54
+  offset: 0, 0
+  index: -1
+parts1
+  rotate: false
+  xy: 94, 236
+  size: 30, 58
+  orig: 30, 58
+  offset: 0, 0
+  index: -1
+parts2
+  rotate: false
+  xy: 554, 4
+  size: 45, 28
+  orig: 45, 28
+  offset: 0, 0
+  index: -1
+pelvis_1
+  rotate: false
+  xy: 1279, 15
+  size: 28, 40
+  orig: 28, 40
+  offset: 0, 0
+  index: -1
+pelvis_2
+  rotate: false
+  xy: 1246, 14
+  size: 31, 41
+  orig: 31, 41
+  offset: 0, 0
+  index: -1
+shoose_1
+  rotate: false
+  xy: 1346, 11
+  size: 34, 28
+  orig: 34, 28
+  offset: 0, 0
+  index: -1
+shoose_2
+  rotate: false
+  xy: 2, 462
+  size: 19, 25
+  orig: 19, 25
+  offset: 0, 0
+  index: -1
+shoose_3
+  rotate: false
+  xy: 70, 374
+  size: 48, 24
+  orig: 48, 24
+  offset: 0, 0
+  index: -1
+shoulder_1
+  rotate: false
+  xy: 280, 446
+  size: 40, 41
+  orig: 40, 41
+  offset: 0, 0
+  index: -1
+shoulder_acc_1
+  rotate: false
+  xy: 2, 20
+  size: 59, 69
+  orig: 59, 69
+  offset: 0, 0
+  index: -1
+shoulder_acc_2
+  rotate: true
+  xy: 157, 166
+  size: 51, 74
+  orig: 61, 74
+  offset: 10, 0
+  index: -1
+ss_1
+  rotate: false
+  xy: 2, 279
+  size: 19, 112
+  orig: 33, 156
+  offset: 7, 20
+  index: -1
+ss_2
+  rotate: true
+  xy: 290, 17
+  size: 26, 174
+  orig: 62, 244
+  offset: 18, 32
+  index: -1
+ss_3
+  rotate: false
+  xy: 1297, 61
+  size: 33, 156
+  orig: 33, 156
+  offset: 0, 0
+  index: -1
+thigh_1
+  rotate: false
+  xy: 65, 9
+  size: 42, 89
+  orig: 42, 89
+  offset: 0, 0
+  index: -1
+thigh_2
+  rotate: false
+  xy: 778, 5
+  size: 64, 83
+  orig: 64, 83
+  offset: 0, 0
+  index: -1

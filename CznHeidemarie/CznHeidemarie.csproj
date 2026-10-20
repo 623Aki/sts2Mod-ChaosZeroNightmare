@@ -41,8 +41,11 @@
     </Reference>
   </ItemGroup>
 
-  <!-- 构建完成后把 DLL 与清单复制到游戏的 mods 目录 -->
-  <Target Name="Copy Mod" AfterTargets="PostBuildEvent">
+  <!-- 构建完成后把 DLL 与清单复制到游戏的 mods 目录。
+       必须排除 Godot 导出触发的 ExportRelease 构建：否则导出的那次 publish
+       会用 ExportRelease 的 DLL 覆盖掉刚编译好的 Debug DLL，
+       表现为「中间 DLL 更新了、mods 里的 DLL 还是旧的」。 -->
+  <Target Name="CopyModToGame" AfterTargets="Build" Condition="'$(Configuration)' != 'ExportRelease'">
     <Message Text="Copying mod to Slay the Spire 2 mods folder..." Importance="high" />
     <MakeDir Directories="$(Sts2Dir)\mods\$(MSBuildProjectName)\" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(Sts2Dir)\mods\$(MSBuildProjectName)\" />

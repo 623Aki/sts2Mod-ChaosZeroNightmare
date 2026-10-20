@@ -4,7 +4,7 @@
   "HEIDEMARIE_KEYWORD_LINK.title": "连接",
   "HEIDEMARIE_KEYWORD_LINK.description": "直接使用此卡时，丢弃手牌中其他所有的连接卡牌。",
   "HEIDEMARIE_KEYWORD_REST.title": "安息",
-  "HEIDEMARIE_KEYWORD_REST.description": "非回合结束丢弃此卡时，此卡效果发动。本回合内此卡不能被移出已使用牌堆。",
+  "HEIDEMARIE_KEYWORD_REST.description": "非回合结束丢弃此卡时，此卡效果发动。本回合内此卡不能被移出弃牌堆。",
   "HEIDEMARIE_KEYWORD_GRAVE_KEEP.title": "守墓",
   "HEIDEMARIE_KEYWORD_GRAVE_KEEP.description": "洗牌时，此卡不会移动至抽牌堆。",
   "HEIDEMARIE_KEYWORD_RECYCLE.title": "回收",

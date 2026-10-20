@@ -14,11 +14,11 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// <summary>
 /// 「旧誓」：2 费能力牌（稀有牌）。
 ///
-/// <para>打出后获得能力<b>旧誓</b>：回合开始时，墓地中每有 1 张极光剑，
+/// <para>打出后获得能力<b>旧誓</b>：回合开始时，弃牌堆和消耗牌堆中每有 1 张极光剑，
 /// 获得 2 点格挡（见 <see cref="HeidemarieOldOathPower"/>）。</para>
 ///
-/// <para>把「剑冢」从一次性重放变成<b>持续防御收益</b>：依赖「守墓」把极光剑永久堆在墓地，
-/// 与「剑冢 / 归墟剑骸 / 积羽」形成闭环 —— 这是官方没有的机制（官方没有守墓）。</para>
+/// <para>把「剑冢」从一次性重放变成<b>持续防御收益</b>：「守墓」把极光剑永久堆在弃牌堆、
+/// 「解放极光」等消耗路径把剑送进消耗堆，两条路线都喂这条能力 —— 这是官方没有的机制。</para>
 ///
 /// <para><b>升级 = 每张剑 4 点格挡</b>：写法与官方 <c>FeelNoPain</c> 一致 ——
 /// 卡牌自己声明 <see cref="CardModel.CanonicalVars"/>（卡面文本靠它插值）
@@ -34,7 +34,7 @@ public sealed class HeidemarieOldOath : HeidemarieCard
 	protected override string FallbackPortraitPath => "res://images/atlases/card_atlas.sprites/ironclad/defend_ironclad.tres";
 
 	/// <summary>
-	/// 卡面文本的数值：墓地中每 1 张极光剑在回合开始时给的格挡。
+	/// 卡面文本的数值：弃牌堆和消耗牌堆中每 1 张极光剑在回合开始时给的格挡。
 	///
 	/// <para>必须与 <see cref="HeidemarieOldOathPower"/> 的单层数值逐字一致。</para>
 	/// </summary>

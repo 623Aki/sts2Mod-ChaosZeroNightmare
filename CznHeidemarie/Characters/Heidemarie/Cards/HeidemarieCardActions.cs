@@ -161,8 +161,9 @@ internal static class HeidemarieCardActions
 	/// <c>AutoPlay</c> 会对 <c>AnyEnemy</c> 自动补一个随机敌人，
 	/// 即每张剑各打一个随机敌人，可以重复命中同一个。</para>
 	///
-	/// <para>踢掉「本回合被安息锁定」的极光剑（「北极圈」升级后生成的剑带安息，
-	/// 本回合不允许被移出墓地）。</para>
+	/// <para>踢掉「本回合被安息锁定」的极光剑：锁墓兜底补丁同样会拦住它们，
+	/// 这里提前过滤只是少走一次失败分支。当前没有给剑挂运行期安息的来源，
+	/// 属防御性写法（判定见 <see cref="HeidemarieRestLock"/>）。</para>
 	/// </summary>
 	public static async Task PlayAuroraSwordsFromDiscard(
 		CardModel source,

@@ -58,6 +58,8 @@ internal static class HeidemarieAllCardsPatch
 		ModelDb.Card<HeidemarieCondensedAurora>(),
 		ModelDb.Card<HeidemarieLiberatedAurora>(),
 		ModelDb.Card<HeidemarieSwordParadise>(),
+		// 第 2 轮：状态牌「骇人的记忆」
+		ModelDb.Card<HeidemarieHorrificMemory>(),
 	};
 }
 

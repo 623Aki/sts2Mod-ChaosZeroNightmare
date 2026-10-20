@@ -1,0 +1,153 @@
+
+1001013_fatal_eff_b.png
+size: 1920,640
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+circle_g
+  rotate: false
+  xy: 2, 2
+  size: 169, 169
+  orig: 169, 169
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_11
+  rotate: true
+  xy: 1278, 50
+  size: 121, 255
+  orig: 121, 255
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_12
+  rotate: true
+  xy: 1535, 50
+  size: 121, 255
+  orig: 121, 255
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_125
+  rotate: false
+  xy: 1796, 125
+  size: 121, 255
+  orig: 121, 255
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_13
+  rotate: false
+  xy: 1792, 382
+  size: 121, 255
+  orig: 121, 255
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_21
+  rotate: true
+  xy: 173, 6
+  size: 165, 219
+  orig: 165, 219
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_22
+  rotate: true
+  xy: 394, 6
+  size: 165, 219
+  orig: 165, 219
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_225
+  rotate: true
+  xy: 1057, 6
+  size: 165, 219
+  orig: 165, 219
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_23
+  rotate: true
+  xy: 615, 6
+  size: 165, 219
+  orig: 165, 219
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_24
+  rotate: true
+  xy: 836, 6
+  size: 165, 219
+  orig: 165, 219
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_31
+  rotate: true
+  xy: 1610, 546
+  size: 91, 173
+  orig: 91, 173
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_32
+  rotate: true
+  xy: 1610, 453
+  size: 91, 173
+  orig: 91, 173
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_325
+  rotate: false
+  xy: 1703, 185
+  size: 91, 173
+  orig: 91, 173
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_33
+  rotate: true
+  xy: 1610, 360
+  size: 91, 173
+  orig: 91, 173
+  offset: 0, 0
+  index: -1
+formica_fatal_blood_34
+  rotate: false
+  xy: 1610, 185
+  size: 91, 173
+  orig: 91, 173
+  offset: 0, 0
+  index: -1
+formica_fatal_obk1
+  rotate: false
+  xy: 2, 173
+  size: 266, 464
+  orig: 266, 464
+  offset: 0, 0
+  index: -1
+formica_fatal_obk2
+  rotate: false
+  xy: 270, 173
+  size: 266, 464
+  orig: 266, 464
+  offset: 0, 0
+  index: -1
+formica_fatal_obk25
+  rotate: false
+  xy: 1074, 173
+  size: 266, 464
+  orig: 266, 464
+  offset: 0, 0
+  index: -1
+formica_fatal_obk3
+  rotate: false
+  xy: 538, 173
+  size: 266, 464
+  orig: 266, 464
+  offset: 0, 0
+  index: -1
+formica_fatal_obk35
+  rotate: false
+  xy: 1342, 173
+  size: 266, 464
+  orig: 266, 464
+  offset: 0, 0
+  index: -1
+formica_fatal_obk4
+  rotate: false
+  xy: 806, 173
+  size: 266, 464
+  orig: 266, 464
+  offset: 0, 0
+  index: -1

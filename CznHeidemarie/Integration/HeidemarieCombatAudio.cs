@@ -54,7 +54,12 @@ internal static class HeidemarieCombatAudio
 	/// <summary>其他技能语音。</summary>
 	private static readonly string[] SkillVoices = { VoicePath("skill_01"), VoicePath("skill_02") };
 
-	/// <summary>终结技 ux（绝响路线）语音，随机取一条。</summary>
+	/// <summary>
+	/// ux 全屏演出（剑之乐园 / 破军路线）语音，随机取一条。
+	///
+	/// <para>只在舞台真正接管画面时使用（<see cref="PlayCinematicSfx"/>）；
+	/// 关掉全屏演出后回退档放的是 u3，见 <see cref="FallbackAudioTrigger"/>。</para>
+	/// </summary>
 	private static readonly string[] UxVoices = { VoicePath("ux"), VoicePath("ux_02") };
 
 	/// <summary>
@@ -73,8 +78,9 @@ internal static class HeidemarieCombatAudio
 	/// <summary>
 	/// 动作名 → 音效文件；缺项表示这段动作没有专属音效。
 	///
-	/// <para><c>XAttack</c> / <c>GAttack</c> 两条属于全屏演出（绝响 / 解放极光），
-	/// 播放前还要过「全屏演出」门，见 <see cref="OnTriggerAnim"/>。</para>
+	/// <para><c>XAttack</c> / <c>GAttack</c> 是全屏演出专用动作：舞台接管时整段让位给
+	/// <see cref="PlayCinematicSfx"/>；没有舞台时由 <see cref="OnTriggerAnim"/> 经
+	/// <see cref="FallbackAudioTrigger"/> 改查 <c>U3Attack</c> 的条目（回退特效组是 u3）。</para>
 	/// </summary>
 	private static readonly Dictionary<string, string> TriggerSfx = new(StringComparer.Ordinal)
 	{
@@ -90,7 +96,13 @@ internal static class HeidemarieCombatAudio
 		["Dead"] = SfxPath("collapse"),
 	};
 
-	/// <summary>动作名 → 固定语音；终结技 ux（<see cref="UxVoices"/>）仍是随机多段，ug 已改为固定。</summary>
+	/// <summary>
+	/// 动作名 → 固定语音（没有舞台接管时的单体档台词）。
+	///
+	/// <para>全屏演出两条路线（ug / ux）不在这里查表，由
+	/// <see cref="PlayCinematicSfx"/> 按路线选段；<c>XAttack</c> / <c>GAttack</c> 没有舞台时
+	/// 经 <see cref="FallbackAudioTrigger"/> 回退到 <c>U3Attack</c> 的 u3 台词。</para>
+	/// </summary>
 	private static readonly Dictionary<string, string> TriggerVoice = new(StringComparer.Ordinal)
 	{
 		["U1Attack"] = VoicePath("u1"),
@@ -109,6 +121,16 @@ internal static class HeidemarieCombatAudio
 	/// 紧邻该指令的 <c>CreatureCmd.TriggerAnim</c> 之前；每次出牌开始时清空）。
 	/// </summary>
 	private static CardModel? _pendingAttackCard;
+
+	/// <summary>
+	/// 本次出牌的主角牌（<c>CardPlayCommittedEvent</c> 时记录，只记本地海德玛丽）。
+	///
+	/// <para><b>为什么还要这一份</b>：语音去重优先用 <see cref="_pendingAttackCard"/>，
+	/// 但它依赖攻击补丁先跑；万一那条链路没走到（补丁提前返回、非攻击指令等），
+	/// 去重会退化成「每段各响一句」。这份按「本次出牌的牌」兜底，
+	/// 保证剑之乐园这种逐敌循环一次出牌最多一句台词。</para>
+	/// </summary>
+	private static CardModel? _currentPlayCard;
 
 	/// <summary>
 	/// 本次出牌已播过语音的「牌 Id + 触发器」键。
@@ -174,16 +196,23 @@ internal static class HeidemarieCombatAudio
 	///
 	/// <para>只对海德玛丽生效；音效还要过观众门（队友演出设置）。</para>
 	///
-	/// <para><b>AoE 攻击的去重口径</b>（2026-10-16）：逐敌攻击会为每个敌人各走一次
-	/// 本方法，因此 ——</para>
+	/// <para><b>AoE 攻击的去重口径</b>（2026-10-16，2026-10-19 修正）：逐敌攻击会为每个敌人
+	/// 各走一次本方法，因此 ——</para>
 	/// <list type="bullet">
 	///   <item>挥击音效：舞台接管时整段让位给演出（<see cref="PlayCinematicSfx"/>
-	///   在 epoch 零点播路线音效，一次）；降级回原生演出时按攻击段数播，
+	///   在 epoch 零点播路线音效，一次）；没有舞台时按攻击段数播，
 	///   因为每一击都是真实可见的挥击；</item>
-	///   <item>语音：舞台接管时同样让位（由 <see cref="PlayCinematicSfx"/> 发，
-	///   整段演出只响一句）；原生路径按「牌 + 触发器」去重，一次出牌只响一句
+	///   <item>语音：舞台接管时让位（由 <see cref="PlayCinematicSfx"/> 发，
+	///   整段演出只响一句），但「已响过」的记账**在让位之前**就要完成 ——
+	///   否则演出收尾后剩下的攻击段会把 u3 台词再补播一遍（剑之乐园的老问题）；
+	///   没有舞台时按「牌 + 触发器」去重，一次出牌只响一句
 	///   （见 <see cref="NoteAttackCard"/> / <see cref="IsDuplicateAttackVoice"/>）。</item>
 	/// </list>
+	///
+	/// <para><b>没有舞台时按「回退档」选音</b>：<c>GAttack</c> / <c>XAttack</c> 只属于
+	/// 全屏演出动作，它们的单体回退特效组用的是「顶击_u3_完整 / 顶击_u3_核心」，
+	/// 所以音效与语音一并回退到 u3 档（见 <see cref="FallbackAudioTrigger"/>）。
+	/// 原实现把这两个触发器整段静音，导致「解放极光」关掉全屏演出后只剩特效没有人声。</para>
 	/// </summary>
 	/// <param name="creature">正在播动作的单位。</param>
 	/// <param name="triggerName">动作触发器名。</param>
@@ -200,45 +229,38 @@ internal static class HeidemarieCombatAudio
 			// 全屏演出接管时，演出的音效 / 语音全部让位给舞台：舞台在
 			// presentation_started（演出 epoch 零点）播路线音效并发一句语音，
 			// 与动画严格同起、取消即停；这里再播就双响，且 AoE 逐敌攻击会把
-			// 同一句台词按敌人数重复。降级回原生演出（舞台没起来）时没有舞台
-			// 接盘，仍走本路播放。
+			// 同一句台词按敌人数重复。没有舞台（设置关掉 / 致死预判不通过 /
+			// 挂载失败降级）时没有舞台接盘，仍走本路播放。
 			bool stagePresents = HeidemarieCinematicRuntime.IsStagePresenting(player, triggerName);
 
-			if (IsCinematicTrigger(triggerName) && !CinematicPresentationEnabled(player))
+			// 语音去重键「先记账再分流」：舞台接管的那些段同样要占键。
+			// 「剑之乐园」是逐敌循环，前几段被舞台吞掉、若不占键，等 stage_finished
+			// 之后剩下的段就会把 u3 台词再补播一遍 —— 听感上就是同一句话重复。
+			bool alreadyVoiced = IsDuplicateAttackVoice(triggerName);
+
+			if (stagePresents)
 			{
+				// 音效与语音都归演出路径（PlayCinematicSfx 在 presentation_started 发）。
 				return;
 			}
 
-			if (!stagePresents
-				&& HeidemariePresentationHost.Audience.Allows(player, CombatPresentationChannel.CombatSfx)
-				&& TriggerSfx.TryGetValue(triggerName, out string? sfxPath))
+			// 没有舞台接管 → 按单体攻击档播：全屏专属动作回退成 u3。
+			string audioTrigger = FallbackAudioTrigger(triggerName);
+
+			if (HeidemariePresentationHost.Audience.Allows(player, CombatPresentationChannel.CombatSfx)
+				&& TriggerSfx.TryGetValue(audioTrigger, out string? sfxPath))
 			{
 				Sfx.TryPlay(sfxPath);
 			}
 
-			if (stagePresents)
-			{
-				// 语音归演出路径（PlayCinematicSfx 在 presentation_started 发），这里不重复。
-				return;
-			}
-
 			// 语音比音效「贵」，且一次出牌只该有一句：AoE 逐敌攻击会为每个敌人
 			// 各走一次 TriggerAnim，这里按「牌 + 触发器」去重，只有第一段出声。
-			if (IsDuplicateAttackVoice(triggerName))
+			if (alreadyVoiced)
 			{
 				return;
 			}
 
-			if (triggerName == "XAttack")
-			{
-				Voice.PlayRandomFor(player, UxVoices);
-			}
-			else if (triggerName == "GAttack")
-			{
-				// 解放极光：固定 ug 语音，不再随机
-				Voice.PlayFor(player, VoicePath("ug"));
-			}
-			else if (TriggerVoice.TryGetValue(triggerName, out string? voicePath))
+			if (TriggerVoice.TryGetValue(audioTrigger, out string? voicePath))
 			{
 				Voice.PlayFor(player, voicePath);
 			}
@@ -256,26 +278,34 @@ internal static class HeidemarieCombatAudio
 	/// <para>同一张牌的连续多条攻击指令（AoE 逐敌循环）不会清账，
 	/// 语音去重因此覆盖整次出牌；换牌 / 新出牌时账自动重开
 	///（另在 <see cref="PlayCardVoice"/> 的 CardPlayCommitted 入口清一次）。</para>
+	///
+	/// <para><b>为什么比 Id 而不比实例</b>：牌堆间移动、指令装配都可能带上同 Id 的
+	/// 不同实例（<c>CardModel.Id</c> 在克隆后保持不变）。按实例比较会把每一次攻击
+	/// 指令都当「换牌」清账，AoE 逐敌循环于是每段各响一句 —— 剑之乐园的 u3 语音
+	/// 重复正是这条链。改按 Id 比较后，一次出牌的所有攻击指令共用同一份记账。</para>
 	/// </summary>
 	/// <param name="card">攻击指令的来源牌。</param>
 	internal static void NoteAttackCard(CardModel card)
 	{
-		if (!ReferenceEquals(_pendingAttackCard, card))
+		if (_pendingAttackCard is null || _pendingAttackCard.Id != card.Id)
 		{
-			_pendingAttackCard = card;
 			VoicedAttackKeys.Clear();
 		}
+
+		_pendingAttackCard = card;
 	}
 
 	/// <summary>
-	/// 这次触发器语音是否已经在本次出牌里播过（按「牌 Id + 触发器」判定）。
+	/// 这次触发器语音是否已经在本次出牌里播过（按「牌 Id + 触发器」判定），
+	/// 并顺手把本次的键记账（调用即视为「本次要由调用方负责发声或已由演出发声」）。
 	/// 没有记账（敌人动作、非攻击链路、来源牌缺失）时不去重。
 	/// </summary>
 	/// <param name="triggerName">动作触发器名。</param>
 	/// <returns><c>true</c> 表示已播过，调用方应当静音。</returns>
 	private static bool IsDuplicateAttackVoice(string triggerName)
 	{
-		CardModel? card = _pendingAttackCard;
+		// 优先用攻击指令记账的那张牌；它缺账时退到「本次出牌的牌」。
+		CardModel? card = _pendingAttackCard ?? _currentPlayCard;
 		if (card is null)
 		{
 			return false;
@@ -285,10 +315,20 @@ internal static class HeidemarieCombatAudio
 		return !VoicedAttackKeys.Add(card.Id + "|" + triggerName);
 	}
 
-	/// <summary>这个动作触发器是不是全屏演出牌专用的（绝响 <c>XAttack</c> / 解放极光 <c>GAttack</c>）。</summary>
-	private static bool IsCinematicTrigger(string triggerName)
+	/// <summary>
+	/// 该动作在没有全屏舞台接管时，实际要按哪个单体攻击档放音。
+	///
+	/// <para><c>GAttack</c>（解放极光）/ <c>XAttack</c>（ux 预留档）只有全屏演出才会用，
+	/// 单体回退特效组分别是「顶击_u3_完整」/「顶击_u3_核心」
+	/// （见 <c>heidemarie_moves.json</c> 的 <c>AttackUg</c> / <c>AttackUx</c>），
+	/// 所以音效与语音统一回退成 u3 —— 两张大招关掉全屏演出时都放
+	/// <c>se_30093_u3_attack_play</c> + <c>vo_30093_u3</c>。</para>
+	/// </summary>
+	/// <param name="triggerName">原始动作触发器名。</param>
+	/// <returns>用于查 <see cref="TriggerSfx"/> / <see cref="TriggerVoice"/> 的键。</returns>
+	private static string FallbackAudioTrigger(string triggerName)
 	{
-		return triggerName is "XAttack" or "GAttack";
+		return triggerName is "GAttack" or "XAttack" ? "U3Attack" : triggerName;
 	}
 
 	/// <summary>
@@ -303,7 +343,12 @@ internal static class HeidemarieCombatAudio
 	/// <para><b>语音也在这里发</b>（2026-10-16）：整段演出只响一句台词。
 	/// AoE 逐敌攻击会多次走到 TriggerAnim，那时舞台已接管、语音全部让位，
 	/// 若不在这里补一句，大招就只剩音效没有台词；而放在 TriggerAnim 那条路上
-	/// 又会按敌人数重复。ug 固定 <c>ug</c>、ux 固定 <c>u3</c>，与原生路径选段一致。</para>
+	/// 又会按敌人数重复。</para>
+	///
+	/// <para><b>路线 → 台词</b>（2026-10-19）：ug（解放极光）固定 <c>vo_30093_ug</c>；
+	/// ux（剑之乐园）在 <c>vo_30093_ux</c> / <c>vo_30093_ux_02</c> 里随机取一条 ——
+	/// 演出音效已经是 <c>ux_attack</c>，台词也必须是 ux 那套，不能再用 u3
+	/// （u3 是没有舞台时的回退档台词，见 <see cref="FallbackAudioTrigger"/>）。</para>
 	///
 	/// <param name="player">发起演出的玩家。</param>
 	/// <param name="route">演出路线（ug / ux，见 <see cref="HeidemarieCinematicRuntime"/> 的路线常量）。</param>
@@ -344,15 +389,15 @@ internal static class HeidemarieCombatAudio
 			Sfx.TryPlay(sfxPath);
 
 			// 语音与音效同起，整段演出只此一句（见方法文档）。
-			string? voicePath = route switch
+			// ug 固定一条；ux 是「破军」路线，在两条 ux 台词里随机。
+			switch (route)
 			{
-				HeidemarieCinematicRuntime.RouteUg => VoicePath("ug"),
-				HeidemarieCinematicRuntime.RouteUx => VoicePath("u3"),
-				_ => null,
-			};
-			if (voicePath is not null)
-			{
-				Voice.PlayFor(player, voicePath);
+				case HeidemarieCinematicRuntime.RouteUg:
+					Voice.PlayFor(player, VoicePath("ug"));
+					break;
+				case HeidemarieCinematicRuntime.RouteUx:
+					Voice.PlayRandomFor(player, UxVoices);
+					break;
 			}
 		}
 		catch (Exception ex)
@@ -504,6 +549,7 @@ internal static class HeidemarieCombatAudio
 		// 新出牌开始：清掉上一条攻击指令的记账，语音去重按「一次出牌」重新计。
 		// （放在本地判定之前 —— 记账与清账对所有出牌都要发生。）
 		_pendingAttackCard = null;
+		_currentPlayCard = null;
 		VoicedAttackKeys.Clear();
 
 		try
@@ -513,6 +559,9 @@ internal static class HeidemarieCombatAudio
 			{
 				return;
 			}
+
+			// 兜底记账：本次出牌的牌（攻击指令记账缺失时，语音去重仍能按它收敛）。
+			_currentPlayCard = card;
 
 			// 终结技的语音由各自的攻击动作名播出（解放极光 GAttack / 剑之乐园
 			// U3Attack / 绝响 XAttack），出牌时再播一条就会叠成双重语音，
@@ -589,6 +638,15 @@ internal static class HeidemarieCombatAudio
 			voicePaths.AddRange(DefenseVoices);
 			voicePaths.AddRange(BuffVoices);
 			voicePaths.Add(VoicePath("hit_01"));
+			// 技能攻击 / 全屏演出的固定台词：u1~u4 是动作档台词，
+			// ug 是解放极光的演出台词，u3 是两张大招关掉全屏后的回退台词。
+			voicePaths.Add(VoicePath("u1"));
+			voicePaths.Add(VoicePath("u2"));
+			voicePaths.Add(VoicePath("u3"));
+			voicePaths.Add(VoicePath("u4"));
+			// 剑之乐园的演出台词是随机两条，预报热时两条都要进缓存。
+			voicePaths.AddRange(UxVoices);
+			voicePaths.Add(VoicePath("ug"));
 			Voice.Prewarm(voicePaths);
 		}
 		catch (Exception ex)

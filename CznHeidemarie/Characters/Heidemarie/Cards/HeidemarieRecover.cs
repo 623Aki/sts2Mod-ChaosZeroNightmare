@@ -15,6 +15,9 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 ///
 /// <para>从抽牌堆或弃牌堆中选择 <c>Cards</c> 张卡牌，赋予其<b>连接</b>并移入手牌。
 /// 描述未限定「本回合」，故连接持续到本场战斗结束。</para>
+///
+/// <para>本回合被「安息」锁在墓地的牌<b>不会出现在候选里</b>
+/// （见 <see cref="HeidemarieRestLock"/>）。</para>
 /// </summary>
 public sealed class HeidemarieRecover : HeidemarieCard
 {
@@ -42,8 +45,12 @@ public sealed class HeidemarieRecover : HeidemarieCard
 	/// <inheritdoc/>
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
+		// 本回合被「安息」锁在墓地的牌不能作为候选：锁墓由 HeidemarieRestLock 统一判定。
+		// 必须在传进选择界面之前过滤 —— CardSelectCmd 没有「不可选」谓词，
+		// 显示出来就会让玩家选中一张实际拿不走的牌。
 		List<CardModel> candidates = PileType.Draw.GetPile(Owner).Cards
 			.Concat(PileType.Discard.GetPile(Owner).Cards)
+			.Where(card => !HeidemarieRestLock.IsLocked(card))
 			.ToList();
 
 		if (candidates.Count == 0)

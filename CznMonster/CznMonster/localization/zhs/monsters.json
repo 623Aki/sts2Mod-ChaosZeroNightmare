@@ -1,0 +1,34 @@
+{
+  "POLEMICA.name": "波勒米卡",
+
+  "POLEMICA.moves.BROOD_CALL.title": "军团召集",
+  "POLEMICA.moves.LEGION_CHARGE.title": "军团冲锋",
+  "POLEMICA.moves.SOLO_STRIKE.title": "首领突袭",
+  "POLEMICA.moves.REBROOD.title": "全军换防",
+  "POLEMICA.moves.SHELL.title": "甲壳壁垒",
+  "POLEMICA.moves.ELITE_HATCH.title": "精锐孵化",
+  "POLEMICA.moves.ELITE_REBROOD.title": "精锐换防",
+  "POLEMICA.moves.SECOND_WIND_CHARGE.title": "垂死冲锋",
+  "POLEMICA.moves.FINAL_STRIKE.title": "终局突刺",
+
+  "POLEMICA_LEGION_SOLDIER.name": "军团兵蚁",
+  "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_RALLY.title": "战吼突刺",
+  "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_HARASS.title": "撕咬",
+
+  "POLEMICA_LEGION_SHIELD.name": "军团盾蚁",
+  "POLEMICA_LEGION_SHIELD.moves.SHIELD_STRIKE.title": "撞角",
+  "POLEMICA_LEGION_SHIELD.moves.SHIELD_COVER.title": "掩护",
+
+  "POLEMICA_ROCK_SHELL_INSECT.name": "岩壳虫",
+  "POLEMICA_ROCK_SHELL_INSECT.moves.ROCK_CRUSH.title": "碎岩重击",
+  "POLEMICA_ROCK_SHELL_INSECT.moves.ROCK_HARDEN.title": "岩壳硬化",
+  "POLEMICA_ROCK_SHELL_INSECT.moves.ROCK_GUARD.title": "岩壳防御",
+
+  "POLEMICA_WING_SHELL_INSECT.name": "翼壳虫",
+  "POLEMICA_WING_SHELL_INSECT.moves.WING_DIVE.title": "翼击",
+  "POLEMICA_WING_SHELL_INSECT.moves.WING_GUARD.title": "翼壳防御",
+
+  "POLEMICA_SHELL_INSECT.name": "壳虫",
+  "POLEMICA_SHELL_INSECT.moves.SHELL_BITE.title": "甲壳撕咬",
+  "POLEMICA_SHELL_INSECT.moves.SHELL_GUARD.title": "甲壳防御"
+}

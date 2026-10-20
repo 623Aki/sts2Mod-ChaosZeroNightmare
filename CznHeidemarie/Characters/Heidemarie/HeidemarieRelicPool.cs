@@ -8,9 +8,13 @@ namespace CznHeidemarie.Characters.Heidemarie;
 /// <summary>
 /// Heidemarie 的角色遗物池。
 ///
-/// <para>当前只放<b>初始遗物</b>「市长铭牌」（<see cref="HeidemarieMayorBadge"/>）。
-/// 它是 <c>RelicRarity.Starter</c>，稀有度掷点只会产出 Common / Uncommon / Rare，
-/// 因此登记在这里不会让它作为奖励 / 商店货出现 —— 放进池子的真正理由有两个：</para>
+/// <para>当前放两件：初始遗物「市长铭牌」（<see cref="HeidemarieMayorBadge"/>，
+/// <c>RelicRarity.Starter</c>）与可获取遗物「和平奖章」
+/// （<see cref="HeidemariePeaceMedal"/>，<c>RelicRarity.Rare</c>，
+/// 可出现在商城 / 奖励）。</para>
+///
+/// <para>「市长铭牌」虽是 Starter 稀有度、不参与奖励 / 商店掷点，仍须登记在池子里，
+/// 理由有两个：</para>
 /// <list type="number">
 ///   <item><c>RelicModel.Pool</c> 要求「该遗物至少属于一个池」，否则读取时会抛异常；</item>
 ///   <item>让 <c>ModelDb.AllRelics</c> 与图鉴能正常枚举到它。</item>
@@ -30,8 +34,9 @@ public sealed class HeidemarieRelicPool : RelicPoolModel
 	public override Color LabOutlineColor => new Color("C8B6E2");
 
 	/// <inheritdoc/>
-	protected override IEnumerable<RelicModel> GenerateAllRelics() => new RelicModel[1]
+	protected override IEnumerable<RelicModel> GenerateAllRelics() => new RelicModel[2]
 	{
 		ModelDb.Relic<HeidemarieMayorBadge>(),
+		ModelDb.Relic<HeidemariePeaceMedal>(),
 	};
 }

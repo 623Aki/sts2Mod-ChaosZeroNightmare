@@ -8,6 +8,7 @@ using CznHeidemarie.Characters.Heidemarie.Presentation;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -66,7 +67,12 @@ public abstract class HeidemarieCard : CardModel
 
 	/// <summary>
 	/// 「安息」：本回合内本牌是否被禁止移出墓地。
-	/// 由 <see cref="IRestCard"/> 在丢弃时置位，回合开始（<see cref="AfterPlayerTurnStart"/>）清除。
+	/// 由 <see cref="IRestCard"/> 在丢弃时置位，下个自己的回合起手抽牌前
+	/// （<see cref="BeforeHandDraw"/>）清除。
+	///
+	/// <para>拦截点在 <see cref="HeidemarieRestLock"/>：洗牌走
+	/// <see cref="ModifyShuffleOrder"/>、取墓牌各自过滤候选、其余移堆动作由
+	/// <c>Registration/HeidemarieRestLockPatch</c> 兜底。「坠星」按设计强制绕过。</para>
 	/// </summary>
 	public bool RestLockedThisTurn { get; private set; }
 
@@ -162,28 +168,55 @@ public abstract class HeidemarieCard : CardModel
 	/// <inheritdoc/>
 	public override CardPoolModel Pool => ModelDb.CardPool<HeidemarieCardPool>();
 
+	/// <summary>
+	/// 本角色卡面 PNG 的规范路径：
+	/// <c>res://images/packed/card_portraits/heidemarie/&lt;卡牌ID&gt;.png</c>。
+	///
+	/// <para>与游戏自带的卡面约定完全一致（<see cref="CardModel.PortraitPngPath"/> 就是这条），
+	/// 所以素材直接按「卡牌 ID 小写」命名丢进目录即可，不需要任何图集打包步骤。</para>
+	///
+	/// <para>同时喂给基类的 <see cref="CardModel.HasPortrait"/>，让「有没有专属立绘」的判断也准。</para>
+	/// </summary>
+	private string ManagedPortraitPngPath =>
+		ImageHelper.GetImagePath($"packed/card_portraits/{Pool.Title.ToLowerInvariant()}/{Id.Entry.ToLowerInvariant()}.png");
+
+	/// <inheritdoc />
+	protected override string PortraitPngPath => ManagedPortraitPngPath;
+
 	/// <inheritdoc/>
 	/// <remarks>
-	/// 取卡顺序：
+	/// 取卡顺序（<b>先 PNG，再图集，最后占位</b>）：
 	/// <list type="number">
-	///   <item>本角色卡池的规范路径 <c>res://images/atlases/card_atlas.sprites/heidemarie/{卡牌ID}.tres</c>；</item>
-	///   <item>该文件不存在时退回 <see cref="FallbackPortraitPath"/>。</item>
+	///   <item><c>res://images/packed/card_portraits/heidemarie/{卡牌ID}.png</c> —— 当前实际使用的路径；</item>
+	///   <item><c>res://images/atlases/card_atlas.sprites/heidemarie/{卡牌ID}.tres</c> ——
+	///   将来若把立绘打进图集就走这条（现在没有这个目录，属于预留）；</item>
+	///   <item><see cref="FallbackPortraitPath"/> —— 两者都没有时的战士占位图。</item>
 	/// </list>
-	/// 因此后续只要把 heidemarie_*.tres 放进上述目录，游戏会自动切换卡面，无需改代码。
+	///
+	/// <para><b>为什么必须自己按 PNG 路径返回</b>：引擎的 <c>AtlasResourceLoader</c> 虽然会把
+	/// <c>card_atlas...tres</c> 回落到 <c>packed/card_portraits/&lt;pool&gt;/&lt;id&gt;.png</c>，
+	/// 但前提是「先真的去加载那个 .tres」。而本类若在 <c>.tres</c> 不存在时直接返回
+	/// <see cref="FallbackPortraitPath"/>（一个<b>存在</b>的战士 .tres），
+	/// 就永远走不到那条回落 —— 立绘会一直显示战士占位图。</para>
 	/// </remarks>
 	public override string PortraitPath
 	{
 		get
 		{
-			string ownPath = ImageHelper.GetImagePath(
-				$"atlases/card_atlas.sprites/{Pool.Title.ToLowerInvariant()}/{Id.Entry.ToLowerInvariant()}.tres");
-
-			if (!PortraitPathCache.TryGetValue(ownPath, out string? resolved))
+			string pngPath = ManagedPortraitPngPath;
+			if (PortraitPathCache.TryGetValue(pngPath, out string? cached))
 			{
-				resolved = ResourceLoader.Exists(ownPath) ? ownPath : FallbackPortraitPath;
-				PortraitPathCache[ownPath] = resolved;
+				return cached;
 			}
 
+			string atlasPath = ImageHelper.GetImagePath(
+				$"atlases/card_atlas.sprites/{Pool.Title.ToLowerInvariant()}/{Id.Entry.ToLowerInvariant()}.tres");
+
+			string resolved = ResourceLoader.Exists(pngPath) ? pngPath
+				: ResourceLoader.Exists(atlasPath) ? atlasPath
+				: FallbackPortraitPath;
+
+			PortraitPathCache[pngPath] = resolved;
 			return resolved;
 		}
 	}
@@ -438,7 +471,12 @@ public abstract class HeidemarieCard : CardModel
 			await sense.OnSense(new BlockingPlayerChoiceContext());
 		}
 
-		if (card == this && !_recycling && card.Pile?.Type == PileType.Discard && RecycleRemaining > 0)
+		// 「回收」与「安息」互斥：已经带锁墓标记的牌不回手。
+		// 注意首次丢入墓地时，本钩子（CardPileCmd.Add 内）先于 AfterCardDiscarded 的置锁，
+		// 因此这里只能拦住「已处于锁定态」的牌；当前没有同时带两个关键字的牌，
+		// 将来若加入，需要在丢弃入口处另行处理（否则回收会先于锁生效）。
+		if (card == this && !_recycling && card.Pile?.Type == PileType.Discard
+			&& RecycleRemaining > 0 && !HeidemarieRestLock.IsLocked(this))
 		{
 			RecycleRemaining--;
 			_recycling = true;
@@ -456,28 +494,67 @@ public abstract class HeidemarieCard : CardModel
 	}
 
 	/// <inheritdoc/>
-	/// <remarks>关键字「守墓」：洗牌时把自己从洗牌列表（弃牌堆 + 抽牌堆）里剔除，留在墓地。</remarks>
+	/// <remarks>
+	/// 关键字「守墓」：洗牌时把自己从洗牌列表（弃牌堆 + 抽牌堆）里剔除，留在墓地。
+	/// 关键字「安息」：本回合被锁在墓地的牌同样不进抽牌堆 ——
+	/// 判定与例外见 <see cref="HeidemarieRestLock"/>。
+	/// </remarks>
 	public override void ModifyShuffleOrder(Player player, List<CardModel> cards, bool isInitialShuffle)
 	{
-		if (!isInitialShuffle && this is IGraveKeepCard)
+		// 初始洗牌发生在战斗开始（卡还在牌组里），两类关键字都不适用
+		if (!isInitialShuffle)
 		{
-			cards.Remove(this);
+			if (this is IGraveKeepCard)
+			{
+				cards.Remove(this);
+			}
+
+			// 只剔除「此刻确实在墓地」的锁墓牌：被「坠星」强制推到抽牌堆之后，
+			// 锁标记仍留到回合结束，但不该再从洗牌列表里拿掉（它本来就该被洗）。
+			if (HeidemarieRestLock.IsLocked(this))
+			{
+				cards.Remove(this);
+			}
 		}
 
 		base.ModifyShuffleOrder(player, cards, isInitialShuffle);
 	}
 
 	/// <inheritdoc/>
-	/// <remarks>回合开始清除「安息」的本回合锁定。</remarks>
+	/// <remarks>
+	/// 回合开始时清除运行期「临时连接」（本回合内赋予的连接）。
+	/// </remarks>
 	public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
 		if (player == Owner)
 		{
-			RestLockedThisTurn = false;
 			RuntimeLinkedThisTurn = false;
 		}
 
 		return base.AfterPlayerTurnStart(choiceContext, player);
+	}
+
+	/// <inheritdoc/>
+	/// <remarks>
+	/// 清除「安息」的本回合锁 —— <b>必须挂在起手抽牌之前</b>。
+	///
+	/// <para>引擎的回合开始顺序是「起手抽牌 → <c>AfterPlayerTurnStart</c>」
+	/// （见 <c>CombatManager.SetupPlayerTurn</c>：先 <c>CardPileCmd.Draw</c>，再派发该钩子），
+	/// 而起手抽牌在抽牌堆空时会触发自动洗牌。若把清锁留在 <c>AfterPlayerTurnStart</c>，
+	/// 上一回合锁在墓地的牌会错过这次洗牌，导致本回合少抽牌 ——
+	/// 语义上「本回合」也应当在抽牌之前就结束。</para>
+	///
+	/// <para><c>BeforeHandDraw</c> 每个玩家回合（含额外回合）各派发一次，且早于抽牌，
+	/// 正是「上一回合的锁失效、这一回合的牌可以正常洗入抽牌堆」的分界点。</para>
+	/// </remarks>
+	public override Task BeforeHandDraw(Player player, PlayerChoiceContext choiceContext, ICombatState combatState)
+	{
+		if (player == Owner)
+		{
+			RestLockedThisTurn = false;
+		}
+
+		return base.BeforeHandDraw(player, choiceContext, combatState);
 	}
 
 	/// <summary>

@@ -90,7 +90,7 @@ public sealed class HeidemarieCardPool : CardPoolModel
 	/// （CardFactory 四处显式排除），因此列池没有副作用。
 	/// 「终焉」虽为先古牌（太古之牙淬炼专属），仍列在此供图鉴与 ModelDb 注册。
 	/// </remarks>
-	protected override CardModel[] GenerateAllCards() => new CardModel[36]
+	protected override CardModel[] GenerateAllCards() => new CardModel[54]
 	{
 		// 基础攻防
 		ModelDb.Card<HeidemarieStrike>(),
@@ -121,7 +121,7 @@ public sealed class HeidemarieCardPool : CardPoolModel
 		ModelDb.Card<HeidemarieStoreLight>(),
 		ModelDb.Card<HeidemarieFallenStar>(),
 		ModelDb.Card<HeidemarieForesee>(),
-		// 格挡 / 过牌 / 丢弃三体系补强（本轮新增 10 张）
+		// 第 1 轮：格挡 / 过牌 / 丢弃三体系补强（10 张）
 		ModelDb.Card<HeidemarieAuroraWard>(),
 		ModelDb.Card<HeidemarieVigil>(),
 		ModelDb.Card<HeidemarieFallingEdge>(),
@@ -132,6 +132,25 @@ public sealed class HeidemarieCardPool : CardPoolModel
 		ModelDb.Card<HeidemarieWallOfSwords>(),
 		ModelDb.Card<HeidemarieDaybreak>(),
 		ModelDb.Card<HeidemarieOldOath>(),
+		// 第 2 轮：减益 / 多人 / 混合补强（18 张；状态牌「骇人的记忆」进衍生池）
+		ModelDb.Card<HeidemarieLuredHand>(),
+		ModelDb.Card<HeidemarieHangedChosen>(),
+		ModelDb.Card<HeidemarieJudgement>(),
+		ModelDb.Card<HeidemarieDreamBorder>(),
+		ModelDb.Card<HeidemarieDiscardEverything>(),
+		ModelDb.Card<HeidemarieNightmareOtherSide>(),
+		ModelDb.Card<HeidemarieInnerAwakening>(),
+		ModelDb.Card<HeidemarieFacelessWoman>(),
+		ModelDb.Card<HeidemarieEmotionalOutburst>(),
+		ModelDb.Card<HeidemarieMutualAid>(),
+		ModelDb.Card<HeidemariePatchwork>(),
+		ModelDb.Card<HeidemarieOfferEdge>(),
+		ModelDb.Card<HeidemarieExpiredStar>(),
+		ModelDb.Card<HeidemarieStandReady>(),
+		ModelDb.Card<HeidemarieWhetEdge>(),
+		ModelDb.Card<HeidemarieStarfall>(),
+		ModelDb.Card<HeidemarieUnsheathe>(),
+		ModelDb.Card<HeidemarieBackToBack>(),
 		// 先古牌：由「绝响」经太古之牙淬炼而来，列池供图鉴 / ModelDb 注册
 		ModelDb.Card<HeidemarieTerminus>(),
 	};

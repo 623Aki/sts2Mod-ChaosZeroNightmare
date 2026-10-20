@@ -27,8 +27,9 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// 这段效果<strong>自己写在 <see cref="AfterCardDiscarded"/> 里</strong>，
 /// 不依赖「安息」关键字 —— 安息还附带「本回合不能移出墓地」的副作用，
 /// 而极光剑被「剑冢」从墓地重放是常规玩法，不能被自己的效果锁住。
-/// （「北极圈」升级时仍会给生成的剑挂上运行期「安息」，
-/// 那是为了拿「安息」的锁墓语义，与这里的丢弃伤害无关。）</para>
+/// （「北极圈」升级只让<strong>卡牌本体</strong>获得安息，生成的剑不带任何关键字；
+/// 将来若出现给剑挂运行期安息的来源，锁墓统一由
+/// <see cref="HeidemarieRestLock"/> 处理。）</para>
 ///
 /// <para>关键字<b>守墓</b>：洗牌时不会移动至抽牌堆，会一直留在墓地。</para>
 ///
@@ -62,6 +63,44 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 	/// <inheritdoc/>
 	/// <summary>演出档位：轻击（attack_ready → attack_play1）。动作与特效档位必须一致。</summary>
 	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackLight;
+
+	/// <summary>
+	/// 特效变体：<b>白昼或极夜任一存在时，特效升格为 u5 终结演出</b>
+	///（演出键 <c>AttackLight/u5</c>，见 <c>heidemarie_moves.json</c>）。
+	///
+	/// <para><b>为什么不换档位而用变体</b>：源数据里 <c>u5_attack_play1</c> 的
+	/// <b>身体 clip 就是 <c>attack_play1</c></b>（见 <c>源数据组库与映射.md</c> 的 command 表）——
+	/// u5 与普通攻击共用同一套身体动画，只有特效组不同。变体机制
+	/// （<see cref="HeidemarieCard.PresentationVariant"/>）正是为「同一套动作换一套特效强度」
+	/// 设计的：身体动作、触发器、命中延迟全部不变，只把特效组从「轻击_横挥」
+	/// 换成「终结_u5_play1」（target 多一层 <c>f2</c>）。</para>
+	///
+	/// <para><b>判定口径与增伤区保持一致</b>：白昼取「能力存在」，极夜取「层数 &gt; 0」
+	///（极夜是 Counter 堆叠，「砺锋」复用极夜通道时层数累加在同一实例上），
+	/// <b>任一成立即升格</b> —— 两者都是「极光剑增伤区」的输入
+	///（见 <see cref="HeidemarieAuroraDamagePoolPower.TotalPercent"/>），
+	/// 只要增伤在生效，特效就同步升格，不会出现「吃着增伤却播轻击特效」的错位。</para>
+	///
+	/// <para><b>求值时机</b>：<see cref="HeidemariePresentationCatalog.ResolveKey"/>
+	/// 在 <c>CardPlayEnqueuingEvent</c>（出牌入队）时读取，早于 <see cref="OnPlay"/>
+	/// 的伤害结算，此时白昼尚未被消耗，判定成立。</para>
+	/// </summary>
+	protected override string? PresentationVariant
+	{
+		get
+		{
+			Creature? creature = Owner?.Creature;
+			if (creature is null)
+			{
+				return null;
+			}
+
+			return creature.GetPower<HeidemarieDaylightPower>() is not null
+				|| creature.GetPowerAmount<HeidemarieNightPower>() > 0
+					? "u5"
+					: null;
+		}
+	}
 
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{

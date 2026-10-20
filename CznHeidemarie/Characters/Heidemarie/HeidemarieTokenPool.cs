@@ -57,11 +57,13 @@ public sealed class HeidemarieTokenPool : CardPoolModel
 	/// 但仍登记在本池里 —— 本池只负责让它们出现在 <c>ModelDb.AllCards</c>（控制台 / 图鉴），
 	/// 不参与任何按稀有度的抽取。</para>
 	/// </remarks>
-	protected override CardModel[] GenerateAllCards() => new CardModel[4]
+	protected override CardModel[] GenerateAllCards() => new CardModel[5]
 	{
 		ModelDb.Card<HeidemarieAuroraSword>(),
 		ModelDb.Card<HeidemarieCondensedAurora>(),
 		ModelDb.Card<HeidemarieLiberatedAurora>(),
 		ModelDb.Card<HeidemarieSwordParadise>(),
+		// 第 2 轮：状态牌，只由「噩梦的另一面」生成，不进角色卡池
+		ModelDb.Card<HeidemarieHorrificMemory>(),
 	};
 }

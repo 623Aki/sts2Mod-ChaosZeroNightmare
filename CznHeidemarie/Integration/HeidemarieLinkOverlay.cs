@@ -57,7 +57,9 @@ internal sealed partial class HeidemarieLinkOverlayRoot : Node2D
 /// </list>
 ///
 /// <para><b>挂载点与 z 序</b>：挂 <see cref="NPlayerHand"/> 自己（<c>CardHolderContainer</c> 的兄弟），
-/// 用 <see cref="OverlayZIndex"/> 压在卡牌之上 —— 手牌是大幅重叠排布的，压在下面完全看不见。</para>
+/// 用 <see cref="OverlayZIndex"/>（<b>负值</b>）压在<b>手牌之下、背景之上</b> ——
+/// 于是拖动的牌（尤其是非连接牌）会自然遮住连线段，符合视角上的前后关系；
+/// 光带拱起的部分在牌顶边之上的空白区，仍然看得见。</para>
 ///
 /// <para><b>开关</b>：需要「连接动画」（本功能自己的开关）与「战斗特效」总开关同时打开；
 /// 粒子再叠加「额外粒子」开关，与卡牌拖尾粒子同一口径。</para>
@@ -79,8 +81,20 @@ internal static class HeidemarieLinkOverlay
 	// 视觉标定（都按「卡牌显示尺寸的比例」写，换分辨率 / 换手牌缩放都不用改）
 	// ──────────────────────────────────────────────────────────────────────
 
-	/// <summary>视觉层在 <see cref="NPlayerHand"/> 下的 z（必须 &gt; 1：hover 时 holder 会置 1）。</summary>
-	private const int OverlayZIndex = 10;
+	/// <summary>
+	/// 视觉层在 <see cref="NPlayerHand"/> 下的 z：取 <b>负</b> —— 压在手牌之下、背景之上。
+	///
+	/// <para>同层邻居的真值（都来自游戏源码）：手牌 holder 常态 <c>0</c>、hover 时 <c>1</c>；
+	/// 战斗 VFX 容器 <c>-9</c>、战斗场景（背景）<c>-10</c>。所以 <c>-1</c> 正好卡在中间：
+	/// 手牌（含正在拖的那张）盖住连线，背景盖不住连线。</para>
+	///
+	/// <para><b>为什么要低于手牌</b>：连线是连接两张牌的「光带」，视角上应该被牌压住 ——
+	/// 尤其拖着一张<b>非连接牌</b>横穿过去时，那张牌挡住光带才符合前后关系；
+	/// 压在牌之上的话，光带会浮在所有卡面上，看着像贴片。</para>
+	///
+	/// <para>拱起段本来就落在牌顶边之上的空白区，压低 z 不会被自己的牌吃掉。</para>
+	/// </summary>
+	private const int OverlayZIndex = -1;
 
 	/// <summary>光带网格的曲线细分段数。</summary>
 	private const int RibbonSegments = 40;
@@ -298,8 +312,10 @@ internal static class HeidemarieLinkOverlay
 	/// <summary>
 	/// 手牌就绪时把手牌视觉层挂上去。
 	///
-	/// <para>挂 <see cref="NPlayerHand"/> 自己而不是战斗 VFX 容器（<c>CombatVfxContainer</c>）：
-	/// 后者在战斗 UI 下层（z_index 被设成 -9），挂上去连线会被手牌整个盖住。</para>
+	/// <para>挂 <see cref="NPlayerHand"/> 自己（而不是战斗 VFX 容器 <c>CombatVfxContainer</c>）：
+	/// 一是<b>坐标系</b> —— 连线端点要按 holder 的全局变换换算，挂在手牌下最省事；
+	/// 二是<b>层级</b> —— VFX 容器被游戏设成 <c>z = -9</c>（背景 <c>-10</c>），挂过去就沉到底了，
+	/// 而现在要的是「比手牌低、比背景高」，由 <see cref="OverlayZIndex"/>（<c>-1</c>）单独控制。</para>
 	/// </summary>
 	internal static void Attach(NPlayerHand hand)
 	{
@@ -336,7 +352,7 @@ internal static class HeidemarieLinkOverlay
 			_root = new HeidemarieLinkOverlayRoot
 			{
 				Name = "HeidemarieLinkOverlay",
-				// 正 z：压在卡牌之上。手牌是大幅重叠排布的，压在下面完全看不见。
+				// 负 z：压在手牌之下、背景之上 —— 拖动的牌会遮住连线段，符合前后关系。
 				ZIndex = OverlayZIndex,
 			};
 			hand.AddChild(_root, forceReadableName: false, Node.InternalMode.Disabled);
@@ -1158,9 +1174,9 @@ internal static class HeidemarieLinkOverlay
 	/// <summary>
 	/// 有没有「整屏 UI」盖在战斗界面之上（抽牌堆 / 弃牌堆 / 消耗堆 / 地图 / 各种浮层）。
 	///
-	/// <para>⚠️ 本视觉层是 <see cref="NPlayerHand"/> 的子节点、z = 10（压在手牌之上），
-	/// 和战斗 UI、手牌处在<b>同一块画布、同一个纵深区间</b>里。而整屏 UI 是普通 Control
-	/// （不设 z），只要我们不主动让位，光带就会画在它们上面 —— 就是「穿模」。</para>
+	/// <para>⚠️ 本视觉层是 <see cref="NPlayerHand"/> 的子节点（z = <see cref="OverlayZIndex"/>），
+	/// 和战斗 UI、手牌处在<b>同一块画布</b>里。整屏 UI 走的是独立画布层，
+	/// z 序跟它比不出结果，只要不主动让位，光带就会画在它们上面 —— 就是「穿模」。</para>
 	///
 	/// <para>判据沿用游戏自己的那套（<c>NOverlayStack.StackIsCovered</c> /
 	/// <c>NPlayerHand.OnHolderPressed</c>）：兜底容器在用时把光带整个收掉；

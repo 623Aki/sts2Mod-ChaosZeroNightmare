@@ -1,75 +1,58 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.ValueProps;
-
-using CznHeidemarie.Characters.Heidemarie.Presentation;
 
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
 /// <summary>
-/// 「光棱」：1 费攻击（罕见牌）。
+/// 「光棱」：1 费技能（罕见牌），<b>消耗</b>。
 ///
-/// <para>造成等同于你当前<b>格挡值</b>的伤害（不消耗格挡）。</para>
+/// <para>丢弃抽牌堆中的<b>所有</b>「极光剑」—— 被丢弃的剑照常结算「被丢弃时」的伤害，
+/// 于是本牌是「从抽牌堆预支剑伤」的消费端：不入墓地、直接消耗。</para>
 ///
-/// <para>「格挡 → 输出」的桥梁：照抄官方 <c>BodySlam</c> 的写法 ——
-/// 用 <see cref="CalculatedDamageVar"/> 的乘子读 <c>Owner.Creature.Block</c>，
-/// 因此吃格挡的一切变化（含战斗中途涨落）都会自动反映到伤害上。</para>
+/// <para>⚠️ 与「这些都不要了」同样的两个坑（见其注释）：
+/// 先 <c>ToList()</c> 快照再弃 —— 边遍历活集合边改堆会抛异常；
+/// 且必须用批量重载 <c>CardCmd.Discard(ctx, IEnumerable)</c>，循环单张会错乱丢弃类效果的时序。</para>
 /// </summary>
 public sealed class HeidemarieLightPrism : HeidemarieCard
 {
 	/// <inheritdoc/>
-	protected override string FallbackPortraitPath => "res://images/atlases/card_atlas.sprites/ironclad/strike_ironclad.tres";
+	protected override string FallbackPortraitPath => "res://images/atlases/card_atlas.sprites/ironclad/defend_ironclad.tres";
 
-	/// <inheritdoc/>
-	/// <remarks>
-	/// 三个变量是官方「计算型伤害」的固定组合（见 <c>BodySlam</c>）：
-	/// 基础值 0 + 每点乘子 1 + 乘子来源 = 当前格挡。
-	/// </remarks>
-	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(3)
-	{
-		new CalculationBaseVar(0m),
-		new ExtraDamageVar(1m),
-		new CalculatedDamageVar(ValueProp.Move)
-			.WithMultiplier((CardModel card, Creature? _) => card.Owner.Creature.Block),
-	};
-
-	/// <summary>1 费、攻击、罕见牌、目标为任意敌人。</summary>
+	/// <summary>1 费、技能、罕见牌、目标为自身、消耗。</summary>
 	public HeidemarieLightPrism()
-		: base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
+		: base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 	{
 	}
 
 	/// <inheritdoc/>
-	protected override IEnumerable<IHoverTip> ExtraCardHoverTips => new[]
+	/// <remarks>关键字<b>消耗</b>：打出即进消耗堆，永不回手、不回墓地。</remarks>
+	public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword>(1)
 	{
-		HoverTipFactory.Static(StaticHoverTip.Block),
+		CardKeyword.Exhaust,
 	};
 
 	/// <inheritdoc/>
-	/// <summary>演出档位：中击（attack_ready → attack_play2）。动作与特效档位必须一致。</summary>
-	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackMid;
-
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
-		ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
+		// 抽牌堆快照：先列全再弃 —— 边遍历活集合边改堆会抛异常（同「这些都不要了」）
+		List<CardModel> swords = PileType.Draw.GetPile(Owner).Cards
+			.Where(c => c is HeidemarieAuroraSword)
+			.ToList();
 
-		await DamageCmd.Attack(DynamicVars.CalculatedDamage)
-			.FromCard(this, cardPlay)
-			// Uncommon 1 费：中·纵劈档（Attack2）
-			.WithAttackerAnim(HeidemarieAttackPlan.Heavy.Trigger, HeidemarieAttackPlan.HitDelay(HeidemarieAttackPlan.Heavy))
-			.Targeting(cardPlay.Target)
-			.WithHitFx(VfxCmd.bluntPath)
-			.Execute(choiceContext);
+		if (swords.Count == 0)
+		{
+			return;
+		}
+
+		await CardCmd.Discard(choiceContext, swords);
 	}
 
 	/// <inheritdoc/>
+	/// <remarks>升级：减费（1 → 0）。</remarks>
 	protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }

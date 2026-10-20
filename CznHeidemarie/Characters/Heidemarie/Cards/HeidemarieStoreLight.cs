@@ -12,7 +12,7 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// <summary>
 /// 「积羽」：2 费技能（稀有牌）。
 ///
-/// <para>关键字<b>安息</b>：在弃牌堆生成 <c>Cards</c> 张极光剑。</para>
+/// <para>关键字<b>安息</b>：在抽牌堆生成 <c>Cards</c> 张极光剑。</para>
 /// <para>关键字<b>感应</b>：抽取本牌后，获得能力<b>白昼</b>，使下一张极光剑伤害 +100%。</para>
 /// </summary>
 public sealed class HeidemarieStoreLight : HeidemarieCard, IRestCard, ISenseCard
@@ -43,7 +43,7 @@ public sealed class HeidemarieStoreLight : HeidemarieCard, IRestCard, ISenseCard
 		=> Generate(choiceContext);
 
 	private Task Generate(PlayerChoiceContext choiceContext)
-		=> HeidemarieCardActions.GenerateAuroraSwords(this, choiceContext, DynamicVars.Cards.IntValue, PileType.Discard);
+		=> HeidemarieCardActions.GenerateAuroraSwords(this, choiceContext, DynamicVars.Cards.IntValue, PileType.Draw);
 
 	/// <inheritdoc/>
 	public async Task OnSense(PlayerChoiceContext choiceContext)

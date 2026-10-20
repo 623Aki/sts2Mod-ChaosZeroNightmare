@@ -1,0 +1,34 @@
+{
+  "POLEMICA.name": "Polemica",
+
+  "POLEMICA.moves.BROOD_CALL.title": "Legion Call",
+  "POLEMICA.moves.LEGION_CHARGE.title": "Legion Charge",
+  "POLEMICA.moves.SOLO_STRIKE.title": "Leader's Strike",
+  "POLEMICA.moves.REBROOD.title": "Full Relieving",
+  "POLEMICA.moves.SHELL.title": "Carapace Bulwark",
+  "POLEMICA.moves.ELITE_HATCH.title": "Elite Hatch",
+  "POLEMICA.moves.ELITE_REBROOD.title": "Elite Relieving",
+  "POLEMICA.moves.SECOND_WIND_CHARGE.title": "Deathbed Charge",
+  "POLEMICA.moves.FINAL_STRIKE.title": "Final Thrust",
+
+  "POLEMICA_LEGION_SOLDIER.name": "Legion Soldier Ant",
+  "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_RALLY.title": "Rallying Sting",
+  "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_HARASS.title": "Bite",
+
+  "POLEMICA_LEGION_SHIELD.name": "Legion Shield Ant",
+  "POLEMICA_LEGION_SHIELD.moves.SHIELD_STRIKE.title": "Horn Bash",
+  "POLEMICA_LEGION_SHIELD.moves.SHIELD_COVER.title": "Cover",
+
+  "POLEMICA_ROCK_SHELL_INSECT.name": "Rock Shell Insect",
+  "POLEMICA_ROCK_SHELL_INSECT.moves.ROCK_CRUSH.title": "Rock Crusher",
+  "POLEMICA_ROCK_SHELL_INSECT.moves.ROCK_HARDEN.title": "Carapace Harden",
+  "POLEMICA_ROCK_SHELL_INSECT.moves.ROCK_GUARD.title": "Carapace Guard",
+
+  "POLEMICA_WING_SHELL_INSECT.name": "Wing Shell Insect",
+  "POLEMICA_WING_SHELL_INSECT.moves.WING_DIVE.title": "Wing Dive",
+  "POLEMICA_WING_SHELL_INSECT.moves.WING_GUARD.title": "Wing Guard",
+
+  "POLEMICA_SHELL_INSECT.name": "Shell Insect",
+  "POLEMICA_SHELL_INSECT.moves.SHELL_BITE.title": "Carapace Bite",
+  "POLEMICA_SHELL_INSECT.moves.SHELL_GUARD.title": "Carapace Guard"
+}
