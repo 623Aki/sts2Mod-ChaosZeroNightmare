@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CznMonster.Content.Audio;
 using MegaCrit.Sts2.Core.Animation;
@@ -8,8 +10,10 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Ascension;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.MonsterMoves;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
@@ -19,7 +23,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace CznMonster.Content.Monsters;
 
 /// <summary>
-/// 岩壳虫（CZN 1001019）：碎岩重击（2 层脆弱）/ 岩壳硬化（+4 力量 + 弃光手牌）/
+/// 岩壳虫（CZN 1001019）：碎岩重击（18 伤害 + 2 层虚弱）/ 岩壳硬化（+4 力量 + 抽牌堆最高稀有度 1 张牌进弃牌堆）/
 /// 岩壳防御（9 伤害 + 15 格挡）。
 /// </summary>
 public sealed class PolemicaRockShellInsect : PolemicaAddMonster
@@ -35,6 +39,18 @@ public sealed class PolemicaRockShellInsect : PolemicaAddMonster
 
 	private int StrengthGain =>
 		AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 4, 4);
+
+	/// <summary>
+	/// 岩壳硬化的取牌优先级：从高稀有度到低依次尝试，取第一个非空的档位。
+	/// 最后一条为兜底，保证抽牌堆非空时一定能选出 1 张（诅咒/状态等也在此档）。
+	/// </summary>
+	private static readonly Func<CardModel, bool>[] RarityPriorities =
+	{
+		c => c.Rarity is CardRarity.Rare or CardRarity.Ancient,
+		c => c.Rarity == CardRarity.Uncommon,
+		c => c.Rarity == CardRarity.Common,
+		_ => true,
+	};
 
 	/// <inheritdoc />
 	public override int MinInitialHp =>
@@ -81,7 +97,8 @@ public sealed class PolemicaRockShellInsect : PolemicaAddMonster
 			.WithHitFx("vfx/vfx_attack_blunt")
 			.Execute(null);
 
-		await PowerCmd.Apply<FrailPower>(
+		// 碎岩重击：2 层虚弱
+		await PowerCmd.Apply<WeakPower>(
 			new ThrowingPlayerChoiceContext(), targets, 2m, Creature, null);
 	}
 
@@ -92,14 +109,46 @@ public sealed class PolemicaRockShellInsect : PolemicaAddMonster
 		await PowerCmd.Apply<StrengthPower>(
 			new ThrowingPlayerChoiceContext(), Creature, StrengthGain, Creature, null);
 
-		// 原始 CARD_MOVE_TO(CARD_SET_ALL → DISCARD)：弃置每个玩家的全部手牌
+		// 原始 CARD_MOVE_TO(CARD_SET_HIGHEST_RARITY → DISCARD)：
+		// 每个玩家的抽牌堆中挑 1 张稀有度最高的牌，移入弃牌堆
 		foreach (Creature target in targets)
 		{
-			if (target.Player is { } player)
+			// 宠物/召唤物的归属者也要处理：先取 Player，没有则取 PetOwner
+			Player? player = target.Player ?? target.PetOwner;
+			if (player == null)
 			{
-				await CardCmd.Discard(
-					new ThrowingPlayerChoiceContext(), PileType.Hand.GetPile(player).Cards);
+				continue;
 			}
+
+			List<CardModel> drawPile = PileType.Draw.GetPile(player).Cards.ToList();
+			if (drawPile.Count == 0)
+			{
+				continue;
+			}
+
+			// 参照原版 ThievingHopper._stealPriorities：从高到低依次尝试档位，
+			// 取第一个有结果的档位；最后一条为兜底，保证抽牌堆非空时必有候选
+			List<CardModel> candidates = drawPile;
+			foreach (Func<CardModel, bool> priority in RarityPriorities)
+			{
+				List<CardModel> filtered = drawPile.Where(priority).ToList();
+				if (filtered.Count > 0)
+				{
+					candidates = filtered;
+					break;
+				}
+			}
+
+			// 使用怪物自己的战斗抽牌随机流（与原版怪物一致，联机同源）
+			CardModel? chosen = RunRng.CombatCardGeneration.NextItem(candidates);
+			if (chosen == null)
+			{
+				continue;
+			}
+
+			// 抽牌堆属于隐藏信息：丢弃时给出预览，让玩家看清是哪张牌
+			CardPileAddResult result = await CardPileCmd.Add(chosen, PileType.Discard);
+			CardCmd.PreviewCardPileAdd(result);
 		}
 	}
 

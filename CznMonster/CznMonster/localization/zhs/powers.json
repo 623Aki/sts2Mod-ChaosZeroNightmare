@@ -3,5 +3,8 @@
   "CZN_ACTION_COUNT_POWER.description": "玩家每打出 {Amount} 张牌，此生物立刻行动一次。",
 
   "POLEMICA_BROOD_POWER.title": "孵化仪式",
-  "POLEMICA_BROOD_POWER.description": "波勒米卡每行动一次，此计数 +1。达到 3 时，它的下一次行动将处决全部召唤物并召唤新的一波。"
+  "POLEMICA_BROOD_POWER.description": "波勒米卡每行动一次，此计数 +1。达到 3 时，它的下一次行动将处决全部召唤物并召唤新的一波。",
+
+  "SERAPHION_HALF_DEATH_POWER.title": "濒死不灭",
+  "SERAPHION_HALF_DEATH_POWER.description": "只要阿克鲁斯存活，塞拉菲翁的生命就无法降到 0：生命流失在触底时被拦截至 1 点，且此后陷入濒死、不再作为可选目标。阿克鲁斯的救援颂歌可以拉起它；阿克鲁斯死亡时，濒死的塞拉菲翁随之消亡。"
 }

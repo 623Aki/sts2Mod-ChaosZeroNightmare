@@ -26,7 +26,7 @@
   "HEIDEMARIE_FINAL_ECHO.description": "{KwBlock}对全体敌人造成{Damage:diff()}点伤害。",
 
   "HEIDEMARIE_TERMINUS.title": "终焉",
-  "HEIDEMARIE_TERMINUS.description": "{KwBlock}对全体敌人造成{Damage:diff()}点伤害。若手牌中存在解放极光，则将其消耗，此时弃牌堆中每有1张极光剑，即可使伤害量+100%。\n本场战斗，任何人每[gold]消耗[/gold]过一张牌，这张牌的{energyPrefix:energyIcons(1)}费用减少1。",
+  "HEIDEMARIE_TERMINUS.description": "{KwBlock}对全体敌人造成{Damage:diff()}点伤害。若手牌中存在解放极光，则将其消耗，此时弃牌堆中每有1张极光剑，即可使伤害量+100%。\n本场战斗，任何人每[gold]消耗[/gold]过一张牌，这张牌的{energyPrefix:energyIcons(1)}费用减少1（打出后恢复）。",
 
   "HEIDEMARIE_CONDENSED_AURORA.title": "凝聚极光",
   "HEIDEMARIE_CONDENSED_AURORA.description": "{KwBlock}移动至弃牌堆时，[gold]极光之光[/gold]1。",

@@ -11,11 +11,27 @@
   "POLEMICA.moves.SECOND_WIND_CHARGE.title": "Deathbed Charge",
   "POLEMICA.moves.FINAL_STRIKE.title": "Final Thrust",
 
-  "POLEMICA_LEGION_SOLDIER.name": "Legion Soldier Ant",
+  "SERAPHION.name": "Seraphion",
+  "SERAPHION.moves.SOVEREIGN_UPRISING.title": "Sovereign Uprising",
+  "SERAPHION.moves.SOVEREIGN_BITE.title": "Twin Fang Bite",
+  "SERAPHION.moves.FINALE_CYCLONE.title": "Finale Cyclone",
+  "SERAPHION.moves.REVIVAL.title": "Revival Recovery",
+  "SERAPHION.moves.FINALE_OPEN.title": "Radiant Surge",
+  "SERAPHION.moves.FINALE_LOOP.title": "Finale Quartet",
+  "SERAPHION.moves.FADING.title": "Dying Shell",
+
+  "ARKRUS.name": "Arkrus",
+  "ARKRUS.moves.GUARD_WARD.title": "Sanctuary",
+  "ARKRUS.moves.GUARD_ASSAULT.title": "Guarding Assault",
+  "ARKRUS.moves.RESCUE_STRIKE.title": "Rescue Thrust",
+  "ARKRUS.moves.RESCUE_CURSE.title": "Rescue Hex",
+  "ARKRUS.moves.RESCUE_SONG.title": "Rescue Hymn",
+
+  "POLEMICA_LEGION_SOLDIER.name": "Unbroken Kulerti",
   "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_RALLY.title": "Rallying Sting",
   "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_HARASS.title": "Bite",
 
-  "POLEMICA_LEGION_SHIELD.name": "Legion Shield Ant",
+  "POLEMICA_LEGION_SHIELD.name": "Armored Kulerti",
   "POLEMICA_LEGION_SHIELD.moves.SHIELD_STRIKE.title": "Horn Bash",
   "POLEMICA_LEGION_SHIELD.moves.SHIELD_COVER.title": "Cover",
 

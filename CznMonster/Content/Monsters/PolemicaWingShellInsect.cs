@@ -18,7 +18,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace CznMonster.Content.Monsters;
 
 /// <summary>
-/// 翼壳虫（CZN 1001018）：翼击（2 层易伤）/ 翼壳防御（9 伤害 + 15 格挡）。
+/// 翼壳虫（CZN 1001018）：翼击（18 伤害 + 2 层脆弱）/ 翼壳防御（9 伤害 + 15 格挡）。
 /// </summary>
 public sealed class PolemicaWingShellInsect : PolemicaAddMonster
 {
@@ -72,7 +72,8 @@ public sealed class PolemicaWingShellInsect : PolemicaAddMonster
 			.WithHitFx("vfx/vfx_attack_slash")
 			.Execute(null);
 
-		await PowerCmd.Apply<VulnerablePower>(
+		// 翼击：2 层脆弱
+		await PowerCmd.Apply<FrailPower>(
 			new ThrowingPlayerChoiceContext(), targets, 2m, Creature, null);
 	}
 

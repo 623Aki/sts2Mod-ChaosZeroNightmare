@@ -11,11 +11,27 @@
   "POLEMICA.moves.SECOND_WIND_CHARGE.title": "垂死冲锋",
   "POLEMICA.moves.FINAL_STRIKE.title": "终局突刺",
 
-  "POLEMICA_LEGION_SOLDIER.name": "军团兵蚁",
+  "SERAPHION.name": "塞拉菲翁",
+  "SERAPHION.moves.SOVEREIGN_UPRISING.title": "主之威仪",
+  "SERAPHION.moves.SOVEREIGN_BITE.title": "双牙撕咬",
+  "SERAPHION.moves.FINALE_CYCLONE.title": "终焉回旋",
+  "SERAPHION.moves.REVIVAL.title": "复归回稳",
+  "SERAPHION.moves.FINALE_OPEN.title": "光耀增幅",
+  "SERAPHION.moves.FINALE_LOOP.title": "终焉四连",
+  "SERAPHION.moves.FADING.title": "濒死之躯",
+
+  "ARKRUS.name": "阿克鲁斯",
+  "ARKRUS.moves.GUARD_WARD.title": "庇护",
+  "ARKRUS.moves.GUARD_ASSAULT.title": "守护突进",
+  "ARKRUS.moves.RESCUE_STRIKE.title": "救援突刺",
+  "ARKRUS.moves.RESCUE_CURSE.title": "救援咒缚",
+  "ARKRUS.moves.RESCUE_SONG.title": "救援颂歌",
+
+  "POLEMICA_LEGION_SOLDIER.name": "不屈的库勒提",
   "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_RALLY.title": "战吼突刺",
   "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_HARASS.title": "撕咬",
 
-  "POLEMICA_LEGION_SHIELD.name": "军团盾蚁",
+  "POLEMICA_LEGION_SHIELD.name": "装甲库勒提",
   "POLEMICA_LEGION_SHIELD.moves.SHIELD_STRIKE.title": "撞角",
   "POLEMICA_LEGION_SHIELD.moves.SHIELD_COVER.title": "掩护",
 

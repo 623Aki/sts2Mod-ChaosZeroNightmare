@@ -29,7 +29,9 @@ internal static class CznMonsterPlaySfxPatch
 	}
 }
 
-/// <summary>死亡音效入口：<c>SfxCmd.PlayDeath</c> 绕过了 <c>Play</c>，单独接管。</summary>
+/// <summary>死亡音效入口：<c>SfxCmd.PlayDeath</c> 绕过了 <c>Play</c>，单独接管。
+/// 这里走 <see cref="MonsterModel.DeathSfx"/> 而不是固定 clip，让模型可以按形态
+/// 换死亡采样（塞拉菲翁濒死 → <c>death_fading</c>，阿克鲁斯救援形态 → <c>death_rescue</c>）。</summary>
 [HarmonyPatch(typeof(SfxCmd), nameof(SfxCmd.PlayDeath), new[] { typeof(MonsterModel) })]
 internal static class CznMonsterDeathSfxPatch
 {
@@ -40,7 +42,7 @@ internal static class CznMonsterDeathSfxPatch
 			return true;
 		}
 
-		CznMonsterSfx.Play(monster!, "death");
+		CznMonsterSfx.TryPlayPlaceholder(monster!.DeathSfx, 1f);
 		return false;
 	}
 }

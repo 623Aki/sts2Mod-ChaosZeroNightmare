@@ -18,7 +18,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace CznMonster.Content.Monsters;
 
 /// <summary>
-/// 壳虫（CZN 1001004）：甲壳撕咬（2 层虚弱）/ 甲壳防御（9 伤害 + 15 格挡）。
+/// 壳虫（CZN 1001004）：甲壳撕咬（18 伤害 + 2 层易伤）/ 甲壳防御（9 伤害 + 15 格挡）。
 /// </summary>
 public sealed class PolemicaShellInsect : PolemicaAddMonster
 {
@@ -72,7 +72,8 @@ public sealed class PolemicaShellInsect : PolemicaAddMonster
 			.WithHitFx("vfx/vfx_attack_blunt")
 			.Execute(null);
 
-		await PowerCmd.Apply<WeakPower>(
+		// 甲壳撕咬：2 层易伤
+		await PowerCmd.Apply<VulnerablePower>(
 			new ThrowingPlayerChoiceContext(), targets, 2m, Creature, null);
 	}
 

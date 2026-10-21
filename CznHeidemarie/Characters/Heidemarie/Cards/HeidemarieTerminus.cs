@@ -32,9 +32,12 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// 「极光剑」，本次伤害 +100%（百分点注入 <see cref="HeidemarieDamagePercentPower"/> 增伤池，
 /// 与剑光等其他百分比增伤<strong>相加</strong>）。</para>
 ///
-/// <para><b>消耗减费</b>（实现参考原版卡牌「午夜」<c>Midnight</c>）：本场战斗中，
-/// <strong>任何人</strong>每消耗过一张牌，本牌费用 -1（<c>EnergyCost.AddThisCombat</c>，
-/// 战斗结束自动还原）。因本牌带<b>保留</b>，减费可跨回合累积。</para>
+/// <para><b>消耗减费</b>（口径与「过期的星星」一致）：本场战斗中，
+/// <strong>任何人</strong>每消耗过一张牌，本牌费用 -1
+/// （<c>EnergyCost.AddUntilPlayed(-1, reduceOnly: true)</c>）；
+/// <b>打出后费用恢复原值</b>（引擎在 <c>AfterCardPlayedCleanup</c> 清掉 WhenPlayed 层），
+/// 之后重新按消耗次数累计。因本牌带<b>保留</b>，减费可跨回合累积，
+/// 但不会像旧实现（<c>AddThisCombat</c>）那样「减下去就永久不恢复」。</para>
 ///
 /// <para>演出走骨架的重·斩击档（<c>U1Attack</c>）。卡面为动态立绘（素材
 /// <c>unique_30093_01.skel</c>，参考「解放极光」），由
@@ -109,13 +112,19 @@ public sealed class HeidemarieTerminus : HeidemarieCard, ITerminateCard, IUnique
 	/// 午夜（<c>Midnight</c>）同款的「补历史」：本牌中途进入战斗时
 	/// （淬炼生成 / 洗入手牌等），按此前已发生的消耗次数一次性减费，
 	/// 保证费用与战斗历史同步。复制品（IsClone）不参与。
+	///
+	/// <para>与「过期的星星」同一口径：走 <c>AddUntilPlayed</c>，
+	/// 这笔补历史同样会在**打出后**被清掉（恢复原值），不会变成永久减费。</para>
 	/// </remarks>
 	public override Task AfterCardEnteredCombat(CardModel card)
 	{
 		if (card == this && !IsClone)
 		{
 			int amount = CombatManager.Instance.History.Entries.OfType<CardExhaustedEntry>().Count();
-			EnergyCost.AddThisCombat(-amount);
+			if (amount > 0)
+			{
+				EnergyCost.AddUntilPlayed(-amount, reduceOnly: true);
+			}
 		}
 
 		return base.AfterCardEnteredCombat(card);
@@ -123,14 +132,28 @@ public sealed class HeidemarieTerminus : HeidemarieCard, ITerminateCard, IUnique
 
 	/// <inheritdoc/>
 	/// <remarks>
-	/// 午夜（<c>Midnight</c>）同款的减费钩子：本场战斗中任何人每消耗一张牌，
-	/// 本牌费用 -1。<b>不判断 <c>card != this</c></b> —— 与午夜一致，
+	/// 减费钩子：本场战斗中任何人每消耗一张牌，本牌费用 -1。
+	/// <b>不判断 <c>card != this</c></b> —— 与午夜一致，
 	/// 消耗任何牌（含本牌、含其他角色的牌）都计数。
-	/// 基类的「焚烧」派发逻辑照常走（本牌不是焚烧牌，实际为空走）。
+	///
+	/// <para><b>为什么用 <c>AddUntilPlayed</c> 而不是 <c>AddThisCombat</c></b>
+	/// （与「过期的星星」一致）：</para>
+	/// <list type="bullet">
+	///   <item>相对 -1、<c>reduceOnly</c> 只在能降低当前费用时生效（0 封底）；</item>
+	///   <item>打出本牌后由引擎 <c>AfterCardPlayedCleanup</c> 清空 WhenPlayed 层，
+	///   费用恢复原值，之后再重新累计 —— 旧实现是永久减费，打出后还在继续便宜。</item>
+	/// </list>
+	///
+	/// <para>基类的「焚烧」派发逻辑照常走（本牌不是焚烧牌，实际为空走）。</para>
 	/// </remarks>
 	public override async Task AfterCardExhausted(PlayerChoiceContext choiceContext, CardModel card, bool causedByEthereal)
 	{
-		EnergyCost.AddThisCombat(-1);
+		// 已经减到 0 就不用再叠层：避免战斗中堆出几十层无效修正。
+		if (EnergyCost.GetWithModifiers(CostModifiers.All) > 0)
+		{
+			EnergyCost.AddUntilPlayed(-1, reduceOnly: true);
+		}
+
 		await base.AfterCardExhausted(choiceContext, card, causedByEthereal);
 	}
 

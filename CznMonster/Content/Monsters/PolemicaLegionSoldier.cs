@@ -17,7 +17,7 @@ using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
 namespace CznMonster.Content.Monsters;
 
 /// <summary>
-/// 军团兵蚁（CZN 1001009）：60% 战吼突刺（全体己方 +1 力量）/ 40% 撕咬（1 层易伤）。
+/// 不屈的库勒提（CZN 1001009）：60% 战吼突刺（全体己方 +1 力量）/ 40% 撕咬（1 层易伤）。
 /// </summary>
 public sealed class PolemicaLegionSoldier : PolemicaAddMonster
 {
@@ -86,7 +86,7 @@ public sealed class PolemicaLegionSoldier : PolemicaAddMonster
 	public override CreatureAnimator GenerateAnimator(MegaSprite controller)
 	{
 		AnimState idle = new("normal_idle", isLooping: true);
-		// 兵蚁只有被召唤出场，登场用 normal_summon（1.57 s）；进入房间的 normal_enter 不作初始状态
+		// 不屈的库勒提只有被召唤出场，登场用 normal_summon（1.57 s）；进入房间的 normal_enter 不作初始状态
 		AnimState summon = new("normal_summon") { NextState = idle };
 		AnimState hit = new("normal_hit") { NextState = idle };
 		AnimState groggy = new("normal_groggy") { NextState = idle };

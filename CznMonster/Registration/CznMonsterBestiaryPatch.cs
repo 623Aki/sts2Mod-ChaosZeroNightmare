@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using CznMonster.Content;
 using CznMonster.Content.Encounters;
 using CznMonster.Settings;
 using Godot;
@@ -88,12 +89,15 @@ internal static class CznMonsterBestiaryPatch
 		bestiaryList.AddChildSafely(
 			NBestiaryLabelDivider.Create(new LocString("bestiary", SectionLocKey)));
 
-		// 6 只 CZN 怪：首领 + 5 只召唤物，同表一个遭遇（Boss），条目按 RoomType 排序
+		// 8 只 CZN 怪：波勒米卡组（boss + 5 召唤物）+ 塞拉菲翁双怪组（boss + 同伴），
+		// 条目按遭遇分组、以 RoomType 区分
 		List<BestiaryEntry> entries = new();
-		EncounterModel boss = ModelDb.Encounter<PolemicaBoss>();
-		foreach (MonsterModel monster in boss.AllPossibleMonsters)
+		foreach (EncounterModel boss in MonsterContent.BossEncounters)
 		{
-			entries.Add(BestiaryEntry.FromMonster(monster, boss, boss.RoomType));
+			foreach (MonsterModel monster in boss.AllPossibleMonsters)
+			{
+				entries.Add(BestiaryEntry.FromMonster(monster, boss, boss.RoomType));
+			}
 		}
 
 		if (entries.Count == 0)

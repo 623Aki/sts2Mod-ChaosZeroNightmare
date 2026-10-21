@@ -112,6 +112,12 @@ public sealed class HeidemarieSwordParadise : HeidemarieCard
 			return;
 		}
 
+		// 语音 / 终结挥击音的去重锚点：本牌逐敌循环会发多条攻击指令，
+		// 每个敌人都会触发一次 U3Attack。把「本次出牌是哪张牌」钉在结算起点，
+		// 音频层就不必依赖 UI 的出牌事件是否走到 —— 关掉全屏演出时正是靠它，
+		// 保证 u3 台词与 4 秒长的 u3 挥击音都只响一次，不会按敌人数重读。
+		HeidemarieCombatAudio.BeginCardPlay(this);
+
 		// 先取快照：攻击过程中敌人会死，边打边遍历会漏。
 		List<Creature> enemies = combatState.HittableEnemies.ToList();
 

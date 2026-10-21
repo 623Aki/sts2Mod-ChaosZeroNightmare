@@ -150,7 +150,7 @@ public sealed class Polemica : MonsterModel
 
 	// ── 行为实现 ──
 
-	/// <summary>军团召集：补满第一波（兵蚁×2 + 盾蚁×1），仪式 +1。</summary>
+	/// <summary>军团召集：补满第一波（不屈的库勒提 ×2 + 装甲库勒提 ×1），仪式 +1。</summary>
 	private async Task BroodCallMove(IReadOnlyList<Creature> targets)
 	{
 		await CreatureCmd.TriggerAnim(Creature, "Summon", 2.43f);

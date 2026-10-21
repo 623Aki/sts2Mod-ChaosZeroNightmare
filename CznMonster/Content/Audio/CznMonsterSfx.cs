@@ -24,15 +24,18 @@ namespace CznMonster.Content.Audio;
 /// 解析成真实采样并吞掉原调用 —— 既不会去解析不存在的 FMOD 事件，也保持零侵入。</para>
 ///
 /// <para><b>播放器生命周期</b>：跟着 <see cref="NCombatRoom"/> 走，离房即失效；
-/// 不做节点池。战斗开始（且首领是 CZN 首领）时把 28 条采样一次性预热进缓存。</para>
+/// 不做节点池。战斗开始（且首领是 CZN 首领）时把采样表里的全部采样一次性预热进缓存。</para>
 /// </summary>
 internal static class CznMonsterSfx
 {
 	/// <summary>占位事件路径前缀；<c>SfxCmd.Play</c> 补丁按它识别并接管。</summary>
 	public const string PlaceholderPrefix = "event:/sfx/enemy/enemy_attacks/cznmonster/";
 
-	/// <summary>本 mod 音频根目录（与 pck 内路径一致）。</summary>
+	/// <summary>本 mod 的波勒米卡组音频根目录（与 pck 内路径一致）。</summary>
 	private const string AudioRoot = "res://CznMonster/audio/sfx/polemica/";
+
+	/// <summary>塞拉菲翁／阿克鲁斯（Diallos 双怪组）音频根目录。</summary>
+	private const string DiallosRoot = "res://CznMonster/audio/sfx/diallos/";
 
 	/// <summary>游戏自带的音效总线名。</summary>
 	private const string SfxBus = "SFX";
@@ -75,17 +78,17 @@ internal static class CznMonsterSfx
 				},
 			},
 
-			// ── 军团兵蚁 1001009（3 条：enter / skill1 / skill2）──
+			// ── 不屈的库勒提 1001009（3 条：enter / skill1 / skill2）──
 			["POLEMICA_LEGION_SOLDIER"] = new(StringComparer.OrdinalIgnoreCase)
 			{
-				// 兵蚁只有 enter 采样；登场动画用 normal_summon，这里复用 enter 采样。
+				// 不屈的库勒提只有 enter 采样；登场动画用 normal_summon，这里复用 enter 采样。
 				["enter"] = new[] { "1001009/se_coorte_normal_enter.ogg" },
 				["summon"] = new[] { "1001009/se_coorte_normal_enter.ogg" },
 				["skill1"] = new[] { "1001009/se_coorte_normal_skill1.ogg" },   // 战吼突刺
 				["skill2"] = new[] { "1001009/se_coorte_normal_skill2.ogg" },   // 撕咬
 			},
 
-			// ── 军团盾蚁 1001010（3 条：enter / skill1 / skill2）──
+			// ── 装甲库勒提 1001010（3 条：enter / skill1 / skill2）──
 			["POLEMICA_LEGION_SHIELD"] = new(StringComparer.OrdinalIgnoreCase)
 			{
 				["enter"] = new[] { "1001010/se_armored_coorte_normal_enter.ogg" },
@@ -119,6 +122,64 @@ internal static class CznMonsterSfx
 				["skill1"] = new[] { "1001004/se_shell_insect_normal_skill1.ogg" },   // 甲壳撕咬
 				["skill2"] = new[] { "1001004/se_shell_insect_normal_skill2.ogg" },   // 甲壳防御
 				["fatal"] = new[] { "1001004/se_1001004_normal_fatal.ogg" },
+			},
+
+			// ── 塞拉菲翁 1003017（bank 24 条；本表只挂用到的 13 条，采样名以 bank 导出实测为准）──
+			["SERAPHION"] = new(StringComparer.OrdinalIgnoreCase)
+			{
+				// se_seraphion_normal_enter：登场
+				["enter"] = new[] { "1003017/se_seraphion_normal_enter.ogg" },
+				// se_seraphion_normal_attack_play1：双牙撕咬（normal_attack_play1）
+				["bite"] = new[] { "1003017/se_seraphion_normal_attack_play1.ogg" },
+				// se_seraphion_normal_attack_play2：终焉回旋（normal_attack_play2）
+				["cyclone"] = new[] { "1003017/se_seraphion_normal_attack_play2.ogg" },
+				// se_seraphion_stance2_buff_1：光耀增幅（stance2_buff_1）
+				["finalebuff"] = new[] { "1003017/se_seraphion_stance2_buff_1.ogg" },
+				// se_seraphion_stance2_attack_play1：终焉四连（stance2_attack_play1）
+				["finalquad"] = new[] { "1003017/se_seraphion_stance2_attack_play1.ogg" },
+				// se_seraphion_stance3_to_normal：复归拍 ① 起身（无濒死入场采样：bank 无 normal_to_stance3，T15 静音）
+				["revival"] = new[] { "1003017/se_seraphion_stance3_to_normal.ogg" },
+				// se_seraphion_normal_to_stance1：复归拍 ② 切持盾形态
+				["toshield"] = new[] { "1003017/se_seraphion_normal_to_stance1.ogg" },
+				// se_seraphion_stance1_attack_play1：回稳三连（stance1_attack_play1）
+				["shieldstance"] = new[] { "1003017/se_seraphion_stance1_attack_play1.ogg" },
+				// se_seraphion_stance1_to_normal：退出持盾形态回 P1
+				["tonormal"] = new[] { "1003017/se_seraphion_stance1_to_normal.ogg" },
+				// se_1003017_normal_death：普通死亡
+				["death"] = new[] { "1003017/se_1003017_normal_death.ogg" },
+				// se_1003017_stance3_death：濒死形态被伴生真死（T9）
+				["death_fading"] = new[] { "1003017/se_1003017_stance3_death.ogg" },
+				// se_1003017_normal_hit：受击
+				["hurt"] = new[] { "1003017/se_1003017_normal_hit.ogg" },
+				// se_1003017_normal_fatal：处决（占位保留，本组当前未使用全屏处决）
+				["fatal"] = new[] { "1003017/se_1003017_normal_fatal.ogg" },
+			},
+
+			// ── 阿克鲁斯 1003016（bank 12 条；用 11 条；无受击采样，T15 不发声）──
+			["ARKRUS"] = new(StringComparer.OrdinalIgnoreCase)
+			{
+				// se_arkrus_normal_enter：登场
+				["enter"] = new[] { "1003016/se_arkrus_normal_enter.ogg" },
+				// se_arkrus_normal_buff_1：庇护（normal_buff_1）
+				["ward"] = new[] { "1003016/se_arkrus_normal_buff_1.ogg" },
+				// se_arkrus_normal_attack_play1：守护突进（normal_attack_play1）
+				["assault"] = new[] { "1003016/se_arkrus_normal_attack_play1.ogg" },
+				// se_arkrus_normal_to_stance1：入救援形态
+				["torescue"] = new[] { "1003016/se_arkrus_normal_to_stance1.ogg" },
+				// se_arkrus_stance1_m_attack_01：救援突刺
+				["rescuestrike"] = new[] { "1003016/se_arkrus_stance1_m_attack_01.ogg" },
+				// se_arkrus_stance1_debuff_1：救援咒缚
+				["rescuecurse"] = new[] { "1003016/se_arkrus_stance1_debuff_1.ogg" },
+				// se_arkrus_stance1_unique_1：救援颂歌
+				["rescuesong"] = new[] { "1003016/se_arkrus_stance1_unique_1.ogg" },
+				// se_arkrus_stance1_to_normal：退出救援形态
+				["toguard"] = new[] { "1003016/se_arkrus_stance1_to_normal.ogg" },
+				// se_1003016_normal_death：普通死亡
+				["death"] = new[] { "1003016/se_1003016_normal_death.ogg" },
+				// se_1003016_stance1_death：救援形态死亡
+				["death_rescue"] = new[] { "1003016/se_1003016_stance1_death.ogg" },
+				// se_1003016_normal_fatal：处决（占位保留）
+				["fatal"] = new[] { "1003016/se_1003016_normal_fatal.ogg" },
 			},
 		};
 
@@ -161,19 +222,28 @@ internal static class CznMonsterSfx
 		}
 	}
 
-	/// <summary>把采样表里的 28 条 ogg 全部读进缓存（不进战斗也能安全调用）。</summary>
+	/// <summary>把采样表里的全部 ogg 读进缓存（不进战斗也能安全调用）。</summary>
 	public static void Prewarm()
 	{
-		foreach (Dictionary<string, string[]> byClip in Clips.Values)
+		foreach (KeyValuePair<string, Dictionary<string, string[]>> group in Clips)
 		{
-			foreach (string[] files in byClip.Values)
+			foreach (string[] files in group.Value.Values)
 			{
 				foreach (string file in files)
 				{
-					GetStream(AudioRoot + file);
+					GetStream(RootFor(group.Key) + file);
 				}
 			}
 		}
+	}
+
+	/// <summary>按 entry 选音频根：塞拉菲翁／阿克鲁斯走 Diallos 组，其余走波勒米卡组。</summary>
+	private static string RootFor(string entry)
+	{
+		return entry.Equals("SERAPHION", StringComparison.OrdinalIgnoreCase)
+			|| entry.Equals("ARKRUS", StringComparison.OrdinalIgnoreCase)
+			? DiallosRoot
+			: AudioRoot;
 	}
 
 	/// <summary>这个怪物是否由本类接管声音。</summary>
@@ -199,7 +269,7 @@ internal static class CznMonsterSfx
 		}
 
 		string file = files.Length == 1 ? files[0] : files[Random.Shared.Next(files.Length)];
-		PlayFile(AudioRoot + file, volume);
+		PlayFile(RootFor(entry) + file, volume);
 	}
 
 	/// <summary>播放一个绝对 <c>res://</c> 路径的采样。</summary>

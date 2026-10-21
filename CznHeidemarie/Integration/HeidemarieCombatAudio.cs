@@ -136,9 +136,21 @@ internal static class HeidemarieCombatAudio
 	/// 本次出牌已播过语音的「牌 Id + 触发器」键。
 	/// AoE 逐敌攻击（如「剑之乐园」对 3 个敌人发 3 条 AttackCommand）会走到
 	/// 3 次 <c>CreatureCmd.TriggerAnim</c>，语音按此去重，保证一次出牌只响一句；
-	/// 挥击音效不去重 —— 原生演出下每一击都是真实可见的挥击，按段数响。
+	/// 普通攻击档的挥击音效不去重 —— 原生演出下每一击都是真实可见的挥击，按段数响。
 	/// </summary>
 	private static readonly HashSet<string> VoicedAttackKeys = new(StringComparer.Ordinal);
+
+	/// <summary>
+	/// 本次出牌已播过「终结档回退挥击音」的「牌 Id + 触发器」键。
+	///
+	/// <para><b>为什么终结档要单独去重</b>：<c>U3Attack</c> / <c>GAttack</c> / <c>XAttack</c>
+	/// 关掉全屏演出后回退到 u3 单体档，对应的 <c>se_30093_u3_attack_play</c> 是一整段
+	/// 约 4 秒的终结挥击音（含出招气声），设计口径是「一次出牌一段终结音」。
+	/// 「剑之乐园」逐敌循环会给每个敌人各走一次 <c>TriggerAnim</c>，不去重就会把同一段
+	/// 4 秒音频叠着放 N 遍 —— 听感上就是「语音 / 挥击声按敌人数重复」。
+	/// 普通攻击档（<c>Attack</c> / <c>Attack2</c> / <c>U1Attack</c>）不进这个集合。</para>
+	/// </summary>
+	private static readonly HashSet<string> SfxPlayedKeys = new(StringComparer.Ordinal);
 
 
 
@@ -200,8 +212,10 @@ internal static class HeidemarieCombatAudio
 	/// 各走一次本方法，因此 ——</para>
 	/// <list type="bullet">
 	///   <item>挥击音效：舞台接管时整段让位给演出（<see cref="PlayCinematicSfx"/>
-	///   在 epoch 零点播路线音效，一次）；没有舞台时按攻击段数播，
-	///   因为每一击都是真实可见的挥击；</item>
+	///   在 epoch 零点播路线音效，一次）；没有舞台时，普通攻击档按攻击段数播
+	///   （每一击都是真实可见的挥击），<b>终结档</b>（<c>U3Attack</c> / <c>GAttack</c> /
+	///   <c>XAttack</c>）回退成的 u3 长音频则一次出牌只放一遍
+	///   （见 <see cref="SfxPlayedKeys"/> / <see cref="IsDuplicateTerminalSfx"/>）；</item>
 	///   <item>语音：舞台接管时让位（由 <see cref="PlayCinematicSfx"/> 发，
 	///   整段演出只响一句），但「已响过」的记账**在让位之前**就要完成 ——
 	///   否则演出收尾后剩下的攻击段会把 u3 台词再补播一遍（剑之乐园的老问题）；
@@ -250,7 +264,14 @@ internal static class HeidemarieCombatAudio
 			if (HeidemariePresentationHost.Audience.Allows(player, CombatPresentationChannel.CombatSfx)
 				&& TriggerSfx.TryGetValue(audioTrigger, out string? sfxPath))
 			{
-				Sfx.TryPlay(sfxPath);
+				// 终结档回退的单体挥击音是一整段 u3 长音频，一次出牌只放一遍：
+				// 「剑之乐园」逐敌循环会为每个敌人各走一次本方法，不去重就会把同一段
+				// 音频叠着放 N 遍（听感上就是「语音 / 挥击声按敌人数重读」）。
+				// 普通攻击档保持按段数播 —— 每一击都是真实可见的挥击。
+				if (!IsTerminalTrigger(triggerName) || !IsDuplicateTerminalSfx(triggerName))
+				{
+					Sfx.TryPlay(sfxPath);
+				}
 			}
 
 			// 语音比音效「贵」，且一次出牌只该有一句：AoE 逐敌攻击会为每个敌人
@@ -290,9 +311,60 @@ internal static class HeidemarieCombatAudio
 		if (_pendingAttackCard is null || _pendingAttackCard.Id != card.Id)
 		{
 			VoicedAttackKeys.Clear();
+			SfxPlayedKeys.Clear();
 		}
 
 		_pendingAttackCard = card;
+	}
+
+	/// <summary>
+	/// 一次出牌的「锚点」：由会逐敌发多条攻击指令的终结牌在自己的 <c>OnPlay</c>
+	/// 开头调用（「剑之乐园」/「解放极光」）。
+	///
+	/// <para><b>为什么还要卡牌自己报一次</b>：语音 / 终结挥击音的去重都依赖
+	/// 「本次出牌是哪张牌」（<see cref="_pendingAttackCard"/> /
+	/// <see cref="_currentPlayCard"/>）。前者的记账挂在攻击指令钩子上，
+	/// 后者挂在 UI 的 <c>CardPlayCommittedEvent</c> 上；只要有一环没走到，
+	/// 去重就会退化成「每段各响一句」，逐敌循环于是按敌人数重复。
+	/// 在 <c>OnPlay</c> 开头补这一次，等于把锚点钉在「牌真正开始结算」的时刻，
+	/// 与 UI 事件和攻击钩子完全解耦。</para>
+	/// </summary>
+	/// <param name="card">正在结算的牌。</param>
+	internal static void BeginCardPlay(CardModel card)
+	{
+		_pendingAttackCard = null;
+		_currentPlayCard = card;
+		VoicedAttackKeys.Clear();
+		SfxPlayedKeys.Clear();
+	}
+
+	/// <summary>
+	/// 该触发器是否属于「终结档」—— 只有全屏演出才会用到的三个动作。
+	///
+	/// <para>它们回退成单体特效时用的是 u3 顶档的长挥击音，口径是「一次出牌一段」，
+	/// 因此音效也要去重（见 <see cref="SfxPlayedKeys"/>）。</para>
+	/// </summary>
+	/// <param name="triggerName">动作触发器名。</param>
+	private static bool IsTerminalTrigger(string triggerName)
+	{
+		return triggerName is "U3Attack" or "GAttack" or "XAttack";
+	}
+
+	/// <summary>
+	/// 这次终结档回退挥击音是否已经在本次出牌里放过（按「牌 Id + 触发器」判定），
+	/// 并顺手记账。没有记账（来源牌缺失）时不去重 —— 宁可多响，也不能漏响。
+	/// </summary>
+	/// <param name="triggerName">动作触发器名。</param>
+	/// <returns><c>true</c> 表示已放过，调用方应当静音。</returns>
+	private static bool IsDuplicateTerminalSfx(string triggerName)
+	{
+		CardModel? card = _pendingAttackCard ?? _currentPlayCard;
+		if (card is null)
+		{
+			return false;
+		}
+
+		return !SfxPlayedKeys.Add(card.Id + "|" + triggerName);
 	}
 
 	/// <summary>
@@ -551,6 +623,7 @@ internal static class HeidemarieCombatAudio
 		_pendingAttackCard = null;
 		_currentPlayCard = null;
 		VoicedAttackKeys.Clear();
+		SfxPlayedKeys.Clear();
 
 		try
 		{

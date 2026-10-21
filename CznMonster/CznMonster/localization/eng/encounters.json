@@ -1,4 +1,7 @@
 {
   "POLEMICA_BOSS.title": "Polemica",
-  "POLEMICA_BOSS.loss": "[gold]{encounter}[/gold]'s legion ground down {character}'s last line of defense."
+  "POLEMICA_BOSS.loss": "[gold]{encounter}[/gold]'s legion trampled {character}'s last line of defense.",
+
+  "SERAPHION_ENCOUNTER.title": "Seraphion",
+  "SERAPHION_ENCOUNTER.loss": "[gold]{encounter}[/gold]'s faithful companion guarded its dying shell to the very end."
 }

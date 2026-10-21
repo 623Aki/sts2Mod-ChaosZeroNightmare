@@ -16,7 +16,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace CznMonster.Content.Monsters;
 
 /// <summary>
-/// 军团盾蚁（CZN 1001010）：40% 撞角（12 伤害）/ 60% 掩护（6 伤害 + 全体己方 15 格挡）。
+/// 装甲库勒提（CZN 1001010）：40% 撞角（12 伤害）/ 60% 掩护（6 伤害 + 全体己方 15 格挡）。
 /// </summary>
 public sealed class PolemicaLegionShield : PolemicaAddMonster
 {

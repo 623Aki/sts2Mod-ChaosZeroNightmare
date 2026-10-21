@@ -97,14 +97,13 @@ internal static class BossPlacementPatch
 		}
 	}
 
-	/// <summary>指定模式：把选中的 CZN 首领强制放进所选章节。</summary>
+	/// <summary>
+	/// 指定模式：把一个未使用的 CZN 首领随机放进所选章节。
+	/// 首领原本只有一只时等价于旧的单选行为；现在有多只（波勒米卡 / 塞拉菲翁双怪组），
+	/// 且没有单独的「首领选择」设置项，于是在未用 CZN 首领里随机（同局去重依旧生效）。
+	/// </summary>
 	private static void ApplySpecified(RunState state)
 	{
-		EncounterModel? chosen = MonsterContent.ChosenBossEncounter;
-		if (chosen == null)
-		{
-			return;
-		}
 		int chapter = Math.Clamp(MonsterSettings.BossChapter, 1, 3);
 		ActModel? act = state.Acts.FirstOrDefault(a => a.Index == chapter - 1);
 		if (act == null)
@@ -112,6 +111,26 @@ internal static class BossPlacementPatch
 			MainFile.Log.Warn($"CznMonster 指定章节不存在：{chapter}（Acts={state.Acts.Count}）");
 			return;
 		}
+
+		List<EncounterModel> pool = new List<EncounterModel>();
+		foreach (EncounterModel boss in MonsterContent.BossEncounters)
+		{
+			if (!UsedBossIds.Contains(boss.Id.Entry))
+			{
+				pool.Add(boss);
+			}
+		}
+		if (pool.Count == 0)
+		{
+			return;
+		}
+
+		EncounterModel? chosen = state.Rng.UpFront.NextItem(pool);
+		if (chosen == null)
+		{
+			return;
+		}
+		MainFile.Log.Info($"CznMonster 指定首领：{chosen.Id.Entry} → 第 {chapter} 章");
 		ApplyBoss(act, chosen);
 	}
 

@@ -1,7 +1,10 @@
 {
   "CZN_ACTION_COUNT_POWER.title": "Action Count",
-  "CZN_ACTION_COUNT_POWER.description": "This creature acts immediately after the player plays {Amount} cards.",
+  "CZN_ACTION_COUNT_POWER.description": "Whenever {Amount} cards are played, this creature immediately takes its turn.",
 
-  "POLEMICA_BROOD_POWER.title": "Hive Ritual",
-  "POLEMICA_BROOD_POWER.description": "Polemica gains 1 stack after each action. At 3 stacks, its next action executes all summons and hatches a new wave."
+  "POLEMICA_BROOD_POWER.title": "Hatching Ritual",
+  "POLEMICA_BROOD_POWER.description": "Polemica's ritual count increases by 1 each time she acts. At 3, her next action executes all summonses and calls a new wave.",
+
+  "SERAPHION_HALF_DEATH_POWER.title": "Half-Death Undying",
+  "SERAPHION_HALF_DEATH_POWER.description": "While Arkrus lives, Seraphion cannot die: lethal loss is intercepted at 1 HP and it falls into a dying state, immune to all further HP loss. Arkrus' Rescue Hymn can reclaim it; should Arkrus die, the dying Seraphion perishes as well."
 }

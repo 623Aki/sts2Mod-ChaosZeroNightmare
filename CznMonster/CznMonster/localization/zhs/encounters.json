@@ -1,4 +1,7 @@
 {
   "POLEMICA_BOSS.title": "波勒米卡",
-  "POLEMICA_BOSS.loss": "[gold]{encounter}[/gold]的军团踏平了{character}的最后一道防线。"
+  "POLEMICA_BOSS.loss": "[gold]{encounter}[/gold]的军团踏平了{character}的最后一道防线。",
+
+  "SERAPHION_ENCOUNTER.title": "塞拉菲翁",
+  "SERAPHION_ENCOUNTER.loss": "[gold]{encounter}[/gold]的衷心同伴至死守护着它残存的躯壳。"
 }
