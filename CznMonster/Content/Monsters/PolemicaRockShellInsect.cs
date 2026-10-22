@@ -23,13 +23,13 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace CznMonster.Content.Monsters;
 
 /// <summary>
-/// 岩壳虫（CZN 1001019）：碎岩重击（18 伤害 + 2 层虚弱）/ 岩壳硬化（+4 力量 + 抽牌堆最高稀有度 1 张牌进弃牌堆）/
+/// 岩壳虫（CZN 1001019）：碎岩重击（9 伤害 + 2 层虚弱）/ 岩壳硬化（+4 力量 + 抽牌堆最高稀有度 1 张牌进弃牌堆）/
 /// 岩壳防御（9 伤害 + 15 格挡）。
 /// </summary>
 public sealed class PolemicaRockShellInsect : PolemicaAddMonster
 {
 	private int CrushDamage =>
-		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 20, 18));
+		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 11, 9));
 
 	private int GuardDamage =>
 		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 10, 9));

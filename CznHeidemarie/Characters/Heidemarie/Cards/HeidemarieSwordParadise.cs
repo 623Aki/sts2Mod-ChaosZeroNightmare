@@ -22,8 +22,13 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 ///
 /// <para>0 费、<b>古代牌</b>（全幅动态立绘，见 <see cref="HeidemarieCard.PortraitPath"/> 的说明）、
 /// 目标为全体敌人。对所有敌人造成其<b>各自最大生命值 30%</b> 的伤害，
-/// 再按造成的伤害回复自身；回复量溢出时把溢出的部分继续分给队友（联机）。
-/// 打出后、或回合结束时仍未打出，本牌<b>移出战斗</b>，不会因洗牌回到手里。</para>
+/// 再按造成的伤害回复自身；回复量溢出时把溢出的部分继续分给队友（联机）。</para>
+///
+/// <para><b>保留 + 只在打出后离场</b>（2026-10-22 改）：本牌带原生关键字 <b>保留</b>，
+/// 回合结束不会自动弃掉；它<b>可以</b>进弃牌堆 / 抽牌堆正常循环
+/// （被弃牌效果丢掉、被洗牌带走都没问题，之后还能再抽到）。
+/// 唯一的离场时机是<b>打出之后</b> —— 由 <see cref="OnPlay"/> 末尾的
+/// <c>CardPileCmd.RemoveFromCombat</c> 移出战斗，不会二次循环。</para>
 ///
 /// <para><b>唯一获取渠道</b> = 能力「希望」：禁止战斗内随机生成，也禁止进 modifier 池
 /// （见 <see cref="CanBeGeneratedInCombat"/> / <see cref="CanBeGeneratedByModifiers"/>），
@@ -76,27 +81,16 @@ public sealed class HeidemarieSwordParadise : HeidemarieCard
 	/// <remarks>只能由能力「希望」生成。</remarks>
 	public override bool CanBeGeneratedByModifiers => false;
 
-	/// <summary>
-	/// 开启「回合结束时仍在手中」的引擎钩子（与诅咒牌「腐朽 / 羞耻」同一套机制，
-	/// 见 <c>CardModel.HasTurnEndInHandEffect</c>）。
-	///
-	/// <para>设计文档口径「打出或回合结束后移除此牌」：打出路已由
-	/// <see cref="OnPlay"/> 末尾的 <c>RemoveFromCombat</c> 覆盖，这里兜住
-	/// 「抽到手里没打」的情况 —— 本牌由「希望」 mid-combat 生成，若放任不管
-	/// 会滞留到后续回合，0 费大招就成了可囤积的牌。</para>
-	/// </summary>
-	public override bool HasTurnEndInHandEffect => true;
-
 	/// <inheritdoc/>
 	/// <remarks>
-	/// 回合末手牌清零前，引擎会把本牌临时放进已使用牌堆再调本方法 ——
-	/// 此时 <c>RemoveFromCombat</c> 合法（与「解放极光」焚烧离场同一做法），
-	/// 移出后不会进弃牌堆，也就不会被洗回抽牌堆。
+	/// 原生关键字<b>保留</b>：回合结束留在手里，不会被回合末清手牌弃掉 ——
+	/// 玩家可以把它留到最合适的时机再打。同时也<b>不</b>开启
+	/// <c>HasTurnEndInHandEffect</c>（改造前那套「回合末仍在手里就移出战斗」的机制已删）。
 	/// </remarks>
-	protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
+	public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword>(1)
 	{
-		await CardPileCmd.RemoveFromCombat(this);
-	}
+		CardKeyword.Retain,
+	};
 
 	/// <inheritdoc/>
 	/// <summary>

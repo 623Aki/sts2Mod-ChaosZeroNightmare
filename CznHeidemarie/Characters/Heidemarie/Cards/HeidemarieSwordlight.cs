@@ -5,6 +5,7 @@ using CznHeidemarie.Characters.Heidemarie.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -16,11 +17,17 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// 「剑光」：1 费攻击（基础牌）。
 ///
 /// <para>造成 8 点伤害；升级后 +2。</para>
-/// <para>关键字<b>感应</b>：抽取本牌后，获得能力<b>白昼</b>，
-/// 使下一张<b>极光剑</b>的伤害 +50%。</para>
+/// <para>关键字<b>感应</b>：抽取本牌后，获得 <see cref="SenseLayers"/> 层<b>极夜</b>
+/// （每层使下一张极光剑伤害 +100%）。</para>
 /// </summary>
 public sealed class HeidemarieSwordlight : HeidemarieCard, ISenseCard
 {
+	/// <summary>
+	/// 感应给的极夜层数 = 1（Common / 1 费档）。
+	/// 层数按「稀有度 + 费用」定档：Common·1 费 = 1 层，Uncommon·2 费 = 2 层，Rare·2 费 = 3 层。
+	/// </summary>
+	private const decimal SenseLayers = 1m;
+
 	/// <inheritdoc/>
 	protected override string FallbackPortraitPath => "res://images/atlases/card_atlas.sprites/ironclad/strike_ironclad.tres";
 
@@ -28,6 +35,13 @@ public sealed class HeidemarieSwordlight : HeidemarieCard, ISenseCard
 	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(1)
 	{
 		new DamageVar(8m, ValueProp.Move),
+	};
+
+	/// <inheritdoc/>
+	/// <remarks>卡面写「极夜+1」，挂上该能力的悬停提示便于查层数含义。</remarks>
+	protected override IEnumerable<IHoverTip> ExtraCardHoverTips => new[]
+	{
+		HoverTipFactory.FromPower<HeidemarieNightPower>(),
 	};
 
 	/// <summary>1 费、攻击、基础牌、目标为任意敌人。</summary>
@@ -39,11 +53,11 @@ public sealed class HeidemarieSwordlight : HeidemarieCard, ISenseCard
 	/// <inheritdoc/>
 	public async Task OnSense(PlayerChoiceContext choiceContext)
 	{
-		// 挂载「白昼」+50：只作用于下一张极光剑，打出后由该能力自行清除
-		await PowerCmd.Apply<HeidemarieDaylightPower>(
+		// 给 1 层「极夜」：每层只作用于一张极光剑，结算后由该能力自行扣层
+		await PowerCmd.Apply<HeidemarieNightPower>(
 			choiceContext,
 			Owner.Creature,
-			HeidemarieDaylightPower.SenseBoost,
+			SenseLayers,
 			Owner.Creature,
 			this,
 			silent: true);

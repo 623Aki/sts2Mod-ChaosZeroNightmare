@@ -12,11 +12,14 @@ using CznHeidemarie.Characters.Heidemarie.Presentation;
 namespace CznHeidemarie.Characters.Heidemarie.Cards;
 
 /// <summary>
-/// 「剑雨」：1 费攻击（基础牌）。
+/// 「剑雨」：1 费攻击（公共牌）。
 ///
 /// <para>关键字<b>连接</b>：直接使用本牌时，丢弃手牌中其他所有带「连接」的牌。</para>
 /// <para>造成 4 点伤害 2 次；升级后感应生成的极光剑 +1。</para>
-/// <para>关键字<b>感应</b>：抽取本牌后，生成 1 张极光剑到<strong>抽牌堆</strong>。</para>
+/// <para>关键字<b>感应</b>：抽取本牌后，生成 2 张极光剑到<strong>抽牌堆</strong>。</para>
+///
+/// <para><b>为什么是 2 张</b>：极光剑是本角色的核心机制，本牌又是初始卡组自带的唯一
+/// 开局产剑入口 —— 基础 2 张（升级 3 张）才能让第一层的「抽到 → 攒剑 → 打出」循环转起来。</para>
 /// </summary>
 public sealed class HeidemarieSwordrain : HeidemarieCard, ILinkCard, ISenseCard
 {
@@ -27,8 +30,8 @@ public sealed class HeidemarieSwordrain : HeidemarieCard, ILinkCard, ISenseCard
 	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(2)
 	{
 		new DamageVar(4m, ValueProp.Move),
-		// 感应生成的极光剑张数（升级 +1）
-		new CardsVar(1),
+		// 感应生成的极光剑张数：基础 2（升级 +1 → 3）
+		new CardsVar(2),
 	};
 
 	/// <summary>1 费、攻击、公共牌、目标为任意敌人。</summary>

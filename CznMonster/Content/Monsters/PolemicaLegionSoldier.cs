@@ -22,7 +22,7 @@ namespace CznMonster.Content.Monsters;
 public sealed class PolemicaLegionSoldier : PolemicaAddMonster
 {
 	private int AttackDamage =>
-		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 13, 12));
+		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 7, 6));
 
 	/// <inheritdoc />
 	public override int MinInitialHp =>

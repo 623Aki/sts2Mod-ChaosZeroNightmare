@@ -225,21 +225,19 @@ $RequiredExact = @(
     # 与 64 小图（PowerModel.PackedIconPath → power_atlas 的 .tres 指向 images/packed/powers/）。
     # 同 relics：挂工程根 res://images/，前缀由引擎给，不能自己加 CznHeidemarie/。
     'images/powers/heidemarie_aurora_light_power.png.import',
-    'images/powers/heidemarie_daylight_power.png.import',
+    # 「白昼」能力已移除（2026-10-22 并入「极夜」），其图标三件套已删除
     'images/powers/heidemarie_night_power.png.import',
     'images/powers/heidemarie_north_polar_power.png.import',
     'images/powers/heidemarie_wall_of_swords_power.png.import',
     'images/powers/heidemarie_old_oath_power.png.import',
     'images/powers/heidemarie_hope_power.png.import',
     'images/packed/powers/heidemarie_aurora_light_power.png.import',
-    'images/packed/powers/heidemarie_daylight_power.png.import',
     'images/packed/powers/heidemarie_night_power.png.import',
     'images/packed/powers/heidemarie_north_polar_power.png.import',
     'images/packed/powers/heidemarie_wall_of_swords_power.png.import',
     'images/packed/powers/heidemarie_old_oath_power.png.import',
     'images/packed/powers/heidemarie_hope_power.png.import',
     'images/atlases/power_atlas.sprites/heidemarie_aurora_light_power.tres',
-    'images/atlases/power_atlas.sprites/heidemarie_daylight_power.tres',
     'images/atlases/power_atlas.sprites/heidemarie_night_power.tres',
     'images/atlases/power_atlas.sprites/heidemarie_north_polar_power.tres',
     'images/atlases/power_atlas.sprites/heidemarie_wall_of_swords_power.tres',
@@ -263,7 +261,25 @@ $RequiredExact = @(
     # 与 Registration/HeidemariePowerIconOverridePatch.cs
     'images/powers/heidemarie_temporary_strength_power.png.import',
     'images/packed/powers/heidemarie_temporary_strength_power.png.import',
-    'images/atlases/power_atlas.sprites/heidemarie_temporary_strength_power.tres'
+    'images/atlases/power_atlas.sprites/heidemarie_temporary_strength_power.tres',
+
+    # 第 3 轮新增（《新增设计》§5）：极光连锁 / 充能极光 / 赤光剑 三个能力，
+    # 每个仍是「256 大图 + 64 小图 + power_atlas 图集」三件套。
+    # 图标由 tools/draw_heidemarie_icons.py 生成（可重跑）。
+    'images/powers/heidemarie_aurora_chain_power.png.import',
+    'images/packed/powers/heidemarie_aurora_chain_power.png.import',
+    'images/atlases/power_atlas.sprites/heidemarie_aurora_chain_power.tres',
+    'images/powers/heidemarie_charged_aurora_power.png.import',
+    'images/packed/powers/heidemarie_charged_aurora_power.png.import',
+    'images/atlases/power_atlas.sprites/heidemarie_charged_aurora_power.tres',
+    'images/powers/heidemarie_crimson_sword_power.png.import',
+    'images/packed/powers/heidemarie_crimson_sword_power.png.import',
+    'images/atlases/power_atlas.sprites/heidemarie_crimson_sword_power.tres',
+
+    # 可获取遗物「赤光之誓」图标：大图 256 / 小图 85 / 描边 85
+    'images/relics/heidemarie_crimson_oath.png.import',
+    'images/relics/heidemarie_crimson_oath_small.png.import',
+    'images/relics/heidemarie_crimson_oath_outline.png.import'
 )
 
 # ──────────────────────────────────────────────────────────────────────────

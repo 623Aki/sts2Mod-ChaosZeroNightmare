@@ -5,6 +5,7 @@ using CznHeidemarie.Characters.Heidemarie.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 
@@ -13,15 +14,14 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// <summary>
 /// 「出鞘」：1 费技能（公共牌）。
 ///
-/// <para>抽 <c>Cards</c> 张牌；每抽到 1 张<b>攻击牌</b>，
-/// 下一张极光剑的伤害提高 <c>Percent</c>%。</para>
+/// <para>抽 <c>Cards</c> 张牌；每抽到 1 张<b>攻击牌</b>，获得 1 层<b>极夜</b>
+/// （每层使下一张极光剑伤害 +100%）。</para>
 ///
 /// <para><b>从 <c>CardPileCmd.Draw</c> 的返回值里数攻击牌</b>，而不是回头查手牌 ——
 /// 手牌里原本就有攻击牌，重查会把「本来就在手里的」也算成「这次抽到的」，
 /// 一张牌能白吃好几层增伤。</para>
 ///
-/// <para>增伤走「白昼」池（<see cref="HeidemarieDaylightPower"/>）：卡面写「下一张极光剑」，
-/// 与白昼同一生命周期（打出极光剑后清除），且与极夜相加而非连乘。</para>
+/// <para>层数按「稀有度 + 费用」定档：本牌 Common·1 费 ⇒ <b>1 张攻击牌 = 1 层</b>。</para>
 /// </summary>
 public sealed class HeidemarieUnsheathe : HeidemarieCard
 {
@@ -29,11 +29,16 @@ public sealed class HeidemarieUnsheathe : HeidemarieCard
 	protected override string FallbackPortraitPath => "res://images/atlases/card_atlas.sprites/ironclad/defend_ironclad.tres";
 
 	/// <inheritdoc/>
-	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(2)
+	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(1)
 	{
 		new CardsVar(2),
-		// 每抽到 1 张攻击牌提供的增伤百分点
-		new DynamicVar("Percent", 100m),
+	};
+
+	/// <inheritdoc/>
+	/// <remarks>卡面写「极夜+1」，挂上该能力的悬停提示便于查层数含义。</remarks>
+	protected override IEnumerable<IHoverTip> ExtraCardHoverTips => new[]
+	{
+		HoverTipFactory.FromPower<HeidemarieNightPower>(),
 	};
 
 	/// <summary>1 费、技能、公共牌、目标为自身。</summary>
@@ -57,10 +62,11 @@ public sealed class HeidemarieUnsheathe : HeidemarieCard
 			return;
 		}
 
-		await PowerCmd.Apply<HeidemarieDaylightPower>(
+		// Common·1 费 ⇒ 每张攻击牌 1 层极夜
+		await PowerCmd.Apply<HeidemarieNightPower>(
 			choiceContext,
 			Owner.Creature,
-			DynamicVars["Percent"].BaseValue * attackCount,
+			attackCount,
 			Owner.Creature,
 			this);
 	}

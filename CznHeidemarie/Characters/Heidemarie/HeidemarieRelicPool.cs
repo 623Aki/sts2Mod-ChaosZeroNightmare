@@ -34,9 +34,11 @@ public sealed class HeidemarieRelicPool : RelicPoolModel
 	public override Color LabOutlineColor => new Color("C8B6E2");
 
 	/// <inheritdoc/>
-	protected override IEnumerable<RelicModel> GenerateAllRelics() => new RelicModel[2]
+	protected override IEnumerable<RelicModel> GenerateAllRelics() => new RelicModel[3]
 	{
 		ModelDb.Relic<HeidemarieMayorBadge>(),
 		ModelDb.Relic<HeidemariePeaceMedal>(),
+		// 第 3 轮：承载「赤光剑」的可获取遗物（《新增设计》§5.2）
+		ModelDb.Relic<HeidemarieCrimsonOath>(),
 	};
 }

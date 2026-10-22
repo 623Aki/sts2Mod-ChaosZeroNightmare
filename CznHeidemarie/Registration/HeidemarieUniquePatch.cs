@@ -11,6 +11,8 @@ using MegaCrit.Sts2.Core.Factories;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Enchantments;
+using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace CznHeidemarie.Registration;
@@ -112,6 +114,61 @@ internal static class HeidemarieUniqueTransformPatch
 }
 
 /// <summary>
+/// 唯一牌 · 多莉之镜（<c>DollysMirror</c>）的复制选牌列表。
+///
+/// <para><b>为什么需要单独补</b>：多莉之镜不走 <c>CardCreationOptions</c>，
+/// 而是直接 <c>CardSelectCmd.FromDeckGeneric</c> 读<b>当前卡组</b>
+/// （见 <c>DollysMirror.AfterObtained</c>），所以奖励 / 商店 / 变形那三处过滤都摸不到它 ——
+/// 卡组里已有的「唯一」牌会照常出现在列表里。</para>
+///
+/// <para>选中之后的后果并不是「变出第二张」（<see cref="HeidemarieUniqueDeckGuard"/>
+/// 会在入组时拦下），而是<b>遗物静默失效</b>：<c>CardPileCmd.Add</c> 返回
+/// <c>success = false</c>，而 <c>CardCmd.PreviewCardPileAdd</c> 对失败项直接跳过，
+/// 玩家什么都看不到。所以要从列表这一层就把它剔除。</para>
+///
+/// <para>只改 <c>Filter</c> 的返回值，原方法（选牌 / 克隆 / 预览）完全不动，
+/// 且仅对「玩家已持有的唯一牌」生效，其他角色与其它牌零影响。</para>
+/// </summary>
+[HarmonyPatch(typeof(DollysMirror), "Filter")]
+internal static class HeidemarieUniqueDollysMirrorPatch
+{
+	private static void Postfix(DollysMirror __instance, CardModel c, ref bool __result)
+	{
+		// Filter 原本只排除任务牌；这里再排除「已持有的唯一牌」。
+		if (__result && HeidemarieUniqueRule.OwnsInDeck(__instance.Owner, c))
+		{
+			__result = false;
+		}
+	}
+}
+
+/// <summary>
+/// 唯一牌 · 禁止被附「克隆」（<c>Clone</c>）附魔。
+///
+/// <para><b>为什么从附魔源头拦</b>：<c>Clone</c> 附魔本身什么也不做，
+/// 它只是休息点「克隆」选项的<b>标记</b> ——
+/// <c>CloneRestSiteOption.OnSelect</c> 会遍历卡组里所有带该附魔的牌逐张复制。
+/// 一旦唯一牌被附上，休息点必然尝试复制它（随后被入组兜底拦下），
+/// 白白浪费一个休息点选项。</para>
+///
+/// <para>拦在 <see cref="EnchantmentModel.CanEnchant"/> 上收益最大：
+/// 所有附魔入口（事件 / 遗物 / 存档迁移）统一生效，且不需要改休息点实现。
+/// 只对 <c>Clone</c> + 唯一牌这一组合返回 <c>false</c>，其它附魔不受影响。</para>
+/// </summary>
+[HarmonyPatch(typeof(EnchantmentModel), nameof(EnchantmentModel.CanEnchant))]
+internal static class HeidemarieUniqueCloneEnchantPatch
+{
+	private static void Postfix(EnchantmentModel __instance, CardModel card, ref bool __result)
+	{
+		// 先判附魔类型（高频调用，早退），再判卡牌是否带「唯一」。
+		if (__result && __instance is Clone && HeidemarieUniqueRule.IsUnique(card))
+		{
+			__result = false;
+		}
+	}
+}
+
+/// <summary>
 /// 唯一牌 · 加牌去重（安全网）。
 ///
 /// <para>任何「把牌加进卡组」的动作最终都会走
@@ -209,6 +266,9 @@ internal static class HeidemarieUniqueDeckGuard
 
 		GD.PushWarning($"[Heidemarie] 唯一牌去重：拦截了 {blocked.Count} 张重复的唯一牌。");
 
+		// 先把被拦下的克隆卡从 RunState 里摘掉，再决定返回值。
+		ReleaseBlocked(blocked);
+
 		if (list.Count > 0)
 		{
 			// 同一批里还有别的牌要加：只把重复的唯一牌摘掉，其余交回原实现
@@ -233,6 +293,37 @@ internal static class HeidemarieUniqueDeckGuard
 
 		__result = Task.FromResult<IReadOnlyList<CardPileAddResult>>(failures);
 		return false;
+	}
+
+	/// <summary>
+	/// 拦截后摘掉「游离卡」。
+	///
+	/// <para><b>为什么需要</b>：复制类效果（多莉之镜 / BingBong / Hoarder / 事件整副复制）
+	/// 都是先 <c>RunState.CloneCard</c> 造卡、再 <c>CardPileCmd.Add</c> 入组。
+	/// <c>CloneCard</c> 这一步已经把克隆卡注册进 <c>RunState</c> 的 floating cards
+	/// （<c>_allCards</c>，用于追踪「还没进任何牌堆」的牌，例如奖励预览）；
+	/// 我们在这里整张拦下后若不摘掉，运行状态里就会长期挂着一张<b>不在任何牌堆</b>的卡，
+	/// <c>ContainsCard</c> 为真、越积越多。</para>
+	///
+	/// <para>只处理 <c>Pile == null</c> 的卡：已经在某个牌堆里的真实牌（例如存档中本就重复的
+	/// 唯一牌被再次塞进卡组）不会被误删。</para>
+	/// </summary>
+	/// <param name="blocked">本轮被拦下的牌。</param>
+	private static void ReleaseBlocked(List<CardModel> blocked)
+	{
+		foreach (CardModel card in blocked)
+		{
+			if (card.Pile is not null || card.Owner?.RunState is not { } runState)
+			{
+				continue;
+			}
+
+			if (runState.ContainsCard(card))
+			{
+				// RemoveCard 会同时把 Owner 置空，这张卡之后不会再被任何逻辑取到。
+				runState.RemoveCard(card);
+			}
+		}
 	}
 }
 

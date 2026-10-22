@@ -16,7 +16,7 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 ///
 /// <para>原生关键字 <b>保留</b>。</para>
 ///
-/// <para>对全体敌人造成 10 点伤害；升级后费用 -1（变为 0 费）。</para>
+/// <para>对全体敌人造成 8 点伤害；升级后伤害 +2（10 点）。</para>
 ///
 /// <para><b>初始卡组自带</b>（见 <see cref="Heidemarie.StartingDeck"/>）——
 /// 由角色卡调整为基础牌，因此不再参与奖励 / 商店抽取，也不列在
@@ -35,7 +35,8 @@ public sealed class HeidemarieFinalEcho : HeidemarieCard
 	/// <inheritdoc/>
 	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(1)
 	{
-		new DamageVar(10m, ValueProp.Move),
+		// 数值回标 10 → 8（《新增设计》§3.2 #3）
+		new DamageVar(8m, ValueProp.Move),
 	};
 
 	/// <inheritdoc/>
@@ -67,9 +68,9 @@ public sealed class HeidemarieFinalEcho : HeidemarieCard
 	}
 
 	/// <inheritdoc/>
+	/// <remarks>升级由「费用 -1」改为「伤害 +2」（《新增设计》§3.2 #3）。</remarks>
 	protected override void OnUpgrade()
 	{
-		// 升级：费用 -1（1 费 → 0 费）
-		EnergyCost.UpgradeBy(-1);
+		DynamicVars.Damage.UpgradeValueBy(2m);
 	}
 }

@@ -18,12 +18,12 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace CznMonster.Content.Monsters;
 
 /// <summary>
-/// 翼壳虫（CZN 1001018）：翼击（18 伤害 + 2 层脆弱）/ 翼壳防御（9 伤害 + 15 格挡）。
+/// 翼壳虫（CZN 1001018）：翼击（9 伤害 + 2 层脆弱）/ 翼壳防御（9 伤害 + 15 格挡）。
 /// </summary>
 public sealed class PolemicaWingShellInsect : PolemicaAddMonster
 {
 	private int DiveDamage =>
-		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 20, 18));
+		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 11, 9));
 
 	private int GuardDamage =>
 		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 10, 9));

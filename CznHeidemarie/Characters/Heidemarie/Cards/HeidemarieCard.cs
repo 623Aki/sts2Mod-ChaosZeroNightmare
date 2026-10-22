@@ -495,7 +495,7 @@ public abstract class HeidemarieCard : CardModel
 
 	/// <inheritdoc/>
 	/// <remarks>
-	/// 关键字「守墓」：洗牌时把自己从洗牌列表（弃牌堆 + 抽牌堆）里剔除，留在墓地。
+	/// 关键字「守墓」：洗牌时若自己还在墓地，就从洗牌列表（弃牌堆 + 抽牌堆）里剔除，留在墓地。
 	/// 关键字「安息」：本回合被锁在墓地的牌同样不进抽牌堆 ——
 	/// 判定与例外见 <see cref="HeidemarieRestLock"/>。
 	/// </remarks>
@@ -504,7 +504,20 @@ public abstract class HeidemarieCard : CardModel
 		// 初始洗牌发生在战斗开始（卡还在牌组里），两类关键字都不适用
 		if (!isInitialShuffle)
 		{
-			if (this is IGraveKeepCard)
+			// 「守墓」默认剔除，两个前提：
+			//
+			// ① <b>此刻还在墓地（弃牌堆）</b>。「守墓」的含义是「洗牌时不要移动到抽牌堆」，
+			//    一张已经在抽牌堆里的牌谈不上「不移动」—— 剔除它反而制造状态不一致：
+			//    这里只改「洗牌列表」，不负责把牌从牌堆里搬走，而洗牌结尾的批量 Add
+			//    对不在列表里的牌既不删除也不重排，整堆重排完后它就被挤到堆顶，
+			//    结果变成「一洗必先抽到」。（被「坠星」塞进抽牌堆的剑正是这种情形，
+			//    「重启」「瓶装潜力」这类显式洗牌会踩到。）口径与
+			//    <see cref="HeidemarieRestLock.IsLocked"/> 一致。
+			// ② 调用方没有用 <see cref="HeidemarieRestLock.BypassGraveKeep"/> 开豁免
+			//    （「坠星」的洗牌）。
+			if (this is IGraveKeepCard
+				&& Pile?.Type == PileType.Discard
+				&& !HeidemarieRestLock.IsGraveKeepBypassedFor(player))
 			{
 				cards.Remove(this);
 			}

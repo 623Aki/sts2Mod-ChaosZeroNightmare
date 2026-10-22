@@ -65,7 +65,7 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackLight;
 
 	/// <summary>
-	/// 特效变体：<b>白昼或极夜任一存在时，特效升格为 u5 终结演出</b>
+	/// 特效变体：<b>极夜层数 &gt; 0 或「充能极光」存在时，特效升格为 u5 终结演出</b>
 	///（演出键 <c>AttackLight/u5</c>，见 <c>heidemarie_moves.json</c>）。
 	///
 	/// <para><b>为什么不换档位而用变体</b>：源数据里 <c>u5_attack_play1</c> 的
@@ -75,15 +75,14 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 	/// 设计的：身体动作、触发器、命中延迟全部不变，只把特效组从「轻击_横挥」
 	/// 换成「终结_u5_play1」（target 多一层 <c>f2</c>）。</para>
 	///
-	/// <para><b>判定口径与增伤区保持一致</b>：白昼取「能力存在」，极夜取「层数 &gt; 0」
-	///（极夜是 Counter 堆叠，「砺锋」复用极夜通道时层数累加在同一实例上），
-	/// <b>任一成立即升格</b> —— 两者都是「极光剑增伤区」的输入
-	///（见 <see cref="HeidemarieAuroraDamagePoolPower.TotalPercent"/>），
-	/// 只要增伤在生效，特效就同步升格，不会出现「吃着增伤却播轻击特效」的错位。</para>
+	/// <para><b>判定口径与增伤区保持一致</b>：极夜取「层数 &gt; 0」、充能极光取「能力存在」，
+	/// 两者正是 <see cref="HeidemarieAuroraDamagePoolPower.TotalPercent"/> 的全部输入，
+	/// <b>任一成立即升格</b> —— 只要增伤在生效，特效就同步升格，
+	/// 不会出现「吃着增伤却播轻击特效」的错位。</para>
 	///
 	/// <para><b>求值时机</b>：<see cref="HeidemariePresentationCatalog.ResolveKey"/>
 	/// 在 <c>CardPlayEnqueuingEvent</c>（出牌入队）时读取，早于 <see cref="OnPlay"/>
-	/// 的伤害结算，此时白昼尚未被消耗，判定成立。</para>
+	/// 的伤害结算，此时极夜尚未被消耗，判定成立。</para>
 	/// </summary>
 	protected override string? PresentationVariant
 	{
@@ -95,8 +94,8 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 				return null;
 			}
 
-			return creature.GetPower<HeidemarieDaylightPower>() is not null
-				|| creature.GetPowerAmount<HeidemarieNightPower>() > 0
+			return creature.GetPowerAmount<HeidemarieNightPower>() > 0
+				|| creature.GetPower<HeidemarieChargedAuroraPower>() is not null
 					? "u5"
 					: null;
 		}
@@ -145,10 +144,10 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 	///
 	/// <para><b>这次伤害「视为一次极光剑结算」</b>：因此
 	/// <list type="bullet">
-	///   <item>照常吃「白昼 / 极夜」的极光剑增伤区（因为 <c>cardSource</c> 就是本牌、
-	///   <c>ValueProp.Move</c> 属于强化攻击，见 <see cref="HeidemarieDaylightPower"/>）；</item>
-	///   <item>结算后<strong>消耗「白昼」</strong>。主动打出时这一步由
-	///   <c>HeidemarieDaylightPower.AfterAttack(AttackCommand)</c> 完成，
+	///   <item>照常吃「极夜 / 充能极光」的极光剑增伤区（因为 <c>cardSource</c> 就是本牌、
+	///   <c>ValueProp.Move</c> 属于强化攻击，见 <see cref="HeidemarieAuroraDamagePoolPower"/>）；</item>
+	///   <item>结算后<strong>消耗 1 层极夜</strong>。主动打出时这一步由
+	///   <see cref="HeidemarieNightPower.AfterAttack"/> 完成，
 	///   而丢弃伤害走的是 <c>CreatureCmd.Damage</c>（不是 AttackCommand），
 	///   所以必须在这里自己清 —— 否则会出现「丢一把剑白嫖增伤、再打一把剑再吃一次」。</item>
 	/// </list></para>
@@ -163,13 +162,14 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 		Creature? target = Owner.RunState.Rng.CombatTargets.NextItem(combatState.HittableEnemies);
 		if (target == null)
 		{
-			// 没有可命中的敌人 = 这次结算没发生，不消耗「白昼」
+			// 没有可命中的敌人 = 这次结算没发生，不消耗层数
 			return;
 		}
 
 		await CreatureCmd.Damage(choiceContext, target, DynamicVars.Damage, Owner.Creature, this, null);
 
-		// 结算完消耗「白昼」（没有该能力时 Remove 是空操作）
-		await PowerCmd.Remove<HeidemarieDaylightPower>(Owner.Creature);
+		// 丢弃伤害也是一次「极光剑结算」→ 极夜与充能极光各消耗 1 次
+		await HeidemarieNightPower.ConsumeAsync(Owner.Creature);
+		await HeidemarieChargedAuroraPower.ConsumeAsync(Owner.Creature);
 	}
 }

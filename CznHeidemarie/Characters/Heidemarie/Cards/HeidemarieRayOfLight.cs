@@ -18,7 +18,7 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 ///
 /// <para>关键字<b>连接</b>。造成 8 点伤害；打出前手牌中每有 1 张带「连接」的牌
 /// （含自身），伤害增加 <c>Percent</c>%（百分点注入 <see cref="HeidemarieDamagePercentPower"/> 增伤池）。
-/// 增伤只计算本牌的连接加成，不含白昼 / 极夜（两者只作用于极光剑）。</para>
+/// 增伤只计算本牌的连接加成，不含极夜 / 充能极光（两者只作用于极光剑）。</para>
 /// </summary>
 public sealed class HeidemarieRayOfLight : HeidemarieCard, ILinkCard
 {

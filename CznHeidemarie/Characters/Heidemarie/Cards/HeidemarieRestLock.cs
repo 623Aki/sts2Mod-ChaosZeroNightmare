@@ -43,6 +43,17 @@ internal static class HeidemarieRestLock
 	private static readonly Dictionary<ulong, int> BypassDepthByOwnerNetId = new();
 
 	/// <summary>
+	/// 「忽略守墓剔除」的嵌套深度，<b>按玩家</b>区分（语义同 <see cref="BypassDepthByOwnerNetId"/>）。
+	///
+	/// <para>与安息锁<b>分开存</b>：守墓是「洗牌时不要进抽牌堆」，安息是「本回合不许离开墓地」，
+	/// 两者的绕过时机不同 —— 安息只在移堆阶段需要放行（移完就不在墓地了，判定自然失效），
+	/// 守墓却必须盖住整次 <c>CardPileCmd.Shuffle</c>（剔除发生在洗牌内部）。
+	/// 若共用一个开关，为了让守墓覆盖洗牌就得让安息锁也跨过 <c>Shuffle</c> 内部的多个
+	/// <c>await</c> 等待点，期间该玩家别的取墓/洗牌行为会被误放行。</para>
+	/// </summary>
+	private static readonly Dictionary<ulong, int> GraveKeepBypassDepthByOwnerNetId = new();
+
+	/// <summary>
 	/// 这张牌此刻是否被「安息」锁在墓地：
 	/// 带锁标记 <b>且</b> 当前确实位于弃牌堆。
 	///
@@ -59,23 +70,58 @@ internal static class HeidemarieRestLock
 	internal static bool IsBypassedFor(Player? player)
 		=> player != null && BypassDepthByOwnerNetId.ContainsKey(player.NetId);
 
+	/// <summary>该玩家当前是否处于「忽略守墓剔除」的作用域内。</summary>
+	internal static bool IsGraveKeepBypassedFor(Player? player)
+		=> player != null && GraveKeepBypassDepthByOwnerNetId.ContainsKey(player.NetId);
+
 	/// <summary>
 	/// 为 <paramref name="player"/> 开一个「忽略安息锁」的作用域
 	/// （供「坠星」这类设计上强制绕过墓地锁的牌使用）。
 	/// 用法：<c>using (HeidemarieRestLock.Bypass(Owner)) { ... }</c>。
 	/// </summary>
-	internal static IDisposable Bypass(Player player) => new BypassScope(player.NetId);
+	internal static IDisposable Bypass(Player player)
+		=> new DepthScope(BypassDepthByOwnerNetId, player.NetId);
 
-	private sealed class BypassScope : IDisposable
+	/// <summary>
+	/// 为 <paramref name="player"/> 开一个「忽略守墓」的作用域：作用域内的洗牌
+	/// 不再把 <see cref="IGraveKeepCard"/> 从洗牌列表里剔除。
+	///
+	/// <para><b>只能给「坠星」这类刻意绕守墓的牌用，且必须开在
+	/// <c>CardPileCmd.Shuffle</c> 外面</b> —— 剔除发生在洗牌内部，
+	/// 只把牌塞进抽牌堆并不能让它在洗牌后留在那里（反而会被挤到堆顶，
+	/// 详见 <see cref="HeidemarieFallenStar.OnPlay"/>）。</para>
+	///
+	/// <para><b>作用域会跨 <c>Shuffle</c> 内部的 <c>await</c> 等待点</b>
+	/// （洗牌动画、<c>Hook.AfterShuffle</c>）。这一点对守墓是可接受的：
+	/// 期间该玩家身上触发的连锁洗牌本来也是「同一批牌该不该进堆」的同一判断；
+	/// 而安息锁<b>不</b>走这个开关，所以不会被这条长作用域误放开。</para>
+	/// </summary>
+	internal static IDisposable BypassGraveKeep(Player player)
+		=> new DepthScope(GraveKeepBypassDepthByOwnerNetId, player.NetId);
+
+	/// <summary>
+	/// 按玩家计数的嵌套作用域，退出时自动减层（减到 0 即移除）。
+	///
+	/// <para>不写成全局布尔：作用域会跨 <c>await</c> 存活，联机时另一名玩家的结算
+	/// 可能在等待点插入 —— 按玩家隔离后，一个人的「坠星」不会顺手解开别人的墓地锁。</para>
+	/// </summary>
+	private sealed class DepthScope : IDisposable
 	{
+		/// <summary>该作用域修改的深度表（安息 / 守墓各一张）。</summary>
+		private readonly Dictionary<ulong, int> _depths;
+
+		/// <summary>作用域所属玩家。</summary>
 		private readonly ulong _netId;
+
+		/// <summary>是否已释放，避免重复减层。</summary>
 		private bool _disposed;
 
-		internal BypassScope(ulong netId)
+		internal DepthScope(Dictionary<ulong, int> depths, ulong netId)
 		{
+			_depths = depths;
 			_netId = netId;
-			BypassDepthByOwnerNetId.TryGetValue(netId, out int depth);
-			BypassDepthByOwnerNetId[netId] = depth + 1;
+			depths.TryGetValue(netId, out int depth);
+			depths[netId] = depth + 1;
 		}
 
 		public void Dispose()
@@ -86,18 +132,18 @@ internal static class HeidemarieRestLock
 			}
 
 			_disposed = true;
-			if (!BypassDepthByOwnerNetId.TryGetValue(_netId, out int depth))
+			if (!_depths.TryGetValue(_netId, out int depth))
 			{
 				return;
 			}
 
 			if (depth <= 1)
 			{
-				BypassDepthByOwnerNetId.Remove(_netId);
+				_depths.Remove(_netId);
 			}
 			else
 			{
-				BypassDepthByOwnerNetId[_netId] = depth - 1;
+				_depths[_netId] = depth - 1;
 			}
 		}
 	}

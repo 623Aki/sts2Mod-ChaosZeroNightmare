@@ -5,7 +5,7 @@
   "HEIDEMARIE_DEFEND.description": "{KwBlock}获得{Block:diff()}点[gold]格挡[/gold]。",
 
   "HEIDEMARIE_SWORDLIGHT.title": "剑光",
-  "HEIDEMARIE_SWORDLIGHT.description": "{KwBlock}造成{Damage:diff()}点伤害。\n{SenseName}：下一张极光剑伤害+50%。",
+  "HEIDEMARIE_SWORDLIGHT.description": "{KwBlock}造成{Damage:diff()}点伤害。\n{SenseName}：[gold]极夜[/gold]+1。",
 
   "HEIDEMARIE_SWORDRAIN.title": "剑雨",
   "HEIDEMARIE_SWORDRAIN.description": "{KwBlock}造成{Damage:diff()}点伤害2次。\n{SenseName}：在抽牌堆生成{Cards:diff()}张极光剑。",
@@ -67,7 +67,7 @@
   "HEIDEMARIE_SKYFALL.description": "{KwBlock}主动打出时，对敌人造成{Damage:diff()}点伤害2次。被丢弃时，对全体敌人造成{DiscardDamage:diff()}点伤害。",
 
   "HEIDEMARIE_UNFOLD_AURORA.title": "展开极光",
-  "HEIDEMARIE_UNFOLD_AURORA.description": "{KwBlock}在手牌生成{Cards:diff()}张极光剑。本回合内极光剑的伤害+50%。",
+  "HEIDEMARIE_UNFOLD_AURORA.description": "{KwBlock}在手牌生成{Cards:diff()}张极光剑。[gold]极夜[/gold]+2。",
 
   "HEIDEMARIE_NORTH_POLAR.title": "北极圈",
   "HEIDEMARIE_NORTH_POLAR.description": "{KwBlock}回合开始时，在手牌生成2张极光剑。",
@@ -79,7 +79,7 @@
   "HEIDEMARIE_MIRROR_BLADES.description": "{KwBlock}打出前手牌中每有1张[gold]连接[/gold]卡牌，即可在手牌生成1张极光剑。",
 
   "HEIDEMARIE_STORE_LIGHT.title": "积羽",
-  "HEIDEMARIE_STORE_LIGHT.description": "{KwBlock}在抽牌堆生成{Cards:diff()}张极光剑。\n{SenseName}：下一张极光剑伤害+100%。",
+  "HEIDEMARIE_STORE_LIGHT.description": "{KwBlock}在抽牌堆生成{Cards:diff()}张极光剑。\n{SenseName}：[gold]极夜[/gold]+3。",
 
   "HEIDEMARIE_FALLEN_STAR.title": "坠星",
   "HEIDEMARIE_FALLEN_STAR.description": "{KwBlock}将手牌和弃牌堆的卡牌全部放入抽牌堆中洗牌。抽{Draw:diff()}张牌。",
@@ -122,7 +122,7 @@
   "HEIDEMARIE_OLD_OATH.description": "{KwBlock}回合开始时，弃牌堆和消耗牌堆中每有1张极光剑，即可获得{Block:diff()}点[gold]格挡[/gold]。",
 
   "HEIDEMARIE_SWORD_PARADISE.title": "剑之乐园",
-  "HEIDEMARIE_SWORD_PARADISE.description": "{KwBlock}对所有敌人造成其最大生命值30%的伤害，并根据造成的伤害回复自身。若回复量溢出，则回复队友。打出或回合结束后移除此牌。",
+  "HEIDEMARIE_SWORD_PARADISE.description": "{KwBlock}对所有敌人造成其最大生命值30%的伤害，并根据造成的伤害回复自身。若回复量溢出，则回复队友。打出后移除此牌。",
 
   "HEIDEMARIE_LURED_HAND.title": "被光诱惑之手",
   "HEIDEMARIE_LURED_HAND.description": "{KwBlock}获得{Strength:diff()}点[gold]力量[/gold]。对全体敌人施加{Vulnerable:diff()}层[gold]易伤[/gold]。",
@@ -173,15 +173,33 @@
   "HEIDEMARIE_STAND_READY.description": "{KwBlock}获得X×{Block:diff()}点[gold]格挡[/gold]。下一回合获得X点[gold]临时力量[/gold]。",
 
   "HEIDEMARIE_WHET_EDGE.title": "砺锋",
-  "HEIDEMARIE_WHET_EDGE.description": "{KwBlock}丢弃最多{Cards:diff()}张牌，每丢弃1张，本回合内极光剑的伤害提高{Percent:diff()}%。",
+  "HEIDEMARIE_WHET_EDGE.description": "{KwBlock}丢弃最多{Cards:diff()}张牌，每丢弃1张，[gold]极夜[/gold]+1。",
   "HEIDEMARIE_WHET_EDGE.selectionScreenPrompt": "选择要丢弃的牌（可少于{Cards}张）。",
 
   "HEIDEMARIE_STARFALL.title": "星落",
   "HEIDEMARIE_STARFALL.description": "{KwBlock}随机丢弃抽牌堆中的{Discard:diff()}张[gold]安息[/gold]卡牌。",
 
   "HEIDEMARIE_UNSHEATHE.title": "出鞘",
-  "HEIDEMARIE_UNSHEATHE.description": "{KwBlock}抽取{Cards:diff()}张牌。每抽到1张攻击牌，下一张极光剑的伤害提高{Percent:diff()}%。",
+  "HEIDEMARIE_UNSHEATHE.description": "{KwBlock}抽取{Cards:diff()}张牌。每抽到1张攻击牌，[gold]极夜[/gold]+1。",
 
   "HEIDEMARIE_BACK_TO_BACK.title": "背靠背",
-  "HEIDEMARIE_BACK_TO_BACK.description": "{KwBlock}全体友方获得{Dexterity:diff()}层[gold]敏捷[/gold]。打出手牌中费用最高的{Play:diff()}张牌。"
+  "HEIDEMARIE_BACK_TO_BACK.description": "{KwBlock}全体友方获得{Dexterity:diff()}层[gold]敏捷[/gold]。打出手牌中费用最高的{Play:diff()}张牌。",
+
+  "HEIDEMARIE_SILENT_RAIN.title": "静雨",
+  "HEIDEMARIE_SILENT_RAIN.description": "{KwBlock}造成{Damage:diff()}点伤害2次。\n{SenseName}：在抽牌堆生成{Cards:diff()}张极光剑。",
+
+  "HEIDEMARIE_DOWNPOUR.title": "剑潮",
+  "HEIDEMARIE_DOWNPOUR.description": "{KwBlock}造成{Damage:diff()}点伤害。打出前手牌中每有1张极光剑，额外造成1次（最多额外{Swords:diff()}次）。\n{SenseName}：在抽牌堆生成{Cards:diff()}张极光剑。",
+
+  "HEIDEMARIE_NAMELESS.title": "无名之辈",
+  "HEIDEMARIE_NAMELESS.description": "{KwBlock}丢弃{Discard:diff()}张牌。选择弃牌堆中的1张牌加入手牌，其获得[gold]连接[/gold]。",
+  "HEIDEMARIE_NAMELESS.selectionScreenPrompt": "选择要丢弃的牌。",
+  "HEIDEMARIE_NAMELESS.recoverPrompt": "选择要加入手牌并赋予[gold]连接[/gold]的牌。",
+
+  "HEIDEMARIE_REST_CALL.title": "长眠之唤",
+  "HEIDEMARIE_REST_CALL.description": "{KwBlock}抽取{Cards:diff()}张牌。选择弃牌堆中的1张[gold]安息[/gold]卡牌打出。",
+  "HEIDEMARIE_REST_CALL.selectionScreenPrompt": "选择要打出的[gold]安息[/gold]卡牌。",
+
+  "HEIDEMARIE_AURORA_CHAIN.title": "极光连锁",
+  "HEIDEMARIE_AURORA_CHAIN.description": "{KwBlock}每当你直接使用或丢弃1张[gold]连接[/gold]牌，获得1层[gold]极光连锁[/gold]（最多{MaxStacks}层）。每层使你的攻击伤害+{PerStack}%。"
 }

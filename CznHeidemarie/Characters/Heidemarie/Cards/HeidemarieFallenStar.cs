@@ -46,9 +46,9 @@ public sealed class HeidemarieFallenStar : HeidemarieCard
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		// 手牌 + 弃牌堆的全部卡（含守墓牌与被安息锁定在墓地的牌）逐张移入抽牌堆。
-		// 本牌按设计强制绕过墓地锁，因此开一个绕过作用域；
-		// 作用域只包住移堆阶段，后面那次 Shuffle 仍按正常规则走
-		// （此刻锁墓牌已经在抽牌堆，HeidemarieRestLock.IsLocked 不再拦它）。
+		//
+		// 「安息」的锁墓判定只看牌是否还在墓地（HeidemarieRestLock.IsLocked 判 Pile.Type），
+		// 牌一旦被移到抽牌堆就自然不再被拦，所以这个作用域只需要包住移堆阶段。
 		List<CardModel> cards = PileType.Hand.GetPile(Owner).Cards
 			.Concat(PileType.Discard.GetPile(Owner).Cards)
 			.ToList();
@@ -61,7 +61,16 @@ public sealed class HeidemarieFallenStar : HeidemarieCard
 			}
 		}
 
-		await CardPileCmd.Shuffle(choiceContext, Owner);
+		// 「守墓」的剔除发生在 Shuffle 内部的 ModifyShuffleOrder，光把牌塞进抽牌堆不够：
+		// 守墓牌会被从洗牌列表里剔除，而 Shuffle 结尾的批量 Add 对「不在列表里、却仍在堆里」的牌
+		// 既不删除也不重排 —— 整堆重排完后它反而停在堆顶，于是一洗必被先抽到。
+		// 因此这里另开一个「忽略守墓」的豁免作用域，让这次洗牌的列表保留守墓牌。
+		// （与上面的安息绕过分开：守墓豁免要跨 Shuffle 内部的 await，安息锁不需要。）
+		using (HeidemarieRestLock.BypassGraveKeep(Owner))
+		{
+			await CardPileCmd.Shuffle(choiceContext, Owner);
+		}
+
 		await CardPileCmd.Draw(choiceContext, _draw.IntValue, Owner);
 	}
 

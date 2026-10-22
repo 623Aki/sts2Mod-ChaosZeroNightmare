@@ -4,5 +4,9 @@
   "HEIDEMARIE_MAYOR_BADGE.flavor": "她曾是园号的英雄。人们把铭牌别在她胸前，于是她就必须一直是英雄。",
   "HEIDEMARIE_PEACE_MEDAL.title": "和平奖章",
   "HEIDEMARIE_PEACE_MEDAL.description": "回合开始时，若所有敌人的意图都不是攻击：友方所有人额外抽{Cards}张牌，获得{Energy}点能量，所有敌人获得{Block}点[gold]格挡[/gold]。",
-  "HEIDEMARIE_PEACE_MEDAL.flavor": "颁授辞上写着「止干戈」。戴上它的人会莫名希望和平收场——而敌人，偶尔也会有同样的念头。"
+  "HEIDEMARIE_PEACE_MEDAL.flavor": "颁授辞上写着「止干戈」。戴上它的人会莫名希望和平收场——而敌人，偶尔也会有同样的念头。",
+
+  "HEIDEMARIE_CRIMSON_OATH.title": "赤光之誓",
+  "HEIDEMARIE_CRIMSON_OATH.description": "回合开始时，获得5层[gold]赤光剑[/gold]（上限8层）。每当你直接使用或丢弃1张[gold]连接[/gold]牌，消耗1层：对生命值最高的敌人造成{Amount}点伤害。",
+  "HEIDEMARIE_CRIMSON_OATH.flavor": "她曾把整座城市的黑夜扛在肩上。赤色的剑光，是她没来得及说出口的那句「别怕」。"
 }

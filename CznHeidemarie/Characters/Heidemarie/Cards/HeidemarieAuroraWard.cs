@@ -31,9 +31,9 @@ public sealed class HeidemarieAuroraWard : HeidemarieCard, ILinkCard
 	/// <inheritdoc/>
 	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(2)
 	{
-		new BlockVar(9m, ValueProp.Move),
-		// 每张连接牌追加的格挡量（升级后 +2）
-		new DynamicVar("Bonus", 3m),
+		new BlockVar(6m, ValueProp.Move),
+		// 每张连接牌追加的格挡量（升级后 +1）
+		new DynamicVar("Bonus", 2m),
 	};
 
 	/// <summary>1 费、技能、公共牌、目标为自身。</summary>
@@ -60,9 +60,10 @@ public sealed class HeidemarieAuroraWard : HeidemarieCard, ILinkCard
 	};
 
 	/// <inheritdoc/>
+	/// <remarks>数值回标（《新增设计》§3.2 #1）：基础 6 → 9（+3），每连接 2 → 3（+1）。</remarks>
 	protected override void OnUpgrade()
 	{
-		DynamicVars.Block.UpgradeValueBy(5m);
-		DynamicVars["Bonus"].UpgradeValueBy(2m);
+		DynamicVars.Block.UpgradeValueBy(3m);
+		DynamicVars["Bonus"].UpgradeValueBy(1m);
 	}
 }

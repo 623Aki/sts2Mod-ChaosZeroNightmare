@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
@@ -53,6 +54,43 @@ internal static class HeidemarieCardActions
 
 		return count;
 	}
+
+	/// <summary>
+	/// 「<b>直接使用</b>了 1 张带「连接」的牌」的统一判定 —— 极光连锁 / 赤光剑共用，
+	/// 避免两处各写一份口径（见《新增设计》§7.3 易错点 #3）。
+	///
+	/// <para>三个条件缺一不可：</para>
+	/// <list type="number">
+	///   <item>出牌者就是<paramref name="player"/>（弃牌 / 出牌都是全场广播）；</item>
+	///   <item>这张牌带「连接」（原生接口或运行期临时赋予）；</item>
+	///   <item><b>不是自动打出</b>（<see cref="CardPlay.IsAutoPlay"/>）且没有被
+	///   <see cref="SuppressLinkDiscard"/> 抑制 —— 「剑冢」重放、「万剑齐鸣」连打
+	///   都<b>不算直接使用</b>，这是本工程既定口径（见 §1.5）。</item>
+	/// </list>
+	/// </summary>
+	/// <param name="cardPlay">本次出牌上下文。</param>
+	/// <param name="player">触发方（能力 / 遗物的持有者）。</param>
+	public static bool IsLinkTrigger(CardPlay cardPlay, Player player)
+		=> cardPlay.Player == player
+			&& !cardPlay.IsAutoPlay
+			&& !SuppressLinkDiscard
+			&& cardPlay.Card is HeidemarieCard holder
+			&& holder.IsLinked;
+
+	/// <summary>
+	/// 「<b>被丢弃</b>了 1 张带「连接」的牌」的统一判定（极光连锁 / 赤光剑共用）。
+	///
+	/// <para>只判「自己玩家的牌进弃牌堆」：弃牌是全场事件，别人的牌被丢不归本角色管。
+	/// 不判当前行动方 —— 敌方效果逼你弃牌同样计入（与「壁仞千里 / 情绪爆发」同口径）；
+	/// 回合末清手牌走 <c>CardPileCmd.Add</c>，根本不派发 <c>AfterCardDiscarded</c>，
+	/// 因此天然不算。</para>
+	/// </summary>
+	/// <param name="card">被丢弃的牌。</param>
+	/// <param name="player">触发方（能力 / 遗物的持有者）。</param>
+	public static bool IsLinkDiscard(CardModel card, Player player)
+		=> card.Owner == player
+			&& card is HeidemarieCard holder
+			&& holder.IsLinked;
 
 	/// <summary>
 	/// 「连接」：丢弃手牌中除 <paramref name="self"/> 外所有带「连接」关键字的牌。

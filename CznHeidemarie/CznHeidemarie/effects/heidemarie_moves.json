@@ -19,7 +19,7 @@
   },
   "AttackLight/u5": {
    "command": ["attack_ready", "attack_play1"],
-   "note": "极光剑升华档（白昼或极夜任一存在，由 HeidemarieAuroraSword.PresentationVariant 产出本键）。身体动作与轻击完全相同（源数据 u5_attack_play1 的身体 clip 即 attack_play1），只换特效组：终结_u5_play1 的 owner 两件套 clip 换 u5（533/433ms），target 五件套（比轻击多一层 f2），偏移仍走受击点 -620,-50。起播 200ms 对齐命中点（HitDelay）。",
+   "note": "极光剑升华档（极夜层数>0 或存在充能极光时，由 HeidemarieAuroraSword.PresentationVariant 产出本键）。身体动作与轻击完全相同（源数据 u5_attack_play1 的身体 clip 即 attack_play1），只换特效组：终结_u5_play1 的 owner 两件套 clip 换 u5（533/433ms），target 五件套（比轻击多一层 f2），偏移仍走受击点 -620,-50。起播 200ms 对齐命中点（HitDelay）。",
    "owner": [],
    "target": [],
    "compose": [{"group": "终结_u5_play1", "command": "u5_attack_play1", "start_ms": 200.0}]

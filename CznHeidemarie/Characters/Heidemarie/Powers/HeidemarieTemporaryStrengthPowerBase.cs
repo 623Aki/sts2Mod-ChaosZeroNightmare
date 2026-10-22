@@ -37,7 +37,7 @@ namespace CznHeidemarie.Characters.Heidemarie.Powers;
 /// <para><b>为什么小图也用同一张</b>：引擎 <c>AtlasResourceLoader</c> 对
 /// <c>power_atlas</c> 的 sprite 有磁盘回落 —— 命中不到图集时就读
 /// <c>res://images/powers/&lt;sprite&gt;.png</c>，也就是本 mod 其它能力
-/// （极光之光 / 白昼 / 极夜……）实际生效的那条路。这里显式指向同一文件，
+/// （极光之光 / 极夜……）实际生效的那条路。这里显式指向同一文件，
 /// 与全 mod 的表现保持一致，不引入第二种缩放口径。</para>
 /// </summary>
 public abstract class HeidemarieTemporaryStrengthPowerBase : TemporaryStrengthPower

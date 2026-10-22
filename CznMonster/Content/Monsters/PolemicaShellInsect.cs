@@ -18,12 +18,12 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace CznMonster.Content.Monsters;
 
 /// <summary>
-/// 壳虫（CZN 1001004）：甲壳撕咬（18 伤害 + 2 层易伤）/ 甲壳防御（9 伤害 + 15 格挡）。
+/// 壳虫（CZN 1001004）：甲壳撕咬（9 伤害 + 2 层易伤）/ 甲壳防御（9 伤害 + 15 格挡）。
 /// </summary>
 public sealed class PolemicaShellInsect : PolemicaAddMonster
 {
 	private int BiteDamage =>
-		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 20, 18));
+		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 11, 9));
 
 	private int GuardDamage =>
 		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 10, 9));

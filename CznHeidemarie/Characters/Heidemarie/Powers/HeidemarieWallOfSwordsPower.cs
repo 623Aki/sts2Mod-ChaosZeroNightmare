@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CznHeidemarie.Characters.Heidemarie.Cards;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -26,14 +25,25 @@ namespace CznHeidemarie.Characters.Heidemarie.Powers;
 ///
 /// <para><b>回合末清手牌不触发本能力</b>：官方清手牌走 <c>CardPileCmd.Add</c>，
 /// 不会派发 <see cref="AbstractModel.AfterCardDiscarded"/>，判据天然成立。</para>
+///
+/// <para><b>计数口径（2026-10-21 与「情绪爆发」统一）</b>：只判「自己玩家的牌进弃牌堆」，
+/// <b>不判当前行动方</b> —— 手牌 / 抽牌堆被丢进弃牌堆都算，
+/// 自己的卡、「连接」的连带丢弃、敌方效果逼你弃牌全部计入；回合末清手牌仍然不算。</para>
+///
+/// <para><b>为什么这里不用像「情绪爆发」那样记账</b>：格挡在敌方回合当场获得才有用
+/// （正好挡本次敌方攻击），而能量会在玩家回合开始被 <c>ResetEnergy</c> 冲掉，
+/// 两者时机诉求相反。</para>
+///
+/// <para><b>本能力不是计数型</b>：没有阈值、每弃 1 张立即结算，
+/// 因此图标数字继续显示层数（<see cref="PowerModel.Amount"/>），不做弃牌计数显示。</para>
 /// </summary>
 public sealed class HeidemarieWallOfSwordsPower : PowerModel
 {
 	/// <summary>单层能力下，每弃 1 张普通牌获得的格挡。</summary>
 	private const decimal BlockPerNormalCard = 2m;
 
-	/// <summary>单层能力下，每弃 1 张极光剑获得的格挡。</summary>
-	private const decimal BlockPerSword = 4m;
+	/// <summary>单层能力下，每弃 1 张极光剑获得的格挡（数值回标 4 → 3，《新增设计》§3.2 #2）。</summary>
+	private const decimal BlockPerSword = 3m;
 
 	/// <inheritdoc/>
 	public override PowerType Type => PowerType.Buff;
@@ -60,15 +70,9 @@ public sealed class HeidemarieWallOfSwordsPower : PowerModel
 	/// <inheritdoc/>
 	public override async Task AfterCardDiscarded(PlayerChoiceContext choiceContext, CardModel card)
 	{
-		// 只认自己玩家弃的牌（弃牌是全场事件，会在 Hook 里广播给所有战斗模型）。
+		// 只认「自己玩家的牌进弃牌堆」（弃牌是全场事件，会在 Hook 里广播给所有战斗模型）。
+		// 不判当前行动方：敌方效果逼你弃牌同样给格挡（与「情绪爆发」统一口径）。
 		if (card.Owner != Owner.Player)
-		{
-			return;
-		}
-
-		// 再加一道「当前行动方」判定：敌方回合里因故弃牌不该给我方发格挡。
-		ICombatState? combatState = Owner.CombatState;
-		if (combatState == null || Owner.Side != combatState.CurrentSide)
 		{
 			return;
 		}
