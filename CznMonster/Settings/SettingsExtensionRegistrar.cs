@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using CznCore.Settings;
+using CznMonster.Content;
 
 namespace CznMonster.Settings;
 
@@ -88,7 +89,7 @@ internal static class SettingsExtensionRegistrar
 					["type"] = "toggle",
 					["id"] = "boss_pos_random",
 					["label"] = (Func<string>)(() => SettingsLocalization.Text("boss_pos_random", "Boss Spawn: Random").Current),
-					["description"] = (Func<string>)(() => SettingsLocalization.Text("boss_pos_random_desc", "CZN bosses may appear in any act; each boss appears at most once per run.").Current),
+					["description"] = (Func<string>)(() => SettingsLocalization.Text("boss_pos_random_desc", "CZN bosses join the native boss pool and are drawn by the original game.").Current),
 					["get"] = (Func<bool>)(() => MonsterSettings.BossPosRandom),
 					["set"] = (Action<bool>)(v => MonsterSettings.BossPosRandom = v),
 					["order"] = 3,
@@ -138,7 +139,21 @@ internal static class SettingsExtensionRegistrar
 						}
 					}
 				},
-				// 7. 首领血量：自定义开关（仅测试用）
+				// 7. 指定首领（仅"指定"勾选时可用）：0 = 随机，1..N = BossCatalog 顺序
+				new Dictionary<string, object>
+				{
+					["type"] = "choice",
+					["id"] = "boss_select",
+					["label"] = (Func<string>)(() => SettingsLocalization.Text("boss_select", "Specified Boss").Current),
+					["description"] = (Func<string>)(() => SettingsLocalization.Text("boss_select_desc", "Which CZN boss to place in the chosen act. Random picks one that has not appeared this run.").Current),
+					["get"] = (Func<int>)(() => MonsterSettings.BossSelect),
+					["set"] = (Action<int>)(v => MonsterSettings.BossSelect = v),
+					["order"] = 6,
+					["parent_id"] = "boss_pos_specified",
+					["enabled"] = (Func<bool>)(() => MonsterSettings.CznMonstersEnabled && MonsterSettings.BossPosSpecified),
+					["options"] = BuildBossSelectOptions()
+				},
+				// 8. 首领血量：自定义开关（仅测试用）
 				new Dictionary<string, object>
 				{
 					["type"] = "toggle",
@@ -147,11 +162,11 @@ internal static class SettingsExtensionRegistrar
 					["description"] = (Func<string>)(() => SettingsLocalization.Text("boss_hp_custom_desc", "For testing only. Overrides the boss HP with the value below.").Current),
 					["get"] = (Func<bool>)(() => MonsterSettings.BossHpCustom),
 					["set"] = (Action<bool>)(v => MonsterSettings.BossHpCustom = v),
-					["order"] = 6,
+					["order"] = 7,
 					["parent_id"] = "czn_monsters_enabled",
 					["enabled"] = (Func<bool>)(() => MonsterSettings.CznMonstersEnabled)
 				},
-				// 8. 自定义血量。
+				// 9. 自定义血量。
 				//    共享设置页由角色 mod 内置的旧版 CznCore 渲染，旧版只支持
 				//    toggle / slider / choice，不支持 text；用 text 时勾选开关会触发
 				//    旧版重建，整行被静默丢弃。这里改用 slider（1–9999，步长 1），
@@ -169,7 +184,7 @@ internal static class SettingsExtensionRegistrar
 					["step"] = 1.0,
 					["suffix"] = "",
 					["display_offset"] = 0.0,
-					["order"] = 7,
+					["order"] = 8,
 					["parent_id"] = "boss_hp_custom",
 					["enabled"] = (Func<bool>)(() => MonsterSettings.CznMonstersEnabled && MonsterSettings.BossHpCustom)
 				}
@@ -177,5 +192,36 @@ internal static class SettingsExtensionRegistrar
 		};
 
 		AppDomain.CurrentDomain.SetData(SharedSettingsExtensionRegistry.RegistryDataKey, providers);
+	}
+
+	/// <summary>
+	/// 「指定首领」下拉框选项：第一项固定为 0=随机，其余按 <see cref="MonsterContent.BossCatalog"/>
+	/// 顺序编号 1..N。名称在渲染时才解析（<see cref="MonsterContent.BossEntry.DisplayName"/>），
+	/// 避免注册阶段提前触发 <c>ModelDb</c>。
+	/// </summary>
+	private static object[] BuildBossSelectOptions()
+	{
+		List<object> options = new List<object>
+		{
+			new Dictionary<string, object>
+			{
+				["id"] = 0,
+				["label"] = (Func<string>)(() => SettingsLocalization.Text("boss_select_random", "Random (Default)").Current)
+			}
+		};
+
+		IReadOnlyList<MonsterContent.BossEntry> catalog = MonsterContent.BossCatalog;
+		for (int i = 0; i < catalog.Count; i++)
+		{
+			MonsterContent.BossEntry entry = catalog[i];
+			options.Add(new Dictionary<string, object>
+			{
+				["id"] = i + 1,
+				// 首领名走游戏 encounters 表的 title，随语言自动切换
+				["label"] = (Func<string>)(() => entry.DisplayName)
+			});
+		}
+
+		return options.ToArray();
 	}
 }

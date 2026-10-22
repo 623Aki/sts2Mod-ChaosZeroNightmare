@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CznMonster.Content.Audio;
+using CznMonster.Content.Bestiary;
 using CznMonster.Content.Powers;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Audio;
@@ -15,6 +16,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.ValueProps;
 using CznMonster.Settings;
 
@@ -401,5 +403,31 @@ public sealed class Seraphion : MonsterModel
 	{
 		return moveStateId != "SOVEREIGN_UPRISING_MOVE"
 			&& moveStateId != "FADING_MOVE";
+	}
+
+	/// <inheritdoc />
+	/// <remarks>
+	/// 图鉴条目固定展示「常态骨架」这套动作（<c>normal_*</c> / <c>stance2_*</c>），
+	/// 死亡用 <c>normal_death</c>（濒死形态的 <c>stance3_death</c> 只在战斗中由死亡拦截钩子触发，
+	/// 图鉴里没有「濒死」这个前置状态）。复归回稳借持盾形态的三连 clip，与战斗里复归拍的收尾动作同源。
+	/// </remarks>
+	public override List<BestiaryMonsterMove> GenerateBestiaryMoveList(NCreatureVisuals? creatureVisuals)
+	{
+		return CznBestiaryMoves.Build(
+			this,
+			creatureVisuals,
+			idleClip: "normal_idle",
+			actions: new CznBestiaryAction[]
+			{
+				new(GetBestiaryMoveName("SOVEREIGN_BITE"), "normal_attack_play1", "bite"),
+				new(GetBestiaryMoveName("FINALE_CYCLONE"), "normal_attack_play2", "cyclone"),
+				new(GetBestiaryMoveName("REVIVAL"), "stance1_attack_play1", "shieldstance"),
+				new(GetBestiaryMoveName("FINALE_OPEN"), "stance2_buff_1", "finalebuff"),
+				new(GetBestiaryMoveName("FINALE_LOOP"), "stance2_attack_play1", "finalquad"),
+			},
+			hurtClip: "normal_hit",
+			hurtSfx: "hurt",
+			dieClip: "normal_death",
+			dieSfx: "death");
 	}
 }

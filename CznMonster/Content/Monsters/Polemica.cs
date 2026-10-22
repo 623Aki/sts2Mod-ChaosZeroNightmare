@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CznMonster.Content.Audio;
+using CznMonster.Content.Bestiary;
 using CznMonster.Content.Powers;
 using CznMonster.Settings;
 using MegaCrit.Sts2.Core.Animation;
@@ -17,6 +18,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace CznMonster.Content.Monsters;
@@ -413,5 +415,31 @@ public sealed class Polemica : MonsterModel
 		return moveStateId != "REBROOD_MOVE"
 			&& moveStateId != "ELITE_REBROOD_MOVE"
 			&& moveStateId != "SHELL_MOVE";
+	}
+
+	/// <inheritdoc />
+	/// <remarks>
+	/// 图鉴招式表改为「纯演出」：每条按钮只播自己的 clip + 同源采样，不再走 <c>PerformMove</c>。
+	/// 死亡动作显式列成 <c>normal_death</c>（原生只探测名为 <c>die</c> 的 clip，探测不到 CZN 的命名）。
+	/// </remarks>
+	public override List<BestiaryMonsterMove> GenerateBestiaryMoveList(NCreatureVisuals? creatureVisuals)
+	{
+		return CznBestiaryMoves.Build(
+			this,
+			creatureVisuals,
+			idleClip: "normal_idle",
+			actions: new CznBestiaryAction[]
+			{
+				new(GetBestiaryMoveName("BROOD_CALL"), "normal_skill2_3", "skill2_3"),
+				new(GetBestiaryMoveName("LEGION_CHARGE"), "normal_skill1_3", "skill1_3"),
+				new(GetBestiaryMoveName("SOLO_STRIKE"), "normal_skill4", "skill4"),
+				new(GetBestiaryMoveName("ELITE_HATCH"), "normal_skill2_3", "skill2_3"),
+				new(GetBestiaryMoveName("SECOND_WIND_CHARGE"), "normal_skill1_3", "skill1_3"),
+				new(GetBestiaryMoveName("FINAL_STRIKE"), "normal_skill4", "skill4"),
+			},
+			hurtClip: "normal_hit",
+			hurtSfx: "hurt",
+			dieClip: "normal_death",
+			dieSfx: "death");
 	}
 }

@@ -1,0 +1,13 @@
+
+agnes_echo.png
+size: 216,244
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+magic1_1
+  rotate: false
+  xy: 2, 2
+  size: 212, 240
+  orig: 212, 240
+  offset: 0, 0
+  index: -1

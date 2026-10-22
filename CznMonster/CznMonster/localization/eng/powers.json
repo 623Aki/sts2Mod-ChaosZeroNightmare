@@ -6,5 +6,8 @@
   "POLEMICA_BROOD_POWER.description": "Polemica's ritual count increases by 1 each time she acts. At 3, her next action executes all summonses and calls a new wave.",
 
   "SERAPHION_HALF_DEATH_POWER.title": "Half-Death Undying",
-  "SERAPHION_HALF_DEATH_POWER.description": "While Arkrus lives, Seraphion cannot die: lethal loss is intercepted at 1 HP and it falls into a dying state, immune to all further HP loss. Arkrus' Rescue Hymn can reclaim it; should Arkrus die, the dying Seraphion perishes as well."
+  "SERAPHION_HALF_DEATH_POWER.description": "While Arkrus lives, Seraphion's HP cannot reach 0: the loss is intercepted at 1 HP, and from then on it enters a dying state in which it takes no HP loss and can no longer be targeted. Arkrus' Rescue Hymn can raise it; when Arkrus dies, the dying Seraphion perishes with it.",
+
+  "AGNES_RESONANCE_POWER.title": "Resonance",
+  "AGNES_RESONANCE_POWER.description": "Resonance is Agnes' pressure gauge: she gains 3 stacks when she transforms, then 2 more for each charging move, up to 10.\n[gold]Execution[/gold] consumes all Resonance: damage = base × (1 + Resonance + 2 × shards on the field), after which she regains 3 stacks. Each Echo Shard on the field also increases [gold]Execution[/gold] damage."
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using CznMonster.Content;
 using CznMonster.Content.Encounters;
+using CznMonster.Content.Monsters;
 using CznMonster.Settings;
 using Godot;
 using HarmonyLib;
@@ -16,11 +17,11 @@ using MegaCrit.Sts2.Core.Rooms;
 namespace CznMonster.Registration;
 
 /// <summary>
-/// 图鉴「CZN 怪物」专属区块（设计文档 §6.5）。
+/// 图鉴「CZN 怪物」专属区块（波勒米卡设计文档 §1.6）。
 ///
-/// <para>原生图鉴按「章节 → 遭遇 → AllPossibleMonsters」收集条目，而本 mod 首领只走
-/// 首领替换（<see cref="BossPlacementPatch"/>），从不进章节遭遇池，
-/// 因此 6 只 CZN 怪在原生流程下永远收集不到 —— 表现为图鉴里根本没有它们。</para>
+/// <para>原生图鉴按「章节 → 遭遇 → AllPossibleMonsters」收集条目，数据源是 ModelDb 的
+/// canonical act；而 <see cref="MonsterPoolPatch"/> 只往运行中的 mutable act 注入首领，
+/// 因此 CZN 怪在图鉴里永远收集不到 —— 表现为图鉴里根本没有它们。</para>
 ///
 /// <para>做法：在图谱追加「事件遭遇」区块（<c>NBestiary.AddEvents</c>）的位置，
 /// 先插入一个本 mod 的区块标题（分隔条复用 <see cref="NBestiaryLabelDivider"/>），
@@ -40,6 +41,9 @@ internal static class CznMonsterBestiaryPatch
 	private const string AddEntriesMethodName = "AddEntries";
 
 	private const string BestiaryListFieldName = "_bestiaryList";
+
+	/// <summary>原生已收录怪物 id 集合（CreateEntries 里建好，AddEntries 用它判锁定态）。</summary>
+	private const string DiscoveredMonsterIdsFieldName = "_discoveredMonsterIds";
 
 	/// <summary>原生私有 AddEntries(List&lt;BestiaryEntry&gt;)，Invoke 前解析一次。</summary>
 	private static readonly MethodInfo? _addEntries = AccessTools.Method(typeof(NBestiary), AddEntriesMethodName);
@@ -89,7 +93,7 @@ internal static class CznMonsterBestiaryPatch
 		bestiaryList.AddChildSafely(
 			NBestiaryLabelDivider.Create(new LocString("bestiary", SectionLocKey)));
 
-		// 8 只 CZN 怪：波勒米卡组（boss + 5 召唤物）+ 塞拉菲翁双怪组（boss + 同伴），
+		// CZN 怪：波勒米卡组（boss + 5 召唤物）+ 塞拉菲翁双怪组（boss + 同伴）+ 阿涅丝组，
 		// 条目按遭遇分组、以 RoomType 区分
 		List<BestiaryEntry> entries = new();
 		foreach (EncounterModel boss in MonsterContent.BossEncounters)
@@ -98,6 +102,14 @@ internal static class CznMonsterBestiaryPatch
 			{
 				entries.Add(BestiaryEntry.FromMonster(monster, boss, boss.RoomType));
 			}
+
+			// 阿涅丝的第二形态是运行时换骨换出来的，同一个模型里图鉴只能看到 Form A；
+			// 这里把展示型模型 AgnesFinal 作为同遭遇的第二条独立条目补上，
+			// 于是「阿涅丝」与「阿涅丝·弗布尔加扎伊特」在图鉴里分开显示（各自一套骨架与动作）。
+			if (boss is AgnesBoss)
+			{
+				entries.Add(BestiaryEntry.FromMonster(ModelDb.Monster<AgnesFinal>(), boss, boss.RoomType));
+			}
 		}
 
 		if (entries.Count == 0)
@@ -105,6 +117,27 @@ internal static class CznMonsterBestiaryPatch
 			return;
 		}
 
+		UnlockSecondForm(bestiary);
+
 		_addEntries.Invoke(bestiary, new object[] { entries });
+	}
+
+	/// <summary>
+	/// 第二形态与本体是同一场战斗的两种形态：本体已收录时把它的 id 临时并进本帧的「已收录」集合，
+	/// 让新条目不要显示成「???」。只改 <c>CreateEntries</c> 每次开图鉴临时建的 HashSet，
+	/// 不写存档、不影响原生解锁判定（零侵入）。
+	/// </summary>
+	private static void UnlockSecondForm(NBestiary bestiary)
+	{
+		FieldInfo? field = AccessTools.Field(typeof(NBestiary), DiscoveredMonsterIdsFieldName);
+		if (field?.GetValue(bestiary) is not HashSet<ModelId> discovered)
+		{
+			return;
+		}
+
+		if (discovered.Contains(ModelDb.Monster<Agnes>().Id))
+		{
+			discovered.Add(ModelDb.Monster<AgnesFinal>().Id);
+		}
 	}
 }

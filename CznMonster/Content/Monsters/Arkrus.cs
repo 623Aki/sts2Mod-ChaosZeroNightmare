@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CznMonster.Content.Audio;
+using CznMonster.Content.Bestiary;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Audio;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
@@ -14,6 +15,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace CznMonster.Content.Monsters;
@@ -279,5 +281,31 @@ public sealed class Arkrus : MonsterModel
 		animator.AddAnyState("Hit", groggy, () => Creature.IsStunned);
 		animator.AddAnyState("Hit", hit);
 		return animator;
+	}
+
+	/// <inheritdoc />
+	/// <remarks>
+	/// 图鉴展示守护定式 + 救援三拍：救援三拍本来就是 <c>stance1_*</c> clip，可直接单播。
+	/// 死亡用常态骨架的 <c>normal_death</c>（救援形态死亡 <c>stance1_death</c> 需要「正在救援」这个
+	/// 战斗内状态才能触发，图鉴里不存在该前置，故不单列）。
+	/// </remarks>
+	public override List<BestiaryMonsterMove> GenerateBestiaryMoveList(NCreatureVisuals? creatureVisuals)
+	{
+		return CznBestiaryMoves.Build(
+			this,
+			creatureVisuals,
+			idleClip: "normal_idle",
+			actions: new CznBestiaryAction[]
+			{
+				new(GetBestiaryMoveName("GUARD_WARD"), "normal_buff_1", "ward"),
+				new(GetBestiaryMoveName("GUARD_ASSAULT"), "normal_attack_play1", "assault"),
+				new(GetBestiaryMoveName("RESCUE_STRIKE"), "stance1_m_attack_01", "rescuestrike"),
+				new(GetBestiaryMoveName("RESCUE_CURSE"), "stance1_debuff_1", "rescuecurse"),
+				new(GetBestiaryMoveName("RESCUE_SONG"), "stance1_unique_1", "rescuesong"),
+			},
+			hurtClip: "normal_hit",
+			hurtSfx: null,
+			dieClip: "normal_death",
+			dieSfx: "death");
 	}
 }

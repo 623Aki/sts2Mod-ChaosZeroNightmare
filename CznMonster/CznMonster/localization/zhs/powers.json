@@ -6,5 +6,8 @@
   "POLEMICA_BROOD_POWER.description": "波勒米卡每行动一次，此计数 +1。达到 3 时，它的下一次行动将处决全部召唤物并召唤新的一波。",
 
   "SERAPHION_HALF_DEATH_POWER.title": "濒死不灭",
-  "SERAPHION_HALF_DEATH_POWER.description": "只要阿克鲁斯存活，塞拉菲翁的生命就无法降到 0：生命流失在触底时被拦截至 1 点，且此后陷入濒死、不再作为可选目标。阿克鲁斯的救援颂歌可以拉起它；阿克鲁斯死亡时，濒死的塞拉菲翁随之消亡。"
+  "SERAPHION_HALF_DEATH_POWER.description": "只要阿克鲁斯存活，塞拉菲翁的生命就无法降到 0：生命流失在触底时被拦截至 1 点，且此后陷入濒死、不再作为可选目标。阿克鲁斯的救援颂歌可以拉起它；阿克鲁斯死亡时，濒死的塞拉菲翁随之消亡。",
+
+  "AGNES_RESONANCE_POWER.title": "共鸣",
+  "AGNES_RESONANCE_POWER.description": "共鸣是阿涅丝的威压刻度：变身后获得 3 层，她每进行一次蓄力行动 +2 层，最多 10 层。\n[gold]处决[/gold]会消耗所有共鸣：伤害 = 基础 ×（1 + 共鸣 + 2×场上碎片数），随后重新获得 3 层。场上每只余响碎片也会让[gold]处决[/gold]伤害提高。"
 }

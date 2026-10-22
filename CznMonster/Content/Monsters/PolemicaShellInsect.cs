@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CznMonster.Content.Audio;
+using CznMonster.Content.Bestiary;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Audio;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
@@ -113,4 +114,12 @@ public sealed class PolemicaShellInsect : PolemicaAddMonster
 	/// <inheritdoc />
 	/// <remarks>处决时已经播过 <c>fatal</c> 采样，死亡不再叠一条。</remarks>
 	protected override string? DeathSfxClip => null;
+
+	/// <inheritdoc />
+	/// <remarks>甲壳撕咬 <c>skill1</c> / 甲壳防御 <c>skill2</c>。</remarks>
+	protected override IReadOnlyList<CznBestiaryAction> BestiaryActions => new[]
+	{
+		new CznBestiaryAction(GetBestiaryMoveName("SHELL_BITE"), "normal_skill1", "skill1"),
+		new CznBestiaryAction(GetBestiaryMoveName("SHELL_GUARD"), "normal_skill2", "skill2"),
+	};
 }

@@ -23,7 +23,7 @@
 | R1 | 使用 CZNCore 作为框架，继承框架的设置功能，其他角色相关功能移除 | 工程内拷贝 CznCore 源码（与 `CznHeidemarie/CznCore` 同构），只使用其**设置子系统**（`SkinSettingsUi.TryInjectShared` + `SharedSettingsExtensionRegistry`）；不调用 `CharacterSkinModBootstrap`、不注册角色 Profile、不引用角色相关运行时 |
 | R2 | 设置：是否启用行动计数；启用后可设范围（1 所有首领 / 2 所有首领+精英 / 3 所有怪物） | 1 个开关 + 1 个三选下拉，下拉为开关的子级（父关子禁） |
 | R3 | 设置：是否启用 CZN 怪物（默认关闭，关闭时下方控件不允许修改） | 1 个开关，默认关；其下控件（首领位置、章节、血量）全部挂 `parent_id` 级联禁用 |
-| R4 | 首领出现位置：随机（1–3 章都能出现，同一只一局只出现一次）/ 指定（勾选后下拉可选第 1、2、3 章） | 2 个互斥复选框 + 1 个章节下拉（仅"指定"勾选时可用） |
+| R4 | 首领出现位置：随机（入原生首领池，是否出现/出现在哪章由原生抽取）/ 指定（勾选后下拉可选第 1、2、3 章与具体首领） | 2 个互斥复选框 + 章节下拉 + 首领下拉（均仅"指定"勾选时可用） |
 | R5 | 首领血量：默认 / 自定义（文本输入），仅用于测试 | 默认/自定义开关 + 文本输入控件（按 §4.5 方案 B 扩框架新增） |
 | R6 | 非首领怪进入对应怪物池，由原生系统自行抽取 | 补丁把自定义遭遇追加进章节遭遇列表，弱/普通/精英分流由 `RoomType` + `IsWeak` 决定 |
 | R7 | 行动计数：怪物产生意图时赋予计数器；玩家每打出 1 张卡计数器 −1；归零怪物施放意图，随后重新产生意图并赋予新计数器；已行动的怪计数器归零仍可再行动，循环不止（防玩家无限流） | 补丁点：`RollMove`（赋予）→ `OnPlayWrapper`（仅主动出牌递减+触发中断）→ `TakeTurn`（中断去重） |
@@ -214,6 +214,7 @@ private static void Register()
 | `boss_pos_random` | toggle | 首领出现位置：随机 | 开 | parent=`czn_monsters_enabled` | 与"指定"互斥：任一个打开时 setter 自动关闭另一个 |
 | `boss_pos_specified` | toggle | 首领出现位置：指定 | 关 | parent=`czn_monsters_enabled` | 同上 |
 | `boss_chapter` | choice | 指定章节 | 1 | parent=`boss_pos_specified`，enabled=`boss_pos_specified` | 选项：1=第 1 章、2=第 2 章、3=第 3 章 |
+| `boss_select` | choice | 指定首领 | 0 随机 | parent=`boss_pos_specified`，enabled=`boss_pos_specified` | 选项：0=随机（默认）、1..N 按 `MonsterContent.BossCatalog` 顺序，标签取 encounters 表 title |
 | `boss_hp_custom` | toggle | 首领血量：自定义 | 关 | parent=`czn_monsters_enabled` | 关=用怪物原生血量；开=用下方数值（仅测试用） |
 | `boss_hp_value` | text（方案 B 新增） | 自定义血量 | — | parent=`boss_hp_custom`，enabled=`boss_hp_custom` | 整数 1–9999，非法输入不落盘 |
 
@@ -300,7 +301,7 @@ mod 侧注册描述：
 | `Slots` | 多怪时给槽位名（`EncounterModel.cs:171`） |
 | `TargetActIndex`（自定义字段） | 0/1/2 或 -1（全章节）；入池时过滤用 |
 
-### 5.3 非首领怪物入池（R6）
+### 5.3 遭遇入池（R6）
 
 补丁 `ActModel.get_AllEncounters` postfix，把本 mod 的遭遇按章节追加：
 
@@ -312,19 +313,22 @@ private static class AllEncountersPatch
     private static void Postfix(ActModel __instance, ref IEnumerable<EncounterModel> __result)
     {
         if (!MonsterSettings.CznMonstersEnabled) return;               // 总闸
-        var extra = MonsterContent.Encounters
-            .Where(e => (e.TargetActIndex < 0 || e.TargetActIndex == __instance.Index)
-                        && e.RoomType != RoomType.Boss);               // 首领永不进池
+        // 非首领：两种模式都入池，按 TargetActIndex 过滤章节
+        // 首领：只在「随机」模式入池，且只注入运行中的 mutable act
+        if (MonsterSettings.BossPosRandom && __instance.IsMutable)
+            extra.AddRange(MonsterContent.BossEncounters);
         if (extra.Any()) __result = __result.Concat(extra);
     }
 }
 ```
 
-- `AllWeakEncounters/AllRegularEncounters/AllEliteEncounters/AllMonsters` 全部由 `AllEncounters`
-  派生（`ActModel.cs:144-169`），**一个补丁覆盖全部池子**，弱/普通/精英分流由 `RoomType`+`IsWeak` 自动完成，
-  后续抽取完全走原生 `GenerateRooms` 的 GrabBag 逻辑（`ActModel.cs:348-383`）。
-- 首领遭遇**不进池**（首领只走 §6 的替换逻辑），避免与"随机/指定"规则打架。
-- 注意：该 getter 在 canonical/mutable 实例上都会被调用，追加对两侧都生效且无害。
+- `AllWeakEncounters/AllRegularEncounters/AllEliteEncounters/AllBossEncounters/AllMonsters` 全部由
+  `AllEncounters` 派生（`ActModel.cs:144-169`），**一个补丁覆盖全部池子**，弱/普通/精英/首领分流由
+  `RoomType`+`IsWeak` 自动完成，后续抽取完全走原生 `GenerateRooms` 的 GrabBag / `rng.NextItem` 逻辑
+  （`ActModel.cs:348-384`）。
+- **首领入池只对 mutable act 生效**：图鉴（`NBestiary.AddAct`）读的是 `ModelDb.Acts` 的 canonical 实例，
+  不注入则图鉴仍由 `CznMonsterBestiaryPatch` 单独补区块，不会重复。
+- 首领在随机模式下由原生 rng 决定是否出现、出现在哪一章，**不再保证必出**；同局是否重复也交给原生。
 
 ---
 
@@ -338,61 +342,34 @@ private static class AllEncountersPatch
 已知缺口：控制台 `ActConsoleCmd` 单独换 act 的路径（`src/Core/DevConsole/ConsoleCommands/ActConsoleCmd.cs:50`）
 不走这里——dev 专用命令，暂不覆盖（记入风险）。
 
-### 6.2 随机模式（同一只一局只出现一次）
+### 6.2 随机模式（首领入池，原生抽取）
 
-```csharp
-// Registration/BossPlacementPatch.cs（伪代码）
-private static readonly HashSet<string> UsedBossIds = new(StringComparer.Ordinal);
-private static ulong _usedBossSeed;
+随机模式**不写任何代码去改首领**：首领遭遇由 §5.3 的 `MonsterPoolPatch` 并进 mutable act 的
+`AllEncounters`，`AllBossEncounters` 随之包含它们，随后由原生 `ActModel.GenerateRooms` 的
+`_rooms.Boss = rng.NextItem(AllBossEncounters)`（`ActModel.cs:384`）决定：
 
-private static void ApplyRandom(RunState state)
-{
-    EnsureInitialized(state);                    // 换局/读档后重建 UsedBossIds（见下）
-    var pool = MonsterContent.BossEncounters
-        .Where(e => !UsedBossIds.Contains(e.Id.Entry))
-        .ToList();
-    if (pool.Count == 0) return;                 // 不够分：保留原生首领
-    foreach (ActModel act in state.Acts)
-    {
-        var pick = state.Rng.UpFront.NextItem(pool);
-        if (pick == null) break;
-        act.SetBossEncounter(pick.ToMutable());  // ActModel.cs:466
-        UsedBossIds.Add(pick.Id.Entry);
-        pool.Remove(pick);
-    }
-}
-
-// 换局检测：seed 变化即新局；读档时把存档里已存在的 CZN 首领种子集补回
-private static void EnsureInitialized(RunState state)
-{
-    if (_usedBossSeed == state.Rng.Seed) return;
-    UsedBossIds.Clear();
-    foreach (ActModel act in state.Acts)
-    {
-        string id = act.BossEncounter.Id.Entry;
-        if (MonsterContent.IsCznBoss(id)) UsedBossIds.Add(id);
-    }
-    _usedBossSeed = state.Rng.Seed;
-}
-```
-
-- 三章在开局一次性随机完（与原生同时机，`RunManager.cs:753-766`），跨章去重即"同一只一局只出现一次"。
+- 是否出现 CZN 首领、出现在哪一章，由原生 rng + 池内权重决定，**不再保证必出**；
+- 同一只首领在同局重复出现是允许的（原生语义，不做跨章去重）；
 - `state.Acts[i]` 天然处理备选章节（Underdocks/Overgrowth 都是 index 0）。
-- 随机数用 `state.Rng.UpFront`（原生同款 Rng，`ActModel.cs:384` 附近用法）。
 
 ### 6.3 指定模式
 
 ```csharp
-if (settings.BossPosSpecified)
+// RunManager.GenerateRooms 的 postfix：原生三章首领都已定好后
+private static void ApplySpecified(RunState state)
 {
-    int idx = settings.BossChapter - 1;                  // 1..3 → 0..2
-    if (idx >= 0 && idx < state.Acts.Count)
-        state.Acts[idx].SetBossEncounter(settings.ChosenBossEncounter.ToMutable());
+    ActModel act = state.Acts.FirstOrDefault(a => a.Index == MonsterSettings.BossChapter - 1);
+    // boss_select = 0 时在未出现的 CZN 首领里随机抽一只；否则用玩家指定的那只
+    EncounterModel boss = MonsterContent.GetSelectedBoss(MonsterSettings.BossSelect)
+        ?? state.Rng.UpFront.NextItem(pool);
+    act.SetBossEncounter(boss);                          // ActModel.cs:466
 }
 ```
 
-- 下拉选项即本 mod 的首领列表（内容量少时固定一只也成立；多只时下拉列出全部 CZN 首领）。
-- 未指定章节保持原生随机首领。
+- 指定模式下首领**不入池**（`BossPosRandom` 被互斥关闭），因此其余章节严格保持原生首领。
+- `boss_select` 下拉：0=随机（默认），1..N 对应 `MonsterContent.BossCatalog` 顺序，
+  名称在渲染时取 `EncounterModel.Title.GetFormattedText()`，随语言自动切换。
+- 若指定的那只已在本局其他章节出现（读档后重复应用等），跳过替换、保留原生。
 
 ### 6.4 血量覆盖（仅测试）
 
@@ -828,8 +805,8 @@ public static bool IsCountedCreature(MonsterModel monster, CombatState cs, out M
 | # | 目标 | 类型 | 作用 | 依据 |
 |---|---|---|---|---|
 | P1 | `NSettingsScreen._Ready` / `OnSubmenuOpened` | Postfix | 注入共享设置面板 | `Entry.cs:21-37` 范式 |
-| P2 | `ActModel.get_AllEncounters` | Postfix（改 `__result`） | CZN 非首领遭遇入池 | `ActModel.cs:144-169` |
-| P3 | `RunManager.GenerateRooms` | Postfix | 随机/指定首领替换 | `RunManager.cs:743-767` |
+| P2 | `ActModel.get_AllEncounters` | Postfix（改 `__result`） | CZN 遭遇入池（随机模式含首领，仅 mutable act） | `ActModel.cs:144-169` |
+| P3 | `RunManager.GenerateRooms` | Postfix | 指定模式首领替换（随机模式不改写） | `RunManager.cs:743-767` |
 | P4 | `MonsterModel.RollMove` | Postfix | 赋予计数器（基数公式 §7.4） | `MonsterModel.cs:416` |
 | P5 | `CardModel.OnPlayWrapper` | Postfix（捕获 `__result` Task） | 仅主动出牌递减；等牌结算完再减；归零则打标记并触发中断链 | `CardModel.cs:1858` |
 | P6 | `Creature.TakeTurn` | Prefix（可跳过） | 去重：当前意图已排队/正在被中断链执行时跳过，防同一意图双演 | `Creature.cs:711` |

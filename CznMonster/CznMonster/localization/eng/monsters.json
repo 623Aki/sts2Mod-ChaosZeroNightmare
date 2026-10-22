@@ -27,6 +27,27 @@
   "ARKRUS.moves.RESCUE_CURSE.title": "Rescue Hex",
   "ARKRUS.moves.RESCUE_SONG.title": "Rescue Hymn",
 
+  "AGNES.name": "Agnes",
+  "AGNES_FINAL.name": "Agnes Furburgazait",
+  "AGNES.moves.AGNES_COMBO.title": "Resonant Barrage",
+  "AGNES.moves.AGNES_BUFF.title": "Resonant Surge",
+  "AGNES.moves.AGNES_HEAVY.title": "Heavy Slam",
+  "AGNES.moves.AGNES_TRANSFORM.title": "Ascendant Metamorphosis",
+  "AGNES.moves.AGNES_HEAVY_B.title": "Calamity Smash",
+  "AGNES.moves.AGNES_TRIPLE.title": "Triple Rend",
+  "AGNES.moves.AGNES_SUPPRESS.title": "Suppressing Wave",
+  "AGNES.moves.AGNES_SLASH.title": "Kaleido Slash",
+  "AGNES.moves.AGNES_SUPPRESS_A.title": "Suppressing Whisper",
+  "AGNES.moves.AGNES_EXECUTE.title": "Execution",
+
+  "AGNES_FINAL.moves.AGNES_HEAVY_B.title": "Calamity Smash",
+  "AGNES_FINAL.moves.AGNES_TRIPLE.title": "Triple Rend",
+  "AGNES_FINAL.moves.AGNES_SUPPRESS.title": "Suppressing Wave",
+  "AGNES_FINAL.moves.AGNES_SLASH.title": "Kaleido Slash",
+  "AGNES_FINAL.moves.AGNES_EXECUTE.title": "Execution",
+
+  "AGNES_ECHO.name": "Echo Shard",
+
   "POLEMICA_LEGION_SOLDIER.name": "Unbroken Kulerti",
   "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_RALLY.title": "Rallying Sting",
   "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_HARASS.title": "Bite",

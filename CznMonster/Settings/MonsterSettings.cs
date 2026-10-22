@@ -32,6 +32,9 @@ internal static class MonsterSettings
 
 	private static int _bossChapter = 1;
 
+	// 指定首领：0=随机（默认），1..N=MonsterContent.BossEncounters 下标 +1
+	private static int _bossSelect;
+
 	private static bool _bossHpCustom;
 
 	private static string _bossHpValueText = string.Empty;
@@ -111,6 +114,20 @@ internal static class MonsterSettings
 		set
 		{
 			_bossChapter = Math.Clamp(value, 1, 3);
+			Save();
+		}
+	}
+
+	/// <summary>
+	/// 指定首领：0 = 随机（默认），1..N = MonsterContent.BossEncounters 的下标 +1。
+	/// 只在「首领出现位置：指定章节」开启时生效；不再是 CZN 首领时按随机处理。
+	/// </summary>
+	public static int BossSelect
+	{
+		get => _bossSelect;
+		set
+		{
+			_bossSelect = Math.Max(0, value);
 			Save();
 		}
 	}
@@ -195,6 +212,7 @@ internal static class MonsterSettings
 		_bossPosRandom = true;
 		_bossPosSpecified = false;
 		_bossChapter = 1;
+		_bossSelect = 0;
 		_bossHpCustom = false;
 		_bossHpValueText = DefaultHp.ToString(CultureInfo.InvariantCulture);
 		_lastValidText = _bossHpValueText;
@@ -227,6 +245,7 @@ internal static class MonsterSettings
 			_bossPosRandom = false;
 		}
 		_bossChapter = Math.Clamp((int)Config.GetValue("czn_monsters", "boss_chapter", 1), 1, 3);
+		_bossSelect = Math.Max(0, (int)Config.GetValue("czn_monsters", "boss_select", 0));
 		_bossHpCustom = (bool)Config.GetValue("czn_monsters", "boss_hp_custom", false);
 		_bossHpValueText = (string)Config.GetValue("czn_monsters", "boss_hp_value", DefaultHp.ToString(CultureInfo.InvariantCulture));
 		if (string.IsNullOrWhiteSpace(_bossHpValueText))
@@ -244,6 +263,7 @@ internal static class MonsterSettings
 		Config.SetValue("czn_monsters", "boss_pos_random", _bossPosRandom);
 		Config.SetValue("czn_monsters", "boss_pos_specified", _bossPosSpecified);
 		Config.SetValue("czn_monsters", "boss_chapter", _bossChapter);
+		Config.SetValue("czn_monsters", "boss_select", _bossSelect);
 		Config.SetValue("czn_monsters", "boss_hp_custom", _bossHpCustom);
 		Config.SetValue("czn_monsters", "boss_hp_value", _bossHpValueText);
 		if (DirAccess.MakeDirRecursiveAbsolute(DirPath) == Error.Ok)

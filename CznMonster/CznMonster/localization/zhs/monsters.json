@@ -27,6 +27,27 @@
   "ARKRUS.moves.RESCUE_CURSE.title": "救援咒缚",
   "ARKRUS.moves.RESCUE_SONG.title": "救援颂歌",
 
+  "AGNES.name": "阿涅丝",
+  "AGNES_FINAL.name": "阿涅丝·弗布尔加扎伊特",
+  "AGNES.moves.AGNES_COMBO.title": "共鸣连击",
+  "AGNES.moves.AGNES_BUFF.title": "同调增幅",
+  "AGNES.moves.AGNES_HEAVY.title": "重锤",
+  "AGNES.moves.AGNES_TRANSFORM.title": "变身·升格",
+  "AGNES.moves.AGNES_HEAVY_B.title": "崩坏重击",
+  "AGNES.moves.AGNES_TRIPLE.title": "三裂闪击",
+  "AGNES.moves.AGNES_SUPPRESS.title": "压制咒波",
+  "AGNES.moves.AGNES_SLASH.title": "万花斩",
+  "AGNES.moves.AGNES_SUPPRESS_A.title": "压制低语",
+  "AGNES.moves.AGNES_EXECUTE.title": "处决",
+
+  "AGNES_FINAL.moves.AGNES_HEAVY_B.title": "崩坏重击",
+  "AGNES_FINAL.moves.AGNES_TRIPLE.title": "三裂闪击",
+  "AGNES_FINAL.moves.AGNES_SUPPRESS.title": "压制咒波",
+  "AGNES_FINAL.moves.AGNES_SLASH.title": "万花斩",
+  "AGNES_FINAL.moves.AGNES_EXECUTE.title": "处决",
+
+  "AGNES_ECHO.name": "余响碎片",
+
   "POLEMICA_LEGION_SOLDIER.name": "不屈的库勒提",
   "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_RALLY.title": "战吼突刺",
   "POLEMICA_LEGION_SOLDIER.moves.SOLDIER_HARASS.title": "撕咬",

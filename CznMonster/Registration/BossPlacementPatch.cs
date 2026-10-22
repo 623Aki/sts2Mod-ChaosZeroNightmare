@@ -7,30 +7,21 @@ using CznMonster.Content.Monsters;
 using CznMonster.Settings;
 using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace CznMonster.Registration;
 
 /// <summary>
-/// P3 首领位置补丁（设计文档 §6.2）：
-/// 在 <see cref="RunManager.GenerateRooms"/> postfix 里按设置替换各章首领。
-/// 本次运行已出现的 CZN 首领记入 <see cref="UsedBossIds"/>，同一次运行不重复（R7）。
+/// P3 首领位置补丁（设计文档 §6.2 / §6.3）：
+/// <para><b>随机模式</b>不再改写首领。首领遭遇由 <see cref="MonsterPoolPatch"/> 并入原生
+/// <c>AllBossEncounters</c>，出现与否、出现在哪一章全部交给原生 <c>GenerateRooms</c> 抽取。</para>
+/// <para><b>指定模式</b>在 <see cref="RunManager.GenerateRooms"/> postfix 里把所选章节的首领
+/// 替换成「指定首领」或未使用的 CZN 首领中的随机一只；其余章节保持原生首领。</para>
 /// </summary>
 [HarmonyLib.HarmonyPatch(typeof(RunManager), "GenerateRooms")]
 internal static class BossPlacementPatch
 {
-	// 本次运行已使用的 CZN 首领 id（用于随机模式去重）
-	internal static readonly HashSet<string> UsedBossIds = new HashSet<string>(StringComparer.Ordinal);
-
-	// 记录本次运行的状态对象：新开一局/读档时重建去重集合（§6.2 伪代码）。
-	// 只比 seed 不够：极小概率新局同 seed 会把上一局的 UsedBossIds 带进来。
-	private static ulong _usedBossSeed;
-
-	private static RunState? _lastState;
-
-	// SetUpNewSingleplayer / SetUpNewMultiplayer 的前缀补丁捕获 RunState（公开 API），
-	// 取不到时回退 DebugOnlyGetState()
+	// 记录本次运行的状态对象（仅用于取 RunState；SetUpNew* 前缀补丁捕获，取不到回退 DebugOnlyGetState）
 	private static RunState? _capturedState;
 
 	internal static void CaptureState(RunState state)
@@ -51,56 +42,28 @@ internal static class BossPlacementPatch
 			{
 				return;
 			}
+
+			// 随机模式：首领进入原生池后由原生抽取，这里不做任何改写（避免"必出"）
+			if (!MonsterSettings.BossPosSpecified)
+			{
+				return;
+			}
+
 			RunState? state = CurrentState();
 			if (state == null)
 			{
 				return;
 			}
-			EnsureInitialized(state);
-
-			// 指定模式优先；随机模式；两个都关 = 不替换，保留原生首领。
-			if (MonsterSettings.BossPosSpecified)
-			{
-				ApplySpecified(state);
-			}
-			else if (MonsterSettings.BossPosRandom)
-			{
-				ApplyRandom(state);
-			}
+			ApplySpecified(state);
 		}
-		catch (System.Exception ex)
+		catch (Exception ex)
 		{
 			MainFile.Log.Warn($"CznMonster 首领位置应用失败：{ex.GetType().Name}: {ex.Message}");
 		}
 	}
 
 	/// <summary>
-	/// 新局/读档后重建去重集合。读档时 Acts 里可能已经有 CZN 首领，
-	/// 只清空会导致同一只再次被选中或重复替换。
-	/// </summary>
-	private static void EnsureInitialized(RunState state)
-	{
-		if (ReferenceEquals(_lastState, state))
-		{
-			return;
-		}
-		_lastState = state;
-		_usedBossSeed = state.Rng.Seed;
-		UsedBossIds.Clear();
-		foreach (ActModel act in state.Acts)
-		{
-			EncounterModel? boss = act.BossEncounter;
-			if (boss != null && MonsterContent.IsCznBoss(boss.Id.Entry))
-			{
-				UsedBossIds.Add(boss.Id.Entry);
-			}
-		}
-	}
-
-	/// <summary>
-	/// 指定模式：把一个未使用的 CZN 首领随机放进所选章节。
-	/// 首领原本只有一只时等价于旧的单选行为；现在有多只（波勒米卡 / 塞拉菲翁双怪组），
-	/// 且没有单独的「首领选择」设置项，于是在未用 CZN 首领里随机（同局去重依旧生效）。
+	/// 指定模式：把「指定首领」（未指定则随机取一只本局未出现的 CZN 首领）放进所选章节。
 	/// </summary>
 	private static void ApplySpecified(RunState state)
 	{
@@ -112,20 +75,31 @@ internal static class BossPlacementPatch
 			return;
 		}
 
-		List<EncounterModel> pool = new List<EncounterModel>();
-		foreach (EncounterModel boss in MonsterContent.BossEncounters)
+		// 设置里明确选了某只首领就照办；选「随机」时在本局未出现过的 CZN 首领里抽
+		EncounterModel? chosen = MonsterContent.GetSelectedBoss(MonsterSettings.BossSelect);
+		if (chosen == null)
 		{
-			if (!UsedBossIds.Contains(boss.Id.Entry))
+			List<EncounterModel> pool = new List<EncounterModel>();
+			foreach (EncounterModel boss in MonsterContent.BossEncounters)
 			{
-				pool.Add(boss);
+				if (!IsUsedInOtherActs(state, act, boss))
+				{
+					pool.Add(boss);
+				}
 			}
+			if (pool.Count == 0)
+			{
+				return;
+			}
+			chosen = state.Rng.UpFront.NextItem(pool);
 		}
-		if (pool.Count == 0)
+		else if (IsUsedInOtherActs(state, act, chosen))
 		{
+			// 指定首领已被本局其他章节占用（例如读档后重复应用）：不覆盖，交给原生
+			MainFile.Log.Info($"CznMonster 指定首领 {chosen.Id.Entry} 本局已出现，跳过替换");
 			return;
 		}
 
-		EncounterModel? chosen = state.Rng.UpFront.NextItem(pool);
 		if (chosen == null)
 		{
 			return;
@@ -134,47 +108,21 @@ internal static class BossPlacementPatch
 		ApplyBoss(act, chosen);
 	}
 
-	/// <summary>
-	/// 随机模式：每只未使用的 CZN 首领随机放进一个尚未被 CZN 占用的章节；
-	/// CZN 首领少于 3 只时，剩余章节保留原生首领（D4）。
-	/// </summary>
-	private static void ApplyRandom(RunState state)
+	/// <summary>该首领是否已出现在本局除 <paramref name="except"/> 之外的章节（含双首领）。</summary>
+	private static bool IsUsedInOtherActs(RunState state, ActModel except, EncounterModel boss)
 	{
-		List<EncounterModel> pool = new List<EncounterModel>();
-		foreach (EncounterModel boss in MonsterContent.BossEncounters)
-		{
-			if (!UsedBossIds.Contains(boss.Id.Entry))
-			{
-				pool.Add(boss);
-			}
-		}
-		if (pool.Count == 0)
-		{
-			return;
-		}
-
-		List<ActModel> availableActs = new List<ActModel>();
 		foreach (ActModel act in state.Acts)
 		{
-			EncounterModel? current = act.BossEncounter;
-			if (current == null || !MonsterContent.IsCznBoss(current.Id.Entry))
+			if (ReferenceEquals(act, except))
 			{
-				availableActs.Add(act);
+				continue;
+			}
+			if (act.BossEncounter?.Id.Entry == boss.Id.Entry || act.SecondBossEncounter?.Id.Entry == boss.Id.Entry)
+			{
+				return true;
 			}
 		}
-
-		while (pool.Count > 0 && availableActs.Count > 0)
-		{
-			EncounterModel? chosen = state.Rng.UpFront.NextItem(pool);
-			ActModel? act = state.Rng.UpFront.NextItem(availableActs);
-			if (chosen == null || act == null)
-			{
-				break;
-			}
-			ApplyBoss(act, chosen);
-			pool.Remove(chosen);
-			availableActs.Remove(act);
-		}
+		return false;
 	}
 
 	private static void ApplyBoss(ActModel act, EncounterModel chosen)
@@ -185,6 +133,7 @@ internal static class BossPlacementPatch
 		}
 
 		// 波勒米卡需要知道本局出现的章节，用于 HP/伤害/格挡缩放
+		// （各遭遇的 GenerateMonsters 也会按 CurrentActIndex 兜底写入）
 		if (chosen is PolemicaBoss)
 		{
 			PolemicaScaling.ActIndex = act.Index;
@@ -193,7 +142,6 @@ internal static class BossPlacementPatch
 		// SetBossEncounter 存的是 canonical；RunManager.CreateRoom 会自己 ToMutable()。
 		// 这里再 ToMutable() 会导致 “Mutable model used in incorrect place” 并黑屏。
 		act.SetBossEncounter(chosen);
-		UsedBossIds.Add(chosen.Id.Entry);
 		MainFile.Log.Info($"CznMonster 首领替换：act {act.Index} -> {chosen.Id.Entry}");
 	}
 }

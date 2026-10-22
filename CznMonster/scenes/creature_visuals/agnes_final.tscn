@@ -1,0 +1,39 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/Core/Nodes/Combat/NCreatureVisuals.cs" id="1_script"]
+[ext_resource type="SpineSkeletonDataResource" path="res://CznMonster/animations/monsters/agnes_final/agnes_final_skel_data.tres" id="2_skel"]
+
+[node name="AgnesFinal" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Visuals" type="SpineSprite" parent="."]
+skeleton_data_res = ExtResource("2_skel")
+preview_skin = "default"
+preview_animation = "stance1_idle"
+preview_frame = false
+preview_time = 0.0
+unique_name_in_owner = true
+position = Vector2(-30, -200)
+scale = Vector2(0.7, 0.7)
+
+[node name="Bounds" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = -330.0
+offset_top = -650.0
+offset_right = 330.0
+offset_bottom = 60.0
+mouse_filter = 2
+
+[node name="CenterPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -300)
+
+[node name="IntentPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -690)
+
+[node name="TalkPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(-30, -560)

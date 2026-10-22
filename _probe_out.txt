@@ -1,0 +1,95 @@
+WorkerThreadPool: 16 threads, 4 max low-priority.
+MegaDot v4.5.1.m.14.mono.custom_build - https://godotengine.org
+TextServer: Added interface "Dummy"
+TextServer: Added interface "ICU / HarfBuzz / Graphite (Built-in)"
+Unrecognized output string "misc2" in mapping:
+030000000d0f00000202000000000000,Horipad O Nintendo Switch 2 Controller,a:b1,b:b0,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b4,leftstick:b10,lefttrigger:b6,leftx:a0,lefty:a1,misc1:b13,misc2:b14,rightshoulder:b5,rightstick:b11,righttrigger:b7,rightx:a2,righty:a3,start:b9,x:b3,y:b2,platform:Windows,
+Unrecognized output string "misc2" in mapping:
+030000000d0f00009601000000000000,Horipad Steam,a:b0,b:b1,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b6,leftstick:b13,lefttrigger:b8,leftx:a0,lefty:a1,misc2:b2,paddle1:b5,paddle2:b15,paddle3:b18,paddle4:b19,rightshoulder:b7,rightstick:b14,righttrigger:b9,rightx:a3,righty:a4,start:b11,x:b3,y:b4,platform:Windows,
+Unrecognized output string "misc2" in mapping:
+030000007e0500006920000000000000,Nintendo Switch 2 Pro Controller,a:b0,b:b1,back:b14,dpdown:b8,dpleft:b10,dpright:b9,dpup:b11,guide:b16,leftshoulder:b12,leftstick:b15,lefttrigger:b13,leftx:a0,lefty:a1~,misc1:b17,misc2:b20,paddle1:b18,paddle2:b19,rightshoulder:b4,rightstick:b7,righttrigger:b5,rightx:a2,righty:a3~,start:b6,x:b2,y:b3,platform:Windows,
+Using "default" pen tablet driver...
+
+TextServer: Primary interface set to: "ICU / HarfBuzz / Graphite (Built-in)".
+FMOD Sound System: Successfully set DSP buffer size
+FMOD Sound System: Successfully initialized
+Custom File System enabled.
+FMOD Sound System: Successfully set global 3D settings
+Loading resource: res://images/packed/common_ui/cursor_default.png
+Loading resource: res://.godot/imported/cursor_default.png-596e4127645e90af2e1f06f04d7fa1ae.image
+.NET: Initializing module...
+Found hostfxr: G:/SteamLibrary/steamapps/common/Slay the Spire 2/data_sts2_windows_x86_64/hostfxr.dll
+.NET: hostfxr initialized
+.NET: GodotPlugins initialized
+Loading resource: res://default_bus_layout.tres
+CORE API HASH: 0
+EDITOR API HASH: 0
+Loading resource: res://probe.gd
+SceneTreeFTI: traversal method DEFAULT
+Loading resource: res://addons/sentry/SentryBootstrap.cs
+Loading resource: res://addons/fmod/FmodManager.gdc
+Loaded system CA certificates
+Loading resource: res://CznMonster/animations/monsters/agnes/agnes_skel_data.tres
+Loading resource: res://CznMonster/animations/monsters/agnes/agnes.atlas
+Loading resource: res://.godot/imported/agnes.atlas-4b70fa7b2b5739ec6785df3c97e846b6.spatlas
+Loading resource: res://CznMonster/animations/monsters/agnes/agnes.skel
+Loading resource: res://.godot/imported/agnes.skel-45187297eecbc0fa6e407e07ea410100.spskel
+Loading resource: res://CznMonster/animations/monsters/agnes_final/agnes_final_skel_data.tres
+Loading resource: res://CznMonster/animations/monsters/agnes_final/agnes_final.atlas
+Loading resource: res://.godot/imported/agnes_final.atlas-f41874223049ae84acabc3880ab086b4.spatlas
+Loading resource: res://CznMonster/animations/monsters/agnes_final/agnes_final.skel
+Loading resource: res://.godot/imported/agnes_final.skel-aee706f8518a70f6102885981d8e2d11.spskel
+Loading resource: res://CznMonster/animations/monsters/agnes_echo/agnes_echo_skel_data.tres
+Loading resource: res://CznMonster/animations/monsters/agnes_echo/agnes_echo.atlas
+Loading resource: res://.godot/imported/agnes_echo.atlas-402a57de60c830751d9de2ed2a6525ac.spatlas
+Loading resource: res://CznMonster/animations/monsters/agnes_echo/agnes_echo.skel
+Loading resource: res://.godot/imported/agnes_echo.skel-980425a356c263760de0bb0b46fe407d.spskel
+INIT sprites=3
+[INFO] Found release_info.json at: G:\SteamLibrary\steamapps\common\Slay the Spire 2\release_info.json
+[INFO] [Sentry.NET] Initialized: env=unknown, release=v0.111.0
+NOSKELETON agnes
+NOSKELETON agnes_final
+NOSKELETON agnes_echo
+RESULT agnes EMPTY/NOTSTARTED
+RESULT agnes_final EMPTY/NOTSTARTED
+RESULT agnes_echo EMPTY/NOTSTARTED
+Unloading: Disposing tracked instances...
+Unloading: Finished disposing tracked instances.
+XR: Clearing primary interface
+FMOD Sound System: System released
+XR: Removed interface "Native mobile"
+XR: Removed interface "OpenXR"
+Orphan StringName: SentryBreadcrumb (static: 0, total: 2)
+Orphan StringName: RenderingDevice (static: 1, total: 3)
+Orphan StringName: Mesh (static: 1, total: 3)
+Orphan StringName: Tween (static: 1, total: 3)
+Orphan StringName: Shader (static: 1, total: 3)
+Orphan StringName: JSON (static: 1, total: 3)
+Orphan StringName: SentryMetric (static: 0, total: 2)
+Orphan StringName: SentryBadCode (static: 0, total: 2)
+Orphan StringName: SentryAttachment (static: 0, total: 2)
+Orphan StringName: MainLoop (static: 1, total: 3)
+Orphan StringName: SentryAndroidOptions (static: 0, total: 2)
+Orphan StringName: SentryScopeObserver (static: 0, total: 2)
+Orphan StringName: SentryEvent (static: 0, total: 2)
+Orphan StringName: Camera2D (static: 1, total: 3)
+Orphan StringName: Camera3D (static: 1, total: 3)
+Orphan StringName: TriangleMesh (static: 1, total: 3)
+Orphan StringName: InputEvent (static: 1, total: 3)
+Orphan StringName: DotnetScopeObserver (static: 0, total: 2)
+Orphan StringName: ScriptBacktrace (static: 1, total: 3)
+Orphan StringName: Control (static: 1, total: 3)
+Orphan StringName: Shape3D (static: 1, total: 3)
+Orphan StringName: ConfigFile (static: 1, total: 3)
+Orphan StringName: ResourceLoader (static: 1, total: 3)
+Orphan StringName: SentryLog (static: 0, total: 2)
+Orphan StringName: ScreenshotProcessor (static: 0, total: 2)
+Orphan StringName: ScriptLanguage (static: 1, total: 3)
+Orphan StringName: SentryGodotLogger (static: 0, total: 2)
+Orphan StringName: Font (static: 1, total: 3)
+Orphan StringName: SentrySDK (static: 0, total: 2)
+Orphan StringName: RenderingServer (static: 1, total: 3)
+Orphan StringName: Image (static: 1, total: 3)
+Orphan StringName: Resource (static: 1, total: 3)
+Orphan StringName: OS (static: 1, total: 3)
+Orphan StringName: AudioLis

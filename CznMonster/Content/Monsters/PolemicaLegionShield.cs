@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CznMonster.Content.Audio;
+using CznMonster.Content.Bestiary;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Audio;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
@@ -125,4 +126,12 @@ public sealed class PolemicaLegionShield : PolemicaAddMonster
 
 	/// <inheritdoc />
 	public override string EntranceSfxClip => "summon";
+
+	/// <inheritdoc />
+	/// <remarks>撞角 <c>skill1</c> / 掩护 <c>skill2</c>。</remarks>
+	protected override IReadOnlyList<CznBestiaryAction> BestiaryActions => new[]
+	{
+		new CznBestiaryAction(GetBestiaryMoveName("SHIELD_STRIKE"), "normal_skill1", "skill1"),
+		new CznBestiaryAction(GetBestiaryMoveName("SHIELD_COVER"), "normal_skill2", "skill2"),
+	};
 }

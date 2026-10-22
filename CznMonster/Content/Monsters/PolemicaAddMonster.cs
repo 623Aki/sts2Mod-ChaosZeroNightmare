@@ -1,9 +1,13 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CznMonster.Content.Audio;
+using CznMonster.Content.Bestiary;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 
 namespace CznMonster.Content.Monsters;
 
@@ -61,5 +65,30 @@ public abstract class PolemicaAddMonster : MonsterModel
 		CznMonsterSfx.Play(this, EntranceSfxClip);
 		await PowerCmd.Apply<MinionPower>(
 			new ThrowingPlayerChoiceContext(), Creature, 1m, Creature, null);
+	}
+
+	/// <summary>
+	/// 图鉴里要展示的招式：子类按自己的动画 clip / 采样 clip 填。
+	/// 名字统一走 <see cref="MonsterModel.GetBestiaryMoveName"/>（键式 <c>&lt;entry&gt;.moves.&lt;Id 去 _MOVE&gt;.title</c>）。
+	/// </summary>
+	protected virtual IReadOnlyList<CznBestiaryAction> BestiaryActions => Array.Empty<CznBestiaryAction>();
+
+	/// <inheritdoc />
+	/// <remarks>
+	/// 召唤物共用一套骨架命名（<c>normal_idle / normal_hit / normal_death / normal_skill1..2</c>），
+	/// 所以受伤 / 死亡在基类统一给出，招式由子类补。死亡采样按 <see cref="DeathSfxClip"/>
+	/// （处决时已经播过 fatal 的怪为 null，保持与战斗一致，不叠第二声）。
+	/// </remarks>
+	public override List<BestiaryMonsterMove> GenerateBestiaryMoveList(NCreatureVisuals? creatureVisuals)
+	{
+		return CznBestiaryMoves.Build(
+			this,
+			creatureVisuals,
+			idleClip: "normal_idle",
+			actions: BestiaryActions,
+			hurtClip: "normal_hit",
+			hurtSfx: null,
+			dieClip: "normal_death",
+			dieSfx: DeathSfxClip);
 	}
 }

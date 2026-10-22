@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Godot;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 
 namespace CznMonster.Content.Audio;
@@ -36,6 +37,9 @@ internal static class CznMonsterSfx
 
 	/// <summary>塞拉菲翁／阿克鲁斯（Diallos 双怪组）音频根目录。</summary>
 	private const string DiallosRoot = "res://CznMonster/audio/sfx/diallos/";
+
+	/// <summary>阿涅丝（双形态共用）音频根目录。</summary>
+	private const string AgnesRoot = "res://CznMonster/audio/sfx/agnes/";
 
 	/// <summary>游戏自带的音效总线名。</summary>
 	private const string SfxBus = "SFX";
@@ -181,6 +185,31 @@ internal static class CznMonsterSfx
 				// se_1003016_normal_fatal：处决（占位保留）
 				["fatal"] = new[] { "1003016/se_1003016_normal_fatal.ogg" },
 			},
+
+			// ── 阿涅丝（3000504 + 3000503 双形态；SFX bank 两底共 14 条，用 10 条；无受击采样，T15 不发声）──
+			["AGNES"] = new(StringComparer.OrdinalIgnoreCase)
+			{
+				// se_3000504_normal_enter：登场
+				["enter"] = new[] { "3000504/se_3000504_normal_enter.ogg" },
+				// se_3000504_normal_attack_play2：集约期连击 / 重击（normal_attack 组共用动作）
+				["combo"] = new[] { "3000504/se_3000504_normal_attack_play2.ogg" },
+				// se_3000504_normal_buff_1：集约期增益（normal_buff_1）
+				["buff"] = new[] { "3000504/se_3000504_normal_buff_1.ogg" },
+				// se_3000503_stance1_run：变身收尾（无 transform 专属采样，借 move 鼓点）
+				["transform"] = new[] { "3000503/se_3000503_stance1_run.ogg" },
+				// se_3000503_stance1_m_attack_01：Form B 重击（stance1_m_attack_01）
+				["b_heavy"] = new[] { "3000503/se_3000503_stance1_m_attack_01.ogg" },
+				// se_3000503_stance1_attack_play1：Form B 三连（stance1_attack 循环组）
+				["b_triple"] = new[] { "3000503/se_3000503_stance1_attack_play1.ogg" },
+				// se_3000503_stance1_s_attack_01：Form B 斩击（stance1_s_attack_01）
+				["b_slash"] = new[] { "3000503/se_3000503_stance1_s_attack_01.ogg" },
+				// se_3000503_stance1_debuff_1：Form B 压制（stance1_debuff_1）
+				["debuff"] = new[] { "3000503/se_3000503_stance1_debuff_1.ogg" },
+				// se_3000503_stance1_death：本体死亡（Form A 无死亡采样，DeathSfx 判 _formB）
+				["death"] = new[] { "3000503/se_3000503_stance1_death.ogg" },
+				// se_3000503_stance1_fatal：处决（占位保留，本组当前未使用）
+				["fatal"] = new[] { "3000503/se_3000503_stance1_fatal.ogg" },
+			},
 		};
 
 	/// <summary>已加载的采样缓存（key = 完整 res:// 路径）。</summary>
@@ -237,9 +266,22 @@ internal static class CznMonsterSfx
 		}
 	}
 
-	/// <summary>按 entry 选音频根：塞拉菲翁／阿克鲁斯走 Diallos 组，其余走波勒米卡组。</summary>
+	/// <summary>
+	/// entry → 采样表分组：图鉴展示用的第二形态（<c>AGNES_FINAL</c>）复用阿涅丝的
+	/// <c>AGNES</c> 组（同骨架家族、同 bank），其余 entry 即分组名。
+	/// </summary>
+	private static string GroupOf(string entry)
+	{
+		return entry.Equals("AGNES_FINAL", StringComparison.OrdinalIgnoreCase) ? "AGNES" : entry;
+	}
+
+	/// <summary>按 entry 选音频根：塞拉菲翁／阿克鲁斯走 Diallos 组，阿涅丝走 Agnes 组，其余走波勒米卡组。</summary>
 	private static string RootFor(string entry)
 	{
+		if (entry.Equals("AGNES", StringComparison.OrdinalIgnoreCase))
+		{
+			return AgnesRoot;
+		}
 		return entry.Equals("SERAPHION", StringComparison.OrdinalIgnoreCase)
 			|| entry.Equals("ARKRUS", StringComparison.OrdinalIgnoreCase)
 			? DiallosRoot
@@ -249,7 +291,7 @@ internal static class CznMonsterSfx
 	/// <summary>这个怪物是否由本类接管声音。</summary>
 	public static bool IsOurs(MonsterModel? monster)
 	{
-		return monster != null && Clips.ContainsKey(monster.Id.Entry);
+		return monster != null && Clips.ContainsKey(GroupOf(monster.Id.Entry));
 	}
 
 	/// <summary>按怪物 + clip 名播放采样；怪物不在表里时静默跳过。</summary>
@@ -261,6 +303,7 @@ internal static class CznMonsterSfx
 	/// <summary>按 entry + clip 名播放采样。</summary>
 	public static void Play(string entry, string clip, float volume = 1f)
 	{
+		entry = GroupOf(entry);
 		if (!Clips.TryGetValue(entry, out Dictionary<string, string[]>? byClip)
 			|| !byClip.TryGetValue(clip, out string[]? files)
 			|| files.Length == 0)
@@ -360,14 +403,16 @@ internal static class CznMonsterSfx
 
 	private static AudioStreamPlayer? EnsurePlayer()
 	{
-		NCombatRoom? room = NCombatRoom.Instance;
-		if (room == null)
+		// 战斗内挂到战斗 UI 下（离房即随房间释放，不需要额外清理）；
+		// 图鉴里没有战斗房间（NCombatRoom.Instance 为 null），退回挂到 NGame 根上，
+		// 否则图鉴的招式按钮会「动画播了、没有任何声音」。
+		Node? parent = NCombatRoom.Instance is { } room
+			? ((Node?)room.Ui ?? room)
+			: NGame.Instance;
+		if (parent == null)
 		{
 			return null;
 		}
-
-		// 挂到战斗 UI 下：离房即随房间释放，不需要额外清理。
-		Node parent = (Node?)room.Ui ?? room;
 
 		for (int i = Players.Count - 1; i >= 0; i--)
 		{

@@ -3,5 +3,8 @@
   "POLEMICA_BOSS.loss": "[gold]{encounter}[/gold]'s legion trampled {character}'s last line of defense.",
 
   "SERAPHION_ENCOUNTER.title": "Seraphion",
-  "SERAPHION_ENCOUNTER.loss": "[gold]{encounter}[/gold]'s faithful companion guarded its dying shell to the very end."
+  "SERAPHION_ENCOUNTER.loss": "[gold]{encounter}[/gold]'s faithful companion guarded its dying shell to the very end.",
+
+  "AGNES_BOSS.title": "Agnes",
+  "AGNES_BOSS.loss": "[gold]{encounter}[/gold]'s echoes kept ringing through the void; {character} succumbed as her resonance converged."
 }

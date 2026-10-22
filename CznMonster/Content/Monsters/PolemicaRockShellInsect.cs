@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CznMonster.Content.Audio;
+using CznMonster.Content.Bestiary;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Audio;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
@@ -189,4 +190,13 @@ public sealed class PolemicaRockShellInsect : PolemicaAddMonster
 	/// <inheritdoc />
 	/// <remarks>处决时已经播过 <c>fatal</c> 采样，死亡不再叠一条。</remarks>
 	protected override string? DeathSfxClip => null;
+
+	/// <inheritdoc />
+	/// <remarks>碎岩重击与岩壳防御共用 <c>normal_skill1</c>（同战斗动画），硬化用 <c>normal_skill2</c>。</remarks>
+	protected override IReadOnlyList<CznBestiaryAction> BestiaryActions => new[]
+	{
+		new CznBestiaryAction(GetBestiaryMoveName("ROCK_CRUSH"), "normal_skill1", "skill1"),
+		new CznBestiaryAction(GetBestiaryMoveName("ROCK_HARDEN"), "normal_skill2", "skill2"),
+		new CznBestiaryAction(GetBestiaryMoveName("ROCK_GUARD"), "normal_skill1", "skill1"),
+	};
 }

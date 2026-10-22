@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[node name="AgnesBoss" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="add1" type="Marker2D" parent="."]
+position = Vector2(660, 740)
+
+[node name="add2" type="Marker2D" parent="."]
+position = Vector2(940, 706)
+
+[node name="boss" type="Marker2D" parent="."]
+position = Vector2(1620, 760)
+
+[node name="add3" type="Marker2D" parent="."]
+position = Vector2(1210, 740)

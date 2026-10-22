@@ -7,10 +7,21 @@ using MegaCrit.Sts2.Core.Models;
 namespace CznMonster.Registration;
 
 /// <summary>
-/// P2 遭遇池注入（设计文档 §6.3 / R6）：
-/// 拦截 <see cref="ActModel.AllEncounters"/> getter，把本 mod 非首领遭遇按章节 Concat 进去。
-/// 遭遇判空、IsWeak 分流、精英分流全部走原逻辑，不碰原池。
+/// P2 遭遇池注入（设计文档 §5.3 / R6）：
+/// 拦截 <see cref="ActModel.AllEncounters"/> getter，把本 mod 遭遇按章节 Concat 进去。
+/// 弱/普通/精英/首领的分流全部走原生派生列表（<c>AllWeakEncounters</c> /
+/// <c>AllRegularEncounters</c> / <c>AllEliteEncounters</c> / <c>AllBossEncounters</c>），
+/// 抽取完全由原生 <c>GrabBag</c> / <c>Rng.NextItem</c> 决定。
 /// </summary>
+/// <remarks>
+/// 注入规则：
+/// <list type="bullet">
+/// <item>非首领遭遇：两种模式都入池，按 <see cref="ICznMonsterEncounter.TargetActIndex"/> 过滤章节。</item>
+/// <item>首领遭遇：只在「首领位置：随机」时入池，且只注入运行中的 mutable act ——
+/// ModelDb 的 canonical act 供图鉴使用，注入会造成图鉴里同一只首领重复出现
+/// （图鉴由 <see cref="CznMonsterBestiaryPatch"/> 单独补区块）。</item>
+/// </list>
+/// </remarks>
 [HarmonyLib.HarmonyPatch(typeof(ActModel), "get_AllEncounters")]
 internal static class MonsterPoolPatch
 {
@@ -18,14 +29,35 @@ internal static class MonsterPoolPatch
 	{
 		try
 		{
-			// 首领永远不进池，只走首领替换逻辑（§6.3）
 			if (!MonsterSettings.CznMonstersEnabled)
 			{
 				return;
 			}
-			List<EncounterModel> extra = MonsterContent.NonBossEncounters
-				.Where(e => e is not ICznMonsterEncounter czn || czn.TargetActIndex < 0 || czn.TargetActIndex == __instance.Index)
-				.ToList();
+
+			List<EncounterModel> extra = new List<EncounterModel>();
+
+			// 1) 非首领遭遇：按章节追加（空清单时无副作用）
+			foreach (EncounterModel encounter in MonsterContent.NonBossEncounters)
+			{
+				if (encounter is not ICznMonsterEncounter czn || czn.TargetActIndex < 0 || czn.TargetActIndex == __instance.Index)
+				{
+					extra.Add(encounter);
+				}
+			}
+
+			// 2) 首领遭遇：随机模式并入原生首领池，由原生 rng.NextItem(AllBossEncounters) 抽取。
+			//    指定模式不入池：那只章的首领由 BossPlacementPatch 显式替换，其余章节保持原生。
+			if (MonsterSettings.BossPosRandom && __instance.IsMutable)
+			{
+				foreach (EncounterModel boss in MonsterContent.BossEncounters)
+				{
+					if (!__result.Contains(boss))
+					{
+						extra.Add(boss);
+					}
+				}
+			}
+
 			if (extra.Count == 0)
 			{
 				return;
