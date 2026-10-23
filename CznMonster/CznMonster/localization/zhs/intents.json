@@ -1,4 +1,7 @@
 {
   "AGNES_EXECUTE.title": "处决",
-  "AGNES_EXECUTE.description": "阿涅丝将收割场上全部余响碎片，并倾泻所有共鸣，对你造成 [blue]{Damage}[/blue] 点伤害。"
+  "AGNES_EXECUTE.description": "阿涅丝将收割场上全部余响碎片，并倾泻所有共鸣，对你造成 [blue]{Damage}[/blue] 点伤害。",
+
+  "ARKRUS_RESCUE.title": "救援颂歌",
+  "ARKRUS_RESCUE.description": "阿克鲁斯将咏唱救援颂歌：[gold]治疗[/gold]濒死的塞拉菲翁，回复其最大生命的 [blue]50%[/blue]，并让它脱离濒死状态。"
 }

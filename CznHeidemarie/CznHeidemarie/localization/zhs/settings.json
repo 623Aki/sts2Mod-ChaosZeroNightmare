@@ -113,5 +113,7 @@
   "voice_cooldown_description": "该角色普通语音之间的最小间隔。全屏终结技语音不受限制。0 秒表示不限制。",
   "collapse_section": "收起",
   "expand_section": "展开",
-  "reset_defaults": "重置"
+  "reset_defaults": "重置",
+  "multiplayer_use_host_settings": "联机时以房主的设置为标准",
+  "multiplayer_use_host_settings_description": "开启后，房主的演出开关（特效、语音、全屏演出、队友选项）会应用到所有玩家，让所有人看到同一套演出。音量、亮度、不透明度与立绘位置仍由每位玩家自己决定。房主的值只在本次联机期间临时生效，不会覆盖你自己的配置文件。"
 }

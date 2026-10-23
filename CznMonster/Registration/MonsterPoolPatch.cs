@@ -29,7 +29,10 @@ internal static class MonsterPoolPatch
 	{
 		try
 		{
-			if (!MonsterSettings.CznMonstersEnabled)
+			// 联机时强制关闭：AllEncounters 的池长度会被本 patch 改变，而 GenerateRooms
+			// 在 host 与 client 两侧各跑一次（Seed 相同、靠池下标抽首领），
+			// 两端池长度不同 → 抽到不同 Boss → checksum 直接劈叉。
+			if (!MonsterSettings.EffectiveCznMonstersEnabled)
 			{
 				return;
 			}
@@ -47,7 +50,7 @@ internal static class MonsterPoolPatch
 
 			// 2) 首领遭遇：随机模式并入原生首领池，由原生 rng.NextItem(AllBossEncounters) 抽取。
 			//    指定模式不入池：那只章的首领由 BossPlacementPatch 显式替换，其余章节保持原生。
-			if (MonsterSettings.BossPosRandom && __instance.IsMutable)
+			if (MonsterSettings.EffectiveBossPosRandom && __instance.IsMutable)
 			{
 				foreach (EncounterModel boss in MonsterContent.BossEncounters)
 				{

@@ -13,8 +13,9 @@ namespace CznMonster.Content;
 /// </summary>
 /// <remarks>
 /// 当前接入：波勒米卡首领遭遇（<see cref="PolemicaBoss"/>）、
-/// 塞拉菲翁／阿克鲁斯双怪首领遭遇（<see cref="SeraphionEncounter"/>）与
-/// 阿涅丝首领遭遇（<see cref="AgnesBoss"/>）。
+/// 塞拉菲翁／阿克鲁斯双怪首领遭遇（<see cref="SeraphionEncounter"/>）、
+/// 阿涅丝首领遭遇（<see cref="AgnesBoss"/>）与
+/// 美梦首领遭遇（<see cref="SweetDreamBoss"/>）。
 /// 非首领清单仍为空，补丁侧对空清单安全。
 /// </remarks>
 internal static class MonsterContent
@@ -29,6 +30,7 @@ internal static class MonsterContent
 		new(() => ModelDb.Encounter<PolemicaBoss>()),
 		new(() => ModelDb.Encounter<SeraphionEncounter>()),
 		new(() => ModelDb.Encounter<AgnesBoss>()),
+		new(() => ModelDb.Encounter<SweetDreamBoss>()),
 	};
 
 	private static IReadOnlyList<EncounterModel>? _bossEncounters;

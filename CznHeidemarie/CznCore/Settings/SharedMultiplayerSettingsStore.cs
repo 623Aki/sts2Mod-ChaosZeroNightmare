@@ -35,6 +35,15 @@ internal sealed class SharedMultiplayerSettingsStore
 
 	public AttackFullScreenPresentationMode AttackFullScreenPresentationMode => _settings.AttackFullScreenPresentationMode;
 
+	/// <summary>联机时是否以房主的设置为标准（默认开启）。</summary>
+	public bool UseHostSettings => _settings.UseHostSettings;
+
+	/// <summary>
+	/// 房主设置接管期间置为 true：此时任何写入都不落盘，
+	/// 避免「陪房主玩一局」把自己的本地配置改掉。
+	/// </summary>
+	public bool PersistSuppressed { get; set; }
+
 	public SharedMultiplayerSettingsStore(Action<string, int> warn, float saveDebounceSeconds)
 	{
 		_warn = warn ?? throw new ArgumentNullException("warn");
@@ -128,6 +137,15 @@ internal sealed class SharedMultiplayerSettingsStore
 		RequestSaveIfNeeded(persist);
 	}
 
+	public void SetUseHostSettings(bool value, bool persist)
+	{
+		_settings = _settings with
+		{
+			UseHostSettings = value
+		};
+		RequestSaveIfNeeded(persist);
+	}
+
 	public void EnableAllChannels(bool persist)
 	{
 		_settings = _settings with
@@ -149,7 +167,7 @@ internal sealed class SharedMultiplayerSettingsStore
 
 	private void RequestSaveIfNeeded(bool persist)
 	{
-		if (!persist)
+		if (!persist || PersistSuppressed)
 		{
 			return;
 		}
@@ -213,7 +231,14 @@ internal sealed class SharedMultiplayerSettingsStore
 			}
 			else if (CharacterSkinSettingsStore.TryParseBoolSetting(text4, out value))
 			{
-				if (SkinSettingSchema.MatchesGlobal(key, "teammate_presentation_enabled"))
+				if (SkinSettingSchema.MatchesGlobal(key, "multiplayer_use_host_settings"))
+				{
+					_settings = _settings with
+					{
+						UseHostSettings = value
+					};
+				}
+				else if (SkinSettingSchema.MatchesGlobal(key, "teammate_presentation_enabled"))
 				{
 					_settings = _settings with
 					{
@@ -252,6 +277,85 @@ internal sealed class SharedMultiplayerSettingsStore
 		}
 	}
 
+	/// <summary>
+	/// 导出「需要跟着房主走」的队友演出设置。
+	/// 文本格式与磁盘 <c>multiplayer.cfg</c> 一致，可直接被 <see cref="ApplyHostSyncedText"/> 解析。
+	/// </summary>
+	public string ExportHostSyncedText()
+	{
+		EnsureLoaded();
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append(GlobalLine("teammate_presentation_enabled", _settings.PresentationEnabled));
+		stringBuilder.Append(GlobalLine("teammate_effects_enabled", _settings.EffectsEnabled));
+		stringBuilder.Append(GlobalLine("teammate_combat_sfx_enabled", _settings.CombatSfxEnabled));
+		stringBuilder.Append(GlobalLine("teammate_voice_enabled", _settings.VoiceEnabled));
+		stringBuilder.Append(GlobalLine("teammate_voice_cooldown_seconds", _settings.VoiceCooldownSeconds));
+		stringBuilder.Append(GlobalLine("teammate_cut_in_enabled", _settings.CutInEnabled));
+		stringBuilder.Append(GlobalLine("teammate_attack_full_screen_presentation_mode", AttackFullScreenPresentationModeSettings.ToSettingValue(_settings.AttackFullScreenPresentationMode)));
+		return stringBuilder.ToString();
+	}
+
+	/// <summary>
+	/// 应用房主下发的队友演出设置。只认 <c>teammate_*</c> 这组键，
+	/// 其它内容被 <see cref="LoadSettingsText"/> 自然忽略（本身就是白名单解析）。
+	/// </summary>
+	public void ApplyHostSyncedText(string? text)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return;
+		}
+		// 白名单过滤：这组键只允许 teammate_*。
+		// 「是否跟随房主」是本机策略，绝不能被房主下发的内容改写。
+		StringBuilder filtered = new StringBuilder();
+		string[] lines = text.Split(new char[2] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+		foreach (string line in lines)
+		{
+			if (line.IndexOf("multiplayer_use_host_settings", StringComparison.Ordinal) >= 0)
+			{
+				continue;
+			}
+			filtered.Append(line).Append('\n');
+		}
+		LoadSettingsText(filtered.ToString());
+	}
+
+	/// <summary>当前快照，用于房主接管前的本地备份。</summary>
+	public SharedMultiplayerSettingsSnapshot Snapshot
+	{
+		get
+		{
+			EnsureLoaded();
+			return _settings;
+		}
+	}
+
+	/// <summary>
+	/// 恢复本地快照。
+	///
+	/// <para><c>UseHostSettings</c> 是玩家自己的选择，不属于「被房主覆盖」的字段，
+	/// 恢复时必须保留当前值，否则玩家在接管期间关掉的开关会被悄悄改回开启。</para>
+	/// </summary>
+	public void RestoreFromSnapshot(SharedMultiplayerSettingsSnapshot snapshot)
+	{
+		_settings = snapshot with
+		{
+			UseHostSettings = _settings.UseHostSettings
+		};
+	}
+
+	/// <summary>
+	/// 接管结束、解除写盘抑制后补写一次。
+	/// 用于「玩家在接管期间改过『以房主为准』开关」这种被抑制掉的本地改动。
+	/// </summary>
+	public void PersistNow()
+	{
+		if (!PersistSuppressed)
+		{
+			SaveSettings();
+		}
+	}
+
 	private void SaveSettings()
 	{
 		try
@@ -270,6 +374,7 @@ internal sealed class SharedMultiplayerSettingsStore
 			stringBuilder.Append(GlobalLine("teammate_voice_cooldown_seconds", _settings.VoiceCooldownSeconds));
 			stringBuilder.Append(GlobalLine("teammate_cut_in_enabled", _settings.CutInEnabled));
 			stringBuilder.Append(GlobalLine("teammate_attack_full_screen_presentation_mode", AttackFullScreenPresentationModeSettings.ToSettingValue(_settings.AttackFullScreenPresentationMode)));
+			stringBuilder.Append(GlobalLine("multiplayer_use_host_settings", _settings.UseHostSettings));
 			fileAccess?.StoreString(stringBuilder.ToString());
 		}
 		catch (Exception ex)

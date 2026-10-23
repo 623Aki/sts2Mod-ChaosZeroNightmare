@@ -82,9 +82,9 @@ public sealed class PolemicaBoss : EncounterModel, ICznMonsterEncounter
 	/// <inheritdoc />
 	protected override IReadOnlyList<(MonsterModel, string?)> GenerateMonsters()
 	{
-		// 读档后静态章节值会丢，这里按当前 RunState 兜底（控制台测试时保留原值）
-		PolemicaScaling.ActIndex = RunManager.Instance?.DebugOnlyGetState()?.CurrentActIndex
-			?? PolemicaScaling.ActIndex;
+		// 读档后静态章节值会丢，这里按当前 RunState 兜底。
+		// 拿不到 RunState 时回落第 1 章（0），不能沿用上一次写入的值（残留会让两端劈叉）。
+		PolemicaScaling.ActIndex = RunManager.Instance?.DebugOnlyGetState()?.CurrentActIndex ?? 0;
 
 		return new (MonsterModel, string?)[] { (ModelDb.Monster<Polemica>().ToMutable(), "boss") };
 	}

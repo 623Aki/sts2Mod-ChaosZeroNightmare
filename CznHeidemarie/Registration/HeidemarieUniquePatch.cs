@@ -236,7 +236,9 @@ internal static class HeidemarieUniqueDeckGuard
 			return true;
 		}
 
-		HashSet<ModelId>? seenInBatch = null;
+		// 批次内去重必须**按玩家分桶**：联机时一批 Add 可能同时含多名玩家的牌，
+		// 共用一个 HashSet 会把「另一个玩家的同 Id 唯一牌」当成重复拦掉。
+		Dictionary<ulong, HashSet<ModelId>>? seenInBatch = null;
 		List<CardModel> blocked = new();
 
 		list.RemoveAll(card =>
@@ -247,8 +249,13 @@ internal static class HeidemarieUniqueDeckGuard
 			}
 
 			bool alreadyInDeck = HeidemarieUniqueRule.DeckContainsCopy(card.Owner, card.Id, card);
-			seenInBatch ??= new HashSet<ModelId>();
-			bool repeatedInBatch = !seenInBatch.Add(card.Id);
+			seenInBatch ??= new Dictionary<ulong, HashSet<ModelId>>();
+			if (!seenInBatch.TryGetValue(card.Owner.NetId, out HashSet<ModelId>? seen))
+			{
+				seen = new HashSet<ModelId>();
+				seenInBatch[card.Owner.NetId] = seen;
+			}
+			bool repeatedInBatch = !seen.Add(card.Id);
 
 			if (!alreadyInDeck && !repeatedInBatch)
 			{

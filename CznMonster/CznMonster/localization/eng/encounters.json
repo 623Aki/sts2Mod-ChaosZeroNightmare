@@ -6,5 +6,8 @@
   "SERAPHION_ENCOUNTER.loss": "[gold]{encounter}[/gold]'s faithful companion guarded its dying shell to the very end.",
 
   "AGNES_BOSS.title": "Agnes",
-  "AGNES_BOSS.loss": "[gold]{encounter}[/gold]'s echoes kept ringing through the void; {character} succumbed as her resonance converged."
+  "AGNES_BOSS.loss": "[gold]{encounter}[/gold]'s echoes kept ringing through the void; {character} succumbed as her resonance converged.",
+
+  "SWEET_DREAM_BOSS.title": "Sweet Dream",
+  "SWEET_DREAM_BOSS.loss": "[gold]{encounter}[/gold]'s dream never ends; {character} never woke from its dozing."
 }

@@ -1,8 +1,8 @@
 # CznMonster 设计文档 —— 自定义怪物 + 行动计数机制
 
-> 版本：v1.2（设计稿）
-> 日期：2026-10-20
-> 状态：机制已落地（v1.2）
+> 版本：v1.4（设计稿）
+> 日期：2026-10-23
+> 状态：机制已落地（v1.2）；v1.3 增补能力映射章节（§10）；v1.4 增补原生生命值模型（§3.3）
 > 修订记录：
 > - v1.1 按用户裁决修订——规则④改为"循环不止（防无限流）"；基础计数改为
 >   等级（首领/精英/普通/召唤物）× 意图分类全表；计数器只随主动打出递减；
@@ -12,6 +12,10 @@
 >   意图降级为 ±0/1/2 的修正量；随从改用原生 `Creature.IsSecondaryEnemy` 判定。
 >   本节内容与 `Registration/ActionCountPatches.cs` 现有实现一致；
 >   已落地且无争议的过程性章节（CznCore 裁剪清单、验收测试、风险、裁决记录）移出本文档
+> - v1.3 新增 §10「CZN ↔ STS2 能力映射」：裁定 CZN 词条到原生 Power 的对应关系，
+>   并单列「脆弱 / 损伤」撞名警示，后续怪物与卡牌实现一律以此为唯一查表口径
+> - v1.4 新增 §3.3「原生生命值模型」：血量真源、生成流水线（进阶 → 摇值 → 联机）、
+>   进阶档位口径、联机缩放公式与倍率表、原生 Boss 血量对照；同步 §3.1 指针与附录 A 索引
 > 工作区：`g:/sts2Mod`，本文档所有源码引用均相对于该根目录
 
 ---
@@ -95,6 +99,7 @@ CznMonster
   （`src/Core/Entities/Creatures/Creature.cs:378-384`），随后联机再缩放
   （`Creature.cs:386-392` → `ScaleHpForMultiplayer`，`Creature.cs:749`）。
   → **自定义血量 = 让自定义 MonsterModel 的两个 HP 属性读设置（min==max 得确定值）**。
+  完整链路、进阶与联机公式见 §3.3。
 
 ### 3.2 意图与回合流程
 
@@ -127,6 +132,192 @@ CznMonster
   `EncounterModel.RoomType`（`src/Core/Models/EncounterModel.cs:51`）区分 Boss/Elite/Monster。
   注意事件战斗也是 `RoomType.Monster`（如 `src/Core/Models/Encounters/BattlewornDummyEventV1Encounter.cs:9`），
   需额外判 `RunState.CurrentRoom is CombatRoom` 排除。
+
+### 3.3 原生生命值模型（血量来源 / 进阶 / 联机）
+
+本节是 §6.4 与四份 `*Scaling.cs` 的标定依据。行号均为 `SlayTheSpire2_source/` 下的反编译源码。
+
+#### 3.3.1 唯一真源：两个抽象属性
+
+原生没有任何血量表或配置文件，所有怪物（含 Boss）只通过这两个属性声明血量：
+
+```csharp
+// src/Core/Models/MonsterModel.cs:56-58
+public abstract int MinInitialHp { get; }
+public abstract int MaxInitialHp { get; }
+```
+
+| 写法 | 结果 | 用例 |
+| --- | --- | --- |
+| `MaxInitialHp => MinInitialHp` | 固定血量，不随机 | 全部原生 Boss（除眷族随从） |
+| Min/Max 给区间（如 `18~23`） | 区间内随机，且同一侧不重复 | 小怪、多体战 |
+| 属性内叠加修正项 | 派生血量 | `Axebot` 的 `+ RespawnMaxHpBonus` |
+
+#### 3.3.2 创建流程：进阶 → 摇值 → 联机
+
+唯一入口是 `CombatState.CreateCreature`，开局生成、战斗中召唤、多体 Boss 的每一只都走这里：
+
+```csharp
+// src/Core/Combat/CombatState.cs:233-247
+public Creature CreateCreature(MonsterModel monster, CombatSide side, string? slot)
+{
+    ...
+    Creature creature = new Creature(monster, side, slot);
+    List<Creature> creaturesOnSide = ((side == CombatSide.Player) ? _allies : _enemies);
+    if (side == CombatSide.Enemy)
+    {
+        creature.SetUniqueMonsterHpValue(creaturesOnSide, RunState.Rng.Niche);
+        creature.ScaleMonsterHpForMultiplayer(Encounter, Players.Count, RunState.CurrentActIndex);
+    }
+    ...
+}
+```
+
+三步语义：
+
+1. **读进阶后血量**：`Creature` 构造直接读两个属性（`Creature.cs:347-362`），若 `Min > Max` 抛
+   `InvalidOperationException`（`Creature.cs:352-355`）。
+2. **`SetUniqueMonsterHpValue`**（`Creature.cs:372-384`）：在 `[Min, Max]` 内取值，并剔除本侧已被占用的血量，
+   保证同屏同种怪血量互不相同；候选集为空时退回纯随机。
+3. **`ScaleMonsterHpForMultiplayer`**（`Creature.cs:386-393`）：仅 `playerCount != 1` 时生效，改 `MaxHp` 并把 `CurrentHp` 拉满。
+
+两个实现细节：
+
+- `MonsterMaxHpBeforeModification`（`Creature.cs:98,383`）保留摇值结果，UI 用它做
+  「血量越高体型越大 / 色调偏移」的微随机（`src/Core/Nodes/Rooms/NCombatRoom.cs:698-707`），不参与战斗数值。
+- 写回时 `Math.Min((int)amount, 999999999)`（`Creature.cs:494-502`）：**小数直接截断**，上限 9.99 亿。
+
+调用面（均为同一入口）：`CombatRoom.cs:209`（开局布阵）、`CreatureCmd.cs:40,48`（战斗中召唤）、
+`PlayerCmd.cs:238`（宠物）、`SurprisePower.cs:24`（原生召唤能力）、`EventCombatSynchronizer.cs:86`（联机事件战斗）。
+→ **只要走 `CreateCreature` 就自动获得进阶与联机缩放，mod 无需自己调用。**
+
+#### 3.3.3 进阶（Ascension）
+
+共 11 档（0~10），枚举定义在 `src/Core/Entities/Ascension/AscensionLevel.cs:3-16`，上限 `maxAscensionAllowed = 10`
+（`AscensionManager.cs:15`）：
+
+| 值 | 枚举 | 中文 | 对血量的影响 |
+| --- | --- | --- | --- |
+| 0 | `None` | 无进阶 | 无 |
+| 1 | `SwarmingElites` | 精英蜂拥 | 无（只改精英数量，`MapPointTypeCounts.cs:14`） |
+| 2~7 | WearyTraveler / Poverty / TightBelt / AscendersBane / Inflation / Scarcity | 旅途劳顿 / 贫穷 / 收紧腰带 / 进阶之灾 / 通货膨胀 / 稀缺 | 无 |
+| **8** | **`ToughEnemies`** | **强韧敌人** | **唯一加血量的进阶** |
+| 9 | `DeadlyEnemies` | 致命敌人 | 无（只加伤害/格挡/力量获取） |
+| 10 | `DoubleBoss` | 双重 Boss | 无（第 3 幕末多加一个 Boss 房） |
+
+实现方式不是全局系数，而是**每只怪在自己的属性里按档位二选一**：
+
+```csharp
+// src/Core/Helpers/AscensionHelper.cs:22-29
+public static int GetValueIfAscension(AscensionLevel level, int ascensionValue, int fallbackValue)
+{
+    if (!RunManager.Instance.HasAscension(level))
+    {
+        return fallbackValue;
+    }
+    return ascensionValue;
+}
+```
+
+- 判定是「当前进阶 ≥ 该档」：`AscensionManager.HasLevel` 为 `_level >= (int)level`（`AscensionManager.cs:45-48`），
+  入口 `RunManager.HasAscension`（`RunManager.cs:1707-1714`，非进行中一律 false）。
+- 进阶等级是**整局共享的一个 int**（`RunState.AscensionLevel`），联机两端同一值，不存在各玩家一套。
+- 血量提升是逐怪硬编码的具体数值，实测幅度约 +4%~+6%（例：Vantom 173→183、Aeonglass 512→535、
+  Queen 400→419；TestSubject 每形态 +11%~+12% 属特例）。
+- 进阶 10 只在最后一幕追加第二个首领遭遇，第二场血量按常规计算、不额外削弱
+  （`RunManager.cs:761-765` → `ActModel.SetSecondBossEncounter`）。
+
+#### 3.3.4 联机（多人血量缩放）
+
+```csharp
+// src/Core/Entities/Creatures/Creature.cs:749-756
+public static decimal ScaleHpForMultiplayer(decimal hp, EncounterModel? encounter, int playerCount, int actIndex)
+{
+    if (playerCount <= 1)
+    {
+        return hp;
+    }
+    return hp * (decimal)playerCount * MultiplayerScalingModel.GetMultiplayerScaling(encounter, actIndex);
+}
+```
+
+```csharp
+// src/Core/Models/Singleton/MultiplayerScalingModel.cs:70-87
+case 0: return 1.1m;
+case 1: return 1.2m;
+case 2: return (encounter != null && encounter.RoomType == RoomType.Boss) ? 1.3m : 1.2m;
+default: throw new ArgumentOutOfRangeException("actIndex", actIndex, "Invalid act index for HP scaling");
+```
+
+**公式：`实际血量 = 进阶后血量 × 人数 × 幕系数`**
+
+| 幕（actIndex） | 普通/精英房 | Boss 房 |
+| --- | --- | --- |
+| 第 1 幕（0） | ×1.1 | ×1.1 |
+| 第 2 幕（1） | ×1.2 | ×1.2 |
+| 第 3 幕（2） | ×1.2 | **×1.3** |
+
+按人数展开的总倍率：
+
+| 人数 | 第 1 幕 | 第 2 幕 | 第 3 幕普通/精英 | 第 3 幕 Boss |
+| --- | --- | --- | --- | --- |
+| 1 | ×1 | ×1 | ×1 | ×1 |
+| 2 | ×2.2 | ×2.4 | ×2.4 | ×2.6 |
+| 3 | ×3.3 | ×3.6 | ×3.6 | ×3.9 |
+| 4 | ×4.4 | ×4.8 | ×4.8 | ×5.2 |
+
+注意点：
+
+- **Boss 没有专属多人系数**，唯一区别是第 3 幕 Boss 房用 1.3 而非 1.2。
+- 人数取 `Players.Count`（房间内玩家总数，不是存活数）。
+- 与进阶是**乘算叠加**：先进阶取值，再乘 `人数 × 幕系数`。
+- 结果为 `decimal`，写回时截断为 `int`（`Creature.cs:500`）。例：Aeonglass 4 人第 3 幕 Boss 房
+  = `512 × 4 × 1.3 = 2662.4` → 2662。
+- **多体 Boss 是每只独立乘**，总血池随人数线性膨胀（女王 599 → 4 人 3114）。
+- 与**格挡**缩放的差异：敌人格挡在 ≤2 人时只 `×人数`、且不乘幕系数，3 人以上才乘；
+  且只对主要/次要敌人、来源为能力牌或怪物招式的格挡生效（`MultiplayerScalingModel.cs:52-68`）。
+
+#### 3.3.5 原生 Boss 血量对照（A0~A7 / A8+）
+
+第 1 幕（Overgrowth + Underdocks，两者 `Index` 都是 0）：
+
+| Boss | 基础 | 进阶 8+ |
+| --- | --- | --- |
+| Vantom | 173 | 183 |
+| CeremonialBeast | 252 | 262 |
+| TheKin（祭司 190 + 随从 58~59 ×2） | 306~308 | 323~325 |
+| WaterfallGiant | 240 | 250 |
+| SoulFysh | 211 | 221 |
+| LagavulinMatriarch | 222 | 233 |
+
+第 2 幕（Hive）：
+
+| Boss | 基础 | 进阶 8+ |
+| --- | --- | --- |
+| TheInsatiable | 321 | 341 |
+| KnowledgeDemon | 379 | 399 |
+| KaiserCrab（Crusher 209 + Rocket 199） | 408 | 428 |
+
+第 3 幕（Glory）：
+
+| Boss | 基础 | 进阶 8+ |
+| --- | --- | --- |
+| Queen（Queen 400 + TorchHeadAmalgam 199） | 599 | 630 |
+| TestSubject（100 → 200 → 300 三形态） | 600 | 636 |
+| Aeonglass | 512 | 535 |
+
+血池阶梯：第 1 幕 173~308、第 2 幕 321~428、第 3 幕 512~636。**随幕增长约 ×2.3~×3.4，不是等比折减**——
+这是自定义 Boss 章节系数必须按幕锚定、而不能简单乘 2/3、5/6 的原因。
+
+#### 3.3.6 对本 mod 的约束
+
+- 自定义 Boss 一律 `MaxInitialHp => MinInitialHp`（确定性血量），与原生 Boss 口径一致。
+- 章节系数按 §3.3.5 的血池阶梯标定，四份 `*Scaling.cs` 的 `HpMul` 即该结论的落地。
+- 自定义血量只替换**基础值**，仍乘章节系数（正确写法见 §6.4）；直接 `custom ?? Scaling.Hp(...)`
+  会短路掉章节系数与进阶。
+- 多体/召唤物的血量会各自独立吃联机倍率；若某个单位不应随人数膨胀（如用于机制计数的随从），
+  参考原生 `DecimillipedeSegment.AfterAddedToRoom`（`src/Core/Models/Monsters/DecimillipedeSegment.cs:120-143`）
+  在进场后用 `CreatureCmd.SetMaxAndCurrentHp` 重算的做法。
 
 ---
 
@@ -373,16 +564,27 @@ private static void ApplySpecified(RunState state)
 
 ### 6.4 血量覆盖（仅测试）
 
-自定义首领的 `MonsterModel` 直接读设置：
+自定义首领的 `MonsterModel` 读设置，且**自定义值只替换基础值**，章节系数与升华照常参与：
 
 ```csharp
-public override int MinInitialHp => MonsterSettings.CustomBossHp ?? BaseMinHp;
-public override int MaxInitialHp => MonsterSettings.CustomBossHp ?? BaseMaxHp;  // 相等 → 确定值
+public override int MinInitialHp
+{
+    get
+    {
+        int baseHp = MonsterSettings.EffectiveCustomBossHp
+            ?? AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 升华值, 普通值);
+        return XxxScaling.Hp(baseHp);   // 仍乘章节系数
+    }
+}
+public override int MaxInitialHp => MinInitialHp;   // 相等 → 确定值
 ```
 
+- **不要写回** `custom ?? Scaling.Hp(...)`：`??` 短路会让开关打开后整段绕过章节系数与升华，
+  默认值 999 会在第 1 章直接出场（原生第 1 章上限 262）。
 - `Creature` 构造在 `[min,max]` 摇值（`Creature.cs:378-384`），min==max 时结果确定。
 - 联机仍会走 `ScaleMonsterHpForMultiplayer`（`Creature.cs:386-392`）——与原生首领行为一致，
-  自定义值语义为"单人血量"（叠加原生多人缩放）。
+  自定义值语义为"单人、第 3 章基准血量"（先乘章节系数，再叠加原生多人缩放）。
+- 联机读 `EffectiveCustomBossHp`（房主快照，`MonsterSettings.cs:310-320`），保证两端同值。
 - 只影响 CZN 首领；原生首领不碰。
 
 ### 6.5 边界
@@ -593,43 +795,74 @@ N  = (N0 + IntentOff) × CombatState.Players.Count
 
 触发点：`CardModel.OnPlayWrapper`（`src/Core/Models/CardModel.cs:1858`，是 `async Task`）。
 **不能用普通 postfix 直接减**：postfix 在方法第一次 `await` 前就返回，牌其实还没结算完。
-实现取 `__result` 的 Task，等整张牌结算完成后再减：
+实现把 `__result` 换成组合 Task：先等整张牌结算完成，再在**同一个 await 链内**完成减询
+与打断收割，然后原动作（`PlayCardAction.ExecuteAction` await 的就是 `OnPlayWrapper`）
+才算执行完：
 
 ```csharp
 [HarmonyPatch(typeof(CardModel), "OnPlayWrapper")]
 internal static class ActionCountCardPlayPatch
 {
-    private static void Postfix(CardModel __instance, bool isAutoPlay, Task __result)
+    private static void Postfix(CardModel __instance, bool isAutoPlay, ref Task __result)
     {
         if (isAutoPlay || __result == null) return;      // 自动打出（Mayhem 等）不减（R7）
-        TaskHelper.RunSafely(AfterCardPlaySettledAsync(__result, __instance));
+        Task playTask = __result;
+        __result = PlayThenSettleAsync(playTask, __instance);
     }
 
-    private static async Task AfterCardPlaySettledAsync(Task playTask, CardModel card)
+    private static async Task PlayThenSettleAsync(Task playTask, CardModel card)
     {
-        await playTask;                                  // 等整张牌（含消耗/丢弃/奇巧）结算完
-        CombatManager cm = CombatManager.Instance;
-        if (!cm.IsInProgress || cm.IsOverOrEnding) return;
-        if (!MonsterSettings.ActionCountEnabled) return;
-
-        // 不能用 card.CombatState：能力牌与复制体打完后会离开战斗堆，Pile 变 null，
-        // CombatState 随之返回 null（CardModel.cs:1018-1029），这类牌就会漏减。
-        // CardScope 是原生兜底链：CombatState ?? Owner.Creature.CombatState ?? RunState（CardModel.cs:1038）。
-        if (card.CardScope is not CombatState cs) return;
-
-        // ① 每张主动打出的卡 −1
-        List<Creature> zeroed = ActionCountRuntime.DecrementAll();
-        if (zeroed.Count == 0) return;
-
-        // ② 先同步打"去重标记"再异步开跑：防止玩家在中断链真正执行前就结束回合，
-        //    导致敌人回合与中断链各演一次同一意图（详见 §7.6）
-        ActionCountRuntime.MarkInterruptQueued(zeroed);
-        TaskHelper.RunSafely(ActionCountRuntime.DrainAsync(cs));
+        try
+        {
+            await playTask;                              // 等整张牌（含消耗/丢弃/奇巧）结算完
+            await ActionCountRuntime.AfterCardPlaySettledAsync(card);
+        }
+        catch (Exception ex)
+        {
+            // 吞掉并记日志：不让打断逻辑把 PlayCardAction 本身打成 faulted 而改变动作执行语义
+            MainFile.Log.Warn($"CznMonster 行动计数减询失败：{ex.GetType().Name}: {ex.Message}");
+        }
     }
 }
 ```
 
-`DrainAsync` 内部循环（对每个归零怪，执行前重新校验）：
+> **多人一致性（v0.4.1 修正，引发过 desync）**：
+> 旧实现取 `__result` 后用 `TaskHelper.RunSafely` fire-and-forget 启动打断链。
+> 打断的实际执行时机（意图动画 → 行动 → 重摇）因此会漂到回合结束校验点
+> （`after player turn phase two end` 等）之后，两端谁先跑完取决于帧率/网络。
+> 实测病例：回合最后一张牌恰好把计数清零，一端在握手间隙里完成了
+> 额外一刀 + 重摇（计数刷新 + 多消耗一次 MonsterAi RNG），另一端停在此计数 0，
+> checksum 在 #92 直接劈叉（行动计数 10 vs 0、玩家 HP/格挡不同步、MonsterAi counter 2 vs 1）。
+> 组合 Task 后，打断被折进出牌动作自己的执行窗口：所有端都在同一个动作同步点完成，
+> 下一个队列动作（含回合结束握手）必然先等到它结束。
+
+`ActionCountRuntime.AfterCardPlaySettledAsync` / `DecrementAndDrainAsync`：
+
+```csharp
+public static async Task AfterCardPlaySettledAsync(CardModel card)
+{
+    CombatManager cm = CombatManager.Instance;
+    if (!cm.IsInProgress || cm.IsOverOrEnding) return;
+    if (!MonsterSettings.ActionCountEnabled) return;
+
+    // 不能用 card.CombatState：能力牌与复制体打完后会离开战斗堆，Pile 变 null，
+    // CombatState 随之返回 null（CardModel.cs:1018-1029），这类牌就会漏减。
+    // CardScope 是原生兜底链：CombatState ?? Owner.Creature.CombatState ?? RunState（CardModel.cs:1038）。
+    if (card.CardScope is not CombatState cs) return;
+
+    await DecrementAndDrainAsync(cs);
+}
+
+public static async Task DecrementAndDrainAsync(CombatState cs)
+{
+    List<Creature> zeroed = ActionCountRuntime.DecrementAll();   // 每张主动打出的卡 −1
+    if (zeroed.Count == 0) return;
+    ActionCountRuntime.MarkInterruptQueued(zeroed);              // 同步打标记（防双演，§7.6）
+    await ActionCountRuntime.DrainAsync(cs);                     // 同步收割，不入后台
+}
+```
+
+`DrainAsync` 内部循环（对每个归零怪，执行前重新校验；仅在结算动作窗内被 await 调用）：
 
 ```csharp
 public static async Task DrainAsync(CombatState cs)
@@ -664,6 +897,8 @@ public static async Task DrainAsync(CombatState cs)
 
 要点：
 
+- **打断必须在动作窗内完成（多人铁律）**：打断链由出牌动作的组合 Task await 到结束，
+  绝不允许 fire-and-forget 漂在校验点之后（v0.4.1 起修正，参见上文 desync 病例）。
 - **计数 Power 同步**：`Assign` 与 `DecrementAll` 内部顺带 `SetAmount` 刷新显示层（§7.7），不新增补丁。
 - **循环不止**：`while` 的条件是"还有归零且带标记的怪"——某怪刚演完重随出的新计数器若在同一波里
   已被后续出牌打到归零，会继续演，对应 §7.1④（防玩家无限流）。
@@ -849,6 +1084,125 @@ CznMonster/
 
 ---
 
+## 10. CZN ↔ STS2 能力映射
+
+### 10.1 口径
+
+CZN（卡厄思梦境）的状态词条与 STS2 的 Power 表**不同名、且部分语义边界不同**。本章是唯一裁定来源：
+
+```
+怪物/卡牌/遗物文案里的 CZN 词条  →  查 §10.2 得到 STS2 载体  →  直接调用原生 Power
+```
+
+三条硬性约定：
+
+1. **只换载体，不造同类**：已有等价原生 Power 时，**禁止**为 CZN 词条新建语义重复的 Power
+   （否则驱散、免疫、HoverTip、AI 判定会分叉成两套）。
+2. **零侵入**：不继承、不修改原生 Power 的数值与钩子（铁律 6），差异一律用「施加层数」吸收（§10.4）。
+3. **文案与机制分离**：玩家可见文案写 CZN 原名（§10.6），底层仍是原生 Power；
+   没有对应词的 STS2 独有效果，文案**不得**冒用 CZN 词条。
+
+### 10.2 已裁定映射表
+
+| # | CZN 词条 | CZN 语义 | STS2 对应 | 实现载体 | 备注 |
+|---|---|---|---|---|---|
+| M1 | **士气** | 攻击伤害按层加算提升 | 力量 | `StrengthPower` | 敌我通用；己方全体用 `CombatState.GetTeammatesOf(Creature)` |
+| M2 | **脆弱** | 受到的伤害提升 | **易伤** | `VulnerablePower` | ⚠ 与 STS2 脆弱撞名，见 §10.3 |
+| M3 | **弱化** | 造成的伤害降低 | 虚弱 | `WeakPower` | 直接对应 |
+| M4 | **损伤** | 获得的格挡降低 | **脆弱** | `FrailPower` | ⚠ 与 CZN 脆弱反着来，见 §10.3 |
+| M5 | **无敌** | 抵消接下来 N 次生命流失 | 缓冲 | `BufferPower` | 每触发一次 −1 层（`BufferPower.cs:29-32`） |
+| M6 | **成长** | 每回合永久叠加攻击力 | 恶魔形态 | `DemonFormPower` | 每个己方回合开始 +`Amount` 层力量（`DemonFormPower.cs:58-66`） |
+
+六条均为**机制等价、仅换名**，层数 1:1 直接传入，不需要中间换算表。
+
+### 10.3 撞名警示（最容易写错的地方）
+
+同一份 CZN 文案里「脆弱」和「损伤」在 STS2 侧**交换了名字**：
+
+| 读到的 CZN 词条 | 机制 | 必须用的类 | 用错会怎样 |
+|---|---|---|---|
+| CZN **脆弱** | 受伤增加 | `VulnerablePower`（易伤） | 误用 `FrailPower` → 变成减格挡，威胁方向完全相反 |
+| CZN **弱化** | 输出降低 | `WeakPower`（虚弱） | 误用 `VulnerablePower` → 玩家反而更痛 |
+| CZN **损伤** | 格挡减少 | `FrailPower`（STS2 脆弱） | 误用 `VulnerablePower` → 变成加伤 debuff |
+
+速记：**CZN 的「脆弱」= STS2 的「易伤」；STS2 的「脆弱」= CZN 的「损伤」。**
+
+### 10.4 数值与叠层口径
+
+- **层数 1:1**，不做比例换算（v1 定论）。若后续核对到 CZN 士气为「每层 +X% 伤害」而非固定值，
+  在此处补一张换算表，改动只发生在施加侧，不影响 Power 选择。
+- **递减时机**：STS2 的易伤/虚弱/脆弱在**持有者回合结束** −1 层；CZN 多为「持续 N 次/回合」。
+  怪物技能给 N 层时按「覆盖 N 个敌方回合」取同值，**不额外补偿**。
+- **多段攻击**：力量与易伤在 STS2 按**每段**结算；CZN 同理，无需折算。
+- **无敌**：`BufferPower` 只挡生命流失（HP loss），不挡格挡；CZN 无敌若限定伤害类型，
+  需自建 Power 并在 §10.7 登记，不得复用 `BufferPower` 硬改。
+- **联机**：`BufferPower` 自带多人缩放（`BufferPower.cs:34-37`），不要重复乘玩家数；
+  力量/易伤/虚弱/脆弱原生按人数不变，照常施加。
+
+### 10.5 实现范式
+
+```csharp
+// CZN「脆弱」（= STS2 易伤）：给玩家上 2 层
+await PowerCmd.Apply<VulnerablePower>(
+    new ThrowingPlayerChoiceContext(), targets, 2m, Creature, null);
+
+// CZN「士气」（= STS2 力量）：己方全体 +1
+await PowerCmd.Apply<StrengthPower>(
+    new ThrowingPlayerChoiceContext(), CombatState.GetTeammatesOf(Creature), 1m, Creature, null);
+
+// CZN「成长」（= STS2 恶魔形态）：自身每回合涨力量
+await PowerCmd.Apply<DemonFormPower>(
+    new ThrowingPlayerChoiceContext(), Creature, 2m, Creature, null);
+```
+
+现有实现可对照：`CznMonster/Content/Monsters/PolemicaShellInsect.cs:77`（易伤）、
+`CznMonster/Content/Monsters/PolemicaRockShellInsect.cs:102`（虚弱）、
+`CznMonster/Content/Monsters/PolemicaWingShellInsect.cs:77`（脆弱）、
+`CznMonster/Content/Monsters/PolemicaLegionSoldier.cs:70`（己方全体力量）、
+`CznMonster/Content/Monsters/Agnes.cs:530`（自身力量）。
+
+约定：
+
+- 一律走 `PowerCmd.Apply<T>`（命令队列，联机确定性），**不用** `ApplyInternal`；
+  直接改写显示层时才用 `SetAmount`（同 §7.7 的例外口径）。
+- CZN 原文的「己方全体」= **施法者所在阵营**：怪物施放时取 `CombatState.GetTeammatesOf(Creature)`
+  （自身 + 随从），对玩家群体施放时取技能传入的 `targets`。
+- 原生 Power 的图标、名称、描述不改；需要 CZN 风味时只在 `localization/<lang>/powers.json`
+  里加**本 mod 自有**的键（如未来的复合 Power），不要覆盖原生键。
+
+### 10.6 反向查表（STS2 → CZN）
+
+写怪物技能时若先想到的是 STS2 效果，按此列回推 CZN 词条：
+
+| STS2 | CZN |
+|---|---|
+| 力量 `StrengthPower` | 士气 |
+| 易伤 `VulnerablePower` | 脆弱 |
+| 虚弱 `WeakPower` | 弱化 |
+| 脆弱 `FrailPower` | 损伤 |
+| 缓冲 `BufferPower` | 无敌 |
+| 恶魔形态 `DemonFormPower` | 成长 |
+
+表外的 STS2 Power（中毒 `PoisonPower`、荆棘 `ThornsPower`、无实体 `IntangiblePower`、
+人工制品 `ArtifactPower`、镀层 `PlatingPower` 等）**CZN 无对应词条**：
+实现可以借用原生 Power，但技能文案只能描述效果本身，不能写成 CZN 状态名。
+
+### 10.7 待裁定清单
+
+以下槽位暂未核对到 CZN 原始词条，实现前需先补齐左侧名称，再决定映射类型
+（走原生 / 需要自建 Power）。补齐后并入 §10.2，不要长期留在本节：
+
+| 用途 | 预期 STS2 载体 | 状态 |
+|---|---|---|
+| 格挡类增益（护盾/铁壁） | 一次性 `CreatureCmd.GainBlock`；持续型 `PlatingPower`（回合结束获得格挡并递减，`PlatingPower.cs:61-68`） | 待核对 CZN 词条名与递减规则 |
+| 持续伤害（中毒类） | `PoisonPower` | 待核对层数语义（CZN 多为按次触发） |
+| 反伤类 | `ThornsPower` | 待核对触发时机（受击前/后） |
+| 减伤/免伤类（非次数制） | `IntangiblePower` | 需与「无敌/缓冲」区分口径 |
+| 嘲讽/仇恨类 | STS2 侧无对应 Power（`Taunt` 只是卡牌 `src/Core/Models/Cards/Taunt.cs`） | 若 CZN 确有该机制则需自建 Power |
+| 每回合抽牌 / 能量类 | `DrawCardsNextTurnPower` / `EnergyNextTurnPower` | 待核对 |
+
+---
+
 ## 附录 A：关键源码索引
 
 | 主题 | 位置 |
@@ -859,6 +1213,10 @@ CznMonster/
 | 怪物模型 | `SlayTheSpire2_source/src/Core/Models/MonsterModel.cs:56,240,416,435` |
 | 意图类型 | `SlayTheSpire2_source/src/Core/MonsterMoves/Intents/IntentType.cs:3` |
 | 进阶判定 | `SlayTheSpire2_source/src/Core/Entities/Ascension/AscensionLevel.cs`、`AscensionManager.cs`、`src/Core/Helpers/AscensionHelper.cs` |
+| 血量真源 | `SlayTheSpire2_source/src/Core/Models/MonsterModel.cs:56-58`（`MinInitialHp` / `MaxInitialHp`） |
+| 血量生成流水线 | `SlayTheSpire2_source/src/Core/Combat/CombatState.cs:233-247`、`src/Core/Entities/Creatures/Creature.cs:372-393`（摇值 + 去重 + 联机缩放） |
+| 联机血量公式 | `SlayTheSpire2_source/src/Core/Entities/Creatures/Creature.cs:749-756`、`src/Core/Models/Singleton/MultiplayerScalingModel.cs:70-87`（幕系数） |
+| 原生 Boss 血量数值 | `src/Core/Models/Monsters/{Vantom,CeremonialBeast,KinPriest,KinFollower,WaterfallGiant,SoulFysh,LagavulinMatriarch,TheInsatiable,KnowledgeDemon,Crusher,Rocket,Queen,TorchHeadAmalgam,TestSubject,Aeonglass}.cs`（汇总表见 §3.3.5） |
 | 随从标记 | `SlayTheSpire2_source/src/Core/Entities/Creatures/Creature.cs:269`（`IsSecondaryEnemy`）、`src/Core/Models/Powers/MinionPower.cs:13` |
 | 多人缩放 | `SlayTheSpire2_source/src/Core/Models/Singleton/MultiplayerScalingModel.cs:70` |
 | 敌人回合 | `SlayTheSpire2_source/src/Core/Combat/CombatManager.cs:1402-1435` |
@@ -868,3 +1226,5 @@ CznMonster/
 | CznCore 扩展协议 | `CznHeidemarie/CznCore/Settings/SharedSettingsExtensionRegistry.cs` |
 | 参考 mod 入口范式 | `CznTipheraCharacter/decompiled/CznTipheraCharacter/Entry.cs:21-130` |
 | 本工作 mod 入口范式 | `CznHeidemarie/MainFile.cs`、`CznHeidemarie/Integration/HeidemarieIntegration.cs` |
+| CZN 能力映射载体（§10） | `SlayTheSpire2_source/src/Core/Models/Powers/StrengthPower.cs`、`VulnerablePower.cs`、`WeakPower.cs`、`FrailPower.cs`、`BufferPower.cs`、`DemonFormPower.cs` |
+| CZN 能力施加范式 | `CznMonster/Content/Monsters/PolemicaShellInsect.cs:77`、`PolemicaLegionSoldier.cs:70`、`Agnes.cs:530` |

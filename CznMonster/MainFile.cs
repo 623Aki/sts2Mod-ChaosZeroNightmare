@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using CznMonster.Content.Audio;
+using CznMonster.Content.Monsters;
+using CznMonster.Content.Net;
 using CznMonster.Registration;
 using CznMonster.Settings;
 using HarmonyLib;
@@ -37,6 +39,14 @@ public static class MainFile
 
 		// 行动计数：订阅战斗生命周期事件（CombatManager 单例，此时已就绪）
 		ActionCountPatches.Initialize();
+
+		// 美梦偷牌：每场战斗开始时无条件复位持有区与「每回合偷几张」——
+		// 不能只靠 Power 的 AfterCombatEnd（Boss 被击杀时 Power 会先被摘掉，那条钩子不执行）。
+		SweetDreamStealRuntime.Initialize();
+
+		// 联机：本局怪物参数以房主为准（CZN 怪物 / 首领位置 / 自定义血量 / 行动计数）。
+		// 客户端通过大厅阶段下发的快照生成地图与战斗，避免与房主劈叉。
+		CznMonsterConfigSyncRuntime.Initialize();
 
 		// 音效：进本 mod 首领战前预热全部 CZN 采样（波勒米卡组 28 条 + Diallos 双怪组 36 条）
 		CznMonsterSfx.Initialize();

@@ -81,9 +81,9 @@ public sealed class AgnesBoss : EncounterModel, ICznMonsterEncounter
 	/// <inheritdoc />
 	protected override IReadOnlyList<(MonsterModel, string?)> GenerateMonsters()
 	{
-		// 读档后静态章节值会丢，这里按当前 RunState 兜底（波勒米卡同）
-		AgnesScaling.ActIndex = RunManager.Instance?.DebugOnlyGetState()?.CurrentActIndex
-			?? AgnesScaling.ActIndex;
+		// 读档后静态章节值会丢，这里按当前 RunState 兜底。
+		// 拿不到 RunState 时回落第 1 章（0），不能沿用上一次写入的值（残留会让两端劈叉）。
+		AgnesScaling.ActIndex = RunManager.Instance?.DebugOnlyGetState()?.CurrentActIndex ?? 0;
 
 		// 只开局生成 Boss；余响碎片在变身回合用 CreatureCmd.Add 铺满三槽
 		return new (MonsterModel, string?)[]

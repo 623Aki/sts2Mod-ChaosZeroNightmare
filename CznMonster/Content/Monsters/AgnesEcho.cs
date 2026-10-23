@@ -35,9 +35,15 @@ namespace CznMonster.Content.Monsters;
 public sealed class AgnesEcho : MonsterModel
 {
 	/// <inheritdoc />
-	/// <remarks>v0.6：基础血量 12 → 18（升华 21，同 +75% 比例）——供品更经打，处决加层更耐攒。</remarks>
-	public override int MinInitialHp => AgnesScaling.Hp(
-		AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 21, 18));
+	/// <remarks>
+	/// v0.6：基础血量 12 → 18（升华 21，同 +75% 比例）——供品更经打，处决加层更耐攒。
+	///
+	/// <para><b>不乘章节系数</b>：碎片血量必须恒等于处决折算值
+	/// （每清一只 = 少挨 2×基础值 = 18 点，即 <c>Agnes.ExecuteDamageBase</c> 的等价交换），
+	/// 一旦跟随 Boss 的章节系数，第 1 章会掉到 7 HP，导致「花输出换减伤」的交换直接失衡。</para>
+	/// </remarks>
+	public override int MinInitialHp =>
+		AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 21, 18);
 
 	/// <inheritdoc />
 	public override int MaxInitialHp => MinInitialHp;

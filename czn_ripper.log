@@ -1,0 +1,422 @@
+2026-10-23 14:48:25 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 14:48:25 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 14:48:25 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 14:48:29 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 14:48:29 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 14:48:29 [ERROR] CLI folder not found in archive: db/levelup@tooltip.db
+2026-10-23 14:48:29 [INFO] Extract begin for node
+2026-10-23 14:48:29 [INFO] Extracting file: cs(monster)@cs.db size=313223
+2026-10-23 14:48:29 [INFO] Converting DB to JSON: cs(monster)@cs.db
+2026-10-23 14:48:29 [INFO] Extract end for node
+2026-10-23 14:48:29 [INFO] Extract begin for node
+2026-10-23 14:48:29 [INFO] Extracting file: cs(monster)@tooltip.db size=82807
+2026-10-23 14:48:29 [INFO] Converting DB to JSON: cs(monster)@tooltip.db
+2026-10-23 14:48:29 [INFO] Extract end for node
+2026-10-23 14:48:29 [INFO] Extract begin for node
+2026-10-23 14:48:29 [INFO] Extracting file: tooltip@tooltip.db size=40892
+2026-10-23 14:48:29 [INFO] Converting DB to JSON: tooltip@tooltip.db
+2026-10-23 14:48:29 [INFO] Extract end for node
+2026-10-23 14:48:29 [INFO] Extract begin for node
+2026-10-23 14:48:29 [INFO] Extracting file: monster_level_stat@monster_level_stat.db size=66307
+2026-10-23 14:48:29 [INFO] Converting DB to JSON: monster_level_stat@monster_level_stat.db
+2026-10-23 14:48:30 [INFO] Extract end for node
+2026-10-23 14:48:30 [INFO] Extract begin for node
+2026-10-23 14:48:30 [INFO] Extracting file: tier_monster_stat@tier_monster_stat.db size=102941
+2026-10-23 14:48:30 [INFO] Converting DB to JSON: tier_monster_stat@tier_monster_stat.db
+2026-10-23 14:48:30 [INFO] Extract end for node
+2026-10-23 14:48:30 [INFO] CLI run finished: 5/6 folders extracted
+2026-10-23 14:48:45 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 14:48:45 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 14:48:45 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 14:48:49 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 14:48:49 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 14:48:49 [INFO] Extract begin for node
+2026-10-23 14:48:49 [INFO] Extracting file: cs(monster)@cs.db size=313223
+2026-10-23 14:48:49 [INFO] Converting DB to JSON: cs(monster)@cs.db
+2026-10-23 14:48:49 [INFO] Extract end for node
+2026-10-23 14:48:49 [INFO] Extract begin for node
+2026-10-23 14:48:49 [INFO] Extracting file: cs(monster)@tooltip.db size=82807
+2026-10-23 14:48:49 [INFO] Converting DB to JSON: cs(monster)@tooltip.db
+2026-10-23 14:48:49 [INFO] Extract end for node
+2026-10-23 14:48:49 [INFO] Extract begin for node
+2026-10-23 14:48:49 [INFO] Extracting file: tooltip@tooltip.db size=40892
+2026-10-23 14:48:49 [INFO] Converting DB to JSON: tooltip@tooltip.db
+2026-10-23 14:48:49 [INFO] Extract end for node
+2026-10-23 14:48:49 [INFO] Extract begin for node
+2026-10-23 14:48:49 [INFO] Extracting file: monster_level_stat@monster_level_stat.db size=66307
+2026-10-23 14:48:49 [INFO] Converting DB to JSON: monster_level_stat@monster_level_stat.db
+2026-10-23 14:48:49 [INFO] Extract end for node
+2026-10-23 14:48:49 [INFO] Extract begin for node
+2026-10-23 14:48:49 [INFO] Extracting file: tier_monster_stat@tier_monster_stat.db size=102941
+2026-10-23 14:48:49 [INFO] Converting DB to JSON: tier_monster_stat@tier_monster_stat.db
+2026-10-23 14:48:49 [INFO] Extract end for node
+2026-10-23 14:48:49 [INFO] CLI run finished: 5/5 folders extracted
+2026-10-23 14:49:10 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 14:49:10 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 14:49:10 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 14:49:14 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 14:49:14 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 14:49:14 [INFO] Extract begin for node
+2026-10-23 14:49:14 [INFO] Extracting file: cs.db size=649
+2026-10-23 14:49:14 [INFO] Converting DB to JSON: cs.db
+2026-10-23 14:49:14 [INFO] Extract end for node
+2026-10-23 14:49:14 [INFO] CLI run finished: 1/1 folders extracted
+2026-10-23 14:51:02 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 14:51:02 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 14:51:02 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 14:51:06 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 14:51:06 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 14:51:06 [INFO] Extract begin for node
+2026-10-23 14:51:06 [INFO] Extracting file: cs(card1)@cs.db size=166278
+2026-10-23 14:51:06 [INFO] Converting DB to JSON: cs(card1)@cs.db
+2026-10-23 14:51:06 [INFO] Extract end for node
+2026-10-23 14:51:06 [INFO] Extract begin for node
+2026-10-23 14:51:06 [INFO] Extracting file: cs(card2)@cs.db size=200206
+2026-10-23 14:51:06 [INFO] Converting DB to JSON: cs(card2)@cs.db
+2026-10-23 14:51:06 [INFO] Extract end for node
+2026-10-23 14:51:06 [INFO] Extract begin for node
+2026-10-23 14:51:06 [INFO] Extracting file: cs(eidolon)@cs.db size=31177
+2026-10-23 14:51:06 [INFO] Converting DB to JSON: cs(eidolon)@cs.db
+2026-10-23 14:51:06 [INFO] Extract end for node
+2026-10-23 14:51:06 [INFO] Extract begin for node
+2026-10-23 14:51:06 [INFO] Extracting file: cs(partner)@cs.db size=112293
+2026-10-23 14:51:06 [INFO] Converting DB to JSON: cs(partner)@cs.db
+2026-10-23 14:51:06 [INFO] Extract end for node
+2026-10-23 14:51:06 [INFO] Extract begin for node
+2026-10-23 14:51:06 [INFO] Extracting file: cs(singularity)@cs.db size=42042
+2026-10-23 14:51:06 [INFO] Converting DB to JSON: cs(singularity)@cs.db
+2026-10-23 14:51:06 [INFO] Extract end for node
+2026-10-23 14:51:06 [INFO] Extract begin for node
+2026-10-23 14:51:06 [INFO] Extracting file: cs(tutorial)@cs.db size=102459
+2026-10-23 14:51:06 [INFO] Converting DB to JSON: cs(tutorial)@cs.db
+2026-10-23 14:51:06 [INFO] Extract end for node
+2026-10-23 14:51:06 [INFO] CLI run finished: 6/6 folders extracted
+2026-10-23 14:55:38 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 14:55:38 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 14:55:38 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 14:55:42 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 14:55:42 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 14:55:42 [INFO] Extract begin for node
+2026-10-23 14:55:42 [INFO] Extracting file: cs(card1)@tooltip.db size=31863
+2026-10-23 14:55:42 [INFO] Converting DB to JSON: cs(card1)@tooltip.db
+2026-10-23 14:55:42 [INFO] Extract end for node
+2026-10-23 14:55:42 [INFO] CLI run finished: 1/1 folders extracted
+2026-10-23 15:18:27 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 15:18:27 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 15:18:27 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 15:18:31 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 15:18:31 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 15:18:31 [INFO] Extract begin for node
+2026-10-23 15:18:31 [INFO] Extracting file: cs(monster)@skill_eff.db size=542424
+2026-10-23 15:18:31 [INFO] Converting DB to JSON: cs(monster)@skill_eff.db
+2026-10-23 15:18:31 [INFO] Extract end for node
+2026-10-23 15:18:31 [INFO] CLI run finished: 1/1 folders extracted
+2026-10-23 15:19:20 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 15:19:20 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 15:19:20 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 15:19:25 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 15:19:25 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 15:19:25 [ERROR] CLI folder not found in archive: db/condition@condition_timing.db
+2026-10-23 15:19:25 [INFO] Extract begin for node
+2026-10-23 15:19:25 [INFO] Extracting file: condition@cond_timing.db size=6638
+2026-10-23 15:19:25 [INFO] Converting DB to JSON: condition@cond_timing.db
+2026-10-23 15:19:25 [INFO] Extract end for node
+2026-10-23 15:19:25 [INFO] Extract begin for node
+2026-10-23 15:19:25 [INFO] Extracting file: cs(monster)@cs.db size=313223
+2026-10-23 15:19:25 [INFO] Converting DB to JSON: cs(monster)@cs.db
+2026-10-23 15:19:25 [INFO] Extract end for node
+2026-10-23 15:19:25 [INFO] CLI run finished: 2/3 folders extracted
+2026-10-23 15:21:54 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 15:21:54 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 15:21:54 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 15:21:59 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 15:21:59 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 15:21:59 [INFO] Extract begin for node
+2026-10-23 15:21:59 [INFO] Extracting file: icon_buff_card_series.sct size=651
+2026-10-23 15:21:59 [INFO] Converting SCT to PNG: icon_buff_card_series.sct
+2026-10-23 15:21:59 [INFO] Extract end for node
+2026-10-23 15:21:59 [INFO] CLI run finished: 1/1 folders extracted
+2026-10-23 15:42:31 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 15:42:31 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 15:42:31 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 15:42:36 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 15:42:36 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 15:42:36 [INFO] Extract begin for node
+2026-10-23 15:42:36 [INFO] Extracting file: cs(aqswaw9004)@cs.db size=64210
+2026-10-23 15:42:36 [INFO] Converting DB to JSON: cs(aqswaw9004)@cs.db
+2026-10-23 15:42:36 [INFO] Extract end for node
+2026-10-23 15:42:36 [INFO] Extract begin for node
+2026-10-23 15:42:36 [INFO] Extracting file: cs(camille1009)@cs.db size=31973
+2026-10-23 15:42:36 [INFO] Converting DB to JSON: cs(camille1009)@cs.db
+2026-10-23 15:42:36 [INFO] Extract end for node
+2026-10-23 15:42:36 [INFO] Extract begin for node
+2026-10-23 15:42:36 [INFO] Extracting file: cs(cylee61)@cs.db size=23899
+2026-10-23 15:42:36 [INFO] Converting DB to JSON: cs(cylee61)@cs.db
+2026-10-23 15:42:36 [INFO] Extract end for node
+2026-10-23 15:42:36 [INFO] Extract begin for node
+2026-10-23 15:42:36 [INFO] Extracting file: cs(domi)@cs.db size=41015
+2026-10-23 15:42:36 [INFO] Converting DB to JSON: cs(domi)@cs.db
+2026-10-23 15:42:36 [INFO] Extract end for node
+2026-10-23 15:42:36 [INFO] Extract begin for node
+2026-10-23 15:42:36 [INFO] Extracting file: cs(hongooo)@cs.db size=29736
+2026-10-23 15:42:36 [INFO] Converting DB to JSON: cs(hongooo)@cs.db
+2026-10-23 15:42:36 [INFO] Extract end for node
+2026-10-23 15:42:36 [INFO] Extract begin for node
+2026-10-23 15:42:36 [INFO] Extracting file: cs(ikarus)@cs.db size=18811
+2026-10-23 15:42:36 [INFO] Converting DB to JSON: cs(ikarus)@cs.db
+2026-10-23 15:42:36 [INFO] Extract end for node
+2026-10-23 15:42:36 [INFO] CLI run finished: 6/6 folders extracted
+2026-10-23 15:42:57 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 15:42:57 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 15:42:57 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 15:43:01 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 15:43:01 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 15:43:01 [INFO] Extract begin for node
+2026-10-23 15:43:01 [INFO] Extracting file: cs(card1)@cs.db size=166278
+2026-10-23 15:43:01 [INFO] Converting DB to JSON: cs(card1)@cs.db
+2026-10-23 15:43:01 [INFO] Extract end for node
+2026-10-23 15:43:01 [INFO] Extract begin for node
+2026-10-23 15:43:01 [INFO] Extracting file: cs(card2)@cs.db size=200206
+2026-10-23 15:43:01 [INFO] Converting DB to JSON: cs(card2)@cs.db
+2026-10-23 15:43:01 [INFO] Extract end for node
+2026-10-23 15:43:01 [INFO] Extract begin for node
+2026-10-23 15:43:01 [INFO] Extracting file: cs(eidolon)@cs.db size=31177
+2026-10-23 15:43:01 [INFO] Converting DB to JSON: cs(eidolon)@cs.db
+2026-10-23 15:43:01 [INFO] Extract end for node
+2026-10-23 15:43:01 [INFO] Extract begin for node
+2026-10-23 15:43:01 [INFO] Extracting file: cs(partner)@cs.db size=112293
+2026-10-23 15:43:01 [INFO] Converting DB to JSON: cs(partner)@cs.db
+2026-10-23 15:43:01 [INFO] Extract end for node
+2026-10-23 15:43:01 [INFO] Extract begin for node
+2026-10-23 15:43:01 [INFO] Extracting file: cs(singularity)@cs.db size=42042
+2026-10-23 15:43:01 [INFO] Converting DB to JSON: cs(singularity)@cs.db
+2026-10-23 15:43:01 [INFO] Extract end for node
+2026-10-23 15:43:01 [INFO] Extract begin for node
+2026-10-23 15:43:01 [INFO] Extracting file: cs(tutorial)@cs.db size=102459
+2026-10-23 15:43:01 [INFO] Converting DB to JSON: cs(tutorial)@cs.db
+2026-10-23 15:43:01 [INFO] Extract end for node
+2026-10-23 15:43:01 [INFO] CLI run finished: 6/6 folders extracted
+2026-10-23 15:43:38 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 15:43:38 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 15:43:38 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 15:43:42 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 15:43:42 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 15:43:43 [INFO] Extract begin for node
+2026-10-23 15:43:43 [INFO] Extracting file: cs(monster)@cs.db size=313223
+2026-10-23 15:43:43 [INFO] Converting DB to JSON: cs(monster)@cs.db
+2026-10-23 15:43:43 [INFO] Extract end for node
+2026-10-23 15:43:43 [INFO] CLI run finished: 1/1 folders extracted
+2026-10-23 15:46:23 [INFO] CLI run started for pack: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\data.pack
+2026-10-23 15:46:23 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\manifest.ssra
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 0 -> 'bin_x86_64'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 1 -> 'bin_arm64'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 2 -> 'bin_arm64l'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 3 -> 'voice_ja'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 4 -> 'story_ja'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 5 -> 'voice_zhs'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 6 -> 'text_zhs'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 7 -> 'lang_zhs'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 8 -> 'text_en'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 9 -> 'lang_en'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 10 -> 'sound_master'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 11 -> 'base_liveops'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 12 -> 'base_s13'
+2026-10-23 15:46:23 [INFO] Discovered SSRA group 13 -> 'base'
+2026-10-23 15:46:27 [INFO] Scanning SSRA manifest: E:\Program Files (x86)\WeGameApps\rail_apps\czn(2002460)\bin\appdata\prod\gameres\shadow\manifest.ssra
+2026-10-23 15:46:27 [INFO] Discovered SSRA group 0 -> 'base_default'
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_all_buff_series.sct size=1954
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_all_buff_series.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_attack_buff_series.sct size=1830
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_attack_buff_series.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_damaged.sct size=1515
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_damaged.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_debility.sct size=1192
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_debility.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_defense_buff_series.sct size=2168
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_defense_buff_series.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_evasion_series.sct size=2178
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_evasion_series.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_expose_weakness.sct size=1457
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_expose_weakness.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_immunity.sct size=1217
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_immunity.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_monster_pattern_change.sct size=1125
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_monster_pattern_change.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_power.sct size=1055
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_power.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_shield_series.sct size=1182
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_shield_series.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_solidity.sct size=1429
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_solidity.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] Extract begin for node
+2026-10-23 15:46:27 [INFO] Extracting file: icon_buff_suspended_animation.sct size=1114
+2026-10-23 15:46:27 [INFO] Converting SCT to PNG: icon_buff_suspended_animation.sct
+2026-10-23 15:46:27 [INFO] Extract end for node
+2026-10-23 15:46:27 [INFO] CLI run finished: 13/13 folders extracted

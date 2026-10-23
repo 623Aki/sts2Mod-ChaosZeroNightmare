@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CznMonster.Content.Audio;
 using Godot;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
@@ -69,9 +70,45 @@ public static class CznBestiaryMoves
 		}
 
 		// 受伤 / 死亡：与原生一样在播之前掐掉所有循环音
-		list.Add(Anim(owner, visuals, HurtName, hurtClip, hurtSfx, idleClip).StopOtherSfx());
+		list.Add(Hurt(owner, visuals, hurtClip, hurtSfx, idleClip).StopOtherSfx());
 		list.Add(Anim(owner, visuals, DieName, dieClip, dieSfx, idleClip: null).StopOtherSfx());
 		return list;
+	}
+
+	/// <summary>
+	/// 「受伤」按钮：clip + <b>通用撞击音</b> +（有则）专属受击怪叫。
+	///
+	/// <para>原生图鉴的受伤按钮播的就是 <see cref="MonsterModel.TakeDamageSfx"/>（通用撞击音，
+	/// <c>MonsterModel.GenerateBestiaryMoveList</c>：<c>FromAnim("hurt", TakeDamageSfx)</c>），
+	/// 战斗里也是「撞击音（必播）+ 怪叫（<c>HasHurtSfx</c> 才播）」两层
+	/// （<c>CreatureCmd.cs:373 → SfxCmd.PlayDamage</c> / <c>:347 → SfxCmd.Play(HurtSfx)</c>）。</para>
+	///
+	/// <para>本 mod 的 CZN bank 里只有波勒米卡（3 条 groan）与塞拉菲翁（<c>normal_hit</c>）有怪叫，
+	/// 其余 9 只没有任何受击采样。若只播怪叫，那些怪点「受伤」就是纯动画零声音；
+	/// 补上这层通用撞击音后与原生图鉴行为一致（有怪叫的怪 = 撞击音 + 怪叫）。</para>
+	/// </summary>
+	private static BestiaryMonsterMove Hurt(
+		MonsterModel owner,
+		NCreatureVisuals? visuals,
+		string clip,
+		string? voiceClip,
+		string? idleClip)
+	{
+		return BestiaryMonsterMove.FromAction(HurtName, () =>
+		{
+			PlayClip(visuals, clip, idleClip);
+
+			// 通用撞击音按 DamageSfxType（armor / fur / plant / slime / magic）走原生 FMOD 事件；
+			// 不是本 mod 的占位路径，SfxCmd.Play 会原样放行到 NAudioManager。
+			SfxCmd.Play(owner.TakeDamageSfx);
+
+			if (!string.IsNullOrEmpty(voiceClip))
+			{
+				CznMonsterSfx.Play(owner, voiceClip);
+			}
+
+			return Task.CompletedTask;
+		});
 	}
 
 	/// <summary>
@@ -88,16 +125,7 @@ public static class CznBestiaryMoves
 	{
 		return BestiaryMonsterMove.FromAction(name, () =>
 		{
-			// 图鉴反复切换条目时旧节点已被释放，这里必须判有效性（SpineAnimation 本身是 null-safe 包装）
-			if (visuals != null && GodotObject.IsInstanceValid(visuals))
-			{
-				SpineAnimationAccess animation = visuals.SpineAnimation;
-				animation.SetAnimation(clip, loop: false);
-				if (!string.IsNullOrEmpty(idleClip))
-				{
-					animation.AddAnimation(idleClip, delay: 0f, loop: true);
-				}
-			}
+			PlayClip(visuals, clip, idleClip);
 
 			if (!string.IsNullOrEmpty(sfxClip))
 			{
@@ -106,5 +134,24 @@ public static class CznBestiaryMoves
 
 			return Task.CompletedTask;
 		});
+	}
+
+	/// <summary>
+	/// 只做动画部分：播 <paramref name="clip"/>（不循环），<paramref name="idleClip"/> 非空时排队接回待机。
+	/// </summary>
+	private static void PlayClip(NCreatureVisuals? visuals, string clip, string? idleClip)
+	{
+		// 图鉴反复切换条目时旧节点已被释放，这里必须判有效性（SpineAnimation 本身是 null-safe 包装）
+		if (visuals == null || !GodotObject.IsInstanceValid(visuals))
+		{
+			return;
+		}
+
+		SpineAnimationAccess animation = visuals.SpineAnimation;
+		animation.SetAnimation(clip, loop: false);
+		if (!string.IsNullOrEmpty(idleClip))
+		{
+			animation.AddAnimation(idleClip, delay: 0f, loop: true);
+		}
 	}
 }

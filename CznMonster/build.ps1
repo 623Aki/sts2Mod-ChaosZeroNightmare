@@ -371,7 +371,12 @@ try {
         'CznMonster/localization/zhs/encounters.json',
         'CznMonster/localization/zhs/powers.json',
         'CznMonster/localization/zhs/bestiary.json',
-        'CznMonster/localization/eng/bestiary.json'
+        'CznMonster/localization/eng/bestiary.json',
+        # 自定义意图文案（AGNES_EXECUTE / ARKRUS_RESCUE）
+        'CznMonster/localization/zhs/intents.json',
+        'CznMonster/localization/eng/intents.json',
+        # 阿涅丝第二形态的图鉴展示场景（AgnesFinal）
+        'scenes/creature_visuals/agnes_final.tscn'
     )
 
     # 条目数 / 导入产物计数 / 关键资源命中一次遍历完成

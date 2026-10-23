@@ -175,7 +175,8 @@ internal sealed class CharacterSkinVoicePlayerRuntime
 			return AudioPlaybackResult.NotPlayed;
 		}
 		bool flag = _audiencePolicy.IsTeammate(player);
-		if (flag && (NCombatRoom.Instance == null || (!bypassCooldown && !SharedTeammateVoicePlaybackGate.Allows(_settings.TeammateVoiceCooldownSeconds))))
+		ulong voiceOwnerNetId = player?.NetId ?? 0uL;
+		if (flag && (NCombatRoom.Instance == null || (!bypassCooldown && !SharedTeammateVoicePlaybackGate.Allows(voiceOwnerNetId, _settings.TeammateVoiceCooldownSeconds))))
 		{
 			return AudioPlaybackResult.NotPlayed;
 		}
@@ -186,7 +187,7 @@ internal sealed class CharacterSkinVoicePlayerRuntime
 		AudioPlaybackResult result = PlayRawWithResult(resPath, volume);
 		if (flag && result.Played)
 		{
-			SharedTeammateVoicePlaybackGate.RecordSuccessfulPlayback();
+			SharedTeammateVoicePlaybackGate.RecordSuccessfulPlayback(voiceOwnerNetId);
 		}
 		else if (result.Played)
 		{

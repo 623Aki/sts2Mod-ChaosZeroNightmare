@@ -38,17 +38,14 @@ internal static class BossPlacementPatch
 	{
 		try
 		{
-			if (!MonsterSettings.CznMonstersEnabled)
+			if (!MonsterSettings.EffectiveCznMonstersEnabled)
 			{
 				return;
 			}
-
-			// 随机模式：首领进入原生池后由原生抽取，这里不做任何改写（避免"必出"）
-			if (!MonsterSettings.BossPosSpecified)
+			if (!MonsterSettings.EffectiveBossPosSpecified)
 			{
 				return;
 			}
-
 			RunState? state = CurrentState();
 			if (state == null)
 			{
@@ -58,7 +55,13 @@ internal static class BossPlacementPatch
 		}
 		catch (Exception ex)
 		{
-			MainFile.Log.Warn($"CznMonster 首领位置应用失败：{ex.GetType().Name}: {ex.Message}");
+			MainFile.Log.Warn($"CznMonster 首领位置补丁失败：{ex.GetType().Name}: {ex.Message}");
+		}
+		finally
+		{
+			// 捕获的 RunState 只服务于「这一局的开局生成」，用完必须清掉：
+			// 否则读档 / 重放 / 调试命令再次触发 GenerateRooms 时会拿到上一局的 RunState。
+			_capturedState = null;
 		}
 	}
 
@@ -67,7 +70,7 @@ internal static class BossPlacementPatch
 	/// </summary>
 	private static void ApplySpecified(RunState state)
 	{
-		int chapter = Math.Clamp(MonsterSettings.BossChapter, 1, 3);
+		int chapter = Math.Clamp(MonsterSettings.EffectiveBossChapter, 1, 3);
 		ActModel? act = state.Acts.FirstOrDefault(a => a.Index == chapter - 1);
 		if (act == null)
 		{
@@ -76,7 +79,7 @@ internal static class BossPlacementPatch
 		}
 
 		// 设置里明确选了某只首领就照办；选「随机」时在本局未出现过的 CZN 首领里抽
-		EncounterModel? chosen = MonsterContent.GetSelectedBoss(MonsterSettings.BossSelect);
+		EncounterModel? chosen = MonsterContent.GetSelectedBoss(MonsterSettings.EffectiveBossSelect);
 		if (chosen == null)
 		{
 			List<EncounterModel> pool = new List<EncounterModel>();

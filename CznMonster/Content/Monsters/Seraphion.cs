@@ -71,14 +71,20 @@ public sealed class Seraphion : MonsterModel
 	// ── 状态 ──
 	private int _p1Turn;          // P1 三拍游标（0..2）；复归完成归 0
 	private bool _p2Form;         // 复归拍后处于持盾形态；下个 P1/终局拍先播 stance1_to_normal 退出
-	private bool _fading;         // 濒死中（Power 的垂死免疫 / 死亡动画分支都读它）
 	private bool _revivePending;  // 救援颂歌解锁 → 下一拍 REVIVAL
 
 	/// <summary>濒死 Power 是否已挂（阿克鲁斯存活期间恒真，救援后解除）。</summary>
 	public bool HalfDeathActive => Creature.GetPower<SeraphionHalfDeathPower>() != null;
 
-	/// <summary>濒死中（垂死免疫生效开关；<see cref="SeraphionHalfDeathPower"/> 读）。</summary>
-	public bool FadingActive => _fading;
+	/// <summary>
+	/// 濒死中（垂死免疫生效开关；<see cref="SeraphionHalfDeathPower"/> 读）。
+	///
+	/// <para><b>真值放在 Power 层数上</b>（1 = 保护待命，2 = 濒死中），不再用本地 bool：
+	/// Power 层数属于战斗态、随双方同步，而本地字段不参与校验。
+	/// 用本地字段时，只要两端对「是否已进入濒死」有一拍不同，
+	/// 就会出现「一端免疫、一端按全额扣血」，并让 <c>ShouldAllowTargeting</c> 两端不一致。</para>
+	/// </summary>
+	public bool FadingActive => Creature?.GetPower<SeraphionHalfDeathPower>() is { Amount: >= 2 };
 
 	/// <summary>救援颂歌写入点（<see cref="SeraphionHalfState.BeginRevivalAsync"/> 唯一调用方）：
 	/// 置复归标志 + 当场把下一次行动改为 REVIVAL 复归拍（意图立刻显示 Attack+Defend，不等待下一掷）。
@@ -100,12 +106,13 @@ public sealed class Seraphion : MonsterModel
 	/// </summary>
 	internal void EnterFading()
 	{
-		if (_fading)
+		if (FadingActive)
 		{
 			return;
 		}
 
-		_fading = true;
+		// 濒死状态写进 Power 层数（同步真值），本地只做表现与游标处理
+		Creature?.GetPower<SeraphionHalfDeathPower>()?.SetAmount(2);
 		_p1Turn = 0;
 		_p2Form = false;
 		if (_fadingState != null)
@@ -124,7 +131,12 @@ public sealed class Seraphion : MonsterModel
 	/// </summary>
 	internal void ExitFading()
 	{
-		_fading = false;
+		SeraphionHalfDeathPower? power = Creature?.GetPower<SeraphionHalfDeathPower>();
+		if (power != null && power.Amount >= 2)
+		{
+			// 回到「保护待命」：濒死免疫解除，Power 本体保留（阿克鲁斯还活着时仍需拦截死亡）
+			power.SetAmount(1);
+		}
 	}
 
 	// FADING 行动状态引用（GenerateMoveStateMachine 时登记，EnterFading 里用）
@@ -139,9 +151,23 @@ public sealed class Seraphion : MonsterModel
 	private int _revivalQueuedRound = -1;
 
 	/// <inheritdoc />
-	/// <remarks>血量覆盖（上游契约 §6.4）：boss 血量自定义设置只作用于本组的主敌。</remarks>
-	public override int MinInitialHp => MonsterSettings.CustomBossHp ?? SeraphionScaling.Hp(
-		AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 206, 195));
+	/// <remarks>血量覆盖（上游契约 §6.4）：boss 血量自定义设置只作用于本组的主敌。
+	///
+	/// <para><b>基础值 240（升华 254）</b>：旧值 195 使双体总血池只有 347，
+	/// 低于原生第 3 幕下限 512 达 32%——即使算上一次救援颂歌（+50% MaxHp = 120）
+	/// 也只有 512 左右，刚好压线。提到 240 后：240 + 152（阿克鲁斯）= 392 面板，
+	/// 计入一次颂歌 = 512，落在原生区间；玩家先杀阿克鲁斯则拿不到续命，机制价值保留。</para>
+	///
+	/// <para>自定义血量只替换基础值，仍乘章节系数（避免开关打开后第 1 章按第 3 章数值出场）。</para></remarks>
+	public override int MinInitialHp
+	{
+		get
+		{
+			int baseHp = MonsterSettings.EffectiveCustomBossHp
+				?? AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 254, 240);
+			return SeraphionScaling.Hp(baseHp);
+		}
+	}
 
 	/// <inheritdoc />
 	public override int MaxInitialHp => MinInitialHp;
@@ -160,7 +186,7 @@ public sealed class Seraphion : MonsterModel
 	/// <remarks>
 	/// 濒死形态下的真死用 <c>stance3_death</c> 采样；普通死亡用 <c>normal_death</c>（T9）。
 	/// </remarks>
-	public override string DeathSfx => CznMonsterSfx.Placeholder(this, _fading ? "death_fading" : "death");
+	public override string DeathSfx => CznMonsterSfx.Placeholder(this, FadingActive ? "death_fading" : "death");
 
 	/// <inheritdoc />
 	/// <remarks>受击 <c>se_1003017_normal_hit</c>。</remarks>
@@ -285,7 +311,8 @@ public sealed class Seraphion : MonsterModel
 
 		_revivePending = false;
 		_p1Turn = 0;
-		_fading = false;
+		// 解除濒死：把 Power 层数从「濒死中(2)」退回「保护待命(1)」，同时关闭垂死免疫
+		ExitFading();
 		_p2Form = true;
 
 		// ① 切持盾形态：normal_to_stance1（1.0s）

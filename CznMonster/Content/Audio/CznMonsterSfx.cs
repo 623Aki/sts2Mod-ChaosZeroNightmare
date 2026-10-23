@@ -41,6 +41,9 @@ internal static class CznMonsterSfx
 	/// <summary>阿涅丝（双形态共用）音频根目录。</summary>
 	private const string AgnesRoot = "res://CznMonster/audio/sfx/agnes/";
 
+	/// <summary>美梦（1004009）音频根目录。</summary>
+	private const string SweetDreamRoot = "res://CznMonster/audio/sfx/sweet_dream/";
+
 	/// <summary>游戏自带的音效总线名。</summary>
 	private const string SfxBus = "SFX";
 
@@ -210,6 +213,39 @@ internal static class CznMonsterSfx
 				// se_3000503_stance1_fatal：处决（占位保留，本组当前未使用）
 				["fatal"] = new[] { "3000503/se_3000503_stance1_fatal.ogg" },
 			},
+
+			// ── 美梦 1004009（bank 共 12 条：enter / attack_play×2 / job_attack /
+			//    debuff_unique×2 / buff / fatal / death / groan×3）──
+			["SWEET_DREAM"] = new(StringComparer.OrdinalIgnoreCase)
+			{
+				// se_hollowfox_normal_enter：战斗开始的登场动画
+				["enter"] = new[] { "1004009/se_hollowfox_normal_enter.ogg" },
+				// se_hollowfox_normal_attack_play1/2：碎梦爪・梦魇碾压每段出一条（随机）
+				["attack"] = new[]
+				{
+					"1004009/se_hollowfox_normal_attack_play1.ogg",
+					"1004009/se_hollowfox_normal_attack_play2.ogg",
+				},
+				// se_hollowfox_normal_job_attack_play：涡梦扑杀（job_attack 链）
+				["job_attack"] = new[] { "1004009/se_hollowfox_normal_job_attack_play.ogg" },
+				// se_hollowfox_normal_debuff_unique_1：阶段切换演出（pt2_00 motion）
+				["debuff1"] = new[] { "1004009/se_hollowfox_normal_debuff_unique_1.ogg" },
+				// se_hollowfox_normal_debuff_unique_2：梦幕重悬 / 深梦苏醒（db motion = debuff_unique_2_1）
+				["debuff2"] = new[] { "1004009/se_hollowfox_normal_debuff_unique_2.ogg" },
+				// se_hollowfox_normal_buff_1：本组当前未使用（占位保留）
+				["buff"] = new[] { "1004009/se_hollowfox_normal_buff_1.ogg" },
+				// se_1004009_normal_fatal：全屏处决演出（不使用，同波勒米卡 §0 裁定）
+				["fatal"] = new[] { "1004009/se_1004009_normal_fatal.ogg" },
+				// se_1004009_normal_death：SfxCmd.PlayDeath 补丁接管
+				["death"] = new[] { "1004009/se_1004009_normal_death.ogg" },
+				// se_1004009_groan_1/2/3：受击 3 条随机
+				["hurt"] = new[]
+				{
+					"1004009/se_1004009_groan_1.ogg",
+					"1004009/se_1004009_groan_2.ogg",
+					"1004009/se_1004009_groan_3.ogg",
+				},
+			},
 		};
 
 	/// <summary>已加载的采样缓存（key = 完整 res:// 路径）。</summary>
@@ -230,8 +266,16 @@ internal static class CznMonsterSfx
 	/// 订阅战斗生命周期（<see cref="MainFile.Initialize"/> 调用）。
 	/// 只有本 mod 首领在场时才预热，避免每次进战斗都白读 28 个文件。
 	/// </summary>
+	private static bool _subscribed;
+
 	internal static void Initialize()
 	{
+		// 幂等：热重载 / 二次 Initialize 不能重复订阅（预热会跑两遍）
+		if (_subscribed)
+		{
+			return;
+		}
+		_subscribed = true;
 		CombatManager.Instance.CombatSetUp += OnCombatSetUp;
 	}
 
@@ -275,12 +319,16 @@ internal static class CznMonsterSfx
 		return entry.Equals("AGNES_FINAL", StringComparison.OrdinalIgnoreCase) ? "AGNES" : entry;
 	}
 
-	/// <summary>按 entry 选音频根：塞拉菲翁／阿克鲁斯走 Diallos 组，阿涅丝走 Agnes 组，其余走波勒米卡组。</summary>
+	/// <summary>按 entry 选音频根：塞拉菲翁／阿克鲁斯走 Diallos 组，阿涅丝走 Agnes 组，美梦走 SweetDream 组，其余走波勒米卡组。</summary>
 	private static string RootFor(string entry)
 	{
 		if (entry.Equals("AGNES", StringComparison.OrdinalIgnoreCase))
 		{
 			return AgnesRoot;
+		}
+		if (entry.Equals("SWEET_DREAM", StringComparison.OrdinalIgnoreCase))
+		{
+			return SweetDreamRoot;
 		}
 		return entry.Equals("SERAPHION", StringComparison.OrdinalIgnoreCase)
 			|| entry.Equals("ARKRUS", StringComparison.OrdinalIgnoreCase)
@@ -311,8 +359,27 @@ internal static class CznMonsterSfx
 			return;
 		}
 
-		string file = files.Length == 1 ? files[0] : files[Random.Shared.Next(files.Length)];
+		string file = files.Length == 1 ? files[0] : files[StableSampleIndex(entry + "|" + clip, files.Length)];
 		PlayFile(RootFor(entry) + file, volume);
+	}
+
+	/// <summary>
+	/// 按 (招式 | clip) 稳定挑一条采样。
+	///
+	/// <para><b>不能用 <c>Random.Shared</c></b>：每个客户端各摇一次，同一个招式两端会听到不同样本
+	/// （玩家可感知的「不同步」，虽然不影响战斗状态）。</para>
+	///
+	/// <para>也不用 <c>string.GetHashCode()</c>：.NET 每个进程带随机化种子，跨进程不稳定。
+	/// 这里用 FNV-1a，纯算术、跨进程 / 跨机器结果相同。</para>
+	/// </summary>
+	private static int StableSampleIndex(string key, int count)
+	{
+		uint hash = 2166136261u;
+		foreach (char c in key)
+		{
+			hash = (hash ^ c) * 16777619u;
+		}
+		return (int)(hash % (uint)count);
 	}
 
 	/// <summary>播放一个绝对 <c>res://</c> 路径的采样。</summary>

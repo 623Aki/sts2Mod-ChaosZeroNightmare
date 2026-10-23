@@ -88,25 +88,24 @@ internal static class HeidemarieRestLockGuard
 			return true;
 		}
 
-		// 「坠星」这类刻意绕过的作用域按牌主判定（见 HeidemarieRestLock.Bypass）
-		if (HeidemarieRestLock.IsBypassedFor(list[0]?.Owner))
-		{
-			return true;
-		}
-
 		// 战斗外 / 收尾阶段放行：此时牌要回牌组、要清理战斗牌堆，不应被锁墓挡住
 		if (!CombatManager.Instance.IsInProgress || CombatManager.Instance.IsOverOrEnding)
 		{
 			return true;
 		}
 
-		List<CardModel> blocked = list.Where(card => HeidemarieRestLock.IsLocked(card)).ToList();
+		// 「坠星」这类刻意绕过的作用域必须**逐卡**按牌主判定。
+		// 原来只看 list[0]：联机时一次 Add 批次可能同时含多名玩家的牌，
+		// A 玩家的坠星会把 B 玩家的墓地锁一起放开。
+		List<CardModel> blocked = list
+			.Where(card => HeidemarieRestLock.IsLocked(card) && !HeidemarieRestLock.IsBypassedFor(card?.Owner))
+			.ToList();
 		if (blocked.Count == 0)
 		{
 			return true;
 		}
 
-		list.RemoveAll(card => HeidemarieRestLock.IsLocked(card));
+		list.RemoveAll(card => HeidemarieRestLock.IsLocked(card) && !HeidemarieRestLock.IsBypassedFor(card?.Owner));
 
 		if (list.Count > 0)
 		{

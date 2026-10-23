@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CznMonster.Content.Powers;
+using CznMonster.Settings;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
@@ -123,6 +125,13 @@ internal static class ActionCountRuntime
 		return InterruptPending.Contains(creature);
 	}
 
+	/// <summary>
+	/// 收割是否正在进行。
+	/// P6（<c>Creature.TakeTurn</c> 拦截）必须同时满足「正在收割」才挡，
+	/// 否则一个残留标记会让这只怪整回合不行动。
+	/// </summary>
+	public static bool IsDraining => _draining;
+
 	/// <summary>取走「已标记且计数 ≤ 0」的生物，并循环收割直到没有剩余。</summary>
 	public static List<Creature> TakeZeroedQueued()
 	{
@@ -138,8 +147,58 @@ internal static class ActionCountRuntime
 	}
 
 	/// <summary>
+	/// 出牌结算完成后的统一减询与打断收割（§7.6）。
+	/// <para>
+	/// 多人一致性关键：P5 已把本调用折进该张牌 <see cref="CardModel.OnPlayWrapper"/>
+	/// 的组合 Task 里，因此本方法必然在那张牌的 <see cref="GameAction"/> 执行窗内被
+	/// <strong>await 到结束</strong> —— 减询 / 打断行动 / 重摇的状态变化，对两端来说
+	/// 都发生在同一个动作同步点，回合结束校验点（after player turn phase two end 等）
+	/// 之前状态一定收敛；不会再出现“一端已重摇（计数刷新 + 多消耗一次 MonsterAi RNG）、
+	/// 另一端停在计数 0”的 checksum 劈叉。
+	/// </para>
+	/// </summary>
+	public static async Task AfterCardPlaySettledAsync(CardModel card)
+	{
+		CombatManager cm = CombatManager.Instance;
+		if (!cm.IsInProgress || cm.IsOverOrEnding)
+		{
+			return;
+		}
+		if (!MonsterSettings.EffectiveActionCountEnabled)
+		{
+			return;
+		}
+		// 不能用 card.CombatState：能力牌（CardType.Power）与复制体（IsDupe）打完后
+		// 结果堆是 PileType.None，会被 CardPileCmd.RemoveFromCombat 移出战斗，
+		// Pile 变 null，CardModel.CombatState 随之返回 null（CardModel.cs:1018-1029），
+		// 导致这类牌打出后计数器不递减。
+		// CardScope 是游戏自带的兜底链：CombatState ?? Owner.Creature.CombatState ?? RunState
+		// （CardModel.cs:1038），牌不在任何战斗堆时仍能拿到当前战斗。
+		if (card.CardScope is not CombatState cs)
+		{
+			return;
+		}
+		await DecrementAndDrainAsync(cs);
+	}
+
+	/// <summary>减询一次并在有生物归零时执行打断收割（§7.6）。</summary>
+	public static async Task DecrementAndDrainAsync(CombatState cs)
+	{
+		// 如果牌结算过程中怪已经死了，DecrementAll 会清掉尸体，不会误触发打断。
+		List<Creature> zeroed = DecrementAll();
+		if (zeroed.Count == 0)
+		{
+			return;
+		}
+		MarkInterruptQueued(zeroed);
+		await DrainAsync(cs);
+	}
+
+	/// <summary>
 	/// 打断执行队列（设计文档 §7.5）：意图动画 → 行动 → 重摇下一步。
-	/// 打断期间 <see cref="Creature.TakeTurn"/> 被 P6 挡住，避免与玩家出牌流程并发执行。
+	/// 只在结算动作窗内被 await 调用（P5 / <see cref="AfterCardPlaySettledAsync"/>）；
+	/// <see cref="Creature.TakeTurn"/> 仍保留 P6 安全网拦截，防止遗留标记时与
+	/// 怪物自然回合并发执行。
 	/// </summary>
 	public static async Task DrainAsync(CombatState cs)
 	{
@@ -182,6 +241,7 @@ internal static class ActionCountRuntime
 					MonsterModel? monster = creature.Monster;
 					if (monster != null)
 					{
+						MainFile.Log.Info($"CznMonster 行动计数打断：{creature.LogName} 执行 {monster.NextMove.Id}");
 						await monster.PerformMove();
 					}
 
@@ -205,6 +265,10 @@ internal static class ActionCountRuntime
 					}
 					catch (Exception ex)
 					{
+						// 重摇失败会让本端的 MonsterAi RNG 少推进一次，理论上与对端错位。
+						// 这里已是最内层兜底（IsActionable 挡掉了绝大多数非法状态），
+						// 只能保证不因一次异常让这只怪后续回合被整回合跳过。
+						InterruptPending.Remove(creature);
 						MainFile.Log.Warn($"CznMonster 行动计数重摇失败：{ex.GetType().Name}: {ex.Message}");
 					}
 				}
@@ -213,6 +277,9 @@ internal static class ActionCountRuntime
 		finally
 		{
 			_draining = false;
+			// 无论怎么退出（战斗结束 / 提前 break / 异常），都不能把「待打断」标记留到下一回合：
+			// 残留标记会让这只怪在下一回合被 P6 整回合跳过。
+			InterruptPending.Clear();
 		}
 	}
 

@@ -556,6 +556,12 @@ internal static class SkinSettingsUi
 			RebuildSettingsPanelDeferred(ctx, RebuildScope.Multiplayer);
 		}, ctx.Text, ctx.Text.TeammatePresentationEnableAll);
 		flag |= TryCreateMultiplayerIntroSection(ctx);
+		// 联机时是否以房主设置为标准（房主 / 客户端都可关；关掉等于全房间各玩各的）
+		flag |= TryCreateToggleSection(ctx, "CznModMultiplayerUseHostSettings", ctx.Text.MultiplayerUseHostSettings, ctx.Text.MultiplayerUseHostSettingsDescription, ctx.Global.TeammateUseHostSettings, (bool value) =>
+		{
+			ctx.Global.SetTeammateUseHostSettings(value, persist: true);
+			RebuildSettingsPanelDeferred(ctx, RebuildScope.Multiplayer);
+		});
 		flag |= TryCreateToggleSection(ctx, "CznModTeammatePresentationEnabled", ctx.Text.TeammatePresentationEnabled, ctx.Text.TeammatePresentationEnabledDescription, ctx.Global.TeammatePresentationEnabled, (bool value) =>
 		{
 			ctx.Global.SetTeammatePresentationEnabled(value, persist: true);
@@ -600,7 +606,7 @@ internal static class SkinSettingsUi
 		{
 			ctx.Global.SetTeammateVoiceCooldownSeconds((float)value, persist: true);
 		}, flag2 && ctx.Global.TeammateVoiceEnabled);
-		AssignGlobalCategory(ctx, "multiplayer", "CznModMultiplayerHeader", "CznModMultiplayerIntro", "CznModTeammatePresentationEnabled", "CznModMultiplayerSummary", "CznModTeammateVisualHeader", "CznModTeammateCutInEnabled", "CznModTeammateAttackFullScreenPresentationMode", "CznModTeammateEffectsEnabled", "CznModTeammateAudioHeader", "CznModTeammateCombatSfxEnabled", "CznModTeammateVoiceEnabled", "CznModTeammateVoiceCooldown");
+		AssignGlobalCategory(ctx, "multiplayer", "CznModMultiplayerHeader", "CznModMultiplayerIntro", "CznModMultiplayerUseHostSettings", "CznModTeammatePresentationEnabled", "CznModMultiplayerSummary", "CznModTeammateVisualHeader", "CznModTeammateCutInEnabled", "CznModTeammateAttackFullScreenPresentationMode", "CznModTeammateEffectsEnabled", "CznModTeammateAudioHeader", "CznModTeammateCombatSfxEnabled", "CznModTeammateVoiceEnabled", "CznModTeammateVoiceCooldown");
 		return flag;
 	}
 

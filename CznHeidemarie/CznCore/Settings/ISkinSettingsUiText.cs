@@ -197,4 +197,10 @@ internal interface ISkinSettingsUiText
 	string ResetDefaults { get; }
 
 	string DebugLogEnabledDescription { get; }
+
+	/// <summary>「联机时以房主的设置为标准」开关标题。</summary>
+	string MultiplayerUseHostSettings { get; }
+
+	/// <summary>「联机时以房主的设置为标准」开关说明。</summary>
+	string MultiplayerUseHostSettingsDescription { get; }
 }

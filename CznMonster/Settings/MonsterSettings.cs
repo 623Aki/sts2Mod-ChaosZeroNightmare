@@ -1,6 +1,8 @@
 using System;
 using System.Globalization;
 using Godot;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace CznMonster.Settings;
 
@@ -203,6 +205,132 @@ internal static class MonsterSettings
 
 	private const int DefaultHp = 999;
 
+	/// <summary>
+	/// 当前是否处于联机会话（Host / Client）。
+	///
+	/// <para><b>为什么必须门控</b>：游戏本体是「双端确定性模拟 + 校验和」，不是房主权威。
+	/// 怪物血量、行动计数、遭遇池这些<b>参与战斗/地图生成</b>的输入只要两端不同，
+	/// 计算结果就会分岔 → <c>ChecksumTracker</c> 判定 <c>StateDiverged</c> → 客户端掉线重开。</para>
+	///
+	/// <para>所以联机时这些设置一律回落到「默认值」，保证两端输入完全一致；
+	/// 设置面板里的值只对单机生效，不会被清掉，联机结束照旧。</para>
+	/// </summary>
+	private static bool IsMultiplayerSession
+	{
+		get
+		{
+			try
+			{
+				return RunManager.Instance?.NetService?.Type.IsMultiplayer() == true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+	}
+
+	/// <summary>
+	/// 房主下发的「本局参数」快照（内存覆盖，**不落盘**）。
+	///
+	/// <para>联机时所有参与战斗 / 地图生成的读点都必须走 <see cref="EffectiveActionCountEnabled"/> 这一族属性，
+	/// 它们在本局有快照时读快照、没有时回落「安全默认」。
+	/// 这样两端用的是同一份参数，不会因为各自的 cfg 不同而劈叉。</para>
+	/// </summary>
+	public readonly record struct MultiplayerSnapshot(bool CznMonstersEnabled, bool BossPosRandom, bool BossPosSpecified, int BossChapter, int BossSelect, bool BossHpCustom, int BossHpValue, bool ActionCountEnabled, int ActionCountScope);
+
+	/// <summary>本局房主参数；单机或尚未收到时为 null。</summary>
+	private static MultiplayerSnapshot? _multiplayer;
+
+	/// <summary>房主参数是否已就绪（客户端据此判断能不能信任 Effective*）。</summary>
+	public static bool HasMultiplayerSnapshot => _multiplayer.HasValue;
+
+	/// <summary>设置变更通知（房主据此把参数重推给客户端）。</summary>
+	internal static event Action? Changed;
+
+	/// <summary>构造本局参数快照（房主广播用）。</summary>
+	public static MultiplayerSnapshot BuildSnapshot()
+	{
+		return new MultiplayerSnapshot(
+			CznMonstersEnabled: _cznMonstersEnabled,
+			BossPosRandom: _bossPosRandom,
+			BossPosSpecified: _bossPosSpecified,
+			BossChapter: _bossChapter,
+			BossSelect: _bossSelect,
+			BossHpCustom: _bossHpCustom,
+			BossHpValue: ParsedHp ?? DefaultHp,
+			ActionCountEnabled: _actionCountEnabled,
+			ActionCountScope: _actionCountScope);
+	}
+
+	/// <summary>应用房主下发的本局参数（只写内存）。</summary>
+	public static void ApplyMultiplayerSnapshot(MultiplayerSnapshot snapshot)
+	{
+		_multiplayer = snapshot;
+	}
+
+	/// <summary>离开联机时丢掉房主参数，回到本地配置。</summary>
+	public static void ClearMultiplayerSnapshot()
+	{
+		_multiplayer = null;
+	}
+
+	/// <summary>
+	/// 当前生效的快照：只有在联机会话里、且确实拿到快照时才返回。
+	///
+	/// <para><b>为什么房主端必须有快照</b>：房主自己也满足 <c>IsMultiplayerSession</c>。
+	/// 如果只在「收到包」时写快照，房主的 <c>_multiplayer</c> 永远是 null，
+	/// <c>EffectiveXxx</c> 就会回落成 false —— 房主的怪不挂行动计数、不注入 CZN 怪物，
+	/// 而客户端照做，两端立刻劈叉（实测报错：客户端 `CZN_ACTION_COUNT_POWER:10`、房主 `<empty>`）。
+	/// 所以房主在 <see cref="CznMonster.Content.Net.CznMonsterConfigSyncRuntime.Attach"/> 里
+	/// 会把自己当成权威快照写进来。</para>
+	/// </summary>
+	private static MultiplayerSnapshot? ActiveSnapshot => IsMultiplayerSession ? _multiplayer : null;
+
+	private static bool EffectiveBool(bool local, Func<MultiplayerSnapshot, bool> select)
+	{
+		return ActiveSnapshot is { } snapshot ? select(snapshot) : local;
+	}
+
+	private static int EffectiveInt(int local, Func<MultiplayerSnapshot, int> select)
+	{
+		return ActiveSnapshot is { } snapshot ? select(snapshot) : local;
+	}
+
+	/// <summary>生效的行动计数开关：联机时以房主为准（是否插入额外怪物行动必须两端一致）。</summary>
+	public static bool EffectiveActionCountEnabled => EffectiveBool(_actionCountEnabled, (MultiplayerSnapshot s) => s.ActionCountEnabled);
+
+	/// <summary>生效的行动计数范围：联机时以房主为准。</summary>
+	public static int EffectiveActionCountScope => EffectiveInt(_actionCountScope, (MultiplayerSnapshot s) => s.ActionCountScope);
+
+	/// <summary>生效的 CZN 怪物开关：联机时以房主为准（遭遇池长度必须两端一致）。</summary>
+	public static bool EffectiveCznMonstersEnabled => EffectiveBool(_cznMonstersEnabled, (MultiplayerSnapshot s) => s.CznMonstersEnabled);
+
+	/// <summary>生效的自定义血量：联机时以房主为准（Boss 血量直接进校验和）。</summary>
+	public static int? EffectiveCustomBossHp
+	{
+		get
+		{
+			if (ActiveSnapshot is not { } snapshot)
+			{
+				return CustomBossHp;
+			}
+			return snapshot.BossHpCustom ? snapshot.BossHpValue : null;
+		}
+	}
+
+	/// <summary>生效的「首领位置：随机」：联机时以房主为准。</summary>
+	public static bool EffectiveBossPosRandom => EffectiveBool(_bossPosRandom, (MultiplayerSnapshot s) => s.BossPosRandom);
+
+	/// <summary>生效的「首领位置：指定」：联机时以房主为准。</summary>
+	public static bool EffectiveBossPosSpecified => EffectiveBool(_bossPosSpecified, (MultiplayerSnapshot s) => s.BossPosSpecified);
+
+	/// <summary>生效的指定章节：联机时以房主为准。</summary>
+	public static int EffectiveBossChapter => EffectiveInt(_bossChapter, (MultiplayerSnapshot s) => s.BossChapter);
+
+	/// <summary>生效的指定首领：联机时以房主为准。</summary>
+	public static int EffectiveBossSelect => EffectiveInt(_bossSelect, (MultiplayerSnapshot s) => s.BossSelect);
+
 	/// <summary>恢复默认值（设置面板 Reset 按钮）。</summary>
 	public static void ResetToDefaults()
 	{
@@ -270,5 +398,7 @@ internal static class MonsterSettings
 		{
 			Config.Save(FilePath);
 		}
+		// 所有 setter 都会走到这里：房主据此把新参数推给客户端
+		Changed?.Invoke();
 	}
 }

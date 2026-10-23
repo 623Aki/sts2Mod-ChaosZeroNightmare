@@ -6,5 +6,8 @@
   "SERAPHION_ENCOUNTER.loss": "[gold]{encounter}[/gold]的衷心同伴至死守护着它残存的躯壳。",
 
   "AGNES_BOSS.title": "阿涅丝",
-  "AGNES_BOSS.loss": "[gold]{encounter}[/gold]的余响在虚空里回荡不止，{character}没能在它的收束里活下来。"
+  "AGNES_BOSS.loss": "[gold]{encounter}[/gold]的余响在虚空里回荡不止，{character}没能在它的收束里活下来。",
+
+  "SWEET_DREAM_BOSS.title": "美梦",
+  "SWEET_DREAM_BOSS.loss": "[gold]{encounter}[/gold]的梦境永不落幕，{character}没能在它的浅眠中醒来。"
 }

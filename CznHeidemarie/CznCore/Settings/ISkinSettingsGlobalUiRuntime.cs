@@ -28,6 +28,9 @@ internal interface ISkinSettingsGlobalUiRuntime
 
 	AttackFullScreenPresentationMode TeammateAttackFullScreenPresentationMode { get; }
 
+	/// <summary>联机时是否以房主的设置为标准。</summary>
+	bool TeammateUseHostSettings { get; }
+
 	void SetDebugLogEnabled(bool value, bool persist);
 
 	void SetGlobalEffectsEnabled(bool value, bool persist);
@@ -51,6 +54,8 @@ internal interface ISkinSettingsGlobalUiRuntime
 	void SetTeammateCutInEnabled(bool value, bool persist);
 
 	void SetTeammateAttackFullScreenPresentationMode(AttackFullScreenPresentationMode value, bool persist);
+
+	void SetTeammateUseHostSettings(bool value, bool persist);
 
 	void EnableAllTeammatePresentationChannels(bool persist);
 

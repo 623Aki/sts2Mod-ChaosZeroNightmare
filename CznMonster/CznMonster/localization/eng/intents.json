@@ -1,4 +1,7 @@
 {
   "AGNES_EXECUTE.title": "Execution",
-  "AGNES_EXECUTE.description": "Agnes harvests every Echo Shard on the field and vents all of her Resonance at you for [blue]{Damage}[/blue] damage."
+  "AGNES_EXECUTE.description": "Agnes harvests every Echo Shard on the field and vents all of her Resonance at you for [blue]{Damage}[/blue] damage.",
+
+  "ARKRUS_RESCUE.title": "Rescue Hymn",
+  "ARKRUS_RESCUE.description": "Arkrus chants a Rescue Hymn: [gold]heals[/gold] the dying Seraphion for [blue]50%[/blue] of its max HP and pulls it out of half-death."
 }

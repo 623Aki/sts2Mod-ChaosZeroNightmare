@@ -167,6 +167,22 @@ internal sealed class CharacterSkinSettingsStore
 
 	private readonly Dictionary<string, CharacterSkinCharacterSettings> _characters = new Dictionary<string, CharacterSkinCharacterSettings>(StringComparer.OrdinalIgnoreCase);
 
+	/// <summary>房主接管前的本地备份（按角色 id 归档）。</summary>
+	private readonly Dictionary<string, CharacterSkinCharacterSettings> _hostSyncedBackups = new Dictionary<string, CharacterSkinCharacterSettings>(StringComparer.OrdinalIgnoreCase);
+
+	/// <summary>房主设置接管期间为 true：只改内存，不写磁盘。</summary>
+	private bool _hostOverrideActive;
+
+	private bool _backupGlobalEffectsEnabled = true;
+
+	private bool _backupGlobalParticlesEnabled = true;
+
+	private bool _backupGlobalCombatSfxEnabled = true;
+
+	private bool _backupGlobalVoiceEnabled = true;
+
+	private SharedMultiplayerSettingsSnapshot _backupSharedMultiplayer = SharedMultiplayerSettingsSnapshot.Defaults;
+
 	private static readonly CharacterSettingDescriptor[] CharacterSettingDescriptors = new CharacterSettingDescriptor[24]
 	{
 		BoolSetting("effects_enabled", (CharacterSkinCharacterSettings settings) => settings.EffectsEnabled, (CharacterSkinCharacterSettings settings, bool value) =>
@@ -400,6 +416,24 @@ internal sealed class CharacterSkinSettingsStore
 			return _sharedMultiplayerSettings.AttackFullScreenPresentationMode;
 		}
 	}
+
+	/// <summary>
+	/// 联机时是否以房主的设置为标准（默认开启）。
+	///
+	/// <para>开启时：客户端会接收房主下发的演出设置并临时覆盖本地值（不落盘）；
+	/// 关闭时：完全按本机设置走，房主下发的内容一律忽略。</para>
+	/// </summary>
+	public bool TeammateUseHostSettings
+	{
+		get
+		{
+			EnsureLoaded();
+			return _sharedMultiplayerSettings.UseHostSettings;
+		}
+	}
+
+	/// <summary>当前是否正处于「房主设置接管」状态（内存里存的是房主的值）。</summary>
+	public bool HostSettingsOverrideActive => _hostOverrideActive;
 
 	internal event Action<string?>? Changed;
 
@@ -672,6 +706,13 @@ internal sealed class CharacterSkinSettingsStore
 	{
 		EnsureLoaded();
 		_sharedMultiplayerSettings.SetAttackFullScreenPresentationMode(value, persist);
+		Changed?.Invoke(null);
+	}
+
+	public void SetTeammateUseHostSettings(bool value, bool persist)
+	{
+		EnsureLoaded();
+		_sharedMultiplayerSettings.SetUseHostSettings(value, persist);
 		Changed?.Invoke(null);
 	}
 
@@ -1119,7 +1160,8 @@ internal sealed class CharacterSkinSettingsStore
 
 	private void RequestSaveIfNeeded(bool persist)
 	{
-		if (persist)
+		// 房主接管期间禁止落盘：否则「陪房主玩一局」会永久改写本地配置
+		if (persist && !_hostOverrideActive)
 		{
 			RequestSave();
 		}
@@ -1341,6 +1383,331 @@ internal sealed class CharacterSkinSettingsStore
 	private static void SetDefeatCgOverlayMode(CharacterSkinCharacterSettings settings, DefeatCgOverlayMode mode)
 	{
 		settings.DefeatCgOverlayMode = (Enum.IsDefined(typeof(DefeatCgOverlayMode), mode) ? mode : DefeatCgOverlayMode.Random);
+	}
+
+	/// <summary>
+	/// 导出「联机时以房主为标准」的设置文本。
+	///
+	/// <para>只包含<b>演出开关类</b>字段；特效音量 / 亮度 / 不透明度、角色语音音量、
+	/// 左侧立绘缩放与位置、选人背景这些本机口味 <b>不导出</b>
+	/// （理由见 <c>CznSettingsSyncRuntime</c> 顶部的分类说明）。</para>
+	/// </summary>
+	public string ExportHostSyncedText()
+	{
+		EnsureLoaded();
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append(GlobalLine("effects_enabled", _globalEffectsEnabled));
+		stringBuilder.Append(GlobalLine("particles_enabled", _globalParticlesEnabled));
+		stringBuilder.Append(GlobalLine("combat_sfx_enabled", _globalCombatSfxEnabled));
+		stringBuilder.Append(GlobalLine("voice_enabled", _globalVoiceEnabled));
+		foreach (KeyValuePair<string, CharacterSkinCharacterSettings> character in _characters)
+		{
+			AppendHostSyncedCharacterSettings(stringBuilder, character.Key, character.Value);
+		}
+		return stringBuilder.ToString();
+	}
+
+	/// <summary>导出队友演出设置（<c>teammate_*</c>，由共享存储统一管理）。</summary>
+	public string ExportHostSyncedMultiplayerText()
+	{
+		EnsureLoaded();
+		return _sharedMultiplayerSettings.ExportHostSyncedText();
+	}
+
+	/// <summary>
+	/// 应用房主下发的设置：首次调用先备份本地值，之后只改内存、不落盘。
+	/// 重复调用只会持续覆盖，不会重复备份。
+	/// </summary>
+	public void ApplyHostSyncedSettings(string? settingsText, string? multiplayerText)
+	{
+		EnsureLoaded();
+		if (!_hostOverrideActive)
+		{
+			TakeHostSyncedBackup();
+		}
+		_hostOverrideActive = true;
+		_sharedMultiplayerSettings.PersistSuppressed = true;
+		if (!string.IsNullOrWhiteSpace(settingsText))
+		{
+			ApplyHostSyncedText(settingsText);
+		}
+		if (!string.IsNullOrWhiteSpace(multiplayerText))
+		{
+			_sharedMultiplayerSettings.ApplyHostSyncedText(multiplayerText);
+		}
+		Changed?.Invoke(null);
+	}
+
+	/// <summary>退出联机 / 关闭「以房主为准」时清掉覆盖，恢复本地设置并重新允许落盘。</summary>
+	public void ClearHostSyncedSettings()
+	{
+		if (!_hostOverrideActive)
+		{
+			return;
+		}
+		_globalEffectsEnabled = _backupGlobalEffectsEnabled;
+		_globalParticlesEnabled = _backupGlobalParticlesEnabled;
+		_globalCombatSfxEnabled = _backupGlobalCombatSfxEnabled;
+		_globalVoiceEnabled = _backupGlobalVoiceEnabled;
+		foreach (KeyValuePair<string, CharacterSkinCharacterSettings> hostSyncedBackup in _hostSyncedBackups)
+		{
+			CharacterSkinCharacterSettings characterSettings = GetCharacterSettings(hostSyncedBackup.Key);
+			CopyHostSyncedCharacterSettings(hostSyncedBackup.Value, characterSettings);
+		}
+		_hostSyncedBackups.Clear();
+		_sharedMultiplayerSettings.RestoreFromSnapshot(_backupSharedMultiplayer);
+		_sharedMultiplayerSettings.PersistSuppressed = false;
+		_hostOverrideActive = false;
+		// 接管期间「以房主为准」开关的改动被抑制掉了，这里补写一次
+		_sharedMultiplayerSettings.PersistNow();
+		Changed?.Invoke(null);
+	}
+
+	/// <summary>接管前把「会被房主覆盖」的字段全部备份一份。</summary>
+	private void TakeHostSyncedBackup()
+	{
+		_backupGlobalEffectsEnabled = _globalEffectsEnabled;
+		_backupGlobalParticlesEnabled = _globalParticlesEnabled;
+		_backupGlobalCombatSfxEnabled = _globalCombatSfxEnabled;
+		_backupGlobalVoiceEnabled = _globalVoiceEnabled;
+		_backupSharedMultiplayer = _sharedMultiplayerSettings.Snapshot;
+		_hostSyncedBackups.Clear();
+		foreach (KeyValuePair<string, CharacterSkinCharacterSettings> character in _characters)
+		{
+			CharacterSkinCharacterSettings backup = new CharacterSkinCharacterSettings();
+			CopyHostSyncedCharacterSettings(character.Value, backup);
+			_hostSyncedBackups[character.Key] = backup;
+		}
+	}
+
+	/// <summary>
+	/// 只复制「跟随房主」的字段。音量 / 亮度 / 不透明度 / 立绘缩放与位置等本地口味不动。
+	/// </summary>
+	private static void CopyHostSyncedCharacterSettings(CharacterSkinCharacterSettings source, CharacterSkinCharacterSettings target)
+	{
+		target.EffectsEnabled = source.EffectsEnabled;
+		target.ParticlesEnabled = source.ParticlesEnabled;
+		target.CombatSfxEnabled = source.CombatSfxEnabled;
+		target.VoiceEnabled = source.VoiceEnabled;
+		target.BattleReadyOverlayMode = source.BattleReadyOverlayMode;
+		target.ShowCardPlayPresentation = source.ShowCardPlayPresentation;
+		target.AttackFullScreenPresentationMode = source.AttackFullScreenPresentationMode;
+		target.CardSelectionPresentationTrigger = source.CardSelectionPresentationTrigger;
+		target.MeleeApproachMovementEnabled = source.MeleeApproachMovementEnabled;
+		target.OfficialAttackTimingEnabled = source.OfficialAttackTimingEnabled;
+		target.CombatPresentationMode = source.CombatPresentationMode;
+		target.DefeatCgOverlayMode = source.DefeatCgOverlayMode;
+		target.LinkOverlayEnabled = source.LinkOverlayEnabled;
+	}
+
+	/// <summary>把单个角色的「跟随房主」字段拼成 key=value 文本。</summary>
+	private static void AppendHostSyncedCharacterSettings(StringBuilder text, string characterId, CharacterSkinCharacterSettings character)
+	{
+		// combat_presentation_mode 放在最前：它带 Fast/Full 联动，后面的显式键负责把差异覆盖回来
+		text.Append(CharacterLine(characterId, "combat_presentation_mode", CombatPresentationModeSettings.ToSettingValue(character.CombatPresentationMode)));
+		text.Append(CharacterLine(characterId, "effects_enabled", BoolText(character.EffectsEnabled)));
+		text.Append(CharacterLine(characterId, "particles_enabled", BoolText(character.ParticlesEnabled)));
+		text.Append(CharacterLine(characterId, "combat_sfx_enabled", BoolText(character.CombatSfxEnabled)));
+		text.Append(CharacterLine(characterId, "voice_enabled", BoolText(character.VoiceEnabled)));
+		text.Append(CharacterLine(characterId, "card_play_presentation_enabled", BoolText(character.ShowCardPlayPresentation)));
+		text.Append(CharacterLine(characterId, "attack_full_screen_presentation_mode", AttackFullScreenPresentationModeSettings.ToSettingValue(character.AttackFullScreenPresentationMode)));
+		text.Append(CharacterLine(characterId, "card_selection_presentation_trigger", CardSelectionPresentationTriggerSettings.ToSettingValue(character.CardSelectionPresentationTrigger)));
+		text.Append(CharacterLine(characterId, "melee_approach_movement_enabled", BoolText(character.MeleeApproachMovementEnabled)));
+		text.Append(CharacterLine(characterId, "official_attack_timing_enabled", BoolText(character.OfficialAttackTimingEnabled)));
+		text.Append(CharacterLine(characterId, "battle_ready_overlay_mode", LeftSideCardPresentationModeSettings.ToSettingValue(character.BattleReadyOverlayMode)));
+		text.Append(CharacterLine(characterId, "defeat_cg_overlay_mode", DefeatCgOverlayModeSettings.ToSettingValue(character.DefeatCgOverlayMode)));
+		text.Append(CharacterLine(characterId, "link_overlay_enabled", BoolText(character.LinkOverlayEnabled)));
+	}
+
+	/// <summary>
+	/// 解析房主下发的设置文本并写进内存。
+	///
+	/// <para>全程白名单：只认 <see cref="IsHostSyncedCharacterSetting"/> 里的键与 4 个全局开关，
+	/// 其它内容（包括恶意塞进来的音量 / 亮度）一律忽略。</para>
+	///
+	/// <para>分两遍应用：先应用带联动的 <c>combat_presentation_mode</c>，
+	/// 再用显式键覆盖，保证结果与房主的实际字段值一致，不受文本行序影响。</para>
+	/// </summary>
+	private void ApplyHostSyncedText(string text)
+	{
+		List<(string CharacterId, string SettingName, string ValueText)> characterLines = new List<(string, string, string)>();
+		string[] lines = text.Split(new char[2] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+		foreach (string line in lines)
+		{
+			int separator = line.IndexOf('=');
+			if (separator <= 0)
+			{
+				continue;
+			}
+			string key = line.Substring(0, separator).Trim();
+			string valueText = line.Substring(separator + 1).Trim();
+			if (TryApplyHostSyncedGlobal(key, valueText))
+			{
+				continue;
+			}
+			if (SkinSettingSchema.TryParseCharacterSetting(key, out string characterId, out string settingName) && IsHostSyncedCharacterSetting(settingName))
+			{
+				characterLines.Add((NormalizeCharacterId(characterId), settingName, valueText));
+			}
+		}
+		foreach (var (characterId2, settingName2, valueText2) in characterLines)
+		{
+			if (!string.Equals(settingName2, "combat_presentation_mode", StringComparison.Ordinal))
+			{
+				continue;
+			}
+			if (CombatPresentationModeSettings.TryParseSettingValue(valueText2, out var combatPresentationMode))
+			{
+				SetCombatPresentationMode(GetCharacterSettings(characterId2), combatPresentationMode);
+			}
+		}
+		foreach (var (characterId3, settingName3, valueText3) in characterLines)
+		{
+			if (string.Equals(settingName3, "combat_presentation_mode", StringComparison.Ordinal))
+			{
+				continue;
+			}
+			ApplyHostSyncedCharacterSetting(GetCharacterSettings(characterId3), settingName3, valueText3);
+		}
+	}
+
+	/// <summary>应用 4 个全局演出开关；键不匹配返回 false。</summary>
+	private bool TryApplyHostSyncedGlobal(string key, string valueText)
+	{
+		if (!TryParseBoolSetting(valueText, out var value))
+		{
+			return false;
+		}
+		if (SkinSettingSchema.MatchesGlobal(key, "effects_enabled"))
+		{
+			_globalEffectsEnabled = value;
+			return true;
+		}
+		if (SkinSettingSchema.MatchesGlobal(key, "particles_enabled"))
+		{
+			_globalParticlesEnabled = value;
+			return true;
+		}
+		if (SkinSettingSchema.MatchesGlobal(key, "combat_sfx_enabled"))
+		{
+			_globalCombatSfxEnabled = value;
+			return true;
+		}
+		if (SkinSettingSchema.MatchesGlobal(key, "voice_enabled"))
+		{
+			_globalVoiceEnabled = value;
+			return true;
+		}
+		return false;
+	}
+
+	/// <summary>应用单个角色的「跟随房主」设置（未知键静默忽略）。</summary>
+	private static void ApplyHostSyncedCharacterSetting(CharacterSkinCharacterSettings settings, string settingName, string valueText)
+	{
+		switch (settingName)
+		{
+		case "effects_enabled":
+			if (TryParseBoolSetting(valueText, out var effectsEnabled))
+			{
+				settings.EffectsEnabled = effectsEnabled;
+			}
+			break;
+		case "particles_enabled":
+			if (TryParseBoolSetting(valueText, out var particlesEnabled))
+			{
+				settings.ParticlesEnabled = particlesEnabled;
+			}
+			break;
+		case "combat_sfx_enabled":
+			if (TryParseBoolSetting(valueText, out var combatSfxEnabled))
+			{
+				settings.CombatSfxEnabled = combatSfxEnabled;
+			}
+			break;
+		case "voice_enabled":
+			if (TryParseBoolSetting(valueText, out var voiceEnabled))
+			{
+				settings.VoiceEnabled = voiceEnabled;
+			}
+			break;
+		case "card_play_presentation_enabled":
+			if (TryParseBoolSetting(valueText, out var cardPlayPresentationEnabled))
+			{
+				SetShowCardPlayPresentation(settings, cardPlayPresentationEnabled);
+			}
+			break;
+		case "attack_full_screen_presentation_mode":
+			if (AttackFullScreenPresentationModeSettings.TryParseSettingValue(valueText, out var attackFullScreenMode))
+			{
+				SetAttackFullScreenPresentationMode(settings, attackFullScreenMode);
+			}
+			break;
+		case "card_selection_presentation_trigger":
+			if (CardSelectionPresentationTriggerSettings.TryParseSettingValue(valueText, out var cardSelectionTrigger))
+			{
+				SetCardSelectionPresentationTrigger(settings, cardSelectionTrigger);
+			}
+			break;
+		case "melee_approach_movement_enabled":
+			if (TryParseBoolSetting(valueText, out var meleeApproachMovementEnabled))
+			{
+				settings.MeleeApproachMovementEnabled = meleeApproachMovementEnabled;
+			}
+			break;
+		case "official_attack_timing_enabled":
+			if (TryParseBoolSetting(valueText, out var officialAttackTimingEnabled))
+			{
+				settings.OfficialAttackTimingEnabled = officialAttackTimingEnabled;
+			}
+			break;
+		case "battle_ready_overlay_mode":
+			if (LeftSideCardPresentationModeSettings.TryParseSettingValue(valueText, out var battleReadyOverlayMode))
+			{
+				SetBattleReadyOverlayMode(settings, battleReadyOverlayMode);
+			}
+			break;
+		case "defeat_cg_overlay_mode":
+			if (DefeatCgOverlayModeSettings.TryParseSettingValue(valueText, out var defeatCgOverlayMode))
+			{
+				SetDefeatCgOverlayMode(settings, defeatCgOverlayMode);
+			}
+			break;
+		case "link_overlay_enabled":
+			if (TryParseBoolSetting(valueText, out var linkOverlayEnabled))
+			{
+				settings.LinkOverlayEnabled = linkOverlayEnabled;
+			}
+			break;
+		}
+	}
+
+	/// <summary>「联机时跟着房主走」的每角色设置键白名单。</summary>
+	private static bool IsHostSyncedCharacterSetting(string settingName)
+	{
+		switch (settingName)
+		{
+		case "combat_presentation_mode":
+		case "effects_enabled":
+		case "particles_enabled":
+		case "combat_sfx_enabled":
+		case "voice_enabled":
+		case "card_play_presentation_enabled":
+		case "attack_full_screen_presentation_mode":
+		case "card_selection_presentation_trigger":
+		case "melee_approach_movement_enabled":
+		case "official_attack_timing_enabled":
+		case "battle_ready_overlay_mode":
+		case "defeat_cg_overlay_mode":
+		case "link_overlay_enabled":
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private static string BoolText(bool value)
+	{
+		return (!value) ? "false" : "true";
 	}
 
 	private void ResetToDefaults()

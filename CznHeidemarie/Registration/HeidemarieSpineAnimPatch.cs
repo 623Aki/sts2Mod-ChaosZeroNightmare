@@ -112,6 +112,14 @@ internal static class HeidemarieMerchantAnimPatch
 			return false;
 		}
 
+		// 下标对齐只在「视觉数量 == 玩家数量」时成立。
+		// 联机中途加入/离开会让两个列表长度不等，此时宁可不改写（保持原动画），
+		// 也不能错判成别人的角色。
+		if (room.PlayerVisuals.Count != players.Count)
+		{
+			return false;
+		}
+
 		int index = -1;
 		for (int i = 0; i < room.PlayerVisuals.Count; i++)
 		{
@@ -121,7 +129,7 @@ internal static class HeidemarieMerchantAnimPatch
 				break;
 			}
 		}
-		return index >= 0 && index < players.Count && players[index].Character is Heidemarie;
+		return index >= 0 && players[index].Character is Heidemarie;
 	}
 
 	/// <summary>

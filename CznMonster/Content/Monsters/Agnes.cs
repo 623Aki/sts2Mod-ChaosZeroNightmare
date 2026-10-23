@@ -177,9 +177,19 @@ public sealed class Agnes : MonsterModel
 
 	/// <inheritdoc />
 	/// <remarks>血量覆盖（上游契约 §6.4）：boss 血量自定义设置只作用于本组的主敌。
-	/// 640 = 波勒米卡 450 × 1.4 双形态系数（阿涅丝设计文档 §2.1）。</remarks>
-	public override int MinInitialHp => MonsterSettings.CustomBossHp ?? AgnesScaling.Hp(
-		AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 672, 640));
+	/// 640 = 波勒米卡 450 × 1.4 双形态系数（阿涅丝设计文档 §2.1）。
+	///
+	/// <para>自定义血量只替换<b>基础值</b>，仍要乘章节系数：否则打开开关后
+	/// 第 1 章也会按第 3 章的数值出场（旧写法 <c>custom ?? Hp(...)</c> 会整段绕过系数与升华）。</para></remarks>
+	public override int MinInitialHp
+	{
+		get
+		{
+			int baseHp = MonsterSettings.EffectiveCustomBossHp
+				?? AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 672, 640);
+			return AgnesScaling.Hp(baseHp);
+		}
+	}
 
 	/// <inheritdoc />
 	public override int MaxInitialHp => MinInitialHp;

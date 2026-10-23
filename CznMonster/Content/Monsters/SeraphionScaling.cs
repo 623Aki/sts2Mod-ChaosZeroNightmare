@@ -16,8 +16,9 @@ internal static class SeraphionScaling
 	/// <summary>本局该组双怪实际出现的章节（0/1/2）。由遭遇生成时写入。</summary>
 	public static int ActIndex { get; set; } = 2;
 
-	// 第 1 章 2/3、第 2 章 5/6、第 3 章 1（用分数避免 0.67 之类的舍入误差）
-	private static readonly decimal[] HpMul = { 2m / 3m, 5m / 6m, 1m };
+	// 第 1 章 7/10、第 2 章 17/20、第 3 章 1
+	// （双体总血池 274 / 333 / 392；第 3 章计入一次救援颂歌后 ≈512，对齐原生 512~636）
+	private static readonly decimal[] HpMul = { 7m / 10m, 17m / 20m, 1m };
 
 	// 第 1 章 3/4、第 2 章 9/10、第 3 章 1；伤害与格挡共用
 	private static readonly decimal[] DmgMul = { 3m / 4m, 9m / 10m, 1m };

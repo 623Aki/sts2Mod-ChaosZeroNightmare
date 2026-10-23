@@ -1,4 +1,5 @@
 using System;
+using CznCore.Multiplayer;
 using CznCore.Presentation;
 using CznCore.Settings;
 using HarmonyLib;
@@ -91,6 +92,9 @@ internal static class HeidemarieIntegration
 			isDebugEnabled: () => HeidemarieSettings.Store.DebugLogEnabled,
 			isPresentationTargetCard: card => card?.Owner?.Character is CznHeidemarie.Characters.Heidemarie.Heidemarie,
 			configureBeforePatching: () => RunStartPreloadRuntime.Configure(HeidemarieSkinProfile.Preload));
+		// 联机设置同步：演出开关类设置在多人游戏里以房主为标准
+		// （见 CznCore/Multiplayer/CznSettingsSyncRuntime.cs；本机口味参数不同步、不落盘）
+		CznSettingsSyncRuntime.Initialize(MainFile.ModId, HeidemarieSettings.Store);
 		HeidemarieBattleReadyRuntime.Initialize();
 		// 战斗入场演出：进入战斗时播一次 Entry 动作链（见 HeidemarieCombatEntryRuntime）
 		HeidemarieCombatEntryRuntime.Initialize();

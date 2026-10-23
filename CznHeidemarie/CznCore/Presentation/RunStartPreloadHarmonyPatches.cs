@@ -4,12 +4,14 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Saves;
+using MegaCrit.Sts2.Core.Saves.Runs;
 
 namespace CznCore.Presentation;
 
@@ -158,11 +160,28 @@ internal static class RunStartPreloadHarmonyPatches
 			{
 				return false;
 			}
-			if (serializableRun.Players[0].CharacterId == null)
+			// 联机存档里 Players[0] 是「存档里的第一个玩家」，不是本机玩家。
+			// 必须按本机 NetId 找自己，否则会出现「别人是海德玛丽 → 我这边去预加载」
+			// 或「我是海德玛丽 → 反而不预加载」。
+			ulong? localNetId = LocalContext.NetId;
+			SerializablePlayer? me = null;
+			if (localNetId.HasValue)
+			{
+				foreach (SerializablePlayer candidate in serializableRun.Players)
+				{
+					if (candidate.NetId == localNetId.Value)
+					{
+						me = candidate;
+						break;
+					}
+				}
+			}
+			me ??= serializableRun.Players[0];
+			if (me.CharacterId == null)
 			{
 				return false;
 			}
-			CharacterModel byId = ModelDb.GetById<CharacterModel>(serializableRun.Players[0].CharacterId);
+			CharacterModel byId = ModelDb.GetById<CharacterModel>(me.CharacterId);
 			return current.AppliesTo(byId);
 		}
 		catch (Exception ex)

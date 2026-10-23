@@ -67,5 +67,12 @@
 
   "POLEMICA_SHELL_INSECT.name": "壳虫",
   "POLEMICA_SHELL_INSECT.moves.SHELL_BITE.title": "甲壳撕咬",
-  "POLEMICA_SHELL_INSECT.moves.SHELL_GUARD.title": "甲壳防御"
+  "POLEMICA_SHELL_INSECT.moves.SHELL_GUARD.title": "甲壳防御",
+
+  "SWEET_DREAM.name": "美梦",
+
+  "SWEET_DREAM.moves.CLAW_BARRAGE.title": "碎梦爪",
+  "SWEET_DREAM.moves.LIE_STRIKE.title": "蚀梦刺击",
+  "SWEET_DREAM.moves.NIGHT_LIES.title": "千谎之夜",
+  "SWEET_DREAM.moves.LIE_STRIKE_HEAVY.title": "涡梦扑杀"
 }

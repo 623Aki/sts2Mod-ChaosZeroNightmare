@@ -3,7 +3,7 @@
   "name": "CznMonster",
   "author": "Archive",
   "description": "Adds custom CZN monsters, boss placement options and an action-count combat mechanic.",
-  "version": "v0.3.0",
+  "version": "v0.4.1",
   "min_game_version": "0.111.0",
   "has_pck": true,
   "has_dll": true,

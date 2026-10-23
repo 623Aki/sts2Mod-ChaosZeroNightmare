@@ -77,9 +77,9 @@ public sealed class SeraphionEncounter : EncounterModel, ICznMonsterEncounter
 	/// <inheritdoc />
 	protected override IReadOnlyList<(MonsterModel, string?)> GenerateMonsters()
 	{
-		// 读档后静态章节值会丢，这里按当前 RunState 兜底（PolemicaBoss 同）
-		SeraphionScaling.ActIndex = RunManager.Instance?.DebugOnlyGetState()?.CurrentActIndex
-			?? SeraphionScaling.ActIndex;
+		// 读档后静态章节值会丢，这里按当前 RunState 兜底。
+		// 拿不到 RunState 时回落第 1 章（0），不能沿用上一次写入的值（残留会让两端劈叉）。
+		SeraphionScaling.ActIndex = RunManager.Instance?.DebugOnlyGetState()?.CurrentActIndex ?? 0;
 
 		// 塞拉菲翁先加入（boss 槽绘制层在后）；阿克鲁斯 add1 在前。
 		// 敌方行动按槽位名排序：add1 < boss，阿克鲁斯先于塞拉菲翁行动。

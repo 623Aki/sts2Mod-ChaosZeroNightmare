@@ -35,7 +35,7 @@ internal static class ActionCountRollMovePatch
 	{
 		try
 		{
-			if (!MonsterSettings.ActionCountEnabled)
+			if (!MonsterSettings.EffectiveActionCountEnabled)
 			{
 				return;
 			}
@@ -79,86 +79,77 @@ internal static class ActionCountRollMovePatch
 }
 
 /// <summary>
-/// P5 玩家出牌后统一减询。
+/// P5 玩家出牌后统一减询,并在同一动作执行窗内同步收割打断。
 /// <para>
 /// 不能直接在 <see cref="CardModel.OnPlayWrapper"/> 的 postfix 里减：那是 async 方法，
-/// postfix 在第一次 await 就返回，牌其实还没结算完。这里拿 <c>__result</c> 的 Task，
-/// 等整张牌结算完成（包括消耗/丢弃/奇巧等后续触发）后再减询。
+/// postfix 在第一次 await 就返回，牌其实还没结算完。这里把 <c>__result</c> 换成组合 Task：
+/// 先等整张牌结算完成（包括消耗/丢弃/奇巧等后续触发），再在 <strong>同一个 await 链内</strong>
+/// 完成减询与打断，然后原动作的 <see cref="PlayCardAction.ExecuteAction"/> 才算执行完。
+/// </para>
+/// <para>
+/// 多人一致性关键：旧实现用 <c>TaskHelper.RunSafely</c> fire-and-forget 启动打断，
+/// 打断的实际执行时机（意图动画 → 行动 → 重摇）会漂到回合结束校验点
+/// （如 after player turn phase two end）之后，且两端完成早晚取决于帧率/网络 ——
+/// 一端已重摇（计数刷新 + 多消耗一次 MonsterAi RNG），另一端停在计数 0，
+/// checksum 直接劈叉。改为组合 Task 后，打断被折进出牌动作自己的执行窗口，
+/// 所有端都在同一个动作同步点完成，之前的下一个队列动作（含回合结束握手）
+/// 必然先等到它结束。
 /// </para>
 /// </summary>
 [HarmonyLib.HarmonyPatch(typeof(CardModel), "OnPlayWrapper")]
 internal static class ActionCountCardPlayPatch
 {
-	private static void Postfix(CardModel __instance, bool isAutoPlay, Task __result)
+	private static void Postfix(CardModel __instance, bool isAutoPlay, ref Task __result)
 	{
-		// 自动打出的牌不减询（§7.6）
+		// 自动打出的牌不减询（§7.6），也不需要等待
 		if (isAutoPlay || __result == null)
 		{
 			return;
 		}
 
-		TaskHelper.RunSafely(AfterCardPlaySettledAsync(__result, __instance));
+		Task playTask = __result;
+		__result = PlayThenSettleAsync(playTask, __instance);
 	}
 
-	private static async Task AfterCardPlaySettledAsync(Task playTask, CardModel card)
+	private static async Task PlayThenSettleAsync(Task playTask, CardModel card)
 	{
 		try
 		{
-			// 等这张牌整体结算完：OnPlay / 附魔 / 苦难 / AfterCardPlayed /
-			// 结果堆移动（消耗/丢弃）/ 空手检查都在这个 Task 里。
 			await playTask;
 
-			CombatManager cm = CombatManager.Instance;
-			if (!cm.IsInProgress || cm.IsOverOrEnding)
-			{
-				return;
-			}
-			if (!MonsterSettings.ActionCountEnabled)
-			{
-				return;
-			}
-			// 不能用 card.CombatState：能力牌（CardType.Power）与复制体（IsDupe）打完后
-			// 结果堆是 PileType.None，会被 CardPileCmd.RemoveFromCombat 移出战斗，
-			// Pile 变 null，CardModel.CombatState 随之返回 null（CardModel.cs:1018-1029），
-			// 导致这类牌打出后计数器不递减。
-			// CardScope 是游戏自带的兜底链：CombatState ?? Owner.Creature.CombatState ?? RunState
-			// （CardModel.cs:1038），牌不在任何战斗堆时仍能拿到当前战斗。
-			if (card.CardScope is not CombatState cs)
-			{
-				return;
-			}
-
-			// 如果牌结算过程中怪已经死了，DecrementAll 会清掉尸体，不会误触发打断。
-			List<Creature> zeroed = ActionCountRuntime.DecrementAll();
-			if (zeroed.Count == 0)
-			{
-				return;
-			}
-			ActionCountRuntime.MarkInterruptQueued(zeroed);
-			TaskHelper.RunSafely(ActionCountRuntime.DrainAsync(cs));
+			// 这张牌已整体结算完（OnPlay / 附魔 / 苦难 / AfterCardPlayed /
+			// 结果堆移动（消耗/丢弃）/ 空手检查都在 playTask 里）。
+			// 在它所属 GameAction 的执行窗内继续收割打断，保持多人同步（见类注释）。
+			await ActionCountRuntime.AfterCardPlaySettledAsync(card);
 		}
 		catch (System.Exception ex)
 		{
+			// 与旧实现一致：出牌/结算本身的异常在此吞掉并记日志，
+			// 不让打断逻辑把 PlayCardAction 本身打成 faulted 而改变动作执行语义。
 			MainFile.Log.Warn($"CznMonster 行动计数减询失败：{ex.GetType().Name}: {ex.Message}");
 		}
 	}
 }
 
 /// <summary>
-/// P6 打断期间挡住自然行动回合（TakeTurn prefix），由 DrainAsync 代为执行（§7.7）。
+/// P6 安全网：若打断因异常中断等原因遗留待执行标记（理论上 P5 已在动作窗内同步收割完），
+/// 自然行动回合（TakeTurn prefix）被挡住，避免打断与怪物自然回合并发执行（§7.7）。
 /// </summary>
 [HarmonyLib.HarmonyPatch(typeof(Creature), "TakeTurn")]
 internal static class ActionCountTakeTurnPatch
 {
 	private static bool Prefix(Creature __instance)
 	{
-		if (!MonsterSettings.ActionCountEnabled)
+		if (!MonsterSettings.EffectiveActionCountEnabled)
 		{
 			return true;
 		}
 		try
 		{
-			return !ActionCountRuntime.HasPendingInterrupt(__instance);
+			// 只在「收割正在进行」时挡住自然行动。
+			// 不能只看 HasPendingInterrupt：标记如果在收割提前退出时残留，
+			// 会让这只怪下一回合直接不行动（而且两端可能只残留一端）。
+			return !(ActionCountRuntime.IsDraining && ActionCountRuntime.HasPendingInterrupt(__instance));
 		}
 		catch (System.Exception ex)
 		{
@@ -173,18 +164,25 @@ internal static class ActionCountTakeTurnPatch
 /// </summary>
 internal static class ActionCountPatches
 {
+	private static bool _subscribed;
+
 	internal static void Initialize()
 	{
+		// 幂等：热重载 / 二次 Initialize 时不能重复订阅（否则计数器被重置两次、预热跑两遍）
+		if (_subscribed)
+		{
+			return;
+		}
+		_subscribed = true;
 		CombatManager.Instance.CombatSetUp += OnCombatSetUp;
 		CombatManager.Instance.CombatEnded += OnCombatEnded;
 	}
 
 	private static void OnCombatSetUp(CombatState state)
 	{
-		if (MonsterSettings.ActionCountEnabled)
-		{
-			ActionCountRuntime.OnCombatSetUp(state);
-		}
+		// 无条件重置：计数器是静态表，不重置会把上一场战斗的状态带进新战斗
+		// （上一场开着计数、这一场关掉时尤其明显）。
+		ActionCountRuntime.OnCombatSetUp(state);
 	}
 
 	private static void OnCombatEnded(CombatRoom _)
@@ -212,11 +210,14 @@ internal static class ActionCountTables
 	//   AscMul    = 进阶修正
 	//   N0 = clamp(round(C × Tol × GroupMul × AscMul), 2, 14)
 	//   N  = (N0 + IntentOff) × 玩家数
-	private const double BaseCardsPerTurn = 3.2;
+	// 用 decimal 而不是 double：这条公式的结果是「阈值整数」，
+	// 落在 x.5 边界时二进制浮点的表示差异会被放大成 ±1 次怪物行动。
+	// decimal 是精确十进制运算，两端必然得到同一个整数。
+	private const decimal BaseCardsPerTurn = 3.2m;
 
-	private const double CardsPerActStep = 0.8;
+	private const decimal CardsPerActStep = 0.8m;
 
-	private const double GroupStep = 0.4;
+	private const decimal GroupStep = 0.4m;
 
 	private const int MinCounter = 2;
 
@@ -227,7 +228,7 @@ internal static class ActionCountTables
 	/// 之后逐章靠能量遗物、抽牌引擎与升级牌抬升。这是整条公式里唯一靠估算的量，
 	/// 实测有偏差时只调这两个常量即可。
 	/// </summary>
-	private static double CardsPerTurn(int actIndex)
+	private static decimal CardsPerTurn(int actIndex)
 	{
 		return BaseCardsPerTurn + CardsPerActStep * actIndex;
 	}
@@ -236,18 +237,18 @@ internal static class ActionCountTables
 	/// 每只怪每回合允许多出的行动次数 A 的倒数。
 	/// 首领一次额外行动最贵 → 容忍最高（A=0.50）；随从最便宜 → 容忍最低（A≈1.18）。
 	/// </summary>
-	private static double Tolerance(MonsterTier tier)
+	private static decimal Tolerance(MonsterTier tier)
 	{
 		switch (tier)
 		{
 			case MonsterTier.Boss:
-				return 2.00;
+				return 2.00m;
 			case MonsterTier.Elite:
-				return 1.67;
+				return 1.67m;
 			case MonsterTier.Normal:
-				return 1.33;
+				return 1.33m;
 			default:
-				return 0.85;
+				return 0.85m;
 		}
 	}
 
@@ -255,21 +256,21 @@ internal static class ActionCountTables
 	/// 进阶修正：按本体实际影响点分档，而不是线性硬套。
 	/// A5–A7 诅咒/少药水/少好牌（玩家出牌能力下降）、A8 敌人更肉、A9 更疼、A10 双 Boss。
 	/// </summary>
-	private static double AscensionMultiplier(int ascensionLevel)
+	private static decimal AscensionMultiplier(int ascensionLevel)
 	{
 		if (ascensionLevel >= 9)
 		{
-			return 0.85;
+			return 0.85m;
 		}
 		if (ascensionLevel >= 8)
 		{
-			return 0.90;
+			return 0.90m;
 		}
 		if (ascensionLevel >= 5)
 		{
-			return 0.95;
+			return 0.95m;
 		}
-		return 1.0;
+		return 1.0m;
 	}
 
 	/// <summary>
@@ -335,8 +336,8 @@ internal static class ActionCountTables
 
 		int actIndex = Math.Clamp(cs.RunState.CurrentActIndex, 0, 2);
 		int groupSize = Math.Clamp(GroupSize(cs, tier), 1, 4);
-		double groupMultiplier = 1.0 + GroupStep * (groupSize - 1);
-		double raw = CardsPerTurn(actIndex)
+		decimal groupMultiplier = 1.0m + GroupStep * (groupSize - 1);
+		decimal raw = CardsPerTurn(actIndex)
 			* Tolerance(tier)
 			* groupMultiplier
 			* AscensionMultiplier(cs.RunState.AscensionLevel);
@@ -419,7 +420,7 @@ internal static class ActionCountTables
 		}
 		// 设置里的“行动计数范围”对原生怪和 mod 怪一视同仁（1=首领，2=首领+精英，3=所有敌人）
 		RoomType roomType = cs.Encounter?.RoomType ?? RoomType.Monster;
-		int scope = Math.Clamp(MonsterSettings.ActionCountScope, 1, 3);
+		int scope = Math.Clamp(MonsterSettings.EffectiveActionCountScope, 1, 3);
 		if (!ScopeAllows(roomType, scope))
 		{
 			return false;

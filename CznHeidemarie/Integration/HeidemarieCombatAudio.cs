@@ -250,7 +250,12 @@ internal static class HeidemarieCombatAudio
 			// 语音去重键「先记账再分流」：舞台接管的那些段同样要占键。
 			// 「剑之乐园」是逐敌循环，前几段被舞台吞掉、若不占键，等 stage_finished
 			// 之后剩下的段就会把 u3 台词再补播一遍 —— 听感上就是同一句话重复。
-			bool alreadyVoiced = IsDuplicateAttackVoice(triggerName);
+			//
+			// 只允许「本机玩家」参与记账：队友的攻击也会在本机走 TriggerAnim，
+			// 若让他们也记账，会拿本地的 _pendingAttackCard/_currentPlayCard 写进全局集合，
+			// 把本地玩家同名牌的台词误判成「已播过」（跨玩家状态污染）。
+			bool isLocalPlayer = HeidemariePresentationHost.IsLocalHeidemarie(player);
+			bool alreadyVoiced = isLocalPlayer && IsDuplicateAttackVoice(triggerName);
 
 			if (stagePresents)
 			{
@@ -268,7 +273,8 @@ internal static class HeidemarieCombatAudio
 				// 「剑之乐园」逐敌循环会为每个敌人各走一次本方法，不去重就会把同一段
 				// 音频叠着放 N 遍（听感上就是「语音 / 挥击声按敌人数重读」）。
 				// 普通攻击档保持按段数播 —— 每一击都是真实可见的挥击。
-				if (!IsTerminalTrigger(triggerName) || !IsDuplicateTerminalSfx(triggerName))
+				// 终结档去重同理：只有本地玩家才用本地账本判定，队友按段数播
+				if (!isLocalPlayer || !IsTerminalTrigger(triggerName) || !IsDuplicateTerminalSfx(triggerName))
 				{
 					Sfx.TryPlay(sfxPath);
 				}

@@ -6,8 +6,14 @@
   "POLEMICA_BROOD_POWER.description": "波勒米卡每行动一次，此计数 +1。达到 3 时，它的下一次行动将处决全部召唤物并召唤新的一波。",
 
   "SERAPHION_HALF_DEATH_POWER.title": "濒死不灭",
-  "SERAPHION_HALF_DEATH_POWER.description": "只要阿克鲁斯存活，塞拉菲翁的生命就无法降到 0：生命流失在触底时被拦截至 1 点，且此后陷入濒死、不再作为可选目标。阿克鲁斯的救援颂歌可以拉起它；阿克鲁斯死亡时，濒死的塞拉菲翁随之消亡。",
+  "SERAPHION_HALF_DEATH_POWER.description": "只要阿克鲁斯存活，塞拉菲翁的生命就无法降到 0：生命流失触底时被拦截至 1 点，且此后陷入濒死、不再作为可选目标。阿克鲁斯的救援颂歌可以拉起它；阿克鲁斯死亡时，濒死的塞拉菲翁随之消亡。",
 
   "AGNES_RESONANCE_POWER.title": "共鸣",
-  "AGNES_RESONANCE_POWER.description": "共鸣是阿涅丝的威压刻度：变身后获得 3 层，她每进行一次蓄力行动 +2 层，最多 10 层。\n[gold]处决[/gold]会消耗所有共鸣：伤害 = 基础 ×（1 + 共鸣 + 2×场上碎片数），随后重新获得 3 层。场上每只余响碎片也会让[gold]处决[/gold]伤害提高。"
+  "AGNES_RESONANCE_POWER.description": "共鸣是阿涅丝的威压刻度：变身后获得 3 层，她每进行一次蓄力行动 +2 层，最多 10 层。\n[gold]处决[/gold]会消耗所有共鸣：伤害 = 基础 ×（1 + 共鸣 + 2×场上碎片数），随后重新获得 3 层。场上每只余响碎片也会让[gold]处决[/gold]伤害提高。",
+
+  "SWEET_DREAM_COUNTDOWN_POWER.title": "梦魇",
+  "SWEET_DREAM_COUNTDOWN_POWER.description": "美梦每受到 1 次伤害，此计数减 1；每回合开始夺走它目标的 [gold]{StealCount}[/gold] 张随机手牌（当前已被夺走 [gold]{StolenCount}[/gold] 张）。此计数归零时，被夺走的牌全部回到手牌，随后美梦重置此计数并获得力量。\n已夺走的牌：\n{StolenList}",
+  "SWEET_DREAM_COUNTDOWN_POWER.stolen_line": "[gold]{Owner}[/gold]：{Cards}",
+  "SWEET_DREAM_COUNTDOWN_POWER.stolen_sep": "、",
+  "SWEET_DREAM_COUNTDOWN_POWER.stolen_none": "（暂无）"
 }

@@ -43,6 +43,8 @@ internal sealed class SkinSettingsGlobalUiRuntime : ISkinSettingsGlobalUiRuntime
 
 	public AttackFullScreenPresentationMode TeammateAttackFullScreenPresentationMode => _store.TeammateAttackFullScreenPresentationMode;
 
+	public bool TeammateUseHostSettings => _store.TeammateUseHostSettings;
+
 	public SkinSettingsGlobalUiRuntime(CharacterSkinSettingsStore store)
 	{
 		_store = store ?? throw new ArgumentNullException("store");
@@ -118,6 +120,12 @@ internal sealed class SkinSettingsGlobalUiRuntime : ISkinSettingsGlobalUiRuntime
 	{
 		_store.SetTeammateAttackFullScreenPresentationMode(value, persist);
 		SyncOtherStores("SetTeammateAttackFullScreenPresentationMode", new object[2] { value, false });
+	}
+
+	public void SetTeammateUseHostSettings(bool value, bool persist)
+	{
+		_store.SetTeammateUseHostSettings(value, persist);
+		SyncOtherStores("SetTeammateUseHostSettings", new object[2] { value, persist });
 	}
 
 	public void EnableAllTeammatePresentationChannels(bool persist)

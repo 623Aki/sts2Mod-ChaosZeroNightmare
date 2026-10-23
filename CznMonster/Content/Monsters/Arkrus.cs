@@ -102,8 +102,10 @@ public sealed class Arkrus : MonsterModel
 			new SingleAttackIntent(StrikeDamage), new DefendIntent());
 		MoveState curse = new("RESCUE_CURSE_MOVE", RescueCurseMove,
 			new DebuffIntent());
+		// 救援颂歌用自定义意图：原生 HealIntent 的文案是「这个敌人将会回复」，
+		// 主语会误导成阿克鲁斯自愈，实际是治疗濒死的塞拉菲翁（见 ArkrusRescueIntent）
 		MoveState song = new("RESCUE_SONG_MOVE", RescueSongMove,
-			new HealIntent());
+			new ArkrusRescueIntent());
 
 		// ── 守护分支：先加先判（救援 → 二拍循环） ──
 		ConditionalBranchState guard = new("GUARD_BRANCH");

@@ -206,6 +206,10 @@ internal sealed class SkinSettingsUiTextRuntime : ISkinSettingsUiText
 
 	public string DebugLogEnabledDescription => _profile.DebugLogEnabledDescription.Current;
 
+	public string MultiplayerUseHostSettings => _profile.MultiplayerUseHostSettings.Current;
+
+	public string MultiplayerUseHostSettingsDescription => _profile.MultiplayerUseHostSettingsDescription.Current;
+
 	public SkinSettingsUiTextRuntime(SkinSettingsUiTextProfile profile)
 	{
 		_profile = profile;

@@ -45,8 +45,16 @@ public sealed class Polemica : MonsterModel
 	private int _brood;           // 对应 cs02_0339：孵化仪式 0..3
 
 	/// <inheritdoc />
-	public override int MinInitialHp => MonsterSettings.CustomBossHp ?? PolemicaScaling.Hp(
-		AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 475, 450));
+	/// <remarks>自定义血量只替换基础值，仍乘章节系数（避免开关打开后第 1 章按第 3 章数值出场）。</remarks>
+	public override int MinInitialHp
+	{
+		get
+		{
+			int baseHp = MonsterSettings.EffectiveCustomBossHp
+				?? AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 475, 450);
+			return PolemicaScaling.Hp(baseHp);
+		}
+	}
 
 	/// <inheritdoc />
 	public override int MaxInitialHp => MinInitialHp;

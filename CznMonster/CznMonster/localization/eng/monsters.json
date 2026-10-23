@@ -67,5 +67,12 @@
 
   "POLEMICA_SHELL_INSECT.name": "Shell Insect",
   "POLEMICA_SHELL_INSECT.moves.SHELL_BITE.title": "Carapace Bite",
-  "POLEMICA_SHELL_INSECT.moves.SHELL_GUARD.title": "Carapace Guard"
+  "POLEMICA_SHELL_INSECT.moves.SHELL_GUARD.title": "Carapace Guard",
+
+  "SWEET_DREAM.name": "Sweet Dream",
+
+  "SWEET_DREAM.moves.CLAW_BARRAGE.title": "Dream-Shattering Claws",
+  "SWEET_DREAM.moves.LIE_STRIKE.title": "Dream-Eroding Jab",
+  "SWEET_DREAM.moves.NIGHT_LIES.title": "Night of a Thousand Lies",
+  "SWEET_DREAM.moves.LIE_STRIKE_HEAVY.title": "Whirl of Dreamslaying"
 }

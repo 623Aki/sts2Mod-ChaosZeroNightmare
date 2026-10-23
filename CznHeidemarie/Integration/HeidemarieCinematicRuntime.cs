@@ -12,8 +12,10 @@ using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace CznHeidemarie.Integration;
 
@@ -330,6 +332,12 @@ internal static class HeidemarieCinematicRuntime
 	{
 		task = Task.CompletedTask;
 
+		// 联机不接管命中闸门（详见 IsMultiplayerSession 的说明）
+		if (IsMultiplayerSession())
+		{
+			return false;
+		}
+
 		Phase? phase = _phase;
 		string? route = RouteForTrigger(triggerName);
 		if (phase is null || phase.Released || route is null || phase.Route != route || phase.Player != player)
@@ -359,6 +367,12 @@ internal static class HeidemarieCinematicRuntime
 	/// </summary>
 	internal static Task WaitForPresentationEnd(CardModel? card)
 	{
+		// 联机不把出牌吊在演出收尾上（详见 IsMultiplayerSession 的说明）
+		if (IsMultiplayerSession())
+		{
+			return Task.CompletedTask;
+		}
+
 		Phase? phase = _phase;
 		if (phase is null || phase.Released || phase.Card is null || card is null)
 		{
@@ -368,6 +382,34 @@ internal static class HeidemarieCinematicRuntime
 		// 比实例也比 Id：模型在牌堆间移动时可能是同一 Id 的不同实例。
 		bool sameCard = ReferenceEquals(phase.Card, card) || phase.Card.Id == card.Id;
 		return sameCard ? phase.Finished.Task : Task.CompletedTask;
+	}
+
+	/// <summary>
+	/// 当前是否是联机会话。
+	///
+	/// <para><b>联机为什么要放弃「命中闸门」与「演出收尾等待」</b>：舞台只在本机创建
+	/// （<see cref="IsStagePresenting"/> 的本地判定），而等待发生在
+	/// <c>CreatureCmd.TriggerAnim</c> / 卡牌 <c>OnPlay</c> 这两个 <b>ActionQueue 执行窗</b>里。</para>
+	///
+	/// <list type="bullet">
+	///   <item>单机：把等待换成「等演出命中帧」只是修观感；</item>
+	///   <item>联机：本机队列会被吊住 3~5 秒（ug 2.8s / ux 5.27s，看门狗上限 10s），
+	///   本机发不出 <c>ReadyToBeginEnemyTurnAction</c> → <b>全队一起等</b>，
+	///   而队友屏幕上并不会出现这段演出（舞台只在施法者机器上）。</item>
+	/// </list>
+	///
+	/// <para>所以联机一律交回原生节奏（原生等待 ≤0.25s），演出照播但不再阻塞结算。</para>
+	/// </summary>
+	internal static bool IsMultiplayerSession()
+	{
+		try
+		{
+			return RunManager.Instance?.NetService?.Type.IsMultiplayer() == true;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	// ──────────────────────────────────────────────────────────────────────────
