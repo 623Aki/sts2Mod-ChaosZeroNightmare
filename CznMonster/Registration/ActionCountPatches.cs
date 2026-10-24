@@ -204,18 +204,28 @@ internal static class ActionCountTables
 	//   进阶   → 对结果整体收税
 	//   同场数 → 把预算分摊给多只怪
 	//
-	//   C(act)    = 3.2 + 0.8 × actIndex            第 1/2/3 章 = 3.2 / 4.0 / 4.8
+	//   C(act)    = 3.0 + 0.3 × actIndex            第 1/2/3 章 = 3.0 / 3.3 / 3.6
 	//   Tol(tier) = 1 / A(tier)                     首领 2.00 / 精英 1.67 / 普通 1.33 / 随从 0.85
 	//   GroupMul  = 1 + 0.4 × (min(n,4) - 1)        n = 同房间同档存活主敌数（随从恒 1）
 	//   AscMul    = 进阶修正
-	//   N0 = clamp(round(C × Tol × GroupMul × AscMul), 2, 14)
-	//   N  = (N0 + IntentOff) × 玩家数
+	//   N0 = round(C × Tol × GroupMul × AscMul)
+	//   N  = clamp(N0 + IntentOff, 2, 14) × 玩家数
 	// 用 decimal 而不是 double：这条公式的结果是「阈值整数」，
 	// 落在 x.5 边界时二进制浮点的表示差异会被放大成 ±1 次怪物行动。
 	// decimal 是精确十进制运算，两端必然得到同一个整数。
-	private const decimal BaseCardsPerTurn = 3.2m;
+	private const decimal BaseCardsPerTurn = 3.0m;
 
-	private const decimal CardsPerActStep = 0.8m;
+	/// <summary>
+	/// 每章递增的「典型出牌数」：0.3/章。
+	///
+	/// <para><b>为什么从 0.8 降下来</b>：后期的能量增长大多被「均费上升」吃掉
+	/// （初始卡组打击/防御 1 费 → 主力牌 1.2~1.5 费），抽牌引擎只解决「手牌够」
+	/// 而不解决「能量够」，因此单回合主动出牌张数并不会同比 +25%/章。
+	/// 原 0.8/章 让第 3 章基数比第 1 章高 50%，而玩家实际出牌数只涨一成左右，
+	/// 触发率被按 1/N 稀释 —— 表现就是「后期几乎不触发」。
+	/// 本机制的目标是<b>全程稳定压力</b>，故斜率必须贴近真实张数增长。</para>
+	/// </summary>
+	private const decimal CardsPerActStep = 0.3m;
 
 	private const decimal GroupStep = 0.4m;
 
@@ -224,9 +234,11 @@ internal static class ActionCountTables
 	private const int MaxCounter = 14;
 
 	/// <summary>
-	/// 玩家一回合的典型出牌数 C：3 能量 / 5 抽牌 / 均费 1 费 ≈ 3 张，
-	/// 之后逐章靠能量遗物、抽牌引擎与升级牌抬升。这是整条公式里唯一靠估算的量，
-	/// 实测有偏差时只调这两个常量即可。
+	/// 玩家一回合的典型<b>主动出牌数</b> C：3 能量 / 5 抽牌 / 均费 1 费 ≈ 3 张。
+	///
+	/// <para>逐章只 +0.3：能量遗物的增量大多被后期均费上升吃掉，抽牌引擎只解决
+	/// 「手牌够」而不解决「能量够」。这是整条公式里唯一靠估算的量，
+	/// 实测有偏差时只调 <see cref="BaseCardsPerTurn"/> 与 <see cref="CardsPerActStep"/> 即可。</para>
 	/// </summary>
 	private static decimal CardsPerTurn(int actIndex)
 	{
@@ -343,8 +355,12 @@ internal static class ActionCountTables
 			* AscensionMultiplier(cs.RunState.AscensionLevel);
 
 		int baseline = (int)Math.Round(raw, MidpointRounding.AwayFromZero);
-		baseline = Math.Clamp(baseline, MinCounter, MaxCounter);
-		return baseline + intentOffset.Value;
+
+		// 意图修正先加、再夹取：夹取的语义是「最终阈值上限」。
+		// 旧顺序（先夹再加）会让多怪/高基数场的意图修正突破 14，上限形同虚设；
+		// 同时 +1/+2 相对小基数档（随从 3 层）会被放大成 +33%~+67%，破坏跨档稳定性。
+		int total = baseline + intentOffset.Value;
+		return Math.Clamp(total, MinCounter, MaxCounter);
 	}
 
 	/// <summary>

@@ -28,8 +28,6 @@ internal static class MonsterSettings
 	// ── CZN 怪物（默认关；位置默认"随机"；血量默认"默认"）──────────────────
 	private static bool _cznMonstersEnabled;
 
-	private static bool _bossPosRandom = true;
-
 	private static bool _bossPosSpecified;
 
 	private static int _bossChapter = 1;
@@ -79,32 +77,18 @@ internal static class MonsterSettings
 		}
 	}
 
-	/// <summary>首领出现位置：随机（与"指定"互斥）。</summary>
-	public static bool BossPosRandom
-	{
-		get => _bossPosRandom;
-		set
-		{
-			_bossPosRandom = value;
-			if (value)
-			{
-				_bossPosSpecified = false;
-			}
-			Save();
-		}
-	}
-
-	/// <summary>首领出现位置：指定章节（与"随机"互斥）。</summary>
+	/// <summary>
+	/// 首领出现位置：指定章节。
+	///
+	/// <para>默认关闭：CZN 首领按固定章节入池，由原生 rng 随机抽取。
+	/// 开启后，在原生三章首领都已抽完之后，把「指定章节」的首领强行替换成指定首领。</para>
+	/// </summary>
 	public static bool BossPosSpecified
 	{
 		get => _bossPosSpecified;
 		set
 		{
 			_bossPosSpecified = value;
-			if (value)
-			{
-				_bossPosRandom = false;
-			}
 			Save();
 		}
 	}
@@ -237,7 +221,7 @@ internal static class MonsterSettings
 	/// 它们在本局有快照时读快照、没有时回落「安全默认」。
 	/// 这样两端用的是同一份参数，不会因为各自的 cfg 不同而劈叉。</para>
 	/// </summary>
-	public readonly record struct MultiplayerSnapshot(bool CznMonstersEnabled, bool BossPosRandom, bool BossPosSpecified, int BossChapter, int BossSelect, bool BossHpCustom, int BossHpValue, bool ActionCountEnabled, int ActionCountScope);
+	public readonly record struct MultiplayerSnapshot(bool CznMonstersEnabled, bool BossPosSpecified, int BossChapter, int BossSelect, bool BossHpCustom, int BossHpValue, bool ActionCountEnabled, int ActionCountScope);
 
 	/// <summary>本局房主参数；单机或尚未收到时为 null。</summary>
 	private static MultiplayerSnapshot? _multiplayer;
@@ -253,7 +237,6 @@ internal static class MonsterSettings
 	{
 		return new MultiplayerSnapshot(
 			CznMonstersEnabled: _cznMonstersEnabled,
-			BossPosRandom: _bossPosRandom,
 			BossPosSpecified: _bossPosSpecified,
 			BossChapter: _bossChapter,
 			BossSelect: _bossSelect,
@@ -319,9 +302,6 @@ internal static class MonsterSettings
 		}
 	}
 
-	/// <summary>生效的「首领位置：随机」：联机时以房主为准。</summary>
-	public static bool EffectiveBossPosRandom => EffectiveBool(_bossPosRandom, (MultiplayerSnapshot s) => s.BossPosRandom);
-
 	/// <summary>生效的「首领位置：指定」：联机时以房主为准。</summary>
 	public static bool EffectiveBossPosSpecified => EffectiveBool(_bossPosSpecified, (MultiplayerSnapshot s) => s.BossPosSpecified);
 
@@ -337,7 +317,6 @@ internal static class MonsterSettings
 		_actionCountEnabled = false;
 		_actionCountScope = 1;
 		_cznMonstersEnabled = false;
-		_bossPosRandom = true;
 		_bossPosSpecified = false;
 		_bossChapter = 1;
 		_bossSelect = 0;
@@ -365,13 +344,7 @@ internal static class MonsterSettings
 		_actionCountEnabled = (bool)Config.GetValue("action_count", "enabled", false);
 		_actionCountScope = Math.Clamp((int)Config.GetValue("action_count", "scope", 1), 1, 3);
 		_cznMonstersEnabled = (bool)Config.GetValue("czn_monsters", "enabled", false);
-		_bossPosRandom = (bool)Config.GetValue("czn_monsters", "boss_pos_random", true);
 		_bossPosSpecified = (bool)Config.GetValue("czn_monsters", "boss_pos_specified", false);
-		if (_bossPosRandom && _bossPosSpecified)
-		{
-			// 手改配置等异常情况：指定优先，保证二者互斥
-			_bossPosRandom = false;
-		}
 		_bossChapter = Math.Clamp((int)Config.GetValue("czn_monsters", "boss_chapter", 1), 1, 3);
 		_bossSelect = Math.Max(0, (int)Config.GetValue("czn_monsters", "boss_select", 0));
 		_bossHpCustom = (bool)Config.GetValue("czn_monsters", "boss_hp_custom", false);
@@ -388,7 +361,6 @@ internal static class MonsterSettings
 		Config.SetValue("action_count", "enabled", _actionCountEnabled);
 		Config.SetValue("action_count", "scope", _actionCountScope);
 		Config.SetValue("czn_monsters", "enabled", _cznMonstersEnabled);
-		Config.SetValue("czn_monsters", "boss_pos_random", _bossPosRandom);
 		Config.SetValue("czn_monsters", "boss_pos_specified", _bossPosSpecified);
 		Config.SetValue("czn_monsters", "boss_chapter", _bossChapter);
 		Config.SetValue("czn_monsters", "boss_select", _bossSelect);

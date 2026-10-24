@@ -28,8 +28,6 @@ internal struct CznMonsterConfigMessage : INetMessage
 
 	public bool cznMonstersEnabled;
 
-	public bool bossPosRandom;
-
 	public bool bossPosSpecified;
 
 	public int bossChapter;
@@ -60,7 +58,6 @@ internal struct CznMonsterConfigMessage : INetMessage
 	{
 		writer.WriteUInt(magic);
 		writer.WriteBool(cznMonstersEnabled);
-		writer.WriteBool(bossPosRandom);
 		writer.WriteBool(bossPosSpecified);
 		writer.WriteInt(bossChapter);
 		writer.WriteInt(bossSelect);
@@ -74,7 +71,6 @@ internal struct CznMonsterConfigMessage : INetMessage
 	{
 		magic = reader.ReadUInt();
 		cznMonstersEnabled = reader.ReadBool();
-		bossPosRandom = reader.ReadBool();
 		bossPosSpecified = reader.ReadBool();
 		bossChapter = reader.ReadInt();
 		bossSelect = reader.ReadInt();

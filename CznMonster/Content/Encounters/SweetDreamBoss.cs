@@ -14,8 +14,12 @@ namespace CznMonster.Content.Encounters;
 /// </summary>
 public sealed class SweetDreamBoss : EncounterModel, ICznMonsterEncounter
 {
+	// 固定入池章节：美梦只进第 1 章首领池，由原生 rng.NextItem(AllBossEncounters) 抽取。
+	// 与原生首领竞争，因此「第 1 章必出美梦」不成立；指定模式可在原生抽取后强行替换。
+	private static readonly int[] Acts = { 0 };
+
 	/// <inheritdoc />
-	public int TargetActIndex => 2;
+	public IReadOnlyList<int>? TargetActIndexes => Acts;
 
 	/// <inheritdoc />
 	public override RoomType RoomType => RoomType.Boss;

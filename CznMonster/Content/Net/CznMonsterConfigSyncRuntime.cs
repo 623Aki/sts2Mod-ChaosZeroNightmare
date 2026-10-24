@@ -110,7 +110,6 @@ internal static class CznMonsterConfigSyncRuntime
 			{
 				magic = CznMonsterConfigMessage.MagicValue,
 				cznMonstersEnabled = snapshot.CznMonstersEnabled,
-				bossPosRandom = snapshot.BossPosRandom,
 				bossPosSpecified = snapshot.BossPosSpecified,
 				bossChapter = snapshot.BossChapter,
 				bossSelect = snapshot.BossSelect,
@@ -143,7 +142,6 @@ internal static class CznMonsterConfigSyncRuntime
 			}
 			MonsterSettings.ApplyMultiplayerSnapshot(new MonsterSettings.MultiplayerSnapshot(
 				CznMonstersEnabled: message.cznMonstersEnabled,
-				BossPosRandom: message.bossPosRandom,
 				BossPosSpecified: message.bossPosSpecified,
 				BossChapter: message.bossChapter,
 				BossSelect: message.bossSelect,

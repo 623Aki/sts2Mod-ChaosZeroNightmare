@@ -23,18 +23,26 @@ namespace CznMonster.Content.Monsters;
 /// </summary>
 public sealed class PolemicaWingShellInsect : PolemicaAddMonster
 {
-	private int DiveDamage =>
-		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 11, 9));
+	// ── 数值（同一只怪两套口径：被首领召唤 / 地图上的第 2 章精英）──
+	// 被召唤：第 3 章基准（攻击 9 / 格挡 15，升华 11·10 / 17），再乘章节系数
+	// 精英：固定攻击 8（升华 10）、格挡 12（升华 14）；遭遇固定在第 2 章，不再乘系数
+	private int DiveDamage => IsSummoned
+		? PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 11, 9))
+		: AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 10, 8);
 
-	private int GuardDamage =>
-		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 10, 9));
+	private int GuardDamage => IsSummoned
+		? PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 10, 9))
+		: AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 10, 8);
 
-	private int GuardBlock =>
-		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 17, 15));
+	private int GuardBlock => IsSummoned
+		? PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 17, 15))
+		: AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 14, 12);
 
 	/// <inheritdoc />
-	public override int MinInitialHp =>
-		PolemicaScaling.Hp(AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 101, 96));
+	/// <remarks>被召唤走「96（升华 101）× 章节系数」；作为第 2 章精英固定 58（升华 64）。</remarks>
+	public override int MinInitialHp => IsSummoned
+		? PolemicaScaling.Hp(AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 101, 96))
+		: AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 64, 58);
 
 	/// <inheritdoc />
 	public override int MaxInitialHp => MinInitialHp;

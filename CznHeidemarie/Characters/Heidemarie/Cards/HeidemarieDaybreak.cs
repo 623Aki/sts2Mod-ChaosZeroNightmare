@@ -12,16 +12,16 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// <summary>
 /// 「破晓」：1 费技能（稀有牌），<b>消耗</b>。
 ///
-/// <para>获得 <c>Energy</c> 点能量；关键字<b>焚烧</b>：本牌被消耗时，
+/// <para>获得 <c>Energy</c> 点能量；关键字<b>感应</b>：本牌从抽牌堆进入手牌时，
 /// 在手牌生成 <c>Cards</c> 张极光剑。</para>
 ///
-/// <para>官方 <c>Adrenaline</c> 的角色化改写，补上本角色的能量缺口；
-/// 「焚烧」与本角色「解放极光」走同一个派发点（<c>AfterCardExhausted</c> → <see cref="IBurnCard"/>）。</para>
+/// <para>官方 <c>Adrenaline</c> 的角色化改写，补上本角色的能量缺口。</para>
 ///
-/// <para>注意本题的消耗是<b>打出后</b>由 <c>CardKeyword.Exhaust</c> 触发的，
-/// 与「焚烧」的触发点天然衔接：牌先离场、再消耗、再发动焚烧。</para>
+/// <para><b>2026-10-24 机制调整</b>：原「焚烧（本牌被消耗时生成极光剑）」改为「感应」——
+/// 触发点从「打出后的消耗」提前到「抽到手牌」，与本角色「弃掉的牌洗回再抽到」的循环天然咬合；
+/// 「焚烧」仍保留给「解放极光」使用（派发点 <c>AfterCardExhausted</c> 不变）。</para>
 /// </summary>
-public sealed class HeidemarieDaybreak : HeidemarieCard, IBurnCard
+public sealed class HeidemarieDaybreak : HeidemarieCard, ISenseCard
 {
 	/// <inheritdoc/>
 	protected override string FallbackPortraitPath => "res://images/atlases/card_atlas.sprites/ironclad/defend_ironclad.tres";
@@ -30,7 +30,7 @@ public sealed class HeidemarieDaybreak : HeidemarieCard, IBurnCard
 	protected override IEnumerable<DynamicVar> CanonicalVars => new List<DynamicVar>(2)
 	{
 		new EnergyVar(2),
-		// 焚烧生成的极光剑张数（升级不改变，升级只降费）
+		// 感应生成的极光剑张数（升级不改变，升级只降费）
 		new CardsVar(2),
 	};
 
@@ -59,15 +59,13 @@ public sealed class HeidemarieDaybreak : HeidemarieCard, IBurnCard
 	}
 
 	/// <inheritdoc/>
-	/// <remarks>关键字「焚烧」：本牌被消耗时在手牌生成极光剑。</remarks>
-	public async Task OnBurn(PlayerChoiceContext choiceContext, bool causedByEthereal)
-	{
-		await HeidemarieCardActions.GenerateAuroraSwords(
+	/// <remarks>关键字「感应」：从抽牌堆进入手牌时，在手牌生成极光剑（由基类统一分派）。</remarks>
+	public Task OnSense(PlayerChoiceContext choiceContext)
+		=> HeidemarieCardActions.GenerateAuroraSwords(
 			this,
 			choiceContext,
 			DynamicVars.Cards.IntValue,
 			PileType.Hand);
-	}
 
 	/// <inheritdoc/>
 	protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);

@@ -284,7 +284,14 @@ internal static class SkinSettingsUi
 
 	private const string DefeatCgEnabledSectionName = "CznModDefeatCgEnabled";
 
-	public static void TryInjectShared(NSettingsScreen screen, ISkinSettingsUiText text)
+	/// <summary>
+	/// 共享设置面板注入（只建全局页，不建角色页）。
+	/// </summary>
+	/// <param name="globalSettingsIconPath">
+	/// 「全局设置」导航按钮的图标路径，由 mod 侧传入，框架不硬编码任何 mod 资源。
+	/// 传空或加载失败时按钮降级为「ALL」文字，不报错。
+	/// </param>
+	public static void TryInjectShared(NSettingsScreen screen, ISkinSettingsUiText text, string globalSettingsIconPath = "")
 	{
 		try
 		{
@@ -309,7 +316,7 @@ internal static class SkinSettingsUi
 			SettingsUiShell settingsUiShell = EnsureSettingsShell(panel, nodeOrNull);
 			VBoxContainer vBoxContainer = EnsureSettingsPage(settingsUiShell.ContentHost, "CznModSettingsPage_Global", "global");
 			SettingsUiExtensionContext ctx = new SettingsUiExtensionContext(screen, panel, vBoxContainer, nodeOrNull2, packedScene, tickboxVisualScene, text);
-			bool flag = EnsureGlobalNavigationButton(panel, settingsUiShell.Sidebar, nodeOrNull2, string.Empty, text);
+			bool flag = EnsureGlobalNavigationButton(panel, settingsUiShell.Sidebar, nodeOrNull2, globalSettingsIconPath, text);
 			flag |= TryCreateTopSpacerSection(vBoxContainer, "CznModSettingsRootHeader");
 			flag |= EnsureGlobalCategoryNavSection(ctx, includeCharacterCategories: false);
 			flag |= TryCreateExtensionSettingsSections(ctx);

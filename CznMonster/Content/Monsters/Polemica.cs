@@ -9,6 +9,7 @@ using CznMonster.Settings;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Audio;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Ascension;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -306,7 +307,7 @@ public sealed class Polemica : MonsterModel
 	}
 
 	/// <summary>召唤一只到下一个空槽；槽位满则跳过。</summary>
-	private async Task SummonOne<T>() where T : MonsterModel
+	private async Task SummonOne<T>() where T : PolemicaAddMonster
 	{
 		string? slot = FindFreeSlot();
 		if (string.IsNullOrEmpty(slot))
@@ -314,8 +315,12 @@ public sealed class Polemica : MonsterModel
 			return;
 		}
 
-		// MinionPower 由 PolemicaAddMonster.AfterAddedToRoom 统一挂载，这里不重复添加
-		await CreatureCmd.Add<T>(CombatState, slot);
+		// 必须自己建实例并显式置 IsSummoned：HP 在 Creature 构造函数里读，
+		// 那一刻还拿不到 CombatState，无法靠遭遇反查身份。
+		// 数值 / MinionPower / 登场动画 / 死亡采样都按这个标记分流。
+		PolemicaAddMonster model = (PolemicaAddMonster)ModelDb.Monster<T>().ToMutable();
+		model.IsSummoned = true;
+		await CreatureCmd.Add(model, CombatState, CombatSide.Enemy, slot);
 	}
 
 	/// <summary>

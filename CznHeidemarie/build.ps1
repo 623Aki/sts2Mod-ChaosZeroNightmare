@@ -159,6 +159,13 @@ $RequiredExact = @(
     'CznHeidemarie/images/defeat/collapse_30093_01.png.import',
     'CznHeidemarie/images/defeat/collapse_30093_02.png.import',
 
+    # 多人模式手势（宝箱房猜拳 / 指向）：CharacterModel.Arm*Texture 的固定路径
+    # res://images/ui/hands/multiplayer_hand_<角色id>_<手势>.png，四个手势缺一不可
+    'images/ui/hands/multiplayer_hand_heidemarie_point.png.import',
+    'images/ui/hands/multiplayer_hand_heidemarie_rock.png.import',
+    'images/ui/hands/multiplayer_hand_heidemarie_paper.png.import',
+    'images/ui/hands/multiplayer_hand_heidemarie_scissors.png.import',
+
     # 败北 CG（Tiphera 类型 gloom 演出）：官方共享 gloom Spine FX 六件套的
     # 入口（skel.import + _skel_data.tres；atlas/png .import 与导入产物由
     # RequiredPrefix 覆盖）+ cha_node 12 槽时间线 + PMA 双材质 +
@@ -183,8 +190,7 @@ $RequiredExact = @(
     'CznHeidemarie/animations/effects/collapse_gloom/screen_fx_collapse_gloom_sin_screen_refl/screen_fx_collapse_gloom_sin_screen_refl_skel_data.tres',
 
     # 卡面：卡框材质 + 「解放极光」的全屏卡原画（静态兜底）
-    'materials/cards/frames/card_frame_heidemarie_mat.tres',
-    'CznHeidemarie/images/card_art/heidemarie_liberated_aurora.png.import',
+    'materials/cards/frames/card_frame_heidemarie_mat.tres',    'CznHeidemarie/images/card_art/heidemarie_liberated_aurora.png.import',
 
     # 动态卡面：Spine 三件套 + 骨架数据 + 渲染器场景
     'CznHeidemarie/animations/cards/heidemarie_card_liberated_aurora.skel.import',
@@ -263,15 +269,14 @@ $RequiredExact = @(
     'images/packed/powers/heidemarie_temporary_strength_power.png.import',
     'images/atlases/power_atlas.sprites/heidemarie_temporary_strength_power.tres',
 
-    # 第 3 轮新增（《新增设计》§5）：极光连锁 / 充能极光 / 赤光剑 三个能力，
+    # 第 3 轮新增（《新增设计》§5）：极光连锁 / 赤光剑两个能力，
     # 每个仍是「256 大图 + 64 小图 + power_atlas 图集」三件套。
     # 图标由 tools/draw_heidemarie_icons.py 生成（可重跑）。
+    # 注：原「充能极光」已于 2026-10-24 并入「极夜」并删除（代码与图标三件套一并移除），
+    #     故此处的 charged_aurora 三项已从必需资源清单中剔除，不要再加回来。
     'images/powers/heidemarie_aurora_chain_power.png.import',
     'images/packed/powers/heidemarie_aurora_chain_power.png.import',
     'images/atlases/power_atlas.sprites/heidemarie_aurora_chain_power.tres',
-    'images/powers/heidemarie_charged_aurora_power.png.import',
-    'images/packed/powers/heidemarie_charged_aurora_power.png.import',
-    'images/atlases/power_atlas.sprites/heidemarie_charged_aurora_power.tres',
     'images/powers/heidemarie_crimson_sword_power.png.import',
     'images/packed/powers/heidemarie_crimson_sword_power.png.import',
     'images/atlases/power_atlas.sprites/heidemarie_crimson_sword_power.tres',

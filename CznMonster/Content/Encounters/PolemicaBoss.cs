@@ -14,8 +14,12 @@ namespace CznMonster.Content.Encounters;
 /// </summary>
 public sealed class PolemicaBoss : EncounterModel, ICznMonsterEncounter
 {
+	// 固定入池章节：波勒米卡只进第 3 章首领池（与阿涅丝同池），由原生 rng.NextItem 抽取。
+	// 与原生首领竞争，A10 第二首领也从该池抽（可能是阿涅丝或原生）。
+	private static readonly int[] Acts = { 2 };
+
 	/// <inheritdoc />
-	public int TargetActIndex => 2;
+	public IReadOnlyList<int>? TargetActIndexes => Acts;
 
 	/// <inheritdoc />
 	public override RoomType RoomType => RoomType.Boss;
@@ -82,9 +86,8 @@ public sealed class PolemicaBoss : EncounterModel, ICznMonsterEncounter
 	/// <inheritdoc />
 	protected override IReadOnlyList<(MonsterModel, string?)> GenerateMonsters()
 	{
-		// 读档后静态章节值会丢，这里按当前 RunState 兜底。
-		// 拿不到 RunState 时回落第 1 章（0），不能沿用上一次写入的值（残留会让两端劈叉）。
-		PolemicaScaling.ActIndex = RunManager.Instance?.DebugOnlyGetState()?.CurrentActIndex ?? 0;
+		// 读档后静态章节值会丢，这里按当前 RunState 兜底（回落第 1 章，不沿用旧值）。
+		PolemicaScaling.SyncActIndex();
 
 		return new (MonsterModel, string?)[] { (ModelDb.Monster<Polemica>().ToMutable(), "boss") };
 	}

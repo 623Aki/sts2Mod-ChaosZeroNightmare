@@ -27,7 +27,7 @@ namespace CznHeidemarie.Characters.Heidemarie.Powers;
 /// <para><b>因子仍由单一出口提供</b>：本能力只保存层数，伤害因子由
 /// <see cref="HeidemarieAuroraDamagePoolPower.TotalPercent"/> 汇总、交给
 /// <see cref="HeidemarieDamagePercentPower"/> 这一个乘算 modifier ——
-/// 与「百分比增伤池 / 极光连锁基线 / 充能极光」全部<b>相加</b>，不会退化成连乘。</para>
+/// 与「百分比增伤池 / 极光连锁基线」全部<b>相加</b>，不会退化成连乘。</para>
 ///
 /// <para><b>消耗时机</b>：主动打出走 <see cref="AfterAttack"/>（每张剑一条攻击指令，
 /// 正好一次）；被丢弃时的伤害不是 <c>AttackCommand</c>，由

@@ -8,7 +8,7 @@ using MegaCrit.Sts2.Core.Models;
 namespace CznHeidemarie.Characters.Heidemarie.Powers;
 
 /// <summary>
-/// 「极光剑增伤区」的<strong>来源登记 + 汇总器</strong>：极夜 + 充能极光。
+/// 「极光剑增伤区」的<strong>来源登记 + 汇总器</strong>：目前唯一来源是<b>极夜</b>。
 ///
 /// <para><b>它不再是乘算 modifier</b>（设计 Q4 = 合并）：本能力只负责
 /// <list type="number">
@@ -17,12 +17,12 @@ namespace CznHeidemarie.Characters.Heidemarie.Powers;
 ///   <see cref="HeidemarieDamagePercentPower"/>（它只在
 ///   <c>cardSource</c> 是极光剑时计入这部分）。</item>
 /// </list>
-/// 因此「极夜 + 充能」与「百分比增伤池（含极光连锁基线）」全部走同一条
+/// 因此「极夜」与「百分比增伤池（含极光连锁基线）」全部走同一条
 /// 加法链，不会退化成引擎乘算区的连乘。</para>
 ///
-/// <para><b>生命周期</b>：由极夜 / 充能极光在获得时「确保存在」
+/// <para><b>生命周期</b>：由极夜在获得时「确保存在」
 /// （<see cref="EnsureAsync"/>，幂等，同时确保百分比增伤池已挂载），
-/// 不自行消失；所有来源都不在时 <see cref="TotalPercent"/> 恒为 0，不产生任何效果，
+/// 不自行消失；极夜归零时 <see cref="TotalPercent"/> 恒为 0，不产生任何效果，
 /// 战斗结束由引擎统一清理。</para>
 ///
 /// <para>对玩家不可见（<see cref="IsVisibleInternal"/> 返回 false），不占战斗界面图标。</para>
@@ -43,8 +43,7 @@ public sealed class HeidemarieAuroraDamagePoolPower : PowerModel
 	/// <summary>
 	/// 确保「极光剑增伤区」与「百分比增伤池」都已挂载（幂等）。
 	///
-	/// <para>由 <see cref="HeidemarieNightPower"/> / <see cref="HeidemarieChargedAuroraPower"/>
-	/// 在首次获得时调用；谁先到都行。</para>
+	/// <para>由 <see cref="HeidemarieNightPower"/> 在首次获得时调用。</para>
 	/// </summary>
 	public static async Task EnsureAsync(Creature owner)
 	{
@@ -66,24 +65,19 @@ public sealed class HeidemarieAuroraDamagePoolPower : PowerModel
 	}
 
 	/// <summary>
-	/// 极光剑增伤区当前的总百分点（极夜 + 充能极光）。
+	/// 极光剑增伤区当前的总百分点（唯一来源：极夜）。
 	///
 	/// <para><b>极夜按「有层数就 +100%」计</b>：每层代表「下一张剑 +100%」，
 	/// 不论还剩几层，单张剑吃到的都是固定 <see cref="HeidemarieNightPower.PercentPerLayer"/>
 	/// 个百分点 —— 层数只决定「还能强化几张」，不叠加在同一张剑上。</para>
+	///
+	/// <para>「充能极光」已按设计移除：它原本提供的固定 +100% 改由<b>极夜层数</b>表达
+	/// （给 1 层极夜 = 下一张剑 +100%），因此本汇总器只剩一个来源。</para>
 	/// </summary>
 	public static decimal TotalPercent(Creature owner)
 	{
-		decimal total = owner.GetPowerAmount<HeidemarieNightPower>() > 0
+		return owner.GetPowerAmount<HeidemarieNightPower>() > 0
 			? HeidemarieNightPower.PercentPerLayer
 			: 0m;
-
-		// 充能极光：只要还剩次数，就提供固定 +100%（与「还剩几张」无关）
-		if (owner.GetPower<HeidemarieChargedAuroraPower>() is not null)
-		{
-			total += HeidemarieChargedAuroraPower.Percent;
-		}
-
-		return total;
 	}
 }

@@ -65,7 +65,7 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 	protected override HeidemarieEffectTier PresentationTier => HeidemarieEffectTier.AttackLight;
 
 	/// <summary>
-	/// 特效变体：<b>极夜层数 &gt; 0 或「充能极光」存在时，特效升格为 u5 终结演出</b>
+	/// 特效变体：<b>极夜层数 &gt; 0 时，特效升格为 u5 终结演出</b>
 	///（演出键 <c>AttackLight/u5</c>，见 <c>heidemarie_moves.json</c>）。
 	///
 	/// <para><b>为什么不换档位而用变体</b>：源数据里 <c>u5_attack_play1</c> 的
@@ -75,10 +75,9 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 	/// 设计的：身体动作、触发器、命中延迟全部不变，只把特效组从「轻击_横挥」
 	/// 换成「终结_u5_play1」（target 多一层 <c>f2</c>）。</para>
 	///
-	/// <para><b>判定口径与增伤区保持一致</b>：极夜取「层数 &gt; 0」、充能极光取「能力存在」，
-	/// 两者正是 <see cref="HeidemarieAuroraDamagePoolPower.TotalPercent"/> 的全部输入，
-	/// <b>任一成立即升格</b> —— 只要增伤在生效，特效就同步升格，
-	/// 不会出现「吃着增伤却播轻击特效」的错位。</para>
+	/// <para><b>判定口径与增伤区保持一致</b>：判据就是「极夜层数 &gt; 0」，
+	/// 它正是 <see cref="HeidemarieAuroraDamagePoolPower.TotalPercent"/> 的全部输入 ——
+	/// 只要增伤在生效，特效就同步升格，不会出现「吃着增伤却播轻击特效」的错位。</para>
 	///
 	/// <para><b>求值时机</b>：<see cref="HeidemariePresentationCatalog.ResolveKey"/>
 	/// 在 <c>CardPlayEnqueuingEvent</c>（出牌入队）时读取，早于 <see cref="OnPlay"/>
@@ -94,10 +93,7 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 				return null;
 			}
 
-			return creature.GetPowerAmount<HeidemarieNightPower>() > 0
-				|| creature.GetPower<HeidemarieChargedAuroraPower>() is not null
-					? "u5"
-					: null;
+			return creature.GetPowerAmount<HeidemarieNightPower>() > 0 ? "u5" : null;
 		}
 	}
 
@@ -144,7 +140,7 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 	///
 	/// <para><b>这次伤害「视为一次极光剑结算」</b>：因此
 	/// <list type="bullet">
-	///   <item>照常吃「极夜 / 充能极光」的极光剑增伤区（因为 <c>cardSource</c> 就是本牌、
+	///   <item>照常吃「极夜」的极光剑增伤区（因为 <c>cardSource</c> 就是本牌、
 	///   <c>ValueProp.Move</c> 属于强化攻击，见 <see cref="HeidemarieAuroraDamagePoolPower"/>）；</item>
 	///   <item>结算后<strong>消耗 1 层极夜</strong>。主动打出时这一步由
 	///   <see cref="HeidemarieNightPower.AfterAttack"/> 完成，
@@ -168,8 +164,7 @@ public sealed class HeidemarieAuroraSword : HeidemarieCard, ILinkCard, IGraveKee
 
 		await CreatureCmd.Damage(choiceContext, target, DynamicVars.Damage, Owner.Creature, this, null);
 
-		// 丢弃伤害也是一次「极光剑结算」→ 极夜与充能极光各消耗 1 次
+		// 丢弃伤害也是一次「极光剑结算」→ 极夜消耗 1 层
 		await HeidemarieNightPower.ConsumeAsync(Owner.Creature);
-		await HeidemarieChargedAuroraPower.ConsumeAsync(Owner.Creature);
 	}
 }

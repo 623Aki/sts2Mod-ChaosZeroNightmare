@@ -1,4 +1,5 @@
 using System;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace CznMonster.Content.Monsters;
 
@@ -19,6 +20,20 @@ internal static class PolemicaScaling
 	private static readonly decimal[] DmgMul = { 3m / 4m, 9m / 10m, 1m };
 
 	private static int Act => Math.Clamp(ActIndex, 0, 2);
+
+	/// <summary>
+	/// 按当前 RunState 同步章节。只服务于「首领 + 它召唤出来的召唤物」：
+	/// 召唤物数值 = 第 3 章基准 × 当前章节系数，所以在首领遭遇生成时写一次。
+	/// 地图上的独立遭遇用固定数值，不读这里，也就不需要调用。
+	/// </summary>
+	/// <remarks>
+	/// 读档后静态值会丢，不能沿用上一次写入的值（残留会让两端劈叉）。
+	/// </remarks>
+	public static void SyncActIndex()
+	{
+		// 拿不到 RunState 时回落第 1 章（0），不要沿用旧值
+		ActIndex = RunManager.Instance?.DebugOnlyGetState()?.CurrentActIndex ?? 0;
+	}
 
 	/// <summary>按章节缩放生命值（向下取整）。</summary>
 	public static int Hp(int baseHp) => (int)Math.Floor(baseHp * HpMul[Act]);

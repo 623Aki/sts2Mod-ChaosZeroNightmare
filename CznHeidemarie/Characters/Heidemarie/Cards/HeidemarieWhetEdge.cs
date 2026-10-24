@@ -20,7 +20,7 @@ namespace CznHeidemarie.Characters.Heidemarie.Cards;
 /// <para><b>增伤通道复用「极夜」</b>：给
 /// <see cref="HeidemarieNightPower"/> 叠加「张数」层。
 /// 层数语义统一后不会出现「两个图标描述同一件事」的歧义，
-/// 也自动共享「极夜 + 充能极光相加」的既有协调逻辑
+/// 也自动共享「极夜按张数计费 + 单出口加算」的既有逻辑
 /// （见 <see cref="HeidemarieAuroraDamagePoolPower"/>）。</para>
 /// </summary>
 public sealed class HeidemarieWhetEdge : HeidemarieCard

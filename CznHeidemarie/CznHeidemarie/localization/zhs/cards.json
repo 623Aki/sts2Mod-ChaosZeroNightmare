@@ -116,7 +116,7 @@
   "HEIDEMARIE_WALL_OF_SWORDS.description": "{KwBlock}每当你丢弃1张牌时，获得{Block:diff()}点[gold]格挡[/gold]。若丢弃的是极光剑，改为获得{SwordBlock:diff()}点[gold]格挡[/gold]。",
 
   "HEIDEMARIE_DAYBREAK.title": "破晓",
-  "HEIDEMARIE_DAYBREAK.description": "{KwBlock}获得{Energy:diff()}点能量。\n{BurnName}：在手牌生成{Cards:diff()}张极光剑。",
+  "HEIDEMARIE_DAYBREAK.description": "{KwBlock}获得{Energy:diff()}点能量。\n{SenseName}：在手牌生成{Cards:diff()}张极光剑。",
 
   "HEIDEMARIE_OLD_OATH.title": "旧誓",
   "HEIDEMARIE_OLD_OATH.description": "{KwBlock}回合开始时，弃牌堆和消耗牌堆中每有1张极光剑，即可获得{Block:diff()}点[gold]格挡[/gold]。",
@@ -201,5 +201,11 @@
   "HEIDEMARIE_REST_CALL.selectionScreenPrompt": "选择要打出的[gold]安息[/gold]卡牌。",
 
   "HEIDEMARIE_AURORA_CHAIN.title": "极光连锁",
-  "HEIDEMARIE_AURORA_CHAIN.description": "{KwBlock}每当你直接使用或丢弃1张[gold]连接[/gold]牌，获得1层[gold]极光连锁[/gold]（最多{MaxStacks}层）。每层使你的攻击伤害+{PerStack}%。"
+  "HEIDEMARIE_AURORA_CHAIN.description": "{KwBlock}每当你直接使用或丢弃1张[gold]连接[/gold]牌，获得1层[gold]极光连锁[/gold]（最多{MaxStacks}层）。每层使你的攻击伤害+{PerStack}%。",
+
+  "HEIDEMARIE_EVERLIGHT.title": "长明",
+  "HEIDEMARIE_EVERLIGHT.description": "{KwBlock}回合开始时，获得{Layers:diff()}层[gold]极夜[/gold]。",
+
+  "HEIDEMARIE_AURORA_OMEN.title": "极光预兆",
+  "HEIDEMARIE_AURORA_OMEN.description": "{KwBlock}在手牌生成{Cards:diff()}张极光剑。\n{SenseName}：[gold]极夜[/gold]+2。"
 }

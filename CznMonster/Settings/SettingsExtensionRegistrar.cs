@@ -83,33 +83,20 @@ internal static class SettingsExtensionRegistrar
 					["set"] = (Action<bool>)(v => MonsterSettings.CznMonstersEnabled = v),
 					["order"] = 2
 				},
-				// 4. 首领位置：随机（默认开；与"指定"互斥）
-				new Dictionary<string, object>
-				{
-					["type"] = "toggle",
-					["id"] = "boss_pos_random",
-					["label"] = (Func<string>)(() => SettingsLocalization.Text("boss_pos_random", "Boss Spawn: Random").Current),
-					["description"] = (Func<string>)(() => SettingsLocalization.Text("boss_pos_random_desc", "CZN bosses join the native boss pool and are drawn by the original game.").Current),
-					["get"] = (Func<bool>)(() => MonsterSettings.BossPosRandom),
-					["set"] = (Action<bool>)(v => MonsterSettings.BossPosRandom = v),
-					["order"] = 3,
-					["parent_id"] = "czn_monsters_enabled",
-					["enabled"] = (Func<bool>)(() => MonsterSettings.CznMonstersEnabled)
-				},
-				// 5. 首领位置：指定（与"随机"互斥）
+				// 4. 首领位置：指定章节（原生抽完之后强行替换；默认关 = 按固定章节入池随机）
 				new Dictionary<string, object>
 				{
 					["type"] = "toggle",
 					["id"] = "boss_pos_specified",
 					["label"] = (Func<string>)(() => SettingsLocalization.Text("boss_pos_specified", "Boss Spawn: Specified Act").Current),
-					["description"] = (Func<string>)(() => SettingsLocalization.Text("boss_pos_specified_desc", "Place the CZN boss in the chosen act only.").Current),
+					["description"] = (Func<string>)(() => SettingsLocalization.Text("boss_pos_specified_desc", "After the native boss roll, override the chosen act with the selected CZN boss.").Current),
 					["get"] = (Func<bool>)(() => MonsterSettings.BossPosSpecified),
 					["set"] = (Action<bool>)(v => MonsterSettings.BossPosSpecified = v),
-					["order"] = 4,
+					["order"] = 3,
 					["parent_id"] = "czn_monsters_enabled",
 					["enabled"] = (Func<bool>)(() => MonsterSettings.CznMonstersEnabled)
 				},
-				// 6. 指定章节（仅"指定"勾选时可用）
+				// 5. 指定章节（仅"指定"勾选时可用）
 				new Dictionary<string, object>
 				{
 					["type"] = "choice",
@@ -117,7 +104,7 @@ internal static class SettingsExtensionRegistrar
 					["label"] = (Func<string>)(() => SettingsLocalization.Text("boss_chapter", "Specified Act").Current),
 					["get"] = (Func<int>)(() => MonsterSettings.BossChapter),
 					["set"] = (Action<int>)(v => MonsterSettings.BossChapter = v),
-					["order"] = 5,
+					["order"] = 4,
 					["parent_id"] = "boss_pos_specified",
 					["enabled"] = (Func<bool>)(() => MonsterSettings.CznMonstersEnabled && MonsterSettings.BossPosSpecified),
 					["options"] = new object[]
@@ -139,7 +126,7 @@ internal static class SettingsExtensionRegistrar
 						}
 					}
 				},
-				// 7. 指定首领（仅"指定"勾选时可用）：0 = 随机，1..N = BossCatalog 顺序
+				// 6. 指定首领（仅"指定"勾选时可用）：0 = 随机，1..N = BossCatalog 顺序
 				new Dictionary<string, object>
 				{
 					["type"] = "choice",
@@ -148,12 +135,12 @@ internal static class SettingsExtensionRegistrar
 					["description"] = (Func<string>)(() => SettingsLocalization.Text("boss_select_desc", "Which CZN boss to place in the chosen act. Random picks one that has not appeared this run.").Current),
 					["get"] = (Func<int>)(() => MonsterSettings.BossSelect),
 					["set"] = (Action<int>)(v => MonsterSettings.BossSelect = v),
-					["order"] = 6,
+					["order"] = 5,
 					["parent_id"] = "boss_pos_specified",
 					["enabled"] = (Func<bool>)(() => MonsterSettings.CznMonstersEnabled && MonsterSettings.BossPosSpecified),
 					["options"] = BuildBossSelectOptions()
 				},
-				// 8. 首领血量：自定义开关（仅测试用）
+				// 7. 首领血量：自定义开关（仅测试用）
 				new Dictionary<string, object>
 				{
 					["type"] = "toggle",
@@ -162,11 +149,11 @@ internal static class SettingsExtensionRegistrar
 					["description"] = (Func<string>)(() => SettingsLocalization.Text("boss_hp_custom_desc", "For testing only. Overrides the boss HP with the value below.").Current),
 					["get"] = (Func<bool>)(() => MonsterSettings.BossHpCustom),
 					["set"] = (Action<bool>)(v => MonsterSettings.BossHpCustom = v),
-					["order"] = 7,
+					["order"] = 6,
 					["parent_id"] = "czn_monsters_enabled",
 					["enabled"] = (Func<bool>)(() => MonsterSettings.CznMonstersEnabled)
 				},
-				// 9. 自定义血量。
+				// 8. 自定义血量。
 				//    共享设置页由角色 mod 内置的旧版 CznCore 渲染，旧版只支持
 				//    toggle / slider / choice，不支持 text；用 text 时勾选开关会触发
 				//    旧版重建，整行被静默丢弃。这里改用 slider（1–9999，步长 1），
@@ -184,7 +171,7 @@ internal static class SettingsExtensionRegistrar
 					["step"] = 1.0,
 					["suffix"] = "",
 					["display_offset"] = 0.0,
-					["order"] = 8,
+					["order"] = 7,
 					["parent_id"] = "boss_hp_custom",
 					["enabled"] = (Func<bool>)(() => MonsterSettings.CznMonstersEnabled && MonsterSettings.BossHpCustom)
 				}

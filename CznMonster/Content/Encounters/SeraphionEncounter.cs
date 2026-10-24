@@ -15,8 +15,12 @@ namespace CznMonster.Content.Encounters;
 /// </summary>
 public sealed class SeraphionEncounter : EncounterModel, ICznMonsterEncounter
 {
+	// 固定入池章节：塞拉菲翁只进第 2 章首领池，由原生 rng.NextItem(AllBossEncounters) 抽取。
+	// 与原生首领竞争，因此「第 2 章必出塞拉菲翁」不成立；指定模式可在原生抽取后强行替换。
+	private static readonly int[] Acts = { 1 };
+
 	/// <inheritdoc />
-	public int TargetActIndex => 2;
+	public IReadOnlyList<int>? TargetActIndexes => Acts;
 
 	/// <inheritdoc />
 	public override RoomType RoomType => RoomType.Boss;

@@ -16,10 +16,12 @@ namespace CznMonster.Registration;
 /// <remarks>
 /// 注入规则：
 /// <list type="bullet">
-/// <item>非首领遭遇：两种模式都入池，按 <see cref="ICznMonsterEncounter.TargetActIndex"/> 过滤章节。</item>
-/// <item>首领遭遇：只在「首领位置：随机」时入池，且只注入运行中的 mutable act ——
-/// ModelDb 的 canonical act 供图鉴使用，注入会造成图鉴里同一只首领重复出现
-/// （图鉴由 <see cref="CznMonsterBestiaryPatch"/> 单独补区块）。</item>
+/// <item>非首领遭遇：按 <see cref="ICznMonsterEncounter.TargetActIndexes"/> 过滤章节后入池。</item>
+/// <item>首领遭遇：同样按 <see cref="ICznMonsterEncounter.TargetActIndexes"/> 入池 ——
+/// 每只只进自己那一章（美梦→第 1 章、塞拉菲翁→第 2 章、波勒米卡/阿涅丝→第 3 章），
+/// 再与本层原生首领一起交给原生 <c>rng.NextItem(AllBossEncounters)</c> 抽取，<b>不保证必出</b>。
+/// 只注入运行中的 mutable act —— ModelDb 的 canonical act 供图鉴使用，
+/// 注入会造成图鉴里同一只首领重复出现（图鉴由 <see cref="CznMonsterBestiaryPatch"/> 单独补区块）。</item>
 /// </list>
 /// </remarks>
 [HarmonyLib.HarmonyPatch(typeof(ActModel), "get_AllEncounters")]
@@ -39,21 +41,27 @@ internal static class MonsterPoolPatch
 
 			List<EncounterModel> extra = new List<EncounterModel>();
 
-			// 1) 非首领遭遇：按章节追加（空清单时无副作用）
+			// 1) 非首领遭遇：按章节集合追加（普通 / 精英由原生 RoomType 分流，无需在此判断）
 			foreach (EncounterModel encounter in MonsterContent.NonBossEncounters)
 			{
-				if (encounter is not ICznMonsterEncounter czn || czn.TargetActIndex < 0 || czn.TargetActIndex == __instance.Index)
+				if (encounter is not ICznMonsterEncounter czn || AppliesToAct(czn, __instance.Index))
 				{
 					extra.Add(encounter);
 				}
 			}
 
-			// 2) 首领遭遇：随机模式并入原生首领池，由原生 rng.NextItem(AllBossEncounters) 抽取。
-			//    指定模式不入池：那只章的首领由 BossPlacementPatch 显式替换，其余章节保持原生。
-			if (MonsterSettings.EffectiveBossPosRandom && __instance.IsMutable)
+			// 2) 首领遭遇：按各自章节入池（美梦→第 1 章、塞拉菲翁→第 2 章、波勒米卡/阿涅丝→第 3 章），
+			//    随后与本层原生首领一起由原生 rng.NextItem(AllBossEncounters) 抽取。
+			//    指定模式不再改变入池范围：原生抽完之后由 BossPlacementPatch 强行替换所选章节。
+			if (__instance.IsMutable)
 			{
 				foreach (EncounterModel boss in MonsterContent.BossEncounters)
 				{
+					// 章节不匹配的首领不注入本层池子
+					if (boss is ICznMonsterEncounter cznBoss && !AppliesToAct(cznBoss, __instance.Index))
+					{
+						continue;
+					}
 					if (!__result.Contains(boss))
 					{
 						extra.Add(boss);
@@ -71,5 +79,23 @@ internal static class MonsterPoolPatch
 		{
 			MainFile.Log.Warn($"CznMonster 遭遇池注入失败：{ex.GetType().Name}: {ex.Message}");
 		}
+	}
+
+	/// <summary>章节过滤：null / 空集合 = 全部章节，否则必须在集合里。</summary>
+	private static bool AppliesToAct(ICznMonsterEncounter encounter, int actIndex)
+	{
+		IReadOnlyList<int>? acts = encounter.TargetActIndexes;
+		if (acts == null || acts.Count == 0)
+		{
+			return true;
+		}
+		for (int i = 0; i < acts.Count; i++)
+		{
+			if (acts[i] == actIndex)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }

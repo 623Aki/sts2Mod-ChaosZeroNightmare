@@ -14,8 +14,12 @@ namespace CznMonster.Content.Encounters;
 /// </summary>
 public sealed class AgnesBoss : EncounterModel, ICznMonsterEncounter
 {
+	// 固定入池章节：阿涅丝只进第 3 章首领池（与波勒米卡同池），由原生 rng.NextItem 抽取。
+	// 与原生首领竞争，A10 第二首领也从该池抽（可能是波勒米卡或原生）。
+	private static readonly int[] Acts = { 2 };
+
 	/// <inheritdoc />
-	public int TargetActIndex => 2;
+	public IReadOnlyList<int>? TargetActIndexes => Acts;
 
 	/// <inheritdoc />
 	public override RoomType RoomType => RoomType.Boss;

@@ -42,8 +42,21 @@ internal static class HeidemarieDeathAnimGuardPatch
 	/// <summary>
 	/// 返回 <c>false</c> = 跳过原方法（不播 <c>die</c>）；<c>true</c> = 放行。
 	/// </summary>
-	private static bool Prefix(MegaAnimationState __instance, string animation, bool loop, int trackId)
+	/// <remarks>
+	/// <b>参数必须用 <c>__args</c> 取，不能按名字绑定。</b>Harmony 按「形参名 ↔ 原方法形参名」
+	/// 匹配普通参数，名字对不上会在打补丁阶段直接抛
+	/// <c>HarmonyException: Patching exception in method …</c>，
+	/// 整个补丁被跳过（本补丁曾因把 <c>animationName</c> 写成 <c>animation</c> 而失效）。
+	/// 改用 <c>object[] __args</c> 后与形参名无关，游戏后续改形参名也不会再失效。
+	/// </remarks>
+	private static bool Prefix(object[] __args)
 	{
+		// __args[0] = animationName（SetAnimation(string animationName, bool loop, int trackId)）
+		if (__args is null || __args.Length < 1 || __args[0] is not string animation)
+		{
+			return true;
+		}
+
 		if (!string.Equals(animation, DeathAnimationName, StringComparison.Ordinal))
 		{
 			return true;

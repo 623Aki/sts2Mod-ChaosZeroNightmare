@@ -264,7 +264,8 @@ internal static class CznMonsterSfx
 
 	/// <summary>
 	/// 订阅战斗生命周期（<see cref="MainFile.Initialize"/> 调用）。
-	/// 只有本 mod 首领在场时才预热，避免每次进战斗都白读 28 个文件。
+	/// 只有本 mod 的遭遇（首领，或地图上的普通/精英）在场时才预热，
+	/// 避免每次打原生怪都白读一整套采样。
 	/// </summary>
 	private static bool _subscribed;
 
@@ -283,7 +284,9 @@ internal static class CznMonsterSfx
 	{
 		try
 		{
-			if (state.Encounter == null || !MonsterContent.IsCznBoss(state.Encounter.Id.Entry))
+			// 首领战与地图上的 CZN 普通/精英遭遇都要预热：
+			// 独立遭遇的 entry 不是首领，用 IsCznEncounter 统一判定。
+			if (state.Encounter == null || !MonsterContent.IsCznEncounter(state.Encounter.Id.Entry))
 			{
 				return;
 			}

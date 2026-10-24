@@ -28,6 +28,12 @@ internal static class SettingsSubmenuPatch
 
 internal static class SettingsInjectPatch
 {
+	/// <summary>
+	/// 「全局设置」导航按钮图标（中性选项图标，与参考 mod 同一张图）。
+	/// 本 mod 自带一份，缺图时框架会降级成「ALL」文字。
+	/// </summary>
+	private const string GlobalSettingsIconPath = "res://images/ui/mod_config/btn_option.png";
+
 	// 文案对象无状态，可复用；SkinSettingsUiTextFactory 只负责拼默认文案
 	private static MonsterSettingsText? _text;
 
@@ -41,7 +47,7 @@ internal static class SettingsInjectPatch
 	{
 		try
 		{
-			SkinSettingsUi.TryInjectShared(screen, Text);
+			SkinSettingsUi.TryInjectShared(screen, Text, GlobalSettingsIconPath);
 		}
 		catch (System.Exception ex)
 		{

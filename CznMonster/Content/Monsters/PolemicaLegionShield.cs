@@ -21,18 +21,24 @@ namespace CznMonster.Content.Monsters;
 /// </summary>
 public sealed class PolemicaLegionShield : PolemicaAddMonster
 {
-	private int StrikeDamage =>
-		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 7, 6));
+	// ── 数值（同一只怪两套口径：被首领召唤 / 地图上的第 1 章普通怪）──
+	// 被召唤：第 3 章基准（攻击 6 / 格挡 15，升华 7 / 17），再乘章节系数
+	// 普通怪：固定攻击 6（升华 7）、格挡 10（升华 12）；遭遇固定在第 1 章，不再乘系数
+	private int StrikeDamage => IsSummoned
+		? PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 7, 6))
+		: AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 7, 6);
 
-	private int CoverDamage =>
-		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 7, 6));
+	private int CoverDamage => StrikeDamage;
 
-	private int CoverBlock =>
-		PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 17, 15));
+	private int CoverBlock => IsSummoned
+		? PolemicaScaling.Dmg(AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 17, 15))
+		: AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 12, 10);
 
 	/// <inheritdoc />
-	public override int MinInitialHp =>
-		PolemicaScaling.Hp(AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 44, 42));
+	/// <remarks>被召唤走「42（升华 44）× 章节系数」；作为第 1 章普通怪固定 40（升华 42）。</remarks>
+	public override int MinInitialHp => IsSummoned
+		? PolemicaScaling.Hp(AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 44, 42))
+		: AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 42, 40);
 
 	/// <inheritdoc />
 	public override int MaxInitialHp => MinInitialHp;
@@ -94,7 +100,9 @@ public sealed class PolemicaLegionShield : PolemicaAddMonster
 	public override CreatureAnimator GenerateAnimator(MegaSprite controller)
 	{
 		AnimState idle = new("normal_idle", isLooping: true);
+		// 被首领召唤出场用 normal_summon；地图上的独立遭遇用进入战斗的 normal_enter
 		AnimState summon = new("normal_summon") { NextState = idle };
+		AnimState enter = new("normal_enter") { NextState = idle };
 		AnimState hit = new("normal_hit") { NextState = idle };
 		AnimState groggy = new("normal_groggy") { NextState = idle };
 		AnimState dead = new("normal_death");
@@ -102,7 +110,7 @@ public sealed class PolemicaLegionShield : PolemicaAddMonster
 		AnimState cover = new("normal_skill2") { NextState = idle };
 		AnimState surprise = new("normal_surprise") { NextState = idle };
 
-		CreatureAnimator animator = new(summon, controller);
+		CreatureAnimator animator = new(IsSummoned ? summon : enter, controller);
 		animator.AddAnyState("Attack", attack);
 		animator.AddAnyState("Cover", cover);
 		animator.AddAnyState("Surprise", surprise);

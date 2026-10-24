@@ -1,13 +1,10 @@
-using System.Collections.Generic;
 using CznHeidemarie.Characters.Heidemarie;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
-using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
-using MegaCrit.Sts2.Core.Entities.Players;
 
 namespace CznHeidemarie.Registration;
 
@@ -101,54 +98,31 @@ internal static class HeidemarieSpineAnimAlias
 [HarmonyPatch(typeof(NMerchantCharacter), nameof(NMerchantCharacter.PlayAnimation))]
 internal static class HeidemarieMerchantAnimPatch
 {
-	private static readonly System.Reflection.FieldInfo? PlayersField =
-		AccessTools.Field(typeof(NMerchantRoom), "_players");
-
-	private static bool IsHeidemarie(NMerchantCharacter character)
-	{
-		NMerchantRoom? room = NMerchantRoom.Instance;
-		if (room is null || PlayersField?.GetValue(room) is not IReadOnlyList<Player> players)
-		{
-			return false;
-		}
-
-		// 下标对齐只在「视觉数量 == 玩家数量」时成立。
-		// 联机中途加入/离开会让两个列表长度不等，此时宁可不改写（保持原动画），
-		// 也不能错判成别人的角色。
-		if (room.PlayerVisuals.Count != players.Count)
-		{
-			return false;
-		}
-
-		int index = -1;
-		for (int i = 0; i < room.PlayerVisuals.Count; i++)
-		{
-			if (ReferenceEquals(room.PlayerVisuals[i], character))
-			{
-				index = i;
-				break;
-			}
-		}
-		return index >= 0 && players[index].Character is Heidemarie;
-	}
-
 	/// <summary>
 	/// 只改写实际播放的动画名，不改动原方法的其它行为。
 	/// </summary>
+	/// <remarks>
+	/// <b>判据是「骨架里有没有这个动画」，不是「这个角色是不是海德玛丽」。</b>
+	/// 早期按 <c>NMerchantRoom.PlayerVisuals</c> 与 <c>_players</c> 的下标对齐判身份，
+	/// 但 <c>AfterRoomIsLoaded</c> 里是<b>先</b> <c>AddChildSafely</c>（触发 <c>_Ready</c> →
+	/// <c>RunWhenSpineReady</c> 同步回调 → <c>PlayAnimation("relaxed_loop")</c>）
+	/// <b>后</b>才 <c>_playerVisuals.Add(...)</c>，回调里根本查不到自己，
+	/// 判据恒 false ⇒ 动画名没被改写 ⇒ Spine 刷
+	/// <c>ERROR: Can not find animation: relaxed_loop</c>。
+	/// 改成骨架能力判定后与列表顺序、事件时序、联机人数都无关：
+	/// 游戏原始角色的骨架自带 <c>relaxed_loop</c>，<see cref="HeidemarieSpineAnimAlias.Resolve"/>
+	/// 原样返回，对他人零侵入。
+	/// </remarks>
 	private static void Prefix(NMerchantCharacter __instance, ref string anim)
 	{
-		if (!IsHeidemarie(__instance))
+		MegaSprite? sprite = HeidemarieSpineAnimAlias.FindSpineSprite(__instance);
+		if (sprite is null)
 		{
 			return;
 		}
 
 		// stop 是 30093.skel 里的停驻姿势；逐级回退保证任何骨架都有能播的动画
-		anim = HeidemarieSpineAnimAlias.Resolve(
-			HeidemarieSpineAnimAlias.FindSpineSprite(__instance),
-			anim,
-			"stop",
-			"b_idle",
-			"idle");
+		anim = HeidemarieSpineAnimAlias.Resolve(sprite, anim, "stop", "b_idle", "idle");
 	}
 }
 

@@ -90,7 +90,7 @@ public sealed class HeidemarieCardPool : CardPoolModel
 	/// （CardFactory 四处显式排除），因此列池没有副作用。
 	/// 「终焉」虽为先古牌（太古之牙淬炼专属），仍列在此供图鉴与 ModelDb 注册。
 	/// </remarks>
-	protected override CardModel[] GenerateAllCards() => new CardModel[59]
+	protected override CardModel[] GenerateAllCards() => new CardModel[61]
 	{
 		// 基础攻防
 		ModelDb.Card<HeidemarieStrike>(),
@@ -158,6 +158,9 @@ public sealed class HeidemarieCardPool : CardPoolModel
 		ModelDb.Card<HeidemarieNameless>(),
 		ModelDb.Card<HeidemarieRestCall>(),
 		ModelDb.Card<HeidemarieAuroraChain>(),
+		// 第 4 轮：极夜引擎补强（长明 / 极光预兆，共 2 张）
+		ModelDb.Card<HeidemarieEverlight>(),
+		ModelDb.Card<HeidemarieAuroraOmen>(),
 		// 先古牌：由「绝响」经太古之牙淬炼而来，列池供图鉴 / ModelDb 注册
 		ModelDb.Card<HeidemarieTerminus>(),
 	};

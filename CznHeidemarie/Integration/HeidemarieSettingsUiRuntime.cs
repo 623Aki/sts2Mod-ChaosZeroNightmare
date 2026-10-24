@@ -40,7 +40,12 @@ internal sealed class HeidemarieSettingsUiRuntime : SkinSettingsUiRuntimeBase
 	public override string CharacterSettingsAvatarPath => "res://images/ui/top_panel/character_icon_heidemarie.png";
 
 	/// <inheritdoc/>
-	public override string GlobalSettingsIconPath => "res://images/ui/top_panel/character_icon_heidemarie.png";
+	/// <remarks>
+	/// 全局设置页的导航按钮用中性「选项」图标，与参考 mod 保持一致；
+	/// 角色页才用 <see cref="CharacterSettingsAvatarPath"/> 的角色头像。
+	/// 缺图时框架会降级成「ALL」文字，不会报错。
+	/// </remarks>
+	public override string GlobalSettingsIconPath => "res://images/ui/mod_config/btn_option.png";
 
 	/// <inheritdoc/>
 	/// <remarks>本项目没有专属战斗特效资源，标签沿用模板中的通用文案。</remarks>

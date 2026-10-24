@@ -122,7 +122,8 @@ internal static class HeidemarieSkinProfile
 				"res://CznHeidemarie/audio/voice/vo_30093_stage_success_01.ogg",
 				"res://CznHeidemarie/audio/voice/vo_30093_hit_01.ogg",
 				"res://CznHeidemarie/audio/voice/vo_30093_lose_01.ogg"),
-			GlobalSettingsIconPath: "res://images/ui/top_panel/character_icon_heidemarie.png");
+			// 全局设置页导航图标：与运行时属性保持一致，用中性「选项」图标
+			GlobalSettingsIconPath: "res://images/ui/mod_config/btn_option.png");
 	}
 
 	private static CharacterSkinCombatEffectsProfile EmptyCombatEffects() => new(

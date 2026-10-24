@@ -23,7 +23,7 @@ namespace CznHeidemarie.Characters.Heidemarie.Powers;
 /// <code>
 /// 1 + ( 一次性注入 Amount
 ///     + 持久基线 PersistentPercent（极光连锁 层数×5）
-///     + 极光剑专属加成（仅当 cardSource 是极光剑：极夜 + 充能极光） ) / 100
+///     + 极光剑专属加成（仅当 cardSource 是极光剑：极夜） ) / 100
 /// </code>
 ///
 /// <para><b>三部分各自的职责</b>：</para>
@@ -82,7 +82,7 @@ public sealed class HeidemarieDamagePercentPower : PowerModel
 
 		decimal total = Amount + PersistentPercent;
 
-		// 极光剑专属加成（极夜 + 充能极光）也在这一个 modifier 里相加。
+		// 极光剑专属加成（极夜）也在这一个 modifier 里相加。
 		if (cardSource is HeidemarieAuroraSword)
 		{
 			total += HeidemarieAuroraDamagePoolPower.TotalPercent(Owner);

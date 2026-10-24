@@ -9,5 +9,11 @@
   "AGNES_BOSS.loss": "[gold]{encounter}[/gold]的余响在虚空里回荡不止，{character}没能在它的收束里活下来。",
 
   "SWEET_DREAM_BOSS.title": "美梦",
-  "SWEET_DREAM_BOSS.loss": "[gold]{encounter}[/gold]的梦境永不落幕，{character}没能在它的浅眠中醒来。"
+  "SWEET_DREAM_BOSS.loss": "[gold]{encounter}[/gold]的梦境永不落幕，{character}没能在它的浅眠中醒来。",
+
+  "POLEMICA_LEGION_DUO_NORMAL.title": "库勒提双卫",
+  "POLEMICA_LEGION_DUO_NORMAL.loss": "[gold]{encounter}[/gold]的两名库勒提交替掩护，{character}始终没能撕开那道战线。",
+
+  "POLEMICA_INSECT_TRIO_ELITE.title": "甲壳虫群",
+  "POLEMICA_INSECT_TRIO_ELITE.loss": "[gold]{encounter}[/gold]的甲壳层层叠起，{character}被碾在了乱石与虫翅之间。"
 }

@@ -8,15 +8,16 @@ namespace CznMonster.Content;
 
 /// <summary>
 /// 本 mod 的内容清单（设计文档 §5.3 / §6）：
-/// 首领遭遇既可由原生池抽出（随机模式），也可被显式替换进指定章节（指定模式）；
+/// 首领遭遇按各自固定章节并入原生池、由原生 rng 抽取；
+/// 「指定」开启时，可在原生抽取之后被强行替换进所选章节；
 /// 非首领遭遇按章节追加进遭遇池。
 /// </summary>
 /// <remarks>
 /// 当前接入：波勒米卡首领遭遇（<see cref="PolemicaBoss"/>）、
 /// 塞拉菲翁／阿克鲁斯双怪首领遭遇（<see cref="SeraphionEncounter"/>）、
 /// 阿涅丝首领遭遇（<see cref="AgnesBoss"/>）与
-/// 美梦首领遭遇（<see cref="SweetDreamBoss"/>）。
-/// 非首领清单仍为空，补丁侧对空清单安全。
+/// 美梦首领遭遇（<see cref="SweetDreamBoss"/>）；
+/// 非首领接入库勒提双卫（普通）与甲壳虫群（精英）。
 /// </remarks>
 internal static class MonsterContent
 {
@@ -37,17 +38,32 @@ internal static class MonsterContent
 
 	/// <summary>
 	/// 全部 CZN 首领遭遇（顺序与 <see cref="BossCatalog"/> 一致）。
-	/// 随机模式下并入原生首领池由原生抽取；指定模式下用于替换。
+	/// 各自按 <c>TargetActIndexes</c> 并入对应章节的原生首领池、由原生 rng 抽取；
+	/// 「指定」开启时也作为替换来源。
 	/// </summary>
 	public static IReadOnlyList<EncounterModel> BossEncounters => _bossEncounters ??= BossCatalog
 		.Select(entry => entry.Resolve())
 		.ToList();
 
 	/// <summary>
-	/// 全部 CZN 非首领遭遇（当前为空，是已知缺口）。
-	/// TODO: 接入普通/精英/弱遭遇时填回；章节追加由 <see cref="ICznMonsterEncounter.TargetActIndex"/> 控制。
+	/// 全部 CZN 非首领遭遇（普通 / 精英）。
+	///
+	/// <para>入池章节由 <see cref="ICznMonsterEncounter.TargetActIndexes"/> 过滤（null / 空 = 全部章节）；
+	/// 普通 / 精英 / 弱的分流完全交给原生 —— <c>RoomType</c> 决定进哪个池，<c>IsWeak</c> 决定进前 3 间弱池还是常规池。</para>
+	///
+	/// <para>这两条遭遇复用的是波勒米卡召唤物的同一批 <c>MonsterModel</c>，
+	/// 由 <see cref="CznMonster.Content.Monsters.PolemicaAddMonster.IsSummoned"/> 区分
+	/// 「被召唤的次级敌人」与「地图上的正式敌人」：招式不变，数值、登场动画、
+	/// 死亡采样与 MinionPower 按身份分流。</para>
 	/// </summary>
-	public static IReadOnlyList<EncounterModel> NonBossEncounters { get; } = new List<EncounterModel>();
+	public static IReadOnlyList<EncounterModel> NonBossEncounters => _nonBossEncounters ??=
+		new EncounterModel[]
+		{
+			ModelDb.Encounter<PolemicaLegionDuoNormal>(),   // 不屈的库勒提 ×1 + 装甲库勒提 ×1（第 1 章普通）
+			ModelDb.Encounter<PolemicaInsectTrioElite>(),  // 岩壳虫 + 翼壳虫 + 壳虫（第 2 章精英）
+		};
+
+	private static IReadOnlyList<EncounterModel>? _nonBossEncounters;
 
 	/// <summary>
 	/// 按设置里的「指定首领」取值解析具体首领：
@@ -67,9 +83,23 @@ internal static class MonsterContent
 	/// <summary>判断某遭遇 id 是否为 CZN 首领。</summary>
 	public static bool IsCznBoss(string entryId)
 	{
-		foreach (EncounterModel boss in BossEncounters)
+		return ContainsEntry(BossEncounters, entryId);
+	}
+
+	/// <summary>
+	/// 判断某遭遇 id 是否为本 mod 的任意遭遇（首领 + 普通/精英）。
+	/// 用于「本场战斗要不要预热 CZN 采样」这类不分首领/非首领的判定。
+	/// </summary>
+	public static bool IsCznEncounter(string entryId)
+	{
+		return ContainsEntry(BossEncounters, entryId) || ContainsEntry(NonBossEncounters, entryId);
+	}
+
+	private static bool ContainsEntry(IReadOnlyList<EncounterModel> encounters, string entryId)
+	{
+		foreach (EncounterModel encounter in encounters)
 		{
-			if (boss.Id.Entry == entryId)
+			if (encounter.Id.Entry == entryId)
 			{
 				return true;
 			}

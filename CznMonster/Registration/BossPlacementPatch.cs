@@ -13,10 +13,12 @@ namespace CznMonster.Registration;
 
 /// <summary>
 /// P3 首领位置补丁（设计文档 §6.2 / §6.3）：
-/// <para><b>随机模式</b>不再改写首领。首领遭遇由 <see cref="MonsterPoolPatch"/> 并入原生
-/// <c>AllBossEncounters</c>，出现与否、出现在哪一章全部交给原生 <c>GenerateRooms</c> 抽取。</para>
-/// <para><b>指定模式</b>在 <see cref="RunManager.GenerateRooms"/> postfix 里把所选章节的首领
-/// 替换成「指定首领」或未使用的 CZN 首领中的随机一只；其余章节保持原生首领。</para>
+/// <para><b>默认（不改写）</b>：CZN 首领由 <see cref="MonsterPoolPatch"/> 按固定章节并入
+/// <c>AllBossEncounters</c>（美梦→第 1 章、塞拉菲翁→第 2 章、波勒米卡/阿涅丝→第 3 章），
+/// 出现与否完全交给原生 <c>GenerateRooms</c> 的 <c>rng.NextItem</c> 抽取。</para>
+/// <para><b>指定模式</b>：原生三章首领都已抽完之后（<see cref="RunManager.GenerateRooms"/> postfix），
+/// 把所选章节的首领<b>强行替换</b>成「指定首领」或未使用的 CZN 首领中的随机一只；
+/// 其余章节保持原生抽取结果。</para>
 /// </summary>
 [HarmonyLib.HarmonyPatch(typeof(RunManager), "GenerateRooms")]
 internal static class BossPlacementPatch

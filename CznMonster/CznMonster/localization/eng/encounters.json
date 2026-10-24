@@ -9,5 +9,11 @@
   "AGNES_BOSS.loss": "[gold]{encounter}[/gold]'s echoes kept ringing through the void; {character} succumbed as her resonance converged.",
 
   "SWEET_DREAM_BOSS.title": "Sweet Dream",
-  "SWEET_DREAM_BOSS.loss": "[gold]{encounter}[/gold]'s dream never ends; {character} never woke from its dozing."
+  "SWEET_DREAM_BOSS.loss": "[gold]{encounter}[/gold]'s dream never ends; {character} never woke from its dozing.",
+
+  "POLEMICA_LEGION_DUO_NORMAL.title": "Kuleti Duo",
+  "POLEMICA_LEGION_DUO_NORMAL.loss": "[gold]{encounter}[/gold]'s two Kuleti guards covered each other without pause; {character} never broke the line.",
+
+  "POLEMICA_INSECT_TRIO_ELITE.title": "Shellbug Swarm",
+  "POLEMICA_INSECT_TRIO_ELITE.loss": "[gold]{encounter}[/gold]'s shells locked together and left {character} buried among rubble and wing cases."
 }
